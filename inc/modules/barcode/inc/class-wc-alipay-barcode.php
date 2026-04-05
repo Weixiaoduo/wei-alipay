@@ -5,6 +5,21 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
 
     const GATEWAY_ID = 'alipay_barcode';
 
+    /**
+     * @var string
+     */
+    public $allow_frontend_input = 'yes';
+
+    /**
+     * @var string
+     */
+    public $pos_enabled = 'yes';
+
+    /**
+     * @var string
+     */
+    public $debug = 'no';
+
     public function __construct( $init_hooks = true ) {
         $this->id                 = self::GATEWAY_ID;
         $this->method_title       = __( 'Alipay Barcode Pay', 'woo-alipay-barcode' );
