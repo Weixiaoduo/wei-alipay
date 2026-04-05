@@ -32,11 +32,20 @@ add_filter( 'woocommerce_payment_gateways', function( $methods ) {
 // Blocks registration
 add_action(
     'woocommerce_blocks_payment_method_type_registration',
-    function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $registry ) {
+    function( $registry ) {
+        if ( ! class_exists( 'Automattic\\WooCommerce\\Blocks\\Payments\\Integrations\\AbstractPaymentMethodType' ) ) {
+            return;
+        }
+
+        if ( ! is_object( $registry ) || ! method_exists( $registry, 'register' ) ) {
+            return;
+        }
+
         $file = WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'inc/class-wc-alipay-fund-auth-blocks-support.php';
         if ( file_exists( $file ) ) {
             require_once $file;
         }
+
         if ( class_exists( 'WC_Alipay_Fund_Auth_Blocks_Support' ) ) {
             $registry->register( new WC_Alipay_Fund_Auth_Blocks_Support() );
         }
