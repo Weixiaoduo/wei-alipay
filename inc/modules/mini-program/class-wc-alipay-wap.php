@@ -722,25 +722,30 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
             $this->successful_request( $_POST, $order_id );
         }
 
-        if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED', 'WAIT_SELLER_SEND_GOODS' ), true ) ) {
+        if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
             if ( ! $order->is_paid() ) {
-                add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', array( $this, 'valid_order_statuses' ) );
-                add_filter( 'woocommerce_payment_complete_reduce_order_stock', '__return_false' );
-                add_filter( 'woocommerce_payment_complete_order_status', array( $this, 'complete_order_status' ) );
                 $order->payment_complete( $trade_no );
 
-                // Some environments may not complete payment through hooks; force terminal status as a safe fallback.
+                // Some environments may not complete payment through hooks; move to processing as a safe fallback.
                 $order = wc_get_order( $order_id );
                 if ( $order && ! $order->is_paid() ) {
                     if ( ! empty( $trade_no ) ) {
                         $order->set_transaction_id( $trade_no );
                     }
-                    $order->update_status( 'completed', __( 'Alipay payment completed by notify fallback.', 'alipaywap' ) );
+                    $order->update_status( 'processing', __( 'Alipay payment confirmed by notify fallback.', 'alipaywap' ) );
                 }
             }
 
             if ( ! empty( $trade_no ) ) {
                 update_post_meta( $order_id, 'Alipay Trade No.', $trade_no );
+            }
+        } elseif ( 'WAIT_SELLER_SEND_GOODS' === $trade_status ) {
+            if ( ! $order->is_paid() ) {
+                if ( ! empty( $trade_no ) ) {
+                    $order->set_transaction_id( $trade_no );
+                    update_post_meta( $order_id, 'Alipay Trade No.', $trade_no );
+                }
+                $order->update_status( 'processing', __( 'Payment received and waiting for fulfilment.', 'alipaywap' ) );
             }
         } elseif ( 'yes' == $this->debug ) {
             $this->log->add( 'alipaywap', 'Unhandled trade status: ' . $trade_status . ', order: ' . $order_id );

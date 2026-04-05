@@ -197,8 +197,13 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 			$this->function->showNotifyRespond( true );
 		}
 
-		$this->log( 'Notify acknowledged without payment completion (Order ID:' . $order->get_id() . ', Trade Status:' . $trade_status . ')' );
-		$this->function->showNotifyRespond( true );
+		if ( 'WAIT_BUYER_PAY' === $trade_status ) {
+			$this->log( 'Notify pending payment acknowledged (Order ID:' . $order->get_id() . ')' );
+			$this->function->showNotifyRespond( true );
+		}
+
+		$this->log( 'Notify rejected for unsupported trade status (Order ID:' . $order->get_id() . ', Trade Status:' . $trade_status . ')' );
+		$this->function->showNotifyRespond( false );
 	}
 
     public function thankyou_page($orderId) {
@@ -329,14 +334,35 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 		$out_trade_no = $this->order_prefix . ltrim( $order->get_order_number(), '#' );
 		$order->update_meta_data( '_alipay_out_trade_no', $out_trade_no );
 		$order->save();
+		$payment_inst = isset( $_POST['acbop_payment_inst'] ) ? wc_clean( wp_unslash( $_POST['acbop_payment_inst'] ) ) : '';
+		$biz_content = $this->build_cross_border_biz_content( $order, $out_trade_no, $payment_inst );
+
+		if ( empty( $biz_content['product_code'] ) ) {
+			// Keep legacy behavior for account types that cannot be represented safely in current SDK flow.
+			$redirect = $this->function->buildAlipayString(
+				$order,
+				$this->partner_id,
+				$this->secure_key,
+				$this->account_type,
+				$payment_inst,
+				$this->notify_url,
+				$this->get_return_url( $order ),
+				$this->order_prefix,
+				$this->is_force_ssl,
+				$this->sandbox
+			);
+
+			if ( WC()->cart ) {
+				WC()->cart->empty_cart();
+			}
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $redirect,
+			);
+		}
 
 		$request = new AlipayTradePagePayRequest();
-		$biz_content = array(
-			'out_trade_no' => $out_trade_no,
-			'total_amount' => Alipay_SDK_Helper::format_amount( $order->get_total() ),
-			'subject'      => sprintf( __( 'Order #%s', 'acbop' ), $order->get_order_number() ),
-			'product_code' => 'FAST_INSTANT_TRADE_PAY',
-		);
 		$request->setBizContent( wp_json_encode( $biz_content ) );
 		$request->setNotifyUrl( $this->notify_url );
 		$request->setReturnUrl( $this->get_return_url( $order ) );
@@ -351,6 +377,42 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 			'result'   => 'success',
 			'redirect' => $redirect,
 		);
+	}
+
+	/**
+	 * Build cross-border request payload while preserving account-type semantics.
+	 *
+	 * @param WC_Order $order
+	 * @param string   $out_trade_no
+	 * @param string   $payment_inst
+	 * @return array
+	 */
+	private function build_cross_border_biz_content( $order, $out_trade_no, $payment_inst ) {
+		$product_code = 'NEW_OVERSEAS_SELLER';
+		if ( in_array( $this->account_type, array( 'new_cross_border_wap', 'hk_wallet_pc2mobile' ), true ) ) {
+			$product_code = 'NEW_WAP_OVERSEAS_SELLER';
+		} elseif ( 'new_cross_border_auto' === $this->account_type ) {
+			$product_code = wp_is_mobile() ? 'NEW_WAP_OVERSEAS_SELLER' : 'NEW_OVERSEAS_SELLER';
+		} elseif ( ! in_array( $this->account_type, array( 'cross_border', 'new_cross_border_pc' ), true ) ) {
+			$product_code = '';
+		}
+
+		$biz_content = array(
+			'out_trade_no' => $out_trade_no,
+			'total_amount' => Alipay_SDK_Helper::format_amount( $order->get_total() ),
+			'subject'      => sprintf( __( 'Order #%s', 'acbop' ), $order->get_order_number() ),
+			'product_code' => $product_code,
+		);
+
+		if ( $payment_inst ) {
+			$biz_content['payment_inst'] = $payment_inst;
+		}
+
+		if ( method_exists( $order, 'get_currency' ) ) {
+			$biz_content['currency'] = $order->get_currency();
+		}
+
+		return $biz_content;
 	}
 
 	/**
