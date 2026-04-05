@@ -673,6 +673,13 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
         $main_settings = get_option( 'woocommerce_alipay_settings', array() );
         $alipay_public_key = isset( $main_settings['public_key'] ) ? $main_settings['public_key'] : '';
 
+        if ( empty( $alipay_public_key ) ) {
+            if ( 'yes' == $this->debug ) {
+                $this->log->add( 'alipaywap', 'Verification result: Missing public key' );
+            }
+            wp_die( 'Fail' );
+        }
+
         if ( ! Alipay_SDK_Helper::verify_notify( $_POST, $alipay_public_key ) ) {
             if ( 'yes' == $this->debug ) {
                 $this->log->add( 'alipaywap', 'Verification result: Invalid' );
@@ -688,7 +695,7 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
         $trade_status = isset( $_POST['trade_status'] ) ? wc_clean( $_POST['trade_status'] ) : '';
         $trade_no = isset( $_POST['trade_no'] ) ? wc_clean( $_POST['trade_no'] ) : '';
 
-        if ( empty( $out_trade_no ) ) {
+        if ( empty( $out_trade_no ) || empty( $trade_status ) ) {
             wp_die( 'Invalid Order ID' );
         }
 
@@ -710,6 +717,11 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
             $order_id = $order->get_id();
         }
 
+        $stored_trade_no = $order->get_meta( 'Alipay Trade No.' );
+        if ( $order->is_paid() && ! empty( $stored_trade_no ) && ! empty( $trade_no ) && $stored_trade_no === $trade_no ) {
+            $this->successful_request( $_POST, $order_id );
+        }
+
         if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED', 'WAIT_SELLER_SEND_GOODS' ), true ) ) {
             if ( ! $order->is_paid() ) {
                 add_filter( 'woocommerce_valid_order_statuses_for_payment_complete', array( $this, 'valid_order_statuses' ) );
@@ -721,6 +733,8 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
             if ( ! empty( $trade_no ) ) {
                 update_post_meta( $order_id, 'Alipay Trade No.', $trade_no );
             }
+        } elseif ( 'yes' == $this->debug ) {
+            $this->log->add( 'alipaywap', 'Unhandled trade status: ' . $trade_status . ', order: ' . $order_id );
         }
 
         $this->successful_request( $_POST, $order_id );
@@ -951,5 +965,9 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
             echo '<p><strong>' . __( 'Alipay Trade No.:', 'alipaywap') . '</strong><br />' .$trade_no. '</p>';
         }
     }
+}
+
+if ( class_exists( 'WC_Alipay_Wap' ) && ! class_exists( 'Woo_Alipay_Mini_Program_Gateway' ) ) {
+    class_alias( 'WC_Alipay_Wap', 'Woo_Alipay_Mini_Program_Gateway' );
 }
 ?>

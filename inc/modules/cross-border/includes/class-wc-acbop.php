@@ -141,6 +141,11 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 		$main_settings = get_option( 'woocommerce_alipay_settings', array() );
 		$alipay_public_key = isset( $main_settings['public_key'] ) ? $main_settings['public_key'] : '';
 
+		if ( empty( $alipay_public_key ) ) {
+			$this->log( 'Notify verify skipped: missing public key' );
+			$this->function->showNotifyRespond( false );
+		}
+
 		if ( ! Alipay_SDK_Helper::verify_notify( $_POST, $alipay_public_key ) ) {
 			$this->log( 'Notify sign verify failed' );
 			$this->function->showNotifyRespond( false );
@@ -150,7 +155,7 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 		$trade_no = isset( $_POST['trade_no'] ) ? wc_clean( $_POST['trade_no'] ) : '';
 		$trade_status = isset( $_POST['trade_status'] ) ? wc_clean( $_POST['trade_status'] ) : '';
 
-		if ( empty( $out_trade_no ) ) {
+		if ( empty( $out_trade_no ) || empty( $trade_status ) ) {
 			$this->log( 'Missing out_trade_no from notify' );
 			$this->function->showNotifyRespond( false );
 		}
@@ -173,6 +178,12 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 			$this->function->showNotifyRespond( false );
 		}
 
+		$stored_trade_no = $order->get_meta( 'Alipay Trade No.' );
+		if ( $order->is_paid() && ! empty( $stored_trade_no ) && ! empty( $trade_no ) && $stored_trade_no === $trade_no ) {
+			$this->log( 'Duplicate notify ignored (Order ID:' . $order->get_id() . ')' );
+			$this->function->showNotifyRespond( true );
+		}
+
 		if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
 			if ( ! $order->is_paid() ) {
 				$order->payment_complete( $trade_no );
@@ -186,7 +197,8 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 			$this->function->showNotifyRespond( true );
 		}
 
-		$this->function->showNotifyRespond( false );
+		$this->log( 'Notify acknowledged without payment completion (Order ID:' . $order->get_id() . ', Trade Status:' . $trade_status . ')' );
+		$this->function->showNotifyRespond( true );
 	}
 
     public function thankyou_page($orderId) {
@@ -354,4 +366,8 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 			self::$log->add( 'acbop', $message );
 		}
 	}
+}
+
+if ( class_exists( 'WC_Alipay_Cross_Border' ) && ! class_exists( 'Woo_Alipay_Cross_Border_Gateway' ) ) {
+	class_alias( 'WC_Alipay_Cross_Border', 'Woo_Alipay_Cross_Border_Gateway' );
 }

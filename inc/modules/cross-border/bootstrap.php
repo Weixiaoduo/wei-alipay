@@ -22,7 +22,9 @@ add_action( 'plugins_loaded', function() {
     }
 
     add_filter( 'woocommerce_payment_gateways', function( $methods ) {
-        if ( class_exists( 'WC_Alipay_Cross_Border' ) ) {
+        if ( class_exists( 'Woo_Alipay_Cross_Border_Gateway' ) ) {
+            $methods[] = 'Woo_Alipay_Cross_Border_Gateway';
+        } elseif ( class_exists( 'WC_Alipay_Cross_Border' ) ) {
             $methods[] = 'WC_Alipay_Cross_Border';
         }
         return $methods;

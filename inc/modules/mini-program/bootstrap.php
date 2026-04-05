@@ -22,7 +22,9 @@ add_action( 'plugins_loaded', function() {
     }
 
     add_filter( 'woocommerce_payment_gateways', function( $methods ) {
-        if ( class_exists( 'WC_Alipay_Wap' ) ) {
+        if ( class_exists( 'Woo_Alipay_Mini_Program_Gateway' ) ) {
+            $methods[] = 'Woo_Alipay_Mini_Program_Gateway';
+        } elseif ( class_exists( 'WC_Alipay_Wap' ) ) {
             $methods[] = 'WC_Alipay_Wap';
         }
         return $methods;
