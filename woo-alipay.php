@@ -43,6 +43,30 @@ if ( class_exists( 'WenPai_Updater' ) ) {
 	new WenPai_Updater( plugin_basename( WOO_ALIPAY_PLUGIN_FILE ), WOO_ALIPAY_VERSION );
 }
 
+if ( ! defined( 'WOO_ALIPAY_PS_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_PS_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/profitsharing/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_PS_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_PS_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/profitsharing/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/fund-auth/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_FUNDAUTH_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_FUNDAUTH_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/fund-auth/' );
+}
+
+if ( file_exists( WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php';
+}
+
 // Load enable gateways helper
 if ( file_exists( WOO_ALIPAY_PLUGIN_PATH . 'enable-gateways.php' ) ) {
 	require_once WOO_ALIPAY_PLUGIN_PATH . 'enable-gateways.php';
