@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Alipay Barcode">
+  <rect width="24" height="24" fill="#1677FF" rx="4"/>
+  <rect x="5" y="6" width="2" height="12" fill="#FFFFFF"/>
+  <rect x="8" y="6" width="1" height="12" fill="#FFFFFF"/>
+  <rect x="10" y="6" width="2" height="12" fill="#FFFFFF"/>
+  <rect x="13" y="6" width="1" height="12" fill="#FFFFFF"/>
+  <rect x="15" y="6" width="2" height="12" fill="#FFFFFF"/>
+</svg>

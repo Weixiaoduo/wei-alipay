@@ -59,12 +59,60 @@ if ( ! defined( 'WOO_ALIPAY_FUNDAUTH_PLUGIN_URL' ) ) {
 	define( 'WOO_ALIPAY_FUNDAUTH_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/fund-auth/' );
 }
 
+if ( ! defined( 'WOO_ALIPAY_RECONCILE_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_RECONCILE_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/reconcile/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_RECONCILE_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_RECONCILE_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/reconcile/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_BARCODE_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_BARCODE_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/barcode/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_BARCODE_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_BARCODE_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/barcode/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_F2F_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_F2F_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/f2f/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_F2F_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_F2F_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/f2f/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_HUABEI_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_HUABEI_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/huabei/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_HUABEI_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_HUABEI_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/huabei/' );
+}
+
 if ( file_exists( WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php';
 }
 
 if ( file_exists( WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_RECONCILE_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_RECONCILE_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_BARCODE_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_BARCODE_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_F2F_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_F2F_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php';
 }
 
 // Load enable gateways helper
