@@ -91,6 +91,22 @@ if ( ! defined( 'WOO_ALIPAY_HUABEI_PLUGIN_URL' ) ) {
 	define( 'WOO_ALIPAY_HUABEI_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/huabei/' );
 }
 
+if ( ! defined( 'WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/subscriptions/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/subscriptions/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_MINIPROGRAM_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_MINIPROGRAM_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/mini-program/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_MINIPROGRAM_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_MINIPROGRAM_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/mini-program/' );
+}
+
 if ( file_exists( WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php';
 }
@@ -113,6 +129,14 @@ if ( file_exists( WOO_ALIPAY_F2F_PLUGIN_PATH . 'bootstrap.php' ) ) {
 
 if ( file_exists( WOO_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WOO_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php';
 }
 
 // Load enable gateways helper

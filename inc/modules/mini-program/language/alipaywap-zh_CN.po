@@ -1,0 +1,347 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Alipay For WooCommerce v1.3.4\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-06-22 11:29+0800\n"
+"PO-Revision-Date: 2016-06-22 11:29+0800\n"
+"Last-Translator: admin <e.solagirl@gmail.com>\n"
+"Language-Team: \n"
+"Language: zh\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=1;\n"
+"X-Generator: Poedit 1.8.1\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ../\n"
+"X-Textdomain-Support: yes\n"
+"X-Poedit-SearchPath-0: .\n"
+
+# @ alipay
+#: alipay-wap-for-woocommerce.php:62 class-wc-alipay-wap.php:991
+msgid "Alipay Trade No.:"
+msgstr "支付宝交易号："
+
+# @ alipay
+#: alipay-wap-for-woocommerce.php:75
+msgid "Settings"
+msgstr "设置"
+
+# @ alipay
+#: class-wc-alipay-wap.php:45 class-wc-alipay-wap.php:128
+#: class-wc-alipay-wap.php:159
+msgid "Alipay"
+msgstr "支付宝(移动网站支付)"
+
+# @ alipay
+#: class-wc-alipay-wap.php:46
+msgid "Proceed to Alipay"
+msgstr "到支付宝付款"
+
+# @ alipay
+#: class-wc-alipay-wap.php:114
+#, php-format
+msgid ""
+"Alipay is enabled, but the store currency is not set to Chinese Yuan. Please "
+"<a href=\"%1s\">set the %2s against the Chinese Yuan exchange rate</a>."
+msgstr ""
+"支付宝移动网站支付已启用，但您的主货币不是人民币，请<a href=\"%1s\">设置%2s转"
+"人民币的汇率</a>."
+
+# @ alipay
+#: class-wc-alipay-wap.php:129
+msgid ""
+"Alipay is a simple, secure and fast online payment method, customer can pay "
+"via debit card, credit card or alipay balance."
+msgstr ""
+"支付宝移动网站支付是一个“简单、安全、快速”的在线支付方式，客户可以通过储蓄"
+"卡、借记卡、信用卡或支付宝余额等方式付款。"
+
+# @ alipay
+#: class-wc-alipay-wap.php:150
+msgid "Enable/Disable"
+msgstr "启用/禁用"
+
+# @ alipay
+#: class-wc-alipay-wap.php:152
+msgid "Enable Alipay Payment"
+msgstr "启用支付宝（移动网站支付）"
+
+# @ alipay
+#: class-wc-alipay-wap.php:156
+msgid "Title"
+msgstr "标题"
+
+# @ alipay
+#: class-wc-alipay-wap.php:158
+msgid "This controls the title which the user sees during checkout."
+msgstr "支付网关名称，用户结账时显示"
+
+# @ alipay
+#: class-wc-alipay-wap.php:163
+msgid "Description"
+msgstr "支付网关描述"
+
+# @ alipay
+#: class-wc-alipay-wap.php:165
+msgid "This controls the description which the user sees during checkout."
+msgstr "描述一下支付网关，用户结账时会看到"
+
+# @ alipay
+#: class-wc-alipay-wap.php:166
+msgid ""
+"Pay via Alipay, if you don't have an Alipay account, you can also pay with "
+"your debit card or credit card"
+msgstr "使用支付宝付款，如果您没有支付宝账户，也可通过借记卡或信用卡付款。"
+
+# @ alipay
+#: class-wc-alipay-wap.php:181
+msgid "Partner ID"
+msgstr "合作者身份ID"
+
+# @ alipay
+#: class-wc-alipay-wap.php:183
+msgid ""
+"Please enter the partner ID<br />If you don't have one, <a href=\"https://b."
+"alipay.com/newIndex.htm\" target=\"_blank\">click here</a> to get."
+msgstr ""
+"请输入合作者身份ID<br />如果您还没有合作者身份ID，请点击<a href=\"https://b."
+"https://openhome.alipay.com/platform/keyManage.htm?keyType=partner\" target="
+"\"_blank\">这里</a>获取"
+
+# @ alipay
+#: class-wc-alipay-wap.php:187
+msgid "Security Key"
+msgstr "MD5密钥"
+
+# @ alipay
+#: class-wc-alipay-wap.php:189
+msgid ""
+"Please enter the security key<br />If you don't have one, <a href=\"https://"
+"b.alipay.com/newIndex.htm\" target=\"_blank\">click here</a> to get."
+msgstr ""
+"请输入MD5密钥<br />如果您还没有MD5密钥，请点击<a href=\"https://openhome."
+"alipay.com/platform/keyManage.htm?keyType=partner\" target=\"_blank\">这里</"
+"a>获取"
+
+# @ alipay
+#: class-wc-alipay-wap.php:193
+msgid "Alipay Account"
+msgstr "支付宝账户"
+
+# @ alipay
+#: class-wc-alipay-wap.php:195
+msgid ""
+"Please enter your Alipay account ( Email or Phone Number ); this is needed "
+"in order to take payment."
+msgstr "请输入您用于收款的支付宝账号（邮箱地址或手机号码）"
+
+# @ alipay
+#: class-wc-alipay-wap.php:200
+msgid "Order No. Prefix"
+msgstr "订单号前缀"
+
+# @ alipay
+#: class-wc-alipay-wap.php:202
+msgid ""
+"eg.WC-. If you <strong>use your Alipay account for multiple stores</strong>, "
+"Please enter this prefix and make sure it is unique as Alipay will not allow "
+"orders with the same merchant order number."
+msgstr ""
+"例如WC-。如果<strong>您的支付宝账户用于多个站点</strong>，请填写该项并保证前"
+"缀的唯一性，支付宝不允许一个账户中出现重复订单号"
+
+# @ alipay
+#: class-wc-alipay-wap.php:206
+msgid "Submission method"
+msgstr "数据提交方式"
+
+# @ alipay
+#: class-wc-alipay-wap.php:208
+msgid "Use form submission method."
+msgstr "使用表单提交数据（POST方式）"
+
+# @ alipay
+#: class-wc-alipay-wap.php:209
+msgid ""
+"Enable this to post order data to Alipay via a form instead of using a "
+"redirect/querystring."
+msgstr "选中该项后会使用表单提交的方式发送数据，否则使用地址重定向方式发送"
+
+# @ alipay
+#: class-wc-alipay-wap.php:214
+msgid "Preferred format for order title"
+msgstr "订单名称格式"
+
+# @ alipay
+#: class-wc-alipay-wap.php:216
+msgid "Select your preferred order title format"
+msgstr "请选择订单名称格式"
+
+# @ alipay
+#: class-wc-alipay-wap.php:217
+msgid "Select the format of order title when making payment at Alipay"
+msgstr "用户在支付宝付款时会依据所选格式显示订单名称"
+
+# @ alipay
+#: class-wc-alipay-wap.php:219
+msgid "Customer Full Name|#Order ID"
+msgstr "客户姓名|#订单ID"
+
+# @ alipay
+#: class-wc-alipay-wap.php:220
+msgid "Name of the first Product|#Order ID"
+msgstr "产品名称|#订单ID"
+
+# @ alipay
+#: class-wc-alipay-wap.php:221
+#, php-format
+msgid "[Customer Full Name]'s Order From %s|#Order ID"
+msgstr "[客户姓名]在%s的订单|#订单ID"
+
+# @ alipay
+#: class-wc-alipay-wap.php:226
+msgid "Debug Log"
+msgstr "调试信息"
+
+# @ alipay
+#: class-wc-alipay-wap.php:228
+msgid "Enable logging"
+msgstr "记录调试信息"
+
+# @ alipay
+#: class-wc-alipay-wap.php:230
+msgid ""
+"Log Alipay events, such as trade status, inside <code>woocommerce/logs/"
+"alipay.txt</code>"
+msgstr ""
+"记录支付宝事件，例如订单状态变化，日志文件位于 <code>woocommerce/logs/alipay."
+"txt</code>"
+
+# @ alipay
+#: class-wc-alipay-wap.php:236
+#, php-format
+msgid "Log Alipay events, such as trade status, inside <code>%s</code>"
+msgstr "记录支付宝事件，例如订单状态变化，日志文件位于<code>%s</code>"
+
+# @ alipay
+#: class-wc-alipay-wap.php:242
+msgid "Exchange Rate"
+msgstr "汇率"
+
+# @ alipay
+#: class-wc-alipay-wap.php:244
+#, php-format
+msgid ""
+"Please set the %s against Chinese Yuan exchange rate, eg if your currency is "
+"US Dollar, then you should enter 6.19"
+msgstr "请设置%s转人民币的汇率，例如您的主货币是美元，请填写6.19"
+
+# @ alipay
+#: class-wc-alipay-wap.php:460
+msgid "<p><strong>ERROR:</strong>The order ID doesn't match!</p>"
+msgstr "<p><strong>错误:</strong>订单ID不匹配</p>"
+
+# @ alipay
+#: class-wc-alipay-wap.php:469
+msgid "Your Alipay Trade No.: "
+msgstr "您此次交易的支付宝交易号："
+
+# @ alipay
+#: class-wc-alipay-wap.php:486 class-wc-alipay-wap.php:718
+msgid "Payment received, awaiting fulfilment. "
+msgstr "买家已付款, 等待卖家发货. "
+
+# @ alipay
+#: class-wc-alipay-wap.php:493
+#, php-format
+msgid "ERROR: Failed to send goods automatically for order %d, "
+msgstr "出问题了: 订单号为%d的订单无法自动发货"
+
+# @ alipay
+#: class-wc-alipay-wap.php:498
+msgid "Your order has been shipped, awaiting buyer's confirmation"
+msgstr "卖家已发货, 等待买家确认收货"
+
+# @ alipay
+#: class-wc-alipay-wap.php:547
+msgid ""
+"Thank you for your order. We are now redirecting you to Alipay to make "
+"payment."
+msgstr "感谢您在本站购物，现在帮您转到支付宝完成付款。"
+
+# @ alipay
+#: class-wc-alipay-wap.php:571
+msgid "Pay via Alipay"
+msgstr "通过支付宝付款"
+
+# @ alipay
+#: class-wc-alipay-wap.php:571
+msgid "Cancel order &amp; restore cart"
+msgstr "取消订单&amp; 恢复购物车"
+
+#: class-wc-alipay-wap.php:620
+msgid ""
+"Thank you for your order, please click the button below to pay with Alipay."
+msgstr "感谢您在本站下单，请点击按钮到支付宝付款"
+
+# @ alipay
+#: class-wc-alipay-wap.php:705
+msgid "Order received, awaiting payment. "
+msgstr "订单已收到, 待买家付款. "
+
+# @ alipay
+#: class-wc-alipay-wap.php:735
+msgid "Your order has been shipped, awaiting buyer's confirmation. "
+msgstr "卖家已发货, 等待买家确认收货. "
+
+# @ alipay
+#: class-wc-alipay-wap.php:796
+msgid "Trade No. is not provided."
+msgstr "请提供支付宝交易号"
+
+# @ alipay
+#: class-wc-alipay-wap.php:798
+msgid "cURL is not installed on this server"
+msgstr "您的服务器未安装CURL"
+
+# @ alipay
+#: class-wc-alipay-wap.php:935
+msgid " etc."
+msgstr "等"
+
+# @ alipay
+#: class-wc-alipay-wap.php:946
+#, php-format
+msgid "Order of %1s from %2s"
+msgstr "%1s在%2s的订单"
+
+# @ alipay
+#: class-wc-alipay-wap.php:948
+#, php-format
+msgid "Your order from %s"
+msgstr "您在%s的订单"
+
+# @ alipay
+#~ msgid "Alipay Payment Gateway Type"
+#~ msgstr "支付接口"
+
+# @ alipay
+#~ msgid ""
+#~ "Please choose a payment method, note that the Dual requires a corporate "
+#~ "account"
+#~ msgstr "请选择支付接口，注意即时到帐需要企业账户"
+
+# @ alipay
+#~ msgid "Escrow Payment"
+#~ msgstr "担保交易"
+
+# @ alipay
+#~ msgid "Dual(Direct Payment + Escrow payment)"
+#~ msgstr "双功能"
+
+# @ alipay
+#~ msgid "Direct Payment"
+#~ msgstr "即时到帐"
