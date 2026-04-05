@@ -2,6 +2,7 @@
 /*
 * Plugin Name: Woo Alipay
 * Plugin URI: https://wenpai.org/plugins/woo-alipay
+* Update URI: https://updates.wenpai.net
 * Description: Integrate Woocommerce with Alipay (Mainland China). Supports WooCommerce Blocks and HPOS.
 * Version: 3.2.0
 * Author: WooCN.com
@@ -33,6 +34,14 @@ if ( ! defined( 'WOO_ALIPAY_VERSION' ) ) {
 }
 
 require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-woo-alipay.php';
+
+if ( file_exists( WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php' ) ) {
+	require_once WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php';
+}
+
+if ( class_exists( 'WenPai_Updater' ) ) {
+	new WenPai_Updater( plugin_basename( WOO_ALIPAY_PLUGIN_FILE ), WOO_ALIPAY_VERSION );
+}
 
 // Load enable gateways helper
 if ( file_exists( WOO_ALIPAY_PLUGIN_PATH . 'enable-gateways.php' ) ) {
