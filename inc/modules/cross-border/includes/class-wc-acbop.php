@@ -338,28 +338,9 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 		$biz_content = $this->build_cross_border_biz_content( $order, $out_trade_no, $payment_inst );
 
 		if ( empty( $biz_content['product_code'] ) ) {
-			// Keep legacy behavior for account types that cannot be represented safely in current SDK flow.
-			$redirect = $this->function->buildAlipayString(
-				$order,
-				$this->partner_id,
-				$this->secure_key,
-				$this->account_type,
-				$payment_inst,
-				$this->notify_url,
-				$this->get_return_url( $order ),
-				$this->order_prefix,
-				$this->is_force_ssl,
-				$this->sandbox
-			);
-
-			if ( WC()->cart ) {
-				WC()->cart->empty_cart();
-			}
-
-			return array(
-				'result'   => 'success',
-				'redirect' => $redirect,
-			);
+			$this->log( 'Unsupported account type for SDK flow: ' . $this->account_type );
+			wc_add_notice( __( 'Unsupported Alipay account type configuration.', 'acbop' ), 'error' );
+			return array( 'result' => 'fail' );
 		}
 
 		$request = new AlipayTradePagePayRequest();
