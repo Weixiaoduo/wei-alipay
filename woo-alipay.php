@@ -107,6 +107,14 @@ if ( ! defined( 'WOO_ALIPAY_MINIPROGRAM_PLUGIN_URL' ) ) {
 	define( 'WOO_ALIPAY_MINIPROGRAM_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/mini-program/' );
 }
 
+if ( ! defined( 'WOO_ALIPAY_CROSS_BORDER_PLUGIN_PATH' ) ) {
+	define( 'WOO_ALIPAY_CROSS_BORDER_PLUGIN_PATH', WOO_ALIPAY_PLUGIN_PATH . 'inc/modules/cross-border/' );
+}
+
+if ( ! defined( 'WOO_ALIPAY_CROSS_BORDER_PLUGIN_URL' ) ) {
+	define( 'WOO_ALIPAY_CROSS_BORDER_PLUGIN_URL', WOO_ALIPAY_PLUGIN_URL . 'inc/modules/cross-border/' );
+}
+
 if ( file_exists( WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WOO_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php';
 }
@@ -137,6 +145,10 @@ if ( file_exists( WOO_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 
 if ( file_exists( WOO_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WOO_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php';
+}
+
+if ( file_exists( WOO_ALIPAY_CROSS_BORDER_PLUGIN_PATH . 'bootstrap.php' ) ) {
+	require_once WOO_ALIPAY_CROSS_BORDER_PLUGIN_PATH . 'bootstrap.php';
 }
 
 // Load enable gateways helper
