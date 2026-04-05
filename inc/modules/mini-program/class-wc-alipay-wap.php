@@ -728,6 +728,15 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
                 add_filter( 'woocommerce_payment_complete_reduce_order_stock', '__return_false' );
                 add_filter( 'woocommerce_payment_complete_order_status', array( $this, 'complete_order_status' ) );
                 $order->payment_complete( $trade_no );
+
+                // Some environments may not complete payment through hooks; force terminal status as a safe fallback.
+                $order = wc_get_order( $order_id );
+                if ( $order && ! $order->is_paid() ) {
+                    if ( ! empty( $trade_no ) ) {
+                        $order->set_transaction_id( $trade_no );
+                    }
+                    $order->update_status( 'completed', __( 'Alipay payment completed by notify fallback.', 'alipaywap' ) );
+                }
             }
 
             if ( ! empty( $trade_no ) ) {
