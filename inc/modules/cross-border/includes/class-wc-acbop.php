@@ -4,7 +4,7 @@
  *
  * Provides Alipay Cross Border Payment Gateway.
  *
- * @class 		WC_Alipay_Cross_Border
+ * @class               Woo_Alipay_Cross_Border_Gateway
  * @extends		WC_Payment_Gateway
  * @version		2.3.0
  * @package		WooCommerce/Classes/Payment
@@ -20,7 +20,7 @@ require_once(dirname( __FILE__ ) . '/function-common.php');
 /**
  * WC_Gateway_Paypal Class.
  */
-class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
+class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 
 	/** @var bool Whether or not logging is enabled */
 	public static $log_enabled = false;
@@ -88,7 +88,7 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
         $this->order_prefix 			= $this->get_option( 'order_prefix' );
         $this->sandbox 					= 'yes' === $this->get_option( 'sandbox', 'no' );
         $this->debug 					= 'yes' === $this->get_option( 'debug', 'no' );
-        $this->notify_url				= WC()->api_request_url( 'WC_Alipay_Cross_Border' );
+        $this->notify_url				= WC()->api_request_url( 'Woo_Alipay_Cross_Border_Gateway' );
         $this->is_force_ssl				= get_option('woocommerce_force_ssl_checkout');
         $this->selected_currency		= get_option('woocommerce_currency');
 
@@ -96,7 +96,7 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 
         add_action( 'admin_notices', array( $this, 'requirement_checks' ) ); 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-        add_action( 'woocommerce_api_wc_alipay_cross_border', array( $this, 'check_alipay_response' ) );
+        add_action( 'woocommerce_api_woo_alipay_cross_border_gateway', array( $this, 'check_alipay_response' ) );
         add_action( 'woocommerce_thankyou_acbop', array( $this, 'thankyou_page' ) );
 	}
 
@@ -428,8 +428,4 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 			self::$log->add( 'acbop', $message );
 		}
 	}
-}
-
-if ( class_exists( 'WC_Alipay_Cross_Border' ) && ! class_exists( 'Woo_Alipay_Cross_Border_Gateway' ) ) {
-	class_alias( 'WC_Alipay_Cross_Border', 'Woo_Alipay_Cross_Border_Gateway' );
 }

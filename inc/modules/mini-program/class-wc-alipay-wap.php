@@ -6,12 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * Provides an Alipay Payment Gateway.
  *
- * @class       WC_Alipay_Wap
+ * @class       Woo_Alipay_Mini_Program_Gateway
  * @extends     WC_Payment_Gateway
  * @version     1.3.3
  */
 
-class WC_Alipay_Wap extends WC_Payment_Gateway {
+class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
     var $current_currency;
     var $multi_currency_enabled;
@@ -54,7 +54,7 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
         $this->has_fields             = false;
         $this->method_title           = __( 'Alipay', 'alipaywap' );
         $this->order_button_text      = __( 'Proceed to Alipay', 'alipaywap' );
-        $this->notify_url             = WC()->api_request_url( 'WC_Alipay_Wap' );
+        $this->notify_url             = WC()->api_request_url( 'Woo_Alipay_Mini_Program_Gateway' );
 
         // Load the settings.
         $this->init_form_fields();
@@ -86,7 +86,7 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
         add_action( 'woocommerce_receipt_alipay_wap', array( $this, 'receipt_page' ) );
 
         // Payment listener/API hook
-        add_action( 'woocommerce_api_wc_alipay', array( $this, 'check_alipay_response' ) );
+        add_action( 'woocommerce_api_woo_alipay_mini_program_gateway', array( $this, 'check_alipay_response' ) );
 
         // Display Alipay Trade No. in the backend.
         add_action( 'woocommerce_admin_order_data_after_billing_address',array( $this, 'wc_alipay_wap_display_order_meta_for_admin' ) );
@@ -981,7 +981,4 @@ class WC_Alipay_Wap extends WC_Payment_Gateway {
     }
 }
 
-if ( class_exists( 'WC_Alipay_Wap' ) && ! class_exists( 'Woo_Alipay_Mini_Program_Gateway' ) ) {
-    class_alias( 'WC_Alipay_Wap', 'Woo_Alipay_Mini_Program_Gateway' );
-}
 ?>
