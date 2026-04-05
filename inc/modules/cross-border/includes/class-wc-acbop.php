@@ -133,66 +133,60 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
     }
 
 	public function check_alipay_response() {
-		// Cleanup unwanted WC response param by AliPay
-		$_POST = stripslashes_deep($_POST);
+		$_POST = stripslashes_deep( $_POST );
 		@ob_clean();
-    	$aliPayNotifyParams = $this->function->getAliPayNotifyParams($this->account_type);
-    	foreach($_POST as $key => $value) {
-    		if (!in_array($key, $aliPayNotifyParams)) {
-    			unset($_POST[$key]);
-    		}
-    	}
 
-    	// Extract order Id
-    	if (!isset($_POST['out_trade_no'])) {
-			$this->log( 'Invalid out trade no from Alipay' );
-            $this->function->showNotifyRespond(false);
-    	}
-    	$orderId = (empty($this->order_prefix)) ? $_POST['out_trade_no'] : preg_replace("/^".$this->order_prefix."/", "", $_POST['out_trade_no']);
-    	if (!is_numeric($orderId)) {
-			$this->log( 'Invalid out trade no from Alipay (Out Trade No:'.$_POST['out_trade_no'].')' );
-            $this->function->showNotifyRespond(false);
-    	}
+		require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
 
-    	// Verify if response coming from Alipay
-		$order = wc_get_order( $orderId );
-		if ( ! $order ) {
-		    $this->log( 'Order not found for notify (Order ID:' . $orderId . ')' );
-		    $this->function->showNotifyRespond(false);
+		$main_settings = get_option( 'woocommerce_alipay_settings', array() );
+		$alipay_public_key = isset( $main_settings['public_key'] ) ? $main_settings['public_key'] : '';
+
+		if ( ! Alipay_SDK_Helper::verify_notify( $_POST, $alipay_public_key ) ) {
+			$this->log( 'Notify sign verify failed' );
+			$this->function->showNotifyRespond( false );
 		}
 
-			if( $order->get_status() != 'completed' && $order->get_status() != 'processing' ){
-	    	$alipayConfig = $this->function->getAliPayConfig(
-	    		$this->account_type,
-	    		(isset($_POST['payment_inst'])) ? $_POST['payment_inst'] : null,
-	    		$this->partner_id,
-	    		$this->secure_key,
-	    		$this->notify_url,
-	    		$this->get_return_url($order),
-	    		$this->is_force_ssl
-	    	);
-			$alipayNotify = new AlipayNotify($alipayConfig);
-			$verify_result = $alipayNotify->verifyNotify($this->sandbox);
-			if (!$verify_result) {
-				$this->log( 'This is not notification from Alipay (Oder ID:'.$orderId.')' );
-	            $this->function->showNotifyRespond(false);
-			}
+		$out_trade_no = isset( $_POST['out_trade_no'] ) ? wc_clean( $_POST['out_trade_no'] ) : '';
+		$trade_no = isset( $_POST['trade_no'] ) ? wc_clean( $_POST['trade_no'] ) : '';
+		$trade_status = isset( $_POST['trade_status'] ) ? wc_clean( $_POST['trade_status'] ) : '';
 
-			// Proceed success payment
-			if ($_POST['trade_status'] == 'TRADE_FINISHED'
-				|| $_POST['trade_status'] == 'TRADE_CLOSED') {
-					if( $order->get_status() != 'completed' && $order->get_status() != 'processing' ){
-	                $order->payment_complete();
-	            }                        
-	            update_post_meta( $orderId, 'Alipay Trade No.', wc_clean($_POST['trade_no']) );
-				$this->log( 'Notify Payment success! (Order ID:'.$orderId.', Alipay Trade No:'.wc_clean($_POST['trade_no']).')' );
-				$this->function->showNotifyRespond(true);
-			}
+		if ( empty( $out_trade_no ) ) {
+			$this->log( 'Missing out_trade_no from notify' );
+			$this->function->showNotifyRespond( false );
+		}
+
+		$orders = wc_get_orders( array(
+			'meta_key'   => '_alipay_out_trade_no',
+			'meta_value' => $out_trade_no,
+			'limit'      => 1,
+		) );
+
+		if ( ! empty( $orders ) ) {
+			$order = $orders[0];
 		} else {
-			$this->function->showNotifyRespond(true);
+			$orderId = (int) preg_replace( '/^' . preg_quote( $this->order_prefix, '/' ) . '/', '', $out_trade_no );
+			$order = $orderId ? wc_get_order( $orderId ) : false;
 		}
 
-		$this->function->showNotifyRespond(false);
+		if ( ! $order ) {
+			$this->log( 'Order not found for notify (Out Trade No:' . $out_trade_no . ')' );
+			$this->function->showNotifyRespond( false );
+		}
+
+		if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
+			if ( ! $order->is_paid() ) {
+				$order->payment_complete( $trade_no );
+			}
+
+			if ( ! empty( $trade_no ) ) {
+				update_post_meta( $order->get_id(), 'Alipay Trade No.', $trade_no );
+			}
+
+			$this->log( 'Notify payment success! (Order ID:' . $order->get_id() . ', Alipay Trade No:' . $trade_no . ')' );
+			$this->function->showNotifyRespond( true );
+		}
+
+		$this->function->showNotifyRespond( false );
 	}
 
     public function thankyou_page($orderId) {
@@ -296,29 +290,55 @@ class WC_Alipay_Cross_Border extends WC_Payment_Gateway {
 	 * @return array
 	 */
 	public function process_payment( $orderId ) {
-		global $woocommerce;
-
 		$order = wc_get_order( $orderId );
-		$redirect = $this->function->buildAlipayString(
-			$order,
-			$this->partner_id,
-			$this->secure_key,
-			$this->account_type,
-			(isset($_POST['acbop_payment_inst'])) ? $_POST['acbop_payment_inst'] : null,
-			$this->notify_url,
-			$this->get_return_url($order),
-			$this->order_prefix,
-			$this->is_force_ssl,
-			$this->sandbox
+		if ( ! $order ) {
+			wc_add_notice( __( 'Invalid order.', 'acbop' ), 'error' );
+			return array( 'result' => 'fail' );
+		}
+
+		require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+		require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+		require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePagePayRequest.php';
+
+		$main_settings = get_option( 'woocommerce_alipay_settings', array() );
+		$config = Alipay_SDK_Helper::get_alipay_config( array(
+			'appid'       => isset( $main_settings['appid'] ) ? $main_settings['appid'] : '',
+			'private_key' => isset( $main_settings['private_key'] ) ? $main_settings['private_key'] : '',
+			'public_key'  => isset( $main_settings['public_key'] ) ? $main_settings['public_key'] : '',
+			'sandbox'     => isset( $main_settings['sandbox'] ) ? $main_settings['sandbox'] : 'no',
+		) );
+
+		$aop = Alipay_SDK_Helper::create_alipay_service( $config );
+		if ( ! $aop ) {
+			wc_add_notice( __( 'Alipay service initialization failed.', 'acbop' ), 'error' );
+			return array( 'result' => 'fail' );
+		}
+
+		$out_trade_no = $this->order_prefix . ltrim( $order->get_order_number(), '#' );
+		$order->update_meta_data( '_alipay_out_trade_no', $out_trade_no );
+		$order->save();
+
+		$request = new AlipayTradePagePayRequest();
+		$biz_content = array(
+			'out_trade_no' => $out_trade_no,
+			'total_amount' => Alipay_SDK_Helper::format_amount( $order->get_total() ),
+			'subject'      => sprintf( __( 'Order #%s', 'acbop' ), $order->get_order_number() ),
+			'product_code' => 'FAST_INSTANT_TRADE_PAY',
 		);
+		$request->setBizContent( wp_json_encode( $biz_content ) );
+		$request->setNotifyUrl( $this->notify_url );
+		$request->setReturnUrl( $this->get_return_url( $order ) );
 
-    	// Remove cart
-    	$woocommerce->cart->empty_cart();
+		$redirect = $aop->pageExecute( $request, 'GET' );
 
-    	return array(
-    		'result' => 'success',
-    		'redirect' => $redirect,
-    	);
+		if ( WC()->cart ) {
+			WC()->cart->empty_cart();
+		}
+
+		return array(
+			'result'   => 'success',
+			'redirect' => $redirect,
+		);
 	}
 
 	/**
