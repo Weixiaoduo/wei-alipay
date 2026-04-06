@@ -30,6 +30,13 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
     var $log;
 
     /**
+     * Core settings fields required by SDK flow.
+     *
+     * @var array
+     */
+    protected $required_core_fields = array( 'appid', 'private_key', 'public_key' );
+
+    /**
      * Constructor for the gateway.
      *
      * @access public
@@ -102,6 +109,10 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $is_available = ( 'yes' === $this->enabled ) ? true : false;
 
+        if ( $is_available && ! $this->has_core_credentials() ) {
+            $is_available = false;
+        }
+
         if ($this->multi_currency_enabled) {
             if ( !in_array( get_woocommerce_currency(), array( 'RMB', 'CNY') ) && !$this->exchange_rate) {
                 $is_available = false;
@@ -123,6 +134,83 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         if ( !in_array( $this->current_currency, array( 'RMB', 'CNY') ) && !$this->exchange_rate ) {
             echo '<div class="error"><p>' . sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1s">set the %2s against the Chinese Yuan exchange rate</a>.', 'alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ), $this->current_currency ) . '</p></div>';
         }
+
+        $missing_fields = $this->get_missing_core_fields();
+        if ( ! empty( $missing_fields ) ) {
+            echo '<div class="error"><p>' . sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'alipaywap' ), esc_html( implode( ', ', $missing_fields ) ) ) . '</p></div>';
+        }
+    }
+
+    /**
+     * Get normalized core settings from main gateway.
+     *
+     * @return array
+     */
+    protected function get_core_settings() {
+        return wp_parse_args(
+            get_option( 'woocommerce_alipay_settings', array() ),
+            array(
+                'appid'       => '',
+                'private_key' => '',
+                'public_key'  => '',
+                'sandbox'     => 'no',
+            )
+        );
+    }
+
+    /**
+     * Return missing required core fields.
+     *
+     * @return array
+     */
+    protected function get_missing_core_fields() {
+        $settings = $this->get_core_settings();
+        $missing = array();
+
+        foreach ( $this->required_core_fields as $field ) {
+            if ( empty( $settings[ $field ] ) ) {
+                $missing[] = $field;
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
+     * Check whether SDK-required credentials are complete.
+     *
+     * @return bool
+     */
+    protected function has_core_credentials() {
+        return empty( $this->get_missing_core_fields() );
+    }
+
+    /**
+     * Write a structured log line for payment lifecycle events.
+     *
+     * @param string $event
+     * @param array  $context
+     * @return void
+     */
+    protected function log_event( $event, $context = array() ) {
+        if ( 'yes' !== $this->debug || ! $this->log ) {
+            return;
+        }
+
+        $pairs = array();
+        foreach ( $context as $key => $value ) {
+            if ( '' === (string) $value ) {
+                continue;
+            }
+            $pairs[] = $key . '=' . $value;
+        }
+
+        $message = $event;
+        if ( ! empty( $pairs ) ) {
+            $message .= ' [' . implode( ', ', $pairs ) . ']';
+        }
+
+        $this->log->add( 'alipaywap', $message );
     }
 
     /**
@@ -600,12 +688,19 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePagePayRequest.php';
 
-        $main_settings = get_option( 'woocommerce_alipay_settings', array() );
+        $missing_fields = $this->get_missing_core_fields();
+        if ( ! empty( $missing_fields ) ) {
+            wc_add_notice( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'alipaywap' ), implode( ', ', $missing_fields ) ), 'error' );
+            $this->log_event( 'Payment init blocked: missing core settings', array( 'missing' => implode( '|', $missing_fields ), 'order_id' => $order_id ) );
+            return array( 'result' => 'fail' );
+        }
+
+        $main_settings = $this->get_core_settings();
         $config = Alipay_SDK_Helper::get_alipay_config( array(
-            'appid'       => isset( $main_settings['appid'] ) ? $main_settings['appid'] : '',
-            'private_key' => isset( $main_settings['private_key'] ) ? $main_settings['private_key'] : '',
-            'public_key'  => isset( $main_settings['public_key'] ) ? $main_settings['public_key'] : '',
-            'sandbox'     => isset( $main_settings['sandbox'] ) ? $main_settings['sandbox'] : 'no',
+            'appid'       => $main_settings['appid'],
+            'private_key' => $main_settings['private_key'],
+            'public_key'  => $main_settings['public_key'],
+            'sandbox'     => $main_settings['sandbox'],
         ) );
 
         $aop = Alipay_SDK_Helper::create_alipay_service( $config );
@@ -616,6 +711,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $alipay_args = $this->get_alipay_args( $order );
         $out_trade_no = isset( $alipay_args['out_trade_no'] ) ? $alipay_args['out_trade_no'] : ( $this->order_prefix . ltrim( $order->get_order_number(), '#' ) );
+
+        $this->log_event( 'Payment init', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no ) );
 
         $order->update_meta_data( '_alipay_out_trade_no', $out_trade_no );
         $order->save();
@@ -633,9 +730,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $redirect = $aop->pageExecute( $request, 'GET' );
 
-        if ( 'yes' == $this->debug ) {
-            $this->log->add( 'alipaywap', 'SDK payment redirect: ' . $redirect );
-        }
+        $this->log_event( 'Payment redirect built', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no ) );
 
         return array(
             'result'   => 'success',
@@ -670,32 +765,27 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
 
-        $main_settings = get_option( 'woocommerce_alipay_settings', array() );
-        $alipay_public_key = isset( $main_settings['public_key'] ) ? $main_settings['public_key'] : '';
+        $main_settings = $this->get_core_settings();
+        $alipay_public_key = $main_settings['public_key'];
 
         if ( empty( $alipay_public_key ) ) {
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( 'alipaywap', 'Verification result: Missing public key' );
-            }
+            $this->log_event( 'Notify rejected: missing public key' );
             wp_die( 'Fail' );
         }
 
         if ( ! Alipay_SDK_Helper::verify_notify( $_POST, $alipay_public_key ) ) {
-            if ( 'yes' == $this->debug ) {
-                $this->log->add( 'alipaywap', 'Verification result: Invalid' );
-            }
+            $this->log_event( 'Notify verify failed' );
             wp_die( 'Fail' );
         }
 
-        if ( 'yes' == $this->debug ) {
-            $this->log->add( 'alipaywap', 'Verification result: Valid' );
-        }
+        $this->log_event( 'Notify verified' );
 
         $out_trade_no = isset( $_POST['out_trade_no'] ) ? wc_clean( $_POST['out_trade_no'] ) : '';
         $trade_status = isset( $_POST['trade_status'] ) ? wc_clean( $_POST['trade_status'] ) : '';
         $trade_no = isset( $_POST['trade_no'] ) ? wc_clean( $_POST['trade_no'] ) : '';
 
         if ( empty( $out_trade_no ) || empty( $trade_status ) ) {
+            $this->log_event( 'Notify rejected: missing required fields', array( 'out_trade_no' => $out_trade_no, 'trade_status' => $trade_status ) );
             wp_die( 'Invalid Order ID' );
         }
 
@@ -712,6 +802,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             $fallback_id = (int) str_replace( $this->order_prefix, '', $out_trade_no );
             $order = $fallback_id ? wc_get_order( $fallback_id ) : false;
             if ( ! $order ) {
+                $this->log_event( 'Notify rejected: order not found', array( 'out_trade_no' => $out_trade_no ) );
                 wp_die( 'Invalid Order ID' );
             }
             $order_id = $order->get_id();
@@ -719,6 +810,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $stored_trade_no = $order->get_meta( 'Alipay Trade No.' );
         if ( $order->is_paid() && ! empty( $stored_trade_no ) && ! empty( $trade_no ) && $stored_trade_no === $trade_no ) {
+            $this->log_event( 'Notify duplicate ignored', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
             $this->successful_request( $_POST, $order_id );
         }
 
@@ -739,6 +831,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             if ( ! empty( $trade_no ) ) {
                 update_post_meta( $order_id, 'Alipay Trade No.', $trade_no );
             }
+
+            $this->log_event( 'Notify paid', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
         } elseif ( 'WAIT_SELLER_SEND_GOODS' === $trade_status ) {
             if ( ! $order->is_paid() ) {
                 if ( ! empty( $trade_no ) ) {
@@ -747,8 +841,9 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                 }
                 $order->update_status( 'processing', __( 'Payment received and waiting for fulfilment.', 'alipaywap' ) );
             }
-        } elseif ( 'yes' == $this->debug ) {
-            $this->log->add( 'alipaywap', 'Unhandled trade status: ' . $trade_status . ', order: ' . $order_id );
+            $this->log_event( 'Notify processing', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
+        } else {
+            $this->log_event( 'Notify ignored status', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
         }
 
         $this->successful_request( $_POST, $order_id );
