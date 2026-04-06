@@ -9,6 +9,34 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  */
 class WC_Alipay_Subscriptions_Signing {
 
+    private function log( $level, $message, $context = array() ) {
+        $logger = wc_get_logger();
+        if ( $logger ) {
+            $logger->log( $level, $message, array_merge( array( 'source' => 'alipay-subscriptions' ), $context ) );
+        }
+    }
+
+    private function get_main_gateway_config() {
+        $main_gateway = new WC_Alipay(false);
+        return array(
+            'appid'       => $main_gateway->get_option('appid'),
+            'private_key' => $main_gateway->get_option('private_key'),
+            'public_key'  => $main_gateway->get_option('public_key'),
+            'sandbox'     => $main_gateway->get_option('sandbox'),
+        );
+    }
+
+    private function get_missing_core_fields() {
+        $config = $this->get_main_gateway_config();
+        $missing = array();
+        foreach ( array( 'appid', 'private_key', 'public_key' ) as $field ) {
+            if ( empty( $config[ $field ] ) ) {
+                $missing[] = $field;
+            }
+        }
+        return $missing;
+    }
+
     public function __construct() {
         // Agreement notify endpoint (server-to-server)
         add_action( 'woocommerce_api_wc_alipay_subscriptions_agreement', array( $this, 'handle_agreement_notify' ) );
@@ -49,13 +77,20 @@ class WC_Alipay_Subscriptions_Signing {
         }
 
         // Verify signature
-        $main_gateway = new WC_Alipay(false);
-        $alipay_public_key = $main_gateway->get_option('public_key');
+        $core = $this->get_main_gateway_config();
+        if ( empty( $core['public_key'] ) ) {
+            $this->log( 'error', 'Agreement notify blocked: missing public key' );
+            status_header( 400 );
+            echo 'fail';
+            exit;
+        }
+        $alipay_public_key = $core['public_key'];
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
         $aop = new AopClient();
         $aop->alipayrsaPublicKey = $alipay_public_key;
         $verified = $aop->rsaCheckV1( $_POST, null, 'RSA2' );
         if ( ! $verified ) {
+            $this->log( 'error', 'Agreement notify signature verification failed' );
             status_header( 400 );
             echo 'fail';
             exit;
@@ -68,6 +103,7 @@ class WC_Alipay_Subscriptions_Signing {
         $external = isset($_POST['external_agreement_no']) ? wc_clean( wp_unslash( $_POST['external_agreement_no'] ) ) : '';
 
         if ( empty( $agreement_no ) || empty( $alipay_user_id ) ) {
+            $this->log( 'error', 'Agreement notify missing required fields', array( 'agreement_no' => $agreement_no, 'alipay_user_id' => $alipay_user_id ) );
             status_header( 400 );
             echo 'fail';
             exit;
@@ -151,6 +187,14 @@ class WC_Alipay_Subscriptions_Signing {
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
         }
+
+        $missing_core = $this->get_missing_core_fields();
+        if ( ! empty( $missing_core ) ) {
+            wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'woo-alipay-subscriptions' ), implode( ', ', $missing_core ) ), 'error' );
+            $this->log( 'error', 'Sign start blocked: missing core settings', array( 'missing' => implode( '|', $missing_core ) ) );
+            wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
+            exit;
+        }
         $user_id = get_current_user_id();
         $order_id = isset( $_GET['order_id'] ) ? absint( $_GET['order_id'] ) : 0;
 
@@ -222,6 +266,14 @@ class WC_Alipay_Subscriptions_Signing {
      */
     public function handle_unsign() {
         if ( ! is_user_logged_in() ) {
+            wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
+            exit;
+        }
+
+        $missing_core = $this->get_missing_core_fields();
+        if ( ! empty( $missing_core ) ) {
+            wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'woo-alipay-subscriptions' ), implode( ', ', $missing_core ) ), 'error' );
+            $this->log( 'error', 'Unsign blocked: missing core settings', array( 'missing' => implode( '|', $missing_core ) ) );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
         }

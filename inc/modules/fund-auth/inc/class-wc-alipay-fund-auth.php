@@ -5,6 +5,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
 
     protected static $log_enabled = false;
     protected static $log = null;
+    protected $required_core_fields = array( 'appid', 'private_key', 'public_key' );
 
     const GATEWAY_ID = 'alipay_fund_auth';
 
@@ -24,6 +25,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         self::$log_enabled = ( 'yes' === $this->get_option( 'debug', 'no' ) );
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+        add_action( 'admin_notices', array( $this, 'requirement_checks' ) );
 
         if ( is_admin() ) {
             add_action( 'add_meta_boxes', array( $this, 'add_authorization_metabox' ) );
@@ -92,9 +94,17 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         if ( 'yes' !== $this->get_option( 'enabled', 'no' ) ) {
             return false;
         }
-        // Reuse core credentials; require appid/private/public.
-        $core = get_option( 'woocommerce_alipay_settings', array() );
-        return ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] );
+        return $this->has_core_credentials();
+    }
+
+    public function requirement_checks() {
+        if ( 'yes' !== $this->get_option( 'enabled', 'no' ) ) {
+            return;
+        }
+        $missing = $this->get_missing_core_fields();
+        if ( ! empty( $missing ) ) {
+            echo '<div class="error"><p>' . sprintf( __( 'Alipay fund auth requires core credentials. Missing fields: %s', 'woo-alipay-fund-auth' ), esc_html( implode( ', ', $missing ) ) ) . '</p></div>';
+        }
     }
 
     private function get_core_settings() {
@@ -106,7 +116,22 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         ) );
     }
 
-    private static function log_msg( $message, $level = 'info' ) {
+    private function get_missing_core_fields() {
+        $core = $this->get_core_settings();
+        $missing = array();
+        foreach ( $this->required_core_fields as $field ) {
+            if ( empty( $core[ $field ] ) ) {
+                $missing[] = $field;
+            }
+        }
+        return $missing;
+    }
+
+    private function has_core_credentials() {
+        return empty( $this->get_missing_core_fields() );
+    }
+
+    private static function log_msg( $message, $level = 'info', $context = array() ) {
         if ( self::$log_enabled ) {
             if ( null === self::$log ) {
                 self::$log = wc_get_logger();
@@ -114,7 +139,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             if ( is_array( $message ) || is_object( $message ) ) {
                 $message = wc_print_r( $message, true );
             }
-            self::$log->log( $level, $message, array( 'source' => self::GATEWAY_ID ) );
+            self::$log->log( $level, $message, array( 'source' => self::GATEWAY_ID ) + (array) $context );
         }
     }
 
@@ -125,6 +150,12 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
     private function create_aop_from_core() {
         require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+
+        $missing_fields = $this->get_missing_core_fields();
+        if ( ! empty( $missing_fields ) ) {
+            self::log_msg( 'Missing core settings for fund auth AOP client', 'error', array( 'missing' => implode( '|', $missing_fields ) ) );
+            return array( null, array() );
+        }
 
         $core   = $this->get_core_settings();
         $config = Alipay_SDK_Helper::get_alipay_config( array(
@@ -355,6 +386,14 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             return array( 'result' => 'failure', 'messages' => __( 'Order not found.', 'woo-alipay-fund-auth' ) );
         }
 
+        $missing_fields = $this->get_missing_core_fields();
+        if ( ! empty( $missing_fields ) ) {
+            $msg = sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay-fund-auth' ), implode( ', ', $missing_fields ) );
+            wc_add_notice( $msg, 'error' );
+            self::log_msg( 'Payment blocked: missing core settings', 'error', array( 'order_id' => $order_id, 'missing' => implode( '|', $missing_fields ) ) );
+            return array( 'result' => 'failure', 'messages' => $msg );
+        }
+
         // M1: Sandbox simulate; Production: warn not configured (to be implemented with real freeze call in next step)
         $core = get_option( 'woocommerce_alipay_settings', array() );
         $sandbox = isset( $core['sandbox'] ) && 'yes' === $core['sandbox'];
@@ -367,6 +406,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             $order->add_order_note( sprintf( __( 'Simulated fund authorization: AUTH %s Frozen %.2f', 'woo-alipay-fund-auth' ), $auth_no, $amount ) );
             $order->update_status( 'on-hold', __( 'Funds authorized (simulated).', 'woo-alipay-fund-auth' ) );
             $order->save();
+            self::log_msg( 'Sandbox authorization success', 'info', array( 'order_id' => $order_id, 'auth_no' => $auth_no, 'amount' => number_format( $amount, 2, '.', '' ) ) );
 
             return array(
                 'result'   => 'success',
@@ -378,6 +418,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         $freeze = $this->freeze_funds( $order, $amount );
         if ( is_wp_error( $freeze ) ) {
             wc_add_notice( $freeze->get_error_message(), 'error' );
+            self::log_msg( 'Freeze failed', 'error', array( 'order_id' => $order_id, 'error' => $freeze->get_error_message() ) );
             return array( 'result' => 'failure', 'messages' => $freeze->get_error_message() );
         }
         $order->add_order_note( sprintf( __( 'Fund authorized: AUTH %s Frozen %.2f', 'woo-alipay-fund-auth' ), $freeze['auth_no'] ?? '-', $amount ) );

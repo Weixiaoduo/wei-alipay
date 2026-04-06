@@ -59,8 +59,12 @@ $container = WC()->payment_gateways();
 if ( ! $container || ! method_exists( $container, 'payment_gateways' ) ) { echo 'gateway_container:missing\n'; return; }
 $g = $container->payment_gateways();
 echo isset( $g['alipay'] ) ? 'alipay_gateway:ok\n' : 'alipay_gateway:missing\n';
+echo isset( $g['alipay_fund_auth'] ) ? 'fund_auth_gateway:ok\n' : 'fund_auth_gateway:missing\n';
 echo class_exists( 'Woo_Alipay_Mini_Program_Gateway' ) ? 'mini_class:ok\n' : 'mini_class:missing\n';
 echo class_exists( 'Woo_Alipay_Cross_Border_Gateway' ) ? 'cross_class:ok\n' : 'cross_class:missing\n';
+echo class_exists( 'WC_Alipay_Fund_Auth' ) ? 'fund_auth_class:ok\n' : 'fund_auth_class:missing\n';
+echo class_exists( 'Woo_Alipay_PS_Service' ) ? 'ps_service:ok\n' : 'ps_service:missing\n';
+echo class_exists( 'Woo_Alipay_PS_Admin' ) ? 'ps_admin:ok\n' : 'ps_admin:missing\n';
 PHP
 wp --path="$WENPAI_WP_PATH" eval-file /tmp/woo-alipay-runtime-check.php
 BASH
@@ -69,8 +73,12 @@ BASH
   output="$(ssh -T wenpai "wp --path='$WENPAI_WP_PATH' eval-file /tmp/woo-alipay-runtime-check.php")"
   echo "$output"
   [[ "$output" == *"alipay_gateway:ok"* ]] || fail "alipay gateway missing"
+  [[ "$output" == *"fund_auth_gateway:ok"* ]] || fail "fund-auth gateway missing"
   [[ "$output" == *"mini_class:ok"* ]] || fail "mini class missing"
   [[ "$output" == *"cross_class:ok"* ]] || fail "cross class missing"
+  [[ "$output" == *"fund_auth_class:ok"* ]] || fail "fund-auth class missing"
+  [[ "$output" == *"ps_service:ok"* ]] || fail "profitsharing service class missing"
+  [[ "$output" == *"ps_admin:ok"* ]] || fail "profitsharing admin class missing"
   pass "Runtime checks passed"
 }
 

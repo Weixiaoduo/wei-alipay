@@ -3,6 +3,26 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 class WC_Alipay_Subscriptions {
 
+    private function get_core_settings() {
+        $main_gateway = new WC_Alipay(false);
+        return array(
+            'appid'       => $main_gateway->get_option( 'appid' ),
+            'private_key' => $main_gateway->get_option( 'private_key' ),
+            'public_key'  => $main_gateway->get_option( 'public_key' ),
+        );
+    }
+
+    private function get_missing_core_fields() {
+        $core = $this->get_core_settings();
+        $missing = array();
+        foreach ( array( 'appid', 'private_key', 'public_key' ) as $field ) {
+            if ( empty( $core[ $field ] ) ) {
+                $missing[] = $field;
+            }
+        }
+        return $missing;
+    }
+
     public function __construct() {
         // Hook for automatic renewals (will only run when gateway supports automatic payments)
         add_action( 'woocommerce_scheduled_subscription_payment_alipay', array( $this, 'scheduled_subscription_payment' ), 10, 2 );
@@ -33,6 +53,14 @@ class WC_Alipay_Subscriptions {
         $logger = wc_get_logger();
         $context = array( 'source' => 'alipay-subscriptions' );
 
+        $missing_core = $this->get_missing_core_fields();
+        if ( ! empty( $missing_core ) ) {
+            $renewal_order->add_order_note( sprintf( __( '自动代扣不可用：Alipay 核心配置缺失（%s）。', 'woo-alipay-subscriptions' ), implode( ', ', $missing_core ) ) );
+            $renewal_order->update_status( 'failed', __( '核心配置不完整，自动代扣失败。', 'woo-alipay-subscriptions' ) );
+            $logger->log( 'error', 'Auto debit blocked: missing core settings', array_merge( $context, array( 'order_id' => $renewal_order->get_id(), 'missing' => implode( '|', $missing_core ) ) ) );
+            return;
+        }
+
         // Phase 1: manual renewal mode by default
         $auto_debit_enabled = ( 'yes' === get_option( 'woo_alipay_subscriptions_enable_auto_debit', 'no' ) );
 
@@ -62,7 +90,7 @@ class WC_Alipay_Subscriptions {
 
         if ( is_wp_error( $result ) ) {
             $renewal_order->add_order_note( sprintf( __( '自动代扣失败：%s', 'woo-alipay-subscriptions' ), $result->get_error_message() ) );
-            $logger->log( 'error', 'Auto debit failed for order #' . $renewal_order->get_id() . ' - ' . $result->get_error_message(), $context );
+            $logger->log( 'error', 'Auto debit failed for order #' . $renewal_order->get_id() . ' - ' . $result->get_error_message(), array_merge( $context, array( 'order_id' => $renewal_order->get_id() ) ) );
             // Schedule retry according to plan
             $this->maybe_schedule_retry( $renewal_order );
             $renewal_order->update_status( 'failed' );
@@ -133,6 +161,7 @@ class WC_Alipay_Subscriptions {
         $result = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $order, $amount, $agreement_no, $product_code );
         if ( is_wp_error( $result ) ) {
             $order->add_order_note( sprintf( __( '自动代扣重试失败：%s', 'woo-alipay-subscriptions' ), $result->get_error_message() ) );
+            wc_get_logger()->log( 'warning', 'Auto debit retry failed', array( 'source' => 'alipay-subscriptions', 'order_id' => $order->get_id(), 'error' => $result->get_error_message() ) );
             $this->maybe_schedule_retry( $order );
             return;
         }

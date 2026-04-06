@@ -5,6 +5,7 @@ class Woo_Alipay_PS_Service {
     protected static $logger = null;
     const JOBS_OPTION = 'woo_alipay_ps_jobs';
     const AS_GROUP    = 'woo_alipay_ps';
+    const CORE_REQUIRED_FIELDS = array( 'appid', 'private_key', 'public_key' );
 
     // Common error hint catalog (extend as needed)
     protected static $error_hints = array(
@@ -45,7 +46,24 @@ class Woo_Alipay_PS_Service {
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeOrderSettleRequest.php';
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeOrderSettleQueryRequest.php';
 
-        $core   = get_option( 'woocommerce_alipay_settings', array() );
+        $core   = wp_parse_args( get_option( 'woocommerce_alipay_settings', array() ), array(
+            'appid'       => '',
+            'private_key' => '',
+            'public_key'  => '',
+            'sandbox'     => 'no',
+        ) );
+
+        $missing = array();
+        foreach ( self::CORE_REQUIRED_FIELDS as $field ) {
+            if ( empty( $core[ $field ] ) ) {
+                $missing[] = $field;
+            }
+        }
+        if ( ! empty( $missing ) ) {
+            self::log( 'error', 'Core credentials missing for profitsharing', array( 'missing' => implode( '|', $missing ) ) );
+            return null;
+        }
+
         $config = Alipay_SDK_Helper::get_alipay_config( array(
             'appid'       => $core['appid'] ?? '',
             'private_key' => $core['private_key'] ?? '',
@@ -54,7 +72,7 @@ class Woo_Alipay_PS_Service {
         ) );
         $aop = Alipay_SDK_Helper::create_alipay_service( $config );
         if ( ! $aop ) {
-            self::log( 'error', 'Failed to create AOP client; check credentials.' );
+            self::log( 'error', 'Failed to create AOP client; check credentials.', array( 'appid' => ! empty( $core['appid'] ) ? 'set' : 'empty' ) );
         }
         return $aop;
     }

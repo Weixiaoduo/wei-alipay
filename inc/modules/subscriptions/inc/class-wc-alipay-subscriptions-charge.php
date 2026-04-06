@@ -3,22 +3,52 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 class WC_Alipay_Subscriptions_Charge {
 
+    private static function log( $level, $message, $context = array() ) {
+        $logger = wc_get_logger();
+        if ( $logger ) {
+            $logger->log( $level, $message, array_merge( array( 'source' => 'alipay-subscriptions' ), $context ) );
+        }
+    }
+
+    private static function get_main_gateway_config( WC_Order $order ) {
+        $main_gateway = new WC_Alipay(false);
+        $config = array(
+            'app_id'               => $main_gateway->get_option('appid'),
+            'merchant_private_key' => $main_gateway->get_option('private_key'),
+            'alipay_public_key'    => $main_gateway->get_option('public_key'),
+            'charset'              => 'UTF-8',
+            'sign_type'            => 'RSA2',
+            'gatewayUrl'           => ( 'yes' === $main_gateway->get_option('sandbox') ) ? 'https://openapi.alipaydev.com/gateway.do' : 'https://openapi.alipay.com/gateway.do',
+        );
+
+        $missing = array();
+        if ( empty( $config['app_id'] ) ) {
+            $missing[] = 'appid';
+        }
+        if ( empty( $config['merchant_private_key'] ) ) {
+            $missing[] = 'private_key';
+        }
+        if ( empty( $config['alipay_public_key'] ) ) {
+            $missing[] = 'public_key';
+        }
+        if ( ! empty( $missing ) ) {
+            self::log( 'error', 'Subscription charge blocked: missing core settings', array( 'order_id' => $order->get_id(), 'missing' => implode( '|', $missing ) ) );
+            return new WP_Error( 'config_missing', sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay-subscriptions' ), implode( ', ', $missing ) ) );
+        }
+
+        return $config;
+    }
+
     /**
      * Perform an auto-debit charge via agreement_no using AlipayTradeCreateRequest.
      * Returns array( 'success' => true, 'trade_no' => '...') or WP_Error.
      */
     public static function charge_with_agreement( WC_Order $order, $amount, $agreement_no, $product_code ) {
         try {
-            // Load main gateway config
-            $main_gateway = new WC_Alipay(false);
-            $config = array(
-                'app_id' => $main_gateway->get_option('appid'),
-                'merchant_private_key' => $main_gateway->get_option('private_key'),
-                'alipay_public_key' => $main_gateway->get_option('public_key'),
-                'charset' => 'UTF-8',
-                'sign_type' => 'RSA2',
-                'gatewayUrl' => ( 'yes' === $main_gateway->get_option('sandbox') ) ? 'https://openapi.alipaydev.com/gateway.do' : 'https://openapi.alipay.com/gateway.do',
-            );
+            $config = self::get_main_gateway_config( $order );
+            if ( is_wp_error( $config ) ) {
+                return $config;
+            }
 
             // Ensure a stable out_trade_no for retries
             $out_trade_no = $order->get_meta( '_alipay_out_trade_no_withhold' );
@@ -54,6 +84,12 @@ class WC_Alipay_Subscriptions_Charge {
             $request = new AlipayTradeCreateRequest();
             $request->setBizContent( wp_json_encode( $biz ) );
 
+            self::log( 'info', 'Subscription charge request', array(
+                'order_id'     => $order->get_id(),
+                'out_trade_no' => $out_trade_no,
+                'amount'       => number_format( (float) $amount, 2, '.', '' ),
+            ) );
+
             $response = $aop->execute( $request );
             $node = 'alipay_trade_create_response';
             $result = isset( $response->$node ) ? $response->$node : null;
@@ -61,14 +97,17 @@ class WC_Alipay_Subscriptions_Charge {
             if ( is_object( $result ) && isset( $result->code ) && '10000' === (string) $result->code ) {
                 $trade_no = isset( $result->trade_no ) ? $result->trade_no : '';
                 if ( $trade_no ) {
+                    self::log( 'info', 'Subscription charge success', array( 'order_id' => $order->get_id(), 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no ) );
                     return array( 'success' => true, 'trade_no' => $trade_no );
                 }
                 return new WP_Error( 'no_trade_no', __( '支付宝返回成功但缺少交易号。', 'woo-alipay-subscriptions' ) );
             }
 
             $msg = isset( $result->sub_msg ) ? $result->sub_msg : ( isset( $result->msg ) ? $result->msg : 'Unknown error' );
+            self::log( 'error', 'Subscription charge failed', array( 'order_id' => $order->get_id(), 'out_trade_no' => $out_trade_no, 'error' => $msg ) );
             return new WP_Error( 'alipay_create_failed', $msg );
         } catch ( Exception $e ) {
+            self::log( 'error', 'Subscription charge exception', array( 'order_id' => $order->get_id(), 'error' => $e->getMessage() ) );
             return new WP_Error( 'exception', $e->getMessage() );
         }
     }
