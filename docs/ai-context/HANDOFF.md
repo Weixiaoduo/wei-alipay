@@ -4,6 +4,7 @@
 
 - Source of truth: `ssh://git@feicode.com:2222/Weixiaoduo/woo-alipay.git` at baseline `d135d670b1ee8ff0dcdc02e55f72e5b5312f1c47`; public mirror was 17 commits behind.
 - Isolated worktree/branch: `/home/parallels/Projects/woo-alipay-cx-audit`, `codex/woo-alipay-audit-20260809`.
+- Code/audit commit: `6a57a68` (`fix: harden Alipay order and callback flows`). FeiCode policy refused a direct branch push; the same commit was sent without merge through AGit to `refs/pull/1/head` (`https://feicode.com/Weixiaoduo/woo-alipay/pulls/1`).
 - Boundary: no production deployment/release/default-branch merge, no live Alipay call, no real transaction, and no historical-data deletion.
 - Delivered: callback context validation/redaction/idempotency, AJAX order-key authorization, query/reconcile amount checks, timeout fail-closed behavior, HPOS order metadata/query repairs, F2F assets/authorization, barcode currency guard, reconciliation SSRF guard, updater isolation/PHP 7.4 fix, webhook table/retry hardening, safe tests, compatibility metadata, and audit report.
 - Audit report: `docs/audits/woo-alipay-comprehensive-audit-2026-08-09.md`.
