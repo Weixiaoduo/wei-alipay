@@ -10,6 +10,7 @@
 * Text Domain: woo-alipay
 * Domain Path: /languages
 * WC tested up to: 10.2.2
+* WC requires at least: 8.3
 * Requires PHP: 7.4
 * Requires at least: 6.6
 * Requires Plugins: woocommerce
@@ -36,6 +37,8 @@ if ( ! defined( 'WOO_ALIPAY_VERSION' ) ) {
 }
 
 require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-woo-alipay.php';
+require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-woo-alipay-secret-store.php';
+Woo_Alipay_Secret_Store::register();
 
 if ( file_exists( WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php' ) ) {
 	require_once WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php';
@@ -177,6 +180,7 @@ add_action( 'before_woocommerce_init', function() {
 register_activation_hook( WOO_ALIPAY_PLUGIN_FILE, array( 'Woo_Alipay', 'activate' ) );
 register_deactivation_hook( WOO_ALIPAY_PLUGIN_FILE, array( 'Woo_Alipay', 'deactivate' ) );
 register_uninstall_hook( WOO_ALIPAY_PLUGIN_FILE, array( 'Woo_Alipay', 'uninstall' ) );
+add_action( 'admin_init', array( 'Woo_Alipay', 'maybe_upgrade' ), 1 );
 
 function woo_alipay_run() {
 	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {

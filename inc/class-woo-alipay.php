@@ -45,17 +45,39 @@ class Woo_Alipay {
 	 * Public methods
 	 *******************************************************************/
 
-	public static function activate() {
-		wp_cache_flush();
-
-		if ( ! get_option( 'woo_alipay_plugin_version' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-			$plugin_data = get_plugin_data( WOO_ALIPAY_PLUGIN_FILE );
-			$version     = $plugin_data['Version'];
-
-			update_option( 'woo_alipay_plugin_version', $version );
+	public static function activate( $network_wide = false ) {
+		if ( is_multisite() && $network_wide ) {
+			$site_ids = get_sites( array( 'fields' => 'ids', 'number' => 0 ) );
+			foreach ( $site_ids as $site_id ) {
+				switch_to_blog( (int) $site_id );
+				self::upgrade_current_site();
+				restore_current_blog();
+			}
+		} else {
+			self::upgrade_current_site();
 		}
+		wp_cache_flush();
+	}
+
+	public static function maybe_upgrade() {
+		if ( '3.2.0-r3' !== get_option( 'woo_alipay_schema_version' ) ) {
+			self::upgrade_current_site();
+		}
+	}
+
+	private static function upgrade_current_site() {
+		$mini = get_option( 'woocommerce_alipay_wap_settings', array() );
+		if ( is_array( $mini ) && ! isset( $mini['protocol_mode'] ) ) {
+			$has_legacy = ! empty( $mini['partnerID'] ) || ! empty( $mini['secure_key'] );
+			$mini['protocol_mode']   = $has_legacy ? 'legacy_md5' : 'rsa2';
+			$mini['legacy_md5_ack']  = 'no';
+			update_option( 'woocommerce_alipay_wap_settings', $mini, false );
+		}
+		if ( class_exists( 'Woo_Alipay_Secret_Store' ) ) {
+			Woo_Alipay_Secret_Store::migrate_current_site();
+		}
+		update_option( 'woo_alipay_plugin_version', WOO_ALIPAY_VERSION, false );
+		update_option( 'woo_alipay_schema_version', '3.2.0-r3', false );
 	}
 
 	public static function deactivate() {
@@ -122,7 +144,7 @@ class Woo_Alipay {
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
 			$order_id  = absint( get_query_var( 'order-pay' ) );
 			$order     = $order_id ? wc_get_order( $order_id ) : false;
-			$order_key = isset( $_GET['key'] ) ? wc_clean( wp_unslash( $_GET['key'] ) ) : '';
+			$order_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce order key authorizes this read-only asset decision.
 			if ( ! $order || 'alipay' !== $order->get_payment_method() || ! hash_equals( $order->get_order_key(), $order_key ) ) {
 				return;
 			}
@@ -311,12 +333,13 @@ class Woo_Alipay {
 
     public function render_admin_reconcile_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) {
-            wp_die( __( '权限不足', 'woo-alipay' ) );
+			wp_die( esc_html__( '权限不足', 'woo-alipay' ) );
         }
         $result = null; $error = '';
-        if ( isset( $_POST['woo_alipay_reconcile_nonce'] ) && wp_verify_nonce( $_POST['woo_alipay_reconcile_nonce'], 'woo_alipay_reconcile' ) ) {
-            $out_trade_no = sanitize_text_field( $_POST['out_trade_no'] ?? '' );
-            $trade_no = sanitize_text_field( $_POST['trade_no'] ?? '' );
+		$nonce = isset( $_POST['woo_alipay_reconcile_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['woo_alipay_reconcile_nonce'] ) ) : '';
+		if ( '' !== $nonce && wp_verify_nonce( $nonce, 'woo_alipay_reconcile' ) ) {
+			$out_trade_no = isset( $_POST['out_trade_no'] ) ? sanitize_text_field( wp_unslash( $_POST['out_trade_no'] ) ) : '';
+			$trade_no = isset( $_POST['trade_no'] ) ? sanitize_text_field( wp_unslash( $_POST['trade_no'] ) ) : '';
             require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
             $main_gateway = new WC_Alipay(false);
             $config = Alipay_SDK_Helper::get_alipay_config(array(

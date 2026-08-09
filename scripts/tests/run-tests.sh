@@ -21,6 +21,9 @@ run_static() {
 
 run_contracts() {
   php "$ROOT_DIR/tests/security-contracts.php"
+  php "$ROOT_DIR/tests/multisite-lifecycle-contracts.php"
+  php "$ROOT_DIR/tests/uninstall-retention-contracts.php"
+  php "$ROOT_DIR/tests/uninstall-purge-contracts.php"
   ! grep -RInE "(get|update|delete)_post_meta\(" "$ROOT_DIR/inc/modules" --include='*.php' --exclude-dir=lib >/tmp/woo-alipay-direct-order-meta.txt || {
     cat /tmp/woo-alipay-direct-order-meta.txt >&2
     fail 'direct post-meta access remains in payment modules (HPOS contract)'

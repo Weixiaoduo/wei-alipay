@@ -16,6 +16,7 @@ add_action( 'plugins_loaded', function() {
         return;
     }
 
+    require_once WOO_ALIPAY_MINIPROGRAM_PATH . 'class-mini-protocol.php';
     $class_file = WOO_ALIPAY_MINIPROGRAM_PATH . 'class-wc-alipay-wap.php';
     if ( file_exists( $class_file ) ) {
         require_once $class_file;

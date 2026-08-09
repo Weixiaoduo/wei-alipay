@@ -586,7 +586,7 @@ class WC_Alipay extends WC_Payment_Gateway
                         <?php echo esc_html(__('现在测试', 'woo-alipay')); ?>
                     </button>
                     <div id="woo-alipay-test-result" style="margin-top: 10px;"></div>
-                    <?php echo $this->get_description_html($data); ?>
+                    <?php echo wp_kses_post( $this->get_description_html( $data ) ); ?>
                 </fieldset>
             </td>
         </tr>
@@ -721,7 +721,14 @@ class WC_Alipay extends WC_Payment_Gateway
             self::$refund_id = str_pad($prefix . $order_id . $suffix, 64, '0', STR_PAD_LEFT);
         }
 
-        $processed_refunds = (array) $order->get_meta('_alipay_processed_refund_requests');
+        $processed_refunds = array_values(
+            array_filter(
+                (array) $order->get_meta('_alipay_processed_refund_requests'),
+                static function( $request_id ) {
+                    return is_string( $request_id ) && '' !== $request_id;
+                }
+            )
+        );
         if (in_array(self::$refund_id, $processed_refunds, true)) {
             self::$refund_id = null;
             return true;
@@ -985,7 +992,7 @@ class WC_Alipay extends WC_Payment_Gateway
 
         $html = ob_get_clean();
 
-        echo $html; // WPCS: XSS OK
+        echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SDK-generated, locally signed Alipay dispatch form; escaping would invalidate fields and auto-submit.
     }
 
     protected function is_mobile()
@@ -1038,9 +1045,11 @@ class WC_Alipay extends WC_Payment_Gateway
         
         echo '<div class="notice notice-info inline">';
         echo '<p>';
-        printf(
-            __('需要配置帮助？请查看 %1$s 获取详细的配置指南和文档。', 'woo-alipay'),
-            '<a href="https://woocn.com/document/woo-alipay" target="_blank">' . __('官方文档', 'woo-alipay') . '</a>'
+        echo wp_kses_post(
+            sprintf(
+                __('需要配置帮助？请查看 %1$s 获取详细的配置指南和文档。', 'woo-alipay'),
+                '<a href="https://woocn.com/document/woo-alipay" target="_blank" rel="noopener noreferrer">' . esc_html__('官方文档', 'woo-alipay') . '</a>'
+            )
         );
         echo '</p>';
         echo '</div>';
@@ -1099,7 +1108,8 @@ class WC_Alipay extends WC_Payment_Gateway
         $transaction_id = isset($response_data['trade_no']) && is_scalar($response_data['trade_no']) ? (string) $response_data['trade_no'] : '';
         $error = '';
 
-        if ('POST' !== strtoupper(isset($_SERVER['REQUEST_METHOD']) ? (string) $_SERVER['REQUEST_METHOD'] : '') || !$out_trade_no) {
+        $request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_key( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+        if ('post' !== $request_method || !$out_trade_no) {
             $error = 'invalid_request';
             do_action('woo_alipay_webhook_processed', $out_trade_no, false, $error);
             echo 'fail';

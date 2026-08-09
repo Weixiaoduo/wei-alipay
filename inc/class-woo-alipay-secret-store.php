@@ -1,0 +1,217 @@
+<?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Versioned encryption for merchant secrets stored in WordPress options.
+ *
+ * Public Alipay verification keys are intentionally not encrypted: they are
+ * not confidential and must remain available to verify notifications. Private
+ * application keys and legacy MD5 shared secrets are encrypted at rest.
+ */
+final class Woo_Alipay_Secret_Store {
+	const PREFIX = 'woo-alipay-secret:v1:';
+
+	/** @var array<string,array<int,string>> */
+	private static $option_fields = array(
+		'woocommerce_alipay_settings'     => array( 'private_key' ),
+		'woocommerce_alipay_wap_settings' => array( 'secure_key' ),
+		'woocommerce_acbop_settings'      => array( 'secure_key' ),
+	);
+
+	public static function register() {
+		foreach ( self::$option_fields as $option => $fields ) {
+			add_filter( 'option_' . $option, array( __CLASS__, 'decrypt_option' ), 10, 2 );
+			add_filter( 'pre_update_option_' . $option, array( __CLASS__, 'encrypt_option' ), 10, 3 );
+		}
+	}
+
+	public static function encrypt_value( $plaintext, $material ) {
+		if ( '' === (string) $plaintext || self::is_envelope( $plaintext ) ) {
+			return (string) $plaintext;
+		}
+		if ( ! function_exists( 'openssl_encrypt' ) ) {
+			return new WP_Error( 'secret_crypto_unavailable', __( 'OpenSSL is required to protect Alipay secrets.', 'woo-alipay' ) );
+		}
+
+		$key = self::derive_key( $material );
+		$iv  = random_bytes( 12 );
+		$tag = '';
+		$ciphertext = openssl_encrypt( (string) $plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag, 'woo-alipay:v1' );
+		if ( false === $ciphertext ) {
+			return new WP_Error( 'secret_encrypt_failed', __( 'Alipay secret encryption failed.', 'woo-alipay' ) );
+		}
+
+		$payload = array(
+			'kid' => substr( hash( 'sha256', (string) $material ), 0, 16 ),
+			'iv'  => base64_encode( $iv ),
+			'tag' => base64_encode( $tag ),
+			'ct'  => base64_encode( $ciphertext ),
+		);
+		return self::PREFIX . base64_encode( wp_json_encode( $payload ) );
+	}
+
+	public static function decrypt_value( $value, $materials ) {
+		if ( ! self::is_envelope( $value ) ) {
+			return (string) $value;
+		}
+		$encoded = substr( (string) $value, strlen( self::PREFIX ) );
+		$payload = json_decode( (string) base64_decode( $encoded, true ), true );
+		if ( ! is_array( $payload ) || ! isset( $payload['iv'], $payload['tag'], $payload['ct'] ) ) {
+			return new WP_Error( 'secret_envelope_invalid', __( 'Stored Alipay secret is malformed.', 'woo-alipay' ) );
+		}
+
+		foreach ( array_values( array_unique( array_filter( (array) $materials ) ) ) as $material ) {
+			$plaintext = openssl_decrypt(
+				(string) base64_decode( (string) $payload['ct'], true ),
+				'aes-256-gcm',
+				self::derive_key( $material ),
+				OPENSSL_RAW_DATA,
+				(string) base64_decode( (string) $payload['iv'], true ),
+				(string) base64_decode( (string) $payload['tag'], true ),
+				'woo-alipay:v1'
+			);
+			if ( false !== $plaintext ) {
+				return $plaintext;
+			}
+		}
+
+		return new WP_Error( 'secret_decrypt_failed', __( 'Stored Alipay secret cannot be decrypted with the configured key ring.', 'woo-alipay' ) );
+	}
+
+	public static function decrypt_option( $settings, $option ) {
+		if ( ! is_array( $settings ) || ! isset( self::$option_fields[ $option ] ) ) {
+			return $settings;
+		}
+		foreach ( self::$option_fields[ $option ] as $field ) {
+			if ( self::is_settings_screen() ) {
+				$settings[ $field ] = '';
+				continue;
+			}
+			$external = apply_filters( 'woo_alipay_secret_value', null, $option, $field );
+			if ( is_string( $external ) && '' !== $external ) {
+				$settings[ $field ] = $external;
+				continue;
+			}
+			if ( empty( $settings[ $field ] ) ) {
+				continue;
+			}
+			$value = self::decrypt_value( $settings[ $field ], self::keyring() );
+			if ( is_wp_error( $value ) ) {
+				$settings[ $field ] = '';
+				do_action( 'woo_alipay_secret_error', $value, $option, $field );
+			} else {
+				$settings[ $field ] = $value;
+			}
+		}
+		return $settings;
+	}
+
+	public static function encrypt_option( $new_value, $old_value, $option ) {
+		if ( ! is_array( $new_value ) || ! isset( self::$option_fields[ $option ] ) ) {
+			return $new_value;
+		}
+		$material = self::active_material();
+		if ( is_wp_error( $material ) ) {
+			do_action( 'woo_alipay_secret_error', $material, $option, '' );
+			return $old_value;
+		}
+		$raw_old = self::raw_option( $option );
+		foreach ( self::$option_fields[ $option ] as $field ) {
+			if ( ! isset( $new_value[ $field ] ) || '' === (string) $new_value[ $field ] ) {
+				if ( is_array( $raw_old ) && ! empty( $raw_old[ $field ] ) ) {
+					$new_value[ $field ] = $raw_old[ $field ];
+				} elseif ( is_array( $old_value ) && ! empty( $old_value[ $field ] ) ) {
+					$new_value[ $field ] = $old_value[ $field ];
+				}
+				continue;
+			}
+			$encrypted = self::encrypt_value( $new_value[ $field ], $material );
+			if ( is_wp_error( $encrypted ) ) {
+				do_action( 'woo_alipay_secret_error', $encrypted, $option, $field );
+				return $old_value;
+			}
+			$new_value[ $field ] = $encrypted;
+		}
+		return $new_value;
+	}
+
+	/** Encrypt plaintext and rotate envelopes to the active key. */
+	public static function migrate_current_site() {
+		$active = self::active_material();
+		if ( is_wp_error( $active ) ) {
+			return $active;
+		}
+		foreach ( self::$option_fields as $option => $fields ) {
+			$stored = self::raw_option( $option );
+			if ( ! is_array( $stored ) ) {
+				continue;
+			}
+			foreach ( $fields as $field ) {
+				if ( empty( $stored[ $field ] ) ) {
+					continue;
+				}
+				$plaintext = self::decrypt_value( $stored[ $field ], self::keyring() );
+				if ( is_wp_error( $plaintext ) ) {
+					do_action( 'woo_alipay_secret_error', $plaintext, $option, $field );
+					continue;
+				}
+				$stored[ $field ] = self::encrypt_value( $plaintext, $active );
+			}
+			update_option( $option, $stored, false );
+		}
+		return true;
+	}
+
+	private static function active_material() {
+		if ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY ) {
+			return (string) WOO_ALIPAY_ENCRYPTION_KEY;
+		}
+		$parts = array();
+		foreach ( array( 'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY' ) as $constant ) {
+			if ( defined( $constant ) ) {
+				$parts[] = constant( $constant );
+			}
+		}
+		if ( empty( $parts ) ) {
+			return new WP_Error( 'secret_key_unavailable', __( 'WordPress security keys are required to protect Alipay secrets.', 'woo-alipay' ) );
+		}
+		return implode( '|', $parts );
+	}
+
+	private static function keyring() {
+		$active = self::active_material();
+		$keys   = is_wp_error( $active ) ? array() : array( $active );
+		return (array) apply_filters( 'woo_alipay_secret_keyring', $keys );
+	}
+
+	private static function derive_key( $material ) {
+		return hash_hmac( 'sha256', 'woo-alipay-secret-store-v1', (string) $material, true );
+	}
+
+	private static function is_envelope( $value ) {
+		return 0 === strpos( (string) $value, self::PREFIX );
+	}
+
+	private static function is_settings_screen() {
+		if ( ! is_admin() ) {
+			return false;
+		}
+		$page    = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
+		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
+		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'acbop' ), true );
+	}
+
+	private static function raw_option( $option ) {
+		global $wpdb;
+		if ( ! isset( $wpdb->options ) ) {
+			return array();
+		}
+		$value = $wpdb->get_var(
+			$wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $option )
+		);
+		return null === $value ? array() : maybe_unserialize( $value );
+	}
+}

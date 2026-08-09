@@ -39,3 +39,14 @@
 - Migration plans for SDK, secret storage, QR CDN, remote close, and multisite uninstall are recorded in `docs/audits/woo-alipay-comprehensive-audit-2026-08-09.md`. Mini-program MD5-era outgoing flow remains a decision-gated legacy blocker.
 - No production deployment, release, merge, real Alipay call/transaction, or historical-data deletion was performed.
 - Second-round code commit `cddf9ca` was pushed without merge to FeiCode PR #1 via `refs/for/master/woo-alipay-audit-20260809`; `refs/pull/1/head` matched `cddf9ca3ee89c06d1fa594c926bfa3152956dd4f` immediately after the push.
+
+
+## [CX] 2026-08-09 Woo Alipay third-round PR #1
+
+- Added explicit Mini-program RSA2/legacy-MD5 policy: legacy requires site acknowledgement plus operator policy, verifies MD5 locally, binds signed partner/seller/order/trade/amount/time, and never falls back from RSA2.
+- Added AES-256-GCM versioned secret envelopes, external-provider filter, key-ring rotation and fail-closed unreadable-secret behavior. Settings UI masks stored and external private material.
+- Added network activation/upgrade and opt-in multisite uninstall behavior. Default uninstall retains gateway settings and all financial/order metadata.
+- Added SPDX candidate SBOM and deterministic offline build with ZIP/file/SDK-tree hashes. The 8,829-file SDK provenance/license/lock gap remains a release blocker.
+- Final first-party tests and PHPStan passed. Changed payment/security PHPCS security sniffs passed. Full release PHPCS, security PHPCS, and Plugin Check remain NOT PASS with classified first-party debt in `docs/audits/woo-alipay-round3-2026-08-09.md`.
+- Isolated HPOS off/on, Blocks, concurrent synthetic RSA2 notification and offline refund fixtures passed. No real Alipay endpoint was contacted.
+- Do not merge, deploy, publish or release this branch.
