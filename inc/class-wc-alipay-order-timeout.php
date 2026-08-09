@@ -128,6 +128,16 @@ class WC_Alipay_Order_Timeout {
 		if ( class_exists( 'WC_Alipay_Order_Query' ) ) {
 			$query = new WC_Alipay_Order_Query();
 			$result = $query->query_single_order_status( $order );
+			if ( is_wp_error( $result ) ) {
+				$this->log( 'Order #' . $order->get_id() . ' status query failed; timeout cancellation skipped: ' . $result->get_error_code(), 'warning' );
+				return false;
+			}
+			if ( false === $result ) {
+				// A submitted Alipay trade may still be payable. Never cancel the Woo order
+				// unless the remote trade has first been closed by a verified workflow.
+				$this->log( 'Order #' . $order->get_id() . ' remains pending at Alipay; timeout cancellation skipped', 'warning' );
+				return false;
+			}
 			
 			// Reload order after query
 			$order = wc_get_order( $order->get_id() );

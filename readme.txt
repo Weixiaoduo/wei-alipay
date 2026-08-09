@@ -1,10 +1,10 @@
 === Payment gateway for WooCommerce - Woo Alipay ===
 Contributors: frogerme
 Tags: alipay, alibaba, payments, payment gateway, 支付宝, 阿里巴巴
-Requires at least: 4.9.5
-Tested up to: 5.4
-Stable tag: trunk
-Requires PHP: 7.0
+Requires at least: 6.6
+Tested up to: 7.0
+Stable tag: 3.2.0
+Requires PHP: 7.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,7 +22,7 @@ This Mainland China gateway allows customers to pay both in mobile browsers or f
 
 ### Important Notes
 
-* Does NOT support cross-border payments: many other gateways are already providing this feature ; this is for Mainland China-hosted websites dealing with transactions within China.
+* The primary gateway is for Mainland China Alipay. Optional bundled modules include cross-border, face-to-face QR, Huabei instalments, barcode/POS, mini-program, subscriptions, fund authorization, profit sharing, and reconciliation. Enable only the modules covered by your merchant agreement and testing.
 * Make sure to read the "TROUBLESHOOT, FEATURE REQUESTS AND 3RD PARTY INTEGRATION" section below and [the full documentation](https://github.com/froger-me/woo-alipay/blob/master/README.md) before contacting the author.
 
 ### Overview
@@ -31,7 +31,7 @@ This plugin adds the following major features to WooCommerce:
 
 * **Payment of WooCommerce orders in mobile web browser app:** calls the Alipay mobile app for a seamless experience.
 * **Payment of WooCommerce orders standard in web browser:** authentication performed via credentials or QR code on desktop/laptop.
-* **Refund of WooCommerce orders:** possibility to refund orders manually in a few clicks, and support for automatic refund in case the transaction failed.
+* **Refund of WooCommerce orders:** manual WooCommerce refunds use the original stored merchant order number. Automatic orphan-payment refund is not enabled.
 * **Multi-currency support:** using an exchange rate against Chinese Yuan configured in the settings.
 
 Compatible with [WooCommerce Multilingual](https://wordpress.org/plugins/woocommerce-multilingual/), [WPML](http://wpml.org/), [Ultimate Member](https://wordpress.org/plugins/ultimate-member/), and any caching plugin compatible with WooCommerce.

@@ -10,6 +10,8 @@
 * Text Domain: woo-alipay
 * Domain Path: /languages
 * WC tested up to: 10.2.2
+* Requires PHP: 7.4
+* Requires at least: 6.6
 * Requires Plugins: woocommerce
 */
 
@@ -39,8 +41,8 @@ if ( file_exists( WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php' )
 	require_once WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php';
 }
 
-if ( class_exists( 'WenPai_Updater' ) ) {
-	new WenPai_Updater( plugin_basename( WOO_ALIPAY_PLUGIN_FILE ), WOO_ALIPAY_VERSION );
+if ( class_exists( 'Woo_Alipay_WenPai_Updater' ) ) {
+	new Woo_Alipay_WenPai_Updater( plugin_basename( WOO_ALIPAY_PLUGIN_FILE ), WOO_ALIPAY_VERSION );
 }
 
 if ( ! defined( 'WOO_ALIPAY_PS_PLUGIN_PATH' ) ) {

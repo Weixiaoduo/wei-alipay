@@ -40,8 +40,10 @@ class WC_Alipay_Webhook_Retry {
 	 * Initialize hooks
 	 */
 	private function init_hooks() {
-		// Create table on plugin activation
+		// The class is loaded on init, which can be too late to register activation hooks.
+		// Keep the hook for direct loads and add a versioned admin repair path.
 		register_activation_hook( WOO_ALIPAY_PLUGIN_FILE, array( $this, 'create_table' ) );
+		add_action( 'admin_init', array( $this, 'maybe_create_table' ) );
 		
 		// Log webhook attempts
 		add_action( 'woocommerce_api_wc_alipay', array( $this, 'log_webhook_attempt' ), 5 );
@@ -49,12 +51,22 @@ class WC_Alipay_Webhook_Retry {
 		// Schedule retry cron
 		add_action( 'wp', array( $this, 'schedule_retry_cron' ) );
 		add_action( 'woo_alipay_retry_failed_webhooks', array( $this, 'retry_failed_webhooks' ) );
+		add_action( 'woo_alipay_webhook_processed', array( $this, 'record_processing_result' ), 10, 3 );
 		
 		// Add admin menu for webhook logs
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 60 );
 		
 		// AJAX handler for manual retry
 		add_action( 'wp_ajax_woo_alipay_retry_webhook', array( $this, 'ajax_retry_webhook' ) );
+	}
+
+	/**
+	 * Create or upgrade the webhook table only when its schema version changes.
+	 */
+	public function maybe_create_table() {
+		if ( '1' !== get_option( 'woo_alipay_webhook_schema_version' ) ) {
+			$this->create_table();
+		}
 	}
 
 	/**
@@ -87,6 +99,7 @@ class WC_Alipay_Webhook_Retry {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
+		update_option( 'woo_alipay_webhook_schema_version', '1', false );
 	}
 
 	/**
@@ -106,8 +119,14 @@ class WC_Alipay_Webhook_Retry {
 			return;
 		}
 
-		$request_data = $_POST;
-		$out_trade_no = isset( $request_data['out_trade_no'] ) ? sanitize_text_field( $request_data['out_trade_no'] ) : '';
+		$raw_request = wp_unslash( $_POST );
+		$request_data = array();
+		foreach ( array( 'notify_id', 'notify_type', 'out_trade_no', 'trade_no', 'trade_status', 'total_amount', 'app_id', 'sign_type' ) as $field ) {
+			if ( isset( $raw_request[ $field ] ) ) {
+				$request_data[ $field ] = sanitize_text_field( $raw_request[ $field ] );
+			}
+		}
+		$out_trade_no = isset( $request_data['out_trade_no'] ) ? $request_data['out_trade_no'] : '';
 		$trade_no = isset( $request_data['trade_no'] ) ? sanitize_text_field( $request_data['trade_no'] ) : '';
 		
 		if ( empty( $out_trade_no ) ) {
@@ -200,6 +219,17 @@ class WC_Alipay_Webhook_Retry {
 			$format,
 			array( '%s' )
 		);
+	}
+
+
+	/**
+	 * Persist the outcome emitted by the main callback processor.
+	 */
+	public function record_processing_result( $out_trade_no, $success, $error = '' ) {
+		if ( !$out_trade_no ) {
+			return;
+		}
+		$this->update_webhook_status( $out_trade_no, $success ? 'success' : 'failed', $error );
 	}
 
 	/**

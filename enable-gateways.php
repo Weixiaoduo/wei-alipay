@@ -14,6 +14,11 @@ add_action( 'init', function() {
     if ( ! isset( $_GET['enable_alipay_gateways'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
         return;
     }
+
+    $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+    if ( ! wp_verify_nonce( $nonce, 'woo_alipay_enable_gateways' ) ) {
+        wp_die( esc_html__( '无效的安全令牌。', 'woo-alipay' ), 403 );
+    }
     
     $gateways = ['alipay', 'alipay_installment', 'alipay_facetopay'];
     

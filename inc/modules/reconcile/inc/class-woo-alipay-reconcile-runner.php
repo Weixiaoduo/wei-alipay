@@ -74,11 +74,21 @@ class Woo_Alipay_Reconcile_Runner {
     }
 
     private static function download_bill( $url, $date, $type ) {
+        $parts = wp_parse_url( $url );
+        $host = isset( $parts['host'] ) ? strtolower( $parts['host'] ) : '';
+        $allowed_host = 'https' === ( $parts['scheme'] ?? '' ) && (
+            'alipay.com' === $host || '.alipay.com' === substr( $host, -11 ) ||
+            'alipaydev.com' === $host || '.alipaydev.com' === substr( $host, -14 )
+        );
+        if ( ! $allowed_host ) {
+            return new WP_Error( 'unsafe_download_url', __( '支付宝对账单下载地址未通过安全校验。', 'woo-alipay-reconcile-pro' ) );
+        }
+
         $uploads = wp_upload_dir();
         $dir     = trailingslashit( $uploads['basedir'] ) . 'woo-alipay-reconcile';
         wp_mkdir_p( $dir );
 
-        $response = wp_remote_get( $url, array( 'timeout' => 60 ) );
+        $response = wp_safe_remote_get( $url, array( 'timeout' => 60, 'limit_response_size' => 25 * MB_IN_BYTES ) );
         if ( is_wp_error( $response ) ) {
             return $response;
         }
@@ -250,8 +260,7 @@ class Woo_Alipay_Reconcile_Runner {
         // Try meta match first.
         $orders = wc_get_orders( array(
             'limit'     => 1,
-            'meta_key'  => '_alipay_out_trade_no',
-            'meta_value'=> $out_trade_no,
+            'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
             'return'    => 'objects',
         ) );
         if ( ! empty( $orders ) && $orders[0] instanceof WC_Order ) {

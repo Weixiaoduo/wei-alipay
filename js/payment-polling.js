@@ -40,8 +40,8 @@
          * Initialize
          */
         init: function() {
-            // Get order ID from URL or data attribute
-            this.orderId = this.getOrderId();
+            // The server supplies an order id only after validating the order key.
+            this.orderId = (typeof woo_alipay_polling !== 'undefined') ? woo_alipay_polling.order_id : null;
 
             if (!this.orderId) {
                 return;
@@ -133,6 +133,7 @@
                 data: {
                     action: 'woo_alipay_query_order_status',
                     order_id: this.orderId,
+                    order_key: woo_alipay_polling.order_key,
                     nonce: woo_alipay_polling.nonce
                 },
                 success: function(response) {
@@ -225,6 +226,7 @@
                     data: {
                         action: 'woo_alipay_query_order_status',
                         order_id: self.orderId,
+                        order_key: woo_alipay_polling.order_key,
                         nonce: woo_alipay_polling.nonce
                     },
                     success: function(response) {

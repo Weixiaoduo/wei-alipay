@@ -575,7 +575,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                         if( $order_needs_updating ){
 
                             // Update order status if IPN has not process the order
-                            update_post_meta( $order_id, 'Alipay Trade No.', wc_clean( $trade_no ) );
+                            $order->update_meta_data( 'Alipay Trade No.', wc_clean( $trade_no ) );
+                            $order->save();
                             $order->update_status( $status, __( "Payment received, awaiting fulfilment. ", 'alipaywap' ) );
                             
                             // Send deliver notification to alipay if the order is vitural and downloadable.
@@ -602,7 +603,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                         if( $order->status != 'completed' && $order->status != 'processing' ){
                             $order->payment_complete();
                         }                        
-                        update_post_meta( $order_id, 'Alipay Trade No.', wc_clean( $trade_no ) );
+                        $order->update_meta_data( 'Alipay Trade No.', wc_clean( $trade_no ) );
+                            $order->save();
                         break;
 
                     default :
@@ -790,8 +792,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         }
 
         $orders = wc_get_orders( array(
-            'meta_key'   => '_alipay_out_trade_no',
-            'meta_value' => $out_trade_no,
+            'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
             'limit'      => 1,
         ) );
 
@@ -806,6 +807,20 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                 wp_die( 'Invalid Order ID' );
             }
             $order_id = $order->get_id();
+        }
+
+        $expected_args = $this->get_alipay_args( $order );
+        $context_check = Alipay_SDK_Helper::validate_notify_context(
+            $_POST,
+            $order,
+            $main_settings['appid'],
+            isset( $expected_args['total_fee'] ) ? $expected_args['total_fee'] : $order->get_total(),
+            (string) $order->get_meta( '_alipay_out_trade_no' ),
+            array( 'alipay_wap' )
+        );
+        if ( is_wp_error( $context_check ) ) {
+            $this->log_event( 'Notify rejected: context mismatch', array( 'reason' => $context_check->get_error_code(), 'order_id' => $order_id ) );
+            wp_die( 'Fail' );
         }
 
         $stored_trade_no = $order->get_meta( 'Alipay Trade No.' );
@@ -829,7 +844,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             }
 
             if ( ! empty( $trade_no ) ) {
-                update_post_meta( $order_id, 'Alipay Trade No.', $trade_no );
+                $order->update_meta_data( 'Alipay Trade No.', $trade_no );
+                $order->save();
             }
 
             $this->log_event( 'Notify paid', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
@@ -837,7 +853,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             if ( ! $order->is_paid() ) {
                 if ( ! empty( $trade_no ) ) {
                     $order->set_transaction_id( $trade_no );
-                    update_post_meta( $order_id, 'Alipay Trade No.', $trade_no );
+                    $order->update_meta_data( 'Alipay Trade No.', $trade_no );
+                $order->save();
                 }
                 $order->update_status( 'processing', __( 'Payment received and waiting for fulfilment.', 'alipaywap' ) );
             }
@@ -1069,7 +1086,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
      * @return void
      */
     function wc_alipay_wap_display_order_meta_for_admin( $order ){
-        $trade_no = get_post_meta( $order->id, 'Alipay Trade No.', true );
+        $trade_no = $order instanceof WC_Order ? $order->get_meta( 'Alipay Trade No.' ) : '';
         if( !empty($trade_no ) ){
             echo '<p><strong>' . __( 'Alipay Trade No.:', 'alipaywap') . '</strong><br />' .$trade_no. '</p>';
         }

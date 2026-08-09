@@ -58,7 +58,16 @@ class Woo_Alipay {
 		}
 	}
 
-	public static function deactivate() {}
+	public static function deactivate() {
+		foreach ( array(
+			'woo_alipay_check_pending_orders',
+			'woo_alipay_check_timeout_orders',
+			'woo_alipay_retry_failed_webhooks',
+			'woo_alipay_ps_process_jobs',
+		) as $hook ) {
+			wp_clear_scheduled_hook( $hook );
+		}
+	}
 
 	public static function uninstall() {
 		require_once WOO_ALIPAY_PLUGIN_PATH . 'uninstall.php';
@@ -109,13 +118,18 @@ class Woo_Alipay {
 
 		wp_enqueue_style( 'woo-alipay-main-style', WOO_ALIPAY_PLUGIN_URL . 'css/main.css', array(), $version );
 		
-		// Enqueue payment polling script on order-pay page
+		// Enqueue payment polling only for the authorized Alipay order-pay page.
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
-			// Get gateway settings
+			$order_id  = absint( get_query_var( 'order-pay' ) );
+			$order     = $order_id ? wc_get_order( $order_id ) : false;
+			$order_key = isset( $_GET['key'] ) ? wc_clean( wp_unslash( $_GET['key'] ) ) : '';
+			if ( ! $order || 'alipay' !== $order->get_payment_method() || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+				return;
+			}
+
 			$gateways = WC()->payment_gateways->payment_gateways();
 			$gateway = isset( $gateways['alipay'] ) ? $gateways['alipay'] : null;
-			
-			// Check if polling is enabled
+
 			if ( $gateway && 'yes' === $gateway->get_option( 'enable_payment_polling', 'yes' ) ) {
 				$script_version = file_exists( WOO_ALIPAY_PLUGIN_PATH . 'js/payment-polling.js' ) 
 					? filemtime( WOO_ALIPAY_PLUGIN_PATH . 'js/payment-polling.js' ) 
@@ -140,6 +154,8 @@ class Woo_Alipay {
 					array(
 						'ajax_url'      => admin_url( 'admin-ajax.php' ),
 						'nonce'         => wp_create_nonce( 'woo_alipay_query_order' ),
+						'order_id'      => $order_id,
+						'order_key'     => $order_key,
 						'poll_interval' => $polling_interval,
 						'max_attempts'  => $max_attempts,
 						'strings'       => array(
@@ -316,10 +332,22 @@ class Woo_Alipay {
                 $result = $query;
                 // 可选：尝试同步 Woo 订单状态
                 if ( isset($_POST['sync_order']) && $result['success'] && in_array( $result['trade_status'], array('TRADE_SUCCESS','TRADE_FINISHED'), true ) ) {
-                    $orders = wc_get_orders( array( 'meta_key' => '_alipay_out_trade_no', 'meta_value' => $result['out_trade_no'], 'limit' => 1 ) );
+                    $orders = wc_get_orders( array( 'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $result['out_trade_no'] ) ), 'limit' => 1 ) );
                     if ( ! empty( $orders ) ) {
                         $order = $orders[0];
-                        if ( ! $order->is_paid() ) {
+                        $expected_amount = Alipay_SDK_Helper::convert_currency(
+                            $order->get_total(),
+                            $order->get_currency(),
+                            $main_gateway->get_option( 'exchange_rate', 0 )
+                        );
+                        $amount_matches = hash_equals(
+                            Alipay_SDK_Helper::format_amount( $expected_amount ),
+                            Alipay_SDK_Helper::format_amount( $result['total_amount'] )
+                        );
+                        $transaction_matches = ! $order->get_transaction_id() || hash_equals( (string) $order->get_transaction_id(), (string) $result['trade_no'] );
+                        if ( 'alipay' !== $order->get_payment_method() || ! $amount_matches || ! $transaction_matches ) {
+                            $error = __( '查询结果与订单支付方式、金额或交易号不一致，已拒绝同步。', 'woo-alipay' );
+                        } elseif ( ! $order->is_paid() ) {
                             $order->payment_complete( $result['trade_no'] );
                             $order->add_order_note( sprintf( __( '对账同步：标记为已支付，交易号: %s', 'woo-alipay' ), $result['trade_no'] ) );
                         }

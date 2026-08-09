@@ -113,7 +113,8 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
             return false;
         }
         $core = $this->get_core_settings();
-        return ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] );
+        $currency_supported = in_array( strtoupper( get_woocommerce_currency() ), array( 'CNY', 'RMB' ), true ) || floatval( $core['exchange_rate'] ) > 0;
+        return $currency_supported && ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] );
     }
 
     public function payment_fields() {
@@ -189,11 +190,17 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
                 return new WP_Error( 'sdk_error', __( '创建支付宝服务失败', 'woo-alipay-barcode' ) );
             }
 
-            $out_trade_no = Alipay_SDK_Helper::generate_out_trade_no( $order->get_id(), 'WooB' );
-            $order->update_meta_data( '_alipay_out_trade_no', $out_trade_no );
-            $order->save();
+            $out_trade_no = (string) $order->get_meta( '_alipay_out_trade_no' );
+            if ( ! $out_trade_no ) {
+                $out_trade_no = Alipay_SDK_Helper::generate_out_trade_no( $order->get_id(), 'WooB' );
+                $order->update_meta_data( '_alipay_out_trade_no', $out_trade_no );
+                $order->save();
+            }
 
             $total = $this->format_amount_for_cny( $order );
+            if ( is_wp_error( $total ) ) {
+                return $total;
+            }
             $subject = $this->get_order_title_excerpt( $order );
 
             $biz = array(
@@ -249,8 +256,10 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         if ( $rate > 0 ) {
             return number_format( (float) $order->get_total() * $rate, 2, '.', '' );
         }
-        // 没有汇率时回退原币种金额（不推荐）
-        return number_format( (float) $order->get_total(), 2, '.', '' );
+        return new WP_Error(
+            'unsupported_currency',
+            __( '当前订单币种需要先配置人民币汇率，已阻止发送错误金额。', 'woo-alipay-barcode' )
+        );
     }
 
     protected function get_order_title_excerpt( WC_Order $order ) {
@@ -335,6 +344,22 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         }
         $order = $order_id ? wc_get_order( $order_id ) : false;
         if ( ! $order ) { echo 'fail'; exit; }
+
+        $expected_amount = $this->format_amount_for_cny( $order );
+        if ( is_wp_error( $expected_amount ) ) { echo 'fail'; exit; }
+        $context_check = Alipay_SDK_Helper::validate_notify_context(
+            $params,
+            $order,
+            $core['appid'],
+            $expected_amount,
+            (string) $order->get_meta( '_alipay_out_trade_no' ),
+            array( self::GATEWAY_ID )
+        );
+        if ( is_wp_error( $context_check ) ) {
+            Alipay_SDK_Helper::log( '条码支付通知上下文校验失败: ' . $context_check->get_error_code(), 'error' );
+            echo 'fail';
+            exit;
+        }
 
         if ( in_array( $status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
             if ( $order->needs_payment() ) {

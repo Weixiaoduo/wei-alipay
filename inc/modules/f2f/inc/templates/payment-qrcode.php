@@ -58,7 +58,8 @@ if (!defined('ABSPATH')) {
     <div class="alipay-qrcode-timer"></div>
 </div>
 
-<input type="hidden" id="alipay-facetopay-nonce" value="<?php echo wp_create_nonce('alipay_facetopay_query'); ?>">
+<input type="hidden" id="alipay-facetopay-nonce" value="<?php echo esc_attr(wp_create_nonce('alipay_facetopay_query')); ?>">
+<input type="hidden" id="alipay-facetopay-order-key" value="<?php echo esc_attr($order->get_order_key()); ?>">
 
 <?php wp_footer(); ?>
 

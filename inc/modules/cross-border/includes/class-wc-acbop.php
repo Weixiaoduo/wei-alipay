@@ -220,8 +220,7 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 		}
 
 		$orders = wc_get_orders( array(
-			'meta_key'   => '_alipay_out_trade_no',
-			'meta_value' => $out_trade_no,
+			'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
 			'limit'      => 1,
 		) );
 
@@ -234,6 +233,19 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 
 		if ( ! $order ) {
 			$this->log( 'Order not found for notify', array( 'out_trade_no' => $out_trade_no ) );
+			$this->function->showNotifyRespond( false );
+		}
+
+		$context_check = Alipay_SDK_Helper::validate_notify_context(
+			$_POST,
+			$order,
+			$main_settings['appid'],
+			$order->get_total(),
+			(string) $order->get_meta( '_alipay_out_trade_no' ),
+			array( 'acbop' )
+		);
+		if ( is_wp_error( $context_check ) ) {
+			$this->log( 'Notify context mismatch', array( 'reason' => $context_check->get_error_code(), 'order_id' => $order->get_id() ) );
 			$this->function->showNotifyRespond( false );
 		}
 
@@ -254,7 +266,8 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 			}
 
 			if ( ! empty( $trade_no ) ) {
-				update_post_meta( $order->get_id(), 'Alipay Trade No.', $trade_no );
+				$order->update_meta_data( 'Alipay Trade No.', $trade_no );
+				$order->save();
 			}
 
 			$this->log( 'Notify payment success', array(
@@ -326,7 +339,8 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
             if( $order->get_status() != 'completed' && $order->get_status() != 'processing' ){
                 $order->payment_complete();
             }                        
-            update_post_meta( $orderId, 'Alipay Trade No.', wc_clean($_GET['trade_no']) );
+            $order->update_meta_data( 'Alipay Trade No.', wc_clean( wp_unslash( $_GET['trade_no'] ) ) );
+            $order->save();
             echo '<ul class="order_details">
 				<li>' . __('Your Alipay Trade No.: ', 'acbop') . '<strong>' . $_GET['trade_no'] . '</strong></li>
 			</ul>';

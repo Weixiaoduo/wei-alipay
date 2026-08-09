@@ -31,28 +31,15 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function __construct($init_hooks = false)
     {
-        $active_plugins = apply_filters('active_plugins', get_option('active_plugins'));
-        $is_wpml = in_array('woocommerce-multilingual/wpml-woocommerce.php', $active_plugins, true);
-        $multi_currency_options = 'yes' === get_option('icl_enable_multi_currency');
-
-        /* translators: In Chinese, can simply be translated as 支付宝. Mentionning "China" in English and other languages to make it clear to international customers this is NOT a crossborder payment method. */
-        $this->title = __('Alipay China', 'woo-alipay');
-        $this->method_title = __('Alipay by Woo Alipay', 'woo-alipay');
-        $this->charset = strtolower(get_bloginfo('charset'));
-        $this->id = self::GATEWAY_ID;
-        $this->icon = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg';
-        $this->description = $this->get_option('description');
+        $this->id                 = self::GATEWAY_ID;
+        $this->method_title       = __('Alipay by Woo Alipay', 'woo-alipay');
         $this->method_description = __('Alipay is a simple, secure and fast online payment method.', 'woo-alipay');
-        $this->exchange_rate = $this->get_option('exchange_rate');
-        $this->current_currency = get_option('woocommerce_currency');
-        $this->multi_currency_enabled = $is_wpml && $multi_currency_options;
+        $this->icon               = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg';
+        $this->has_fields         = false;
+        $this->charset            = strtolower(get_bloginfo('charset'));
+        $this->current_currency   = get_option('woocommerce_currency');
         $this->supported_currencies = array('RMB', 'CNY');
-        $this->order_button_text = __('Pay with Alipay', 'woo-alipay');
-        $this->order_title_format = $this->get_option('order_title_format');
-        $this->order_prefix = $this->get_option('order_prefix');
-        $this->has_fields = false;
-        $this->form_submission_method = ('yes' === $this->get_option('form_submission_method'));
-        $this->notify_url = WC()->api_request_url('WC_Alipay');
+        $this->notify_url         = WC()->api_request_url('WC_Alipay');
         $this->supports = array(
             'products',
             'refunds',
@@ -66,14 +53,28 @@ class WC_Alipay extends WC_Payment_Gateway
             'tokenization',
         );
 
-        self::$log_enabled = ('yes' === $this->get_option('debug', 'no'));
-
         if (!in_array($this->charset, array('gbk', 'utf-8'), true)) {
             $this->charset = 'utf-8';
         }
 
+        // WooCommerce settings must be initialized before reading gateway options.
         $this->setup_form_fields();
         $this->init_settings();
+
+        $active_plugins = apply_filters('active_plugins', get_option('active_plugins'));
+        $is_wpml = in_array('woocommerce-multilingual/wpml-woocommerce.php', $active_plugins, true);
+        $multi_currency_options = 'yes' === get_option('icl_enable_multi_currency');
+
+        $this->enabled                = $this->get_option('enabled', 'no');
+        $this->title                  = $this->get_option('title', __('Alipay China', 'woo-alipay'));
+        $this->description            = $this->get_option('description', '');
+        $this->exchange_rate          = $this->get_option('exchange_rate');
+        $this->multi_currency_enabled = $is_wpml && $multi_currency_options;
+        $this->order_button_text      = __('Pay with Alipay', 'woo-alipay');
+        $this->order_title_format     = $this->get_option('order_title_format');
+        $this->order_prefix           = $this->get_option('order_prefix');
+        $this->form_submission_method = ('yes' === $this->get_option('form_submission_method'));
+        self::$log_enabled            = ('yes' === $this->get_option('debug', 'no'));
 
 
         // Register subscription scheduled payment hook
@@ -100,8 +101,6 @@ class WC_Alipay extends WC_Payment_Gateway
                 // Put the order on hol and add redirection form on receipt page
                 add_action('woocommerce_receipt_alipay', array($this, 'receipt_page'), 10, 1);
 
-                // Stricter user sanitation
-                add_filter('sanitize_user', array($this, 'sanitize_user_strict'), 10, 3);
             }
 
             $this->validate_settings();
@@ -693,9 +692,14 @@ class WC_Alipay extends WC_Payment_Gateway
             return new WP_Error('error', __('Refund failed - incorrect refund amount (must be more than 0 and less than the total amount of the order).', 'woo-alipay'));
         }
 
-        // 使用原始的out_trade_no，从订单元数据中获取
-        $original_request = $order->get_meta('alipay_initalRequest');
-        $out_trade_no = $original_request ? $original_request : 'WooA' . $order_id . '-' . current_time('timestamp');
+        // Use the exact merchant order number submitted to Alipay.
+        $out_trade_no = (string) $order->get_meta('_alipay_out_trade_no');
+        if (!$out_trade_no) {
+            $out_trade_no = (string) $order->get_meta('alipay_initalRequest');
+        }
+        if (!$out_trade_no) {
+            return new WP_Error('error', __('Refund failed - original Alipay merchant order number is missing.', 'woo-alipay'));
+        }
         
         // 生成退款ID（如果self::$refund_id为空）
         if (empty(self::$refund_id)) {
@@ -855,7 +859,7 @@ class WC_Alipay extends WC_Payment_Gateway
         $page = 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay#woocommerce_alipay_exchange_rate';
         $url = admin_url($page);
 
-        echo '<div class="error"><p>' . sprintf($message, $url, $this->current_currency . '</p></div>'); // WPCS: XSS OK
+        echo '<div class="error"><p>' . wp_kses_post(sprintf($message, esc_url($url), esc_html($this->current_currency))) . '</p></div>';
     }
 
     public function get_icon()
@@ -885,7 +889,15 @@ class WC_Alipay extends WC_Payment_Gateway
         $pay_request_builder->setBody($this->get_order_title($order, true));
         $pay_request_builder->setSubject($this->get_order_title($order));
         $pay_request_builder->setTotalAmount($total);
-        $pay_request_builder->setOutTradeNo('WooA' . $order_id . '-' . current_time('timestamp'));
+        $out_trade_no = (string) $order->get_meta('_alipay_out_trade_no');
+        if (!$out_trade_no) {
+            $out_trade_no = Alipay_SDK_Helper::generate_out_trade_no($order_id, 'WooA');
+            $order->update_meta_data('_alipay_out_trade_no', $out_trade_no);
+            // Retain the legacy key for upgrade compatibility.
+            $order->update_meta_data('alipay_initalRequest', $out_trade_no);
+            $order->save();
+        }
+        $pay_request_builder->setOutTradeNo($out_trade_no);
 
         if ($this->is_mobile()) {
             $pay_request_builder->setTimeExpress('15m');
@@ -904,9 +916,6 @@ class WC_Alipay extends WC_Payment_Gateway
             } else {
                 $html = $aop->pagePay($pay_request_builder, $config['return_url'], $config['notify_url']);
             }
-
-            $order->add_meta_data('alipay_initalRequest', $pay_request_builder->getOutTradeNo(), true);
-            $order->save();
 
             set_query_var('dispatcher_form', ob_get_clean());
 
@@ -928,14 +937,7 @@ class WC_Alipay extends WC_Payment_Gateway
 
     protected function is_mobile()
     {
-        $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
-
-        if (strpos($ua, 'ipad') || strpos($ua, 'iphone') || strpos($ua, 'android')) {
-
-            return true;
-        }
-
-        return false;
+        return wp_is_mobile();
     }
 
     protected function get_order_title($order, $desc = false)
@@ -1038,197 +1040,128 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function check_alipay_response()
     {
-        $response_data = $_POST; // @codingStandardsIgnoreLine
-        $out_trade_no = isset($_POST['out_trade_no']) ? sanitize_text_field($_POST['out_trade_no']) : '';
-        $response_app_id = isset($_POST['app_id']) ? sanitize_text_field($_POST['app_id']) : '';
-        $trade_status = isset($_POST['trade_status']) ? sanitize_text_field($_POST['trade_status']) : '';
-        $transaction_id = isset($_POST['trade_no']) ? sanitize_text_field($_POST['trade_no']) : '';
-        $response_total = isset($_POST['total_amount']) ? sanitize_text_field($_POST['total_amount']) : '';
-        $fund_bill_list = isset($_POST['fund_bill_list']) ? stripslashes(sanitize_text_field($_POST['fund_bill_list'])) : '';
-        $needs_reply = false;
-        $error = false;
+        $response_data = wp_unslash($_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+        $out_trade_no  = isset($response_data['out_trade_no']) ? wc_clean($response_data['out_trade_no']) : '';
+        $trade_status  = isset($response_data['trade_status']) ? wc_clean($response_data['trade_status']) : '';
+        $transaction_id = isset($response_data['trade_no']) ? wc_clean($response_data['trade_no']) : '';
+        $error = '';
 
-        // 先尝试通过既有规则（WooA前缀）解析订单ID
-        $order = null;
+        if ('POST' !== strtoupper(isset($_SERVER['REQUEST_METHOD']) ? (string) $_SERVER['REQUEST_METHOD'] : '') || !$out_trade_no) {
+            $error = 'invalid_request';
+            do_action('woo_alipay_webhook_processed', $out_trade_no, false, $error);
+            echo 'fail';
+            exit;
+        }
+
+        Woo_Alipay::require_lib('check_notification');
+        $config = $this->get_config();
+        $aop = new AlipayTradeService($config);
+        $signature_valid = $aop->check($response_data);
+        $app_id_valid = isset($response_data['app_id']) && hash_equals((string) $config['app_id'], (string) $response_data['app_id']);
+
+        // Locate only after signature verification. Invalid callbacks must never mutate an order.
+        $order = false;
         $order_id = 0;
-        if ( strpos( $out_trade_no, 'WooA' ) === 0 ) {
-            $out_trade_no_parts = explode('-', str_replace('WooA', '', $out_trade_no));
-            $order_id = absint(array_shift($out_trade_no_parts));
+        if ($signature_valid && preg_match('/^(?:WooA|SubR)(\d+)(?:-|$)/', $out_trade_no, $matches)) {
+            $order_id = absint($matches[1]);
             $order = wc_get_order($order_id);
         }
-        // 若无法解析或未找到订单，改为通过订单元数据定位（适配自动续费 SubR*）
-        if ( ! $order ) {
-            $orders = wc_get_orders( array( 'meta_key' => '_alipay_out_trade_no', 'meta_value' => $out_trade_no, 'limit' => 1 ) );
-            if ( ! empty( $orders ) ) {
+        if ($signature_valid && !$order) {
+            $orders = wc_get_orders(array(
+                'limit'      => 1,
+                'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
+            ));
+            if (!empty($orders)) {
                 $order = $orders[0];
                 $order_id = $order->get_id();
             }
         }
-        $order_check = ($order instanceof WC_Order);
-        
-        if (!$order_check) {
-            self::log(__METHOD__ . ' Order #' . $order_id . ' not found.', 'error');
-            return;
-        }
-        
-        $config = $this->get_config($order_id);
-        $response_data['fund_bill_list'] = stripslashes($response_data['fund_bill_list']);
-        $order_total = $this->maybe_convert_amount($order->get_total());
-        
-        // 处理退款通知：如果包含refund_fee，则验证原始订单金额
-        $refund_fee = isset($_POST['refund_fee']) ? sanitize_text_field($_POST['refund_fee']) : '';
-        if (!empty($refund_fee) && floatval($refund_fee) > 0) {
-            // 这是退款通知，验证原始订单金额
-            $total_amount_check = ($order_total === $response_total);
+
+        if (!$signature_valid) {
+            $error = 'invalid_response_signature';
+        } elseif (!$app_id_valid) {
+            $error = 'mismatched_app_id';
+        } elseif (!($order instanceof WC_Order)) {
+            $error = 'order_not_found';
+        } elseif ('alipay' !== $order->get_payment_method()) {
+            $error = 'mismatched_payment_method';
         } else {
-            // 这是支付通知，正常验证
-            $total_amount_check = ($order_total === $response_total);
+            $stored_out_trade_no = (string) $order->get_meta('_alipay_out_trade_no');
+            if (!$stored_out_trade_no) {
+                $stored_out_trade_no = (string) $order->get_meta('alipay_initalRequest');
+            }
+            $amount_valid = isset($response_data['total_amount'])
+                && hash_equals($this->maybe_convert_amount($order->get_total()), number_format((float) $response_data['total_amount'], 2, '.', ''));
+            $out_trade_no_valid = !$stored_out_trade_no || hash_equals($stored_out_trade_no, $out_trade_no);
+            $existing_transaction_id = (string) $order->get_transaction_id();
+            $transaction_valid = !$existing_transaction_id || !$transaction_id || hash_equals($existing_transaction_id, $transaction_id);
+
+            if (!$out_trade_no_valid) {
+                $error = 'mismatched_out_trade_no';
+            } elseif (!$amount_valid) {
+                $error = 'invalid_response_total_amount';
+            } elseif (!$transaction_valid) {
+                $error = 'mismatched_transaction_id';
+            }
         }
-        
-        $response_app_id_check = ($response_app_id === $config['app_id']);
 
-        $order->add_meta_data('alipay_initalResponse', json_encode($_POST), true);
+        if ($error) {
+            self::log(__METHOD__ . ' rejected callback: ' . $error, 'warning', true, array(
+                'order_id'     => $order_id,
+                'out_trade_no' => $out_trade_no,
+                'trade_status' => $trade_status,
+            ));
+            do_action('woo_alipay_webhook_processed', $out_trade_no, false, $error);
+            echo 'fail';
+            exit;
+        }
 
-        Woo_Alipay::require_lib('check_notification');
+        // Keep a bounded, non-sensitive receipt instead of persisting the full signed payload.
+        $order->update_meta_data('_alipay_last_notify', array(
+            'out_trade_no' => $out_trade_no,
+            'trade_no'     => $transaction_id,
+            'trade_status' => $trade_status,
+            'total_amount' => number_format((float) $response_data['total_amount'], 2, '.', ''),
+            'received_at'  => current_time('mysql', true),
+        ));
 
-        $aop = new AlipayTradeService($config);
-        $result_check_signature = $aop->check($response_data);
-
-        self::log(__METHOD__ . ' Alipay response raw data: ' . wc_print_r($response_data, true));
-
-        if ($order_check && $result_check_signature && $response_app_id_check && $total_amount_check) {
-
-            if ('TRADE_FINISHED' === $trade_status || 'TRADE_SUCCESS' === $trade_status) {
-                $needs_reply = true;
-
-                add_filter('woocommerce_valid_order_statuses_for_payment', array(
-                    $this,
-                    'valid_order_statuses_for_payment'
-                ), 10, 1);
-
-                if ($order->needs_payment()) {
-                    self::log(__METHOD__ . ' Found order #' . $order_id);
-                    $order->payment_complete(wc_clean($transaction_id));
-                    $order->add_order_note(__('Alipay payment completed', 'woo-alipay'));
-                    WC()->cart->empty_cart();
-                } else {
-                    $order->add_order_note(__('Alipay notified the payment was successful but the order was already paid for. Please double check that the payment was recorded properly.', 'woo-alipay'));
-                }
-
-                remove_filter('woocommerce_valid_order_statuses_for_payment', array(
-                    $this,
-                    'valid_order_statuses_for_payment'
-                ), 10);
-
-                if ('TRADE_FINISHED' === $trade_status) {
-                    $order->update_meta_data('alipay_transaction_closed', true);
-                    $order->save_meta_data();
-                }
-            } elseif ('TRADE_CLOSED' === $trade_status) {
-                $needs_reply = true;
-
-                add_filter('woocommerce_valid_order_statuses_for_payment', array(
-                    $this,
-                    'valid_order_statuses_for_payment'
-                ), 10, 1);
-
-                if ($order->needs_payment()) {
-                    $order->add_order_note(__('Alipay closed the transaction and the order is no longer valid for payment.', 'woo-alipay'));
-                    $this->order_cancel($order);
-                    self::log(__METHOD__ . ' Found order #' . $order_id . ' and changed status to "cancelled".', 'error');
-                }
-
-                remove_filter('woocommerce_valid_order_statuses_for_payment', array(
-                    $this,
-                    'valid_order_statuses_for_payment'
-                ), 10);
+        $accepted = true;
+        if (in_array($trade_status, array('TRADE_FINISHED', 'TRADE_SUCCESS'), true)) {
+            if (!$order->is_paid()) {
+                add_filter('woocommerce_valid_order_statuses_for_payment', array($this, 'valid_order_statuses_for_payment'), 10, 1);
+                $order->payment_complete($transaction_id);
+                remove_filter('woocommerce_valid_order_statuses_for_payment', array($this, 'valid_order_statuses_for_payment'), 10);
+                $order->add_order_note(__('Alipay payment completed', 'woo-alipay'));
+            }
+            if ('TRADE_FINISHED' === $trade_status) {
                 $order->update_meta_data('alipay_transaction_closed', true);
-                $order->save_meta_data();
-            } elseif ('WAIT_BUYER_PAY' === $trade_status) {
-                $order->add_order_note(__('Alipay notified it is waiting for payment.', 'woo-alipay'));
             }
-        } else {
-            $error = __('Invalid Alipay response: ', 'woo-alipay');
-
-            if ($order_check) {
-
-                if (!$response_app_id_check) {
-                    $error .= 'mismatched_app_id';
-                } elseif (!$result_check_signature) {
-                    $error .= 'invalid_response_signature';
-                } elseif (!$total_amount_check) {
-                    $error .= 'invalid_response_total_amount';
-                }
-
-                $order->update_status('failed', $error);
-                self::log(__METHOD__ . ' Found order #' . $order_id . ' and changed status to "failed".', 'error');
-            } else {
-                self::log(__METHOD__ . ' Alipay error - Order not found after payment.', 'error', true);
-
-                if ($response_app_id_check && $result_check_signature) {
-
-                    if ('TRADE_SUCCESS' === $trade_status) {
-                        $refund_result = $this->do_refund(
-                            $out_trade_no,
-                            $transaction_id,
-                            $response_total,
-                            str_pad('WooA' . current_time('timestamp'), 64, '0', STR_PAD_LEFT),
-                            __('Woo Alipay error: WooCommerce Order not found.', 'woo-alipay')
-                        );
-
-                        if (!$refund_result instanceof WP_Error) {
-                            $message = ' Missing order #' . $order_id;
-                            $message .= ', Alipay transaction #' . $transaction_id . ' successfully refunded.';
-
-                            self::log(__METHOD__ . $message, 'info', true);
-                        } else {
-                            $message = ' Missing order #' . $order_id;
-                            $message .= ', Alipay transaction #' . $transaction_id . ' could not be refunded.';
-                            $message .= " Reason: \n";
-                            $message .= 'there was an error while trying to automatically refund the order.';
-                            $message .= ' Error details: ' . wc_print_r($refund_result);
-
-                            self::log(__METHOD__ . $message, 'error', true);
-                            do_action(
-                                'wooalipay_orphan_transaction_notification',
-                                $order_id,
-                                $transaction_id,
-                                WC_Log_Handler_File::get_log_file_path($this->id),
-                                'auto_refund_error'
-                            );
-                        }
-                    } elseif ('TRADE_CLOSED' === $trade_status || 'TRADE_FINISHED' === $trade_status) {
-                        $message = ' Missing order #' . $order_id;
-                        $message .= ', Alipay transaction #' . $transaction_id . ' could not be refunded.';
-                        $message .= " Reason: \n";
-                        $message .= 'Alipay already closed the transaction.';
-                        $message .= ' Alipay response raw data: ' . wc_print_r($response_data);
-
-                        self::log(__METHOD__ . $message, 'error', true);
-                        do_action(
-                            'wooalipay_orphan_transaction_notification',
-                            $order_id,
-                            $transaction_id,
-                            WC_Log_Handler_File::get_log_file_path($this->id),
-                            'transaction_closed'
-                        );
-                    }
-                }
+        } elseif ('TRADE_CLOSED' === $trade_status) {
+            if ($order->needs_payment()) {
+                $order->update_status('cancelled', __('Alipay closed the transaction and the order is no longer valid for payment.', 'woo-alipay'));
             }
+            $order->update_meta_data('alipay_transaction_closed', true);
+        } elseif ('WAIT_BUYER_PAY' !== $trade_status) {
+            $accepted = false;
+            $error = 'unsupported_trade_status';
         }
 
-        if ($needs_reply) {
-            echo (!$error) ? 'success' : 'fail'; // WPCS: XSS OK
-        }
-
-        exit();
+        $order->save();
+        self::log(__METHOD__ . ' callback processed', 'info', false, array(
+            'order_id'     => $order_id,
+            'out_trade_no' => $out_trade_no,
+            'trade_status' => $trade_status,
+        ));
+        do_action('woo_alipay_webhook_processed', $out_trade_no, $accepted, $error);
+        echo $accepted ? 'success' : 'fail';
+        exit;
     }
 
     protected function order_cancel($order)
     {
 
         if ('on-hold' === $order->get_status()) {
-            $updated = $order->update_status('cancel');
+            $updated = $order->update_status('cancelled');
 
             if (!$updated) {
 
@@ -1296,12 +1229,16 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function test_connection()
     {
+        if (!current_user_can('manage_woocommerce')) {
+            wp_send_json_error('权限不足', 403);
+        }
 
+        $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
         if (
-            !isset($_POST['nonce']) ||
-            !wp_verify_nonce($_POST['nonce'], '_woo_alipay_test_nonce')
+            !$nonce ||
+            !wp_verify_nonce($nonce, '_woo_alipay_test_nonce')
         ) {
-            wp_send_json_error('安全验证失败');
+            wp_send_json_error('安全验证失败', 403);
         } else {
             $result = $this->execute_dummy_query();
 

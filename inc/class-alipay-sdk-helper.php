@@ -213,6 +213,77 @@ class Alipay_SDK_Helper
     }
 
     /**
+     * Return a bounded notification payload suitable for WooCommerce logs.
+     * Signature material and customer data are deliberately excluded.
+     *
+     * @param array $params Notification parameters.
+     * @return array
+     */
+    public static function redact_notify_for_log($params)
+    {
+        $safe = array();
+        $allowed = array('notify_id', 'notify_type', 'out_trade_no', 'trade_no', 'trade_status', 'total_amount', 'app_id', 'sign_type');
+
+        foreach ($allowed as $field) {
+            if (isset($params[$field]) && is_scalar($params[$field])) {
+                $safe[$field] = sanitize_text_field(wp_unslash((string) $params[$field]));
+            }
+        }
+
+        return $safe;
+    }
+
+    /**
+     * Validate signed notification fields against the local order context.
+     * This must be called only after verify_notify() succeeds.
+     *
+     * @param array    $params                Notification parameters.
+     * @param WC_Order $order                 WooCommerce order.
+     * @param string   $expected_app_id       Configured application ID.
+     * @param float    $expected_amount       Expected amount in CNY.
+     * @param string   $expected_out_trade_no Stored merchant order number.
+     * @param array    $allowed_methods       Allowed payment method IDs.
+     * @return true|WP_Error
+     */
+    public static function validate_notify_context($params, $order, $expected_app_id, $expected_amount, $expected_out_trade_no = '', $allowed_methods = array())
+    {
+        if (!($order instanceof WC_Order)) {
+            return new WP_Error('invalid_order', __('Invalid order.', 'woo-alipay'));
+        }
+
+        $params = wp_unslash($params);
+        $app_id = isset($params['app_id']) ? (string) $params['app_id'] : '';
+        if ('' === $app_id || '' === (string) $expected_app_id || !hash_equals((string) $expected_app_id, $app_id)) {
+            return new WP_Error('app_id_mismatch', __('Alipay application ID does not match.', 'woo-alipay'));
+        }
+
+        $out_trade_no = isset($params['out_trade_no']) ? (string) $params['out_trade_no'] : '';
+        if ('' === $out_trade_no || ('' !== (string) $expected_out_trade_no && !hash_equals((string) $expected_out_trade_no, $out_trade_no))) {
+            return new WP_Error('out_trade_no_mismatch', __('Merchant order number does not match.', 'woo-alipay'));
+        }
+
+        if (!isset($params['total_amount']) || !is_numeric($params['total_amount'])) {
+            return new WP_Error('invalid_amount', __('Alipay notification amount is invalid.', 'woo-alipay'));
+        }
+
+        if (!hash_equals(self::format_amount($expected_amount), self::format_amount($params['total_amount']))) {
+            return new WP_Error('amount_mismatch', __('Alipay notification amount does not match the order.', 'woo-alipay'));
+        }
+
+        if (!empty($allowed_methods) && !in_array($order->get_payment_method(), $allowed_methods, true)) {
+            return new WP_Error('payment_method_mismatch', __('Order payment method does not match.', 'woo-alipay'));
+        }
+
+        $stored_transaction_id = (string) $order->get_transaction_id();
+        $notified_trade_no = isset($params['trade_no']) ? (string) $params['trade_no'] : '';
+        if ('' !== $stored_transaction_id && '' !== $notified_trade_no && !hash_equals($stored_transaction_id, $notified_trade_no)) {
+            return new WP_Error('trade_no_mismatch', __('Alipay transaction ID does not match.', 'woo-alipay'));
+        }
+
+        return true;
+    }
+
+    /**
      * 记录日志
      * 
      * @param string $message 日志信息
