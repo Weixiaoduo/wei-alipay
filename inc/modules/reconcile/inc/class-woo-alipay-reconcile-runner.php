@@ -257,14 +257,13 @@ class Woo_Alipay_Reconcile_Runner {
         if ( empty( $out_trade_no ) ) {
             return null;
         }
-        // Try meta match first.
-        $orders = wc_get_orders( array(
-            'limit'     => 1,
-            'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
-            'return'    => 'objects',
-        ) );
-        if ( ! empty( $orders ) && $orders[0] instanceof WC_Order ) {
-            return $orders[0];
+        // Try an exact data-store-aware meta match first.
+        $lookup = Alipay_SDK_Helper::find_order_by_out_trade_no( $out_trade_no );
+        if ( $lookup instanceof WC_Order ) {
+            return $lookup;
+        }
+        if ( is_wp_error( $lookup ) && 'order_not_found' !== $lookup->get_error_code() ) {
+            return null;
         }
         // Try to parse WooA/WooB prefixes to get order ID.
         if ( preg_match( '/(Woo[A-Z]?)(\d+)/', $out_trade_no, $m ) ) {

@@ -153,6 +153,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                 'appid'       => '',
                 'private_key' => '',
                 'public_key'  => '',
+                'seller_id'   => '',
                 'sandbox'     => 'no',
             )
         );
@@ -791,15 +792,15 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             wp_die( 'Invalid Order ID' );
         }
 
-        $orders = wc_get_orders( array(
-            'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
-            'limit'      => 1,
-        ) );
-
-        if ( ! empty( $orders ) ) {
-            $order = $orders[0];
+        $lookup = Alipay_SDK_Helper::find_order_by_out_trade_no( $out_trade_no, array( $this->id ) );
+        if ( $lookup instanceof WC_Order ) {
+            $order = $lookup;
             $order_id = $order->get_id();
         } else {
+            if ( is_wp_error( $lookup ) && 'order_not_found' !== $lookup->get_error_code() ) {
+                $this->log_event( 'Notify rejected: ambiguous merchant order number', array( 'out_trade_no' => $out_trade_no ) );
+                wp_die( 'Fail' );
+            }
             $fallback_id = (int) str_replace( $this->order_prefix, '', $out_trade_no );
             $order = $fallback_id ? wc_get_order( $fallback_id ) : false;
             if ( ! $order ) {
@@ -816,53 +817,54 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             $main_settings['appid'],
             isset( $expected_args['total_fee'] ) ? $expected_args['total_fee'] : $order->get_total(),
             (string) $order->get_meta( '_alipay_out_trade_no' ),
-            array( 'alipay_wap' )
+            array( 'alipay_wap' ),
+            $main_settings['seller_id']
         );
         if ( is_wp_error( $context_check ) ) {
             $this->log_event( 'Notify rejected: context mismatch', array( 'reason' => $context_check->get_error_code(), 'order_id' => $order_id ) );
             wp_die( 'Fail' );
         }
 
-        $stored_trade_no = $order->get_meta( 'Alipay Trade No.' );
-        if ( $order->is_paid() && ! empty( $stored_trade_no ) && ! empty( $trade_no ) && $stored_trade_no === $trade_no ) {
-            $this->log_event( 'Notify duplicate ignored', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
-            $this->successful_request( $_POST, $order_id );
+        $transition = Alipay_SDK_Helper::validate_notify_transition( $order, $trade_status );
+        if ( is_wp_error( $transition ) ) {
+            $this->log_event( 'Notify rejected: invalid transition', array( 'reason' => $transition->get_error_code(), 'order_id' => $order_id ) );
+            wp_die( 'Fail' );
         }
 
-        if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
-            if ( ! $order->is_paid() ) {
-                $order->payment_complete( $trade_no );
+        $lock = Alipay_SDK_Helper::acquire_lock( 'notify', $out_trade_no, 30 );
+        if ( false === $lock ) {
+            wp_die( 'Fail' );
+        }
 
-                // Some environments may not complete payment through hooks; move to processing as a safe fallback.
-                $order = wc_get_order( $order_id );
-                if ( $order && ! $order->is_paid() ) {
-                    if ( ! empty( $trade_no ) ) {
-                        $order->set_transaction_id( $trade_no );
-                    }
-                    $order->update_status( 'processing', __( 'Alipay payment confirmed by notify fallback.', 'alipaywap' ) );
-                }
-            }
+        $order = wc_get_order( $order_id );
+        $context_check = Alipay_SDK_Helper::validate_notify_context(
+            $_POST,
+            $order,
+            $main_settings['appid'],
+            isset( $expected_args['total_fee'] ) ? $expected_args['total_fee'] : $order->get_total(),
+            (string) $order->get_meta( '_alipay_out_trade_no' ),
+            array( 'alipay_wap' ),
+            $main_settings['seller_id']
+        );
+        $transition = is_wp_error( $context_check ) ? $context_check : Alipay_SDK_Helper::validate_notify_transition( $order, $trade_status );
+        if ( is_wp_error( $transition ) ) {
+            Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
+            $this->log_event( 'Notify rejected after lock', array( 'reason' => $transition->get_error_code(), 'order_id' => $order_id ) );
+            wp_die( 'Fail' );
+        }
 
-            if ( ! empty( $trade_no ) ) {
-                $order->update_meta_data( 'Alipay Trade No.', $trade_no );
-                $order->save();
-            }
-
+        if ( 'process_payment' === $transition ) {
+            $order->payment_complete( $trade_no );
+            $order->update_meta_data( 'Alipay Trade No.', $trade_no );
+            $order->save();
             $this->log_event( 'Notify paid', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
-        } elseif ( 'WAIT_SELLER_SEND_GOODS' === $trade_status ) {
-            if ( ! $order->is_paid() ) {
-                if ( ! empty( $trade_no ) ) {
-                    $order->set_transaction_id( $trade_no );
-                    $order->update_meta_data( 'Alipay Trade No.', $trade_no );
-                $order->save();
-                }
-                $order->update_status( 'processing', __( 'Payment received and waiting for fulfilment.', 'alipaywap' ) );
-            }
-            $this->log_event( 'Notify processing', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
+        } elseif ( 'process_close' === $transition ) {
+            $order->update_status( 'cancelled', __( 'Alipay closed the transaction.', 'alipaywap' ) );
         } else {
-            $this->log_event( 'Notify ignored status', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
+            $this->log_event( 'Notify replay/pending acknowledged', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
         }
 
+        Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
         $this->successful_request( $_POST, $order_id );
     }
 

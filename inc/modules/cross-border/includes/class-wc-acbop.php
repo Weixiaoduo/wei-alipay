@@ -156,6 +156,7 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 				'appid'       => '',
 				'private_key' => '',
 				'public_key'  => '',
+				'seller_id'   => '',
 				'sandbox'     => 'no',
 			)
 		);
@@ -219,14 +220,14 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 			$this->function->showNotifyRespond( false );
 		}
 
-		$orders = wc_get_orders( array(
-			'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
-			'limit'      => 1,
-		) );
-
-		if ( ! empty( $orders ) ) {
-			$order = $orders[0];
+		$lookup = Alipay_SDK_Helper::find_order_by_out_trade_no( $out_trade_no, array( $this->id ) );
+		if ( $lookup instanceof WC_Order ) {
+			$order = $lookup;
 		} else {
+			if ( is_wp_error( $lookup ) && 'order_not_found' !== $lookup->get_error_code() ) {
+				$this->log( 'Ambiguous merchant order number', array( 'out_trade_no' => $out_trade_no ) );
+				$this->function->showNotifyRespond( false );
+			}
 			$orderId = (int) preg_replace( '/^' . preg_quote( $this->order_prefix, '/' ) . '/', '', $out_trade_no );
 			$order = $orderId ? wc_get_order( $orderId ) : false;
 		}
@@ -242,60 +243,57 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 			$main_settings['appid'],
 			$order->get_total(),
 			(string) $order->get_meta( '_alipay_out_trade_no' ),
-			array( 'acbop' )
+			array( 'acbop' ),
+			$main_settings['seller_id']
 		);
 		if ( is_wp_error( $context_check ) ) {
 			$this->log( 'Notify context mismatch', array( 'reason' => $context_check->get_error_code(), 'order_id' => $order->get_id() ) );
 			$this->function->showNotifyRespond( false );
 		}
 
-		$stored_trade_no = $order->get_meta( 'Alipay Trade No.' );
-		if ( $order->is_paid() && ! empty( $stored_trade_no ) && ! empty( $trade_no ) && $stored_trade_no === $trade_no ) {
-			$this->log( 'Duplicate notify ignored', array(
-				'order_id'     => $order->get_id(),
-				'out_trade_no' => $out_trade_no,
-				'trade_no'     => $trade_no,
-				'trade_status' => $trade_status,
-			) );
-			$this->function->showNotifyRespond( true );
+		$transition = Alipay_SDK_Helper::validate_notify_transition( $order, $trade_status );
+		if ( is_wp_error( $transition ) ) {
+			$this->log( 'Notify transition rejected', array( 'reason' => $transition->get_error_code(), 'order_id' => $order->get_id() ) );
+			$this->function->showNotifyRespond( false );
 		}
 
-		if ( in_array( $trade_status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
-			if ( ! $order->is_paid() ) {
-				$order->payment_complete( $trade_no );
-			}
-
-			if ( ! empty( $trade_no ) ) {
-				$order->update_meta_data( 'Alipay Trade No.', $trade_no );
-				$order->save();
-			}
-
-			$this->log( 'Notify payment success', array(
-				'order_id'     => $order->get_id(),
-				'out_trade_no' => $out_trade_no,
-				'trade_no'     => $trade_no,
-				'trade_status' => $trade_status,
-			) );
-			$this->function->showNotifyRespond( true );
+		$lock = Alipay_SDK_Helper::acquire_lock( 'notify', $out_trade_no, 30 );
+		if ( false === $lock ) {
+			$this->function->showNotifyRespond( false );
 		}
 
-		if ( 'WAIT_BUYER_PAY' === $trade_status ) {
-			$this->log( 'Notify pending payment acknowledged', array(
-				'order_id'     => $order->get_id(),
-				'out_trade_no' => $out_trade_no,
-				'trade_no'     => $trade_no,
-				'trade_status' => $trade_status,
-			) );
-			$this->function->showNotifyRespond( true );
+		$order = wc_get_order( $order->get_id() );
+		$context_check = Alipay_SDK_Helper::validate_notify_context(
+			$_POST,
+			$order,
+			$main_settings['appid'],
+			$order->get_total(),
+			(string) $order->get_meta( '_alipay_out_trade_no' ),
+			array( 'acbop' ),
+			$main_settings['seller_id']
+		);
+		$transition = is_wp_error( $context_check ) ? $context_check : Alipay_SDK_Helper::validate_notify_transition( $order, $trade_status );
+		if ( is_wp_error( $transition ) ) {
+			Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
+			$this->function->showNotifyRespond( false );
 		}
 
-		$this->log( 'Notify rejected for unsupported trade status', array(
+		if ( 'process_payment' === $transition ) {
+			$order->payment_complete( $trade_no );
+			$order->update_meta_data( 'Alipay Trade No.', $trade_no );
+			$order->save();
+		} elseif ( 'process_close' === $transition ) {
+			$order->update_status( 'cancelled', __( 'Alipay closed the transaction.', 'woo-alipay' ) );
+		}
+
+		$this->log( 'Notify processed', array(
 			'order_id'     => $order->get_id(),
 			'out_trade_no' => $out_trade_no,
 			'trade_no'     => $trade_no,
 			'trade_status' => $trade_status,
 		) );
-		$this->function->showNotifyRespond( false );
+		Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
+		$this->function->showNotifyRespond( true );
 	}
 
     public function thankyou_page($orderId) {

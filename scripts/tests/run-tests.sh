@@ -7,10 +7,10 @@ info() { printf '[INFO] %s\n' "$1"; }
 fail() { printf '[FAIL] %s\n' "$1" >&2; exit 1; }
 
 run_static() {
-  info 'PHP syntax checks (all plugin PHP files)'
+  info 'PHP syntax checks (first-party PHP; bundled SDK excluded)'
   local count
-  count="$(find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -type f -name '*.php' -print | wc -l | tr -d ' ')"
-  if ! find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -type f -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l >/tmp/woo-alipay-php-lint.txt; then
+  count="$(find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print | wc -l | tr -d ' ')"
+  if ! find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l >/tmp/woo-alipay-php-lint.txt; then
     grep -v '^No syntax errors detected' /tmp/woo-alipay-php-lint.txt >&2 || true
     fail "one or more of $count PHP files failed syntax checks"
   fi

@@ -226,6 +226,11 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
             if ( '10000' === (string) $res->code ) {
                 // 即时支付成功
                 $trade_no = isset( $res->trade_no ) ? (string) $res->trade_no : '';
+                $response_out_trade_no = isset( $res->out_trade_no ) ? (string) $res->out_trade_no : '';
+                $response_amount = isset( $res->total_amount ) ? (string) $res->total_amount : '';
+                if ( !$trade_no || !hash_equals( $out_trade_no, $response_out_trade_no ) || !Alipay_SDK_Helper::amounts_equal( $total, $response_amount ) ) {
+                    return new WP_Error( 'alipay_context_mismatch', __( '支付宝即时响应与订单不匹配。', 'woo-alipay-barcode' ) );
+                }
                 $order->payment_complete( $trade_no );
                 $order->add_order_note( __( '条码支付成功（即时返回）。', 'woo-alipay-barcode' ) );
                 WC()->cart && WC()->cart->empty_cart();
@@ -336,14 +341,8 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         $trade_no     = isset( $params['trade_no'] ) ? sanitize_text_field( $params['trade_no'] ) : '';
         $status       = isset( $params['trade_status'] ) ? sanitize_text_field( $params['trade_status'] ) : '';
 
-        // 解析订单ID（WooB 前缀）
-        $order_id = 0;
-        if ( 0 === strpos( $out_trade_no, 'WooB' ) ) {
-            $parts = explode( '-', str_replace( 'WooB', '', $out_trade_no ) );
-            $order_id = absint( array_shift( $parts ) );
-        }
-        $order = $order_id ? wc_get_order( $order_id ) : false;
-        if ( ! $order ) { echo 'fail'; exit; }
+        $order = Alipay_SDK_Helper::find_order_by_out_trade_no( $out_trade_no, array( self::GATEWAY_ID ) );
+        if ( is_wp_error( $order ) ) { echo 'fail'; exit; }
 
         $expected_amount = $this->format_amount_for_cny( $order );
         if ( is_wp_error( $expected_amount ) ) { echo 'fail'; exit; }
@@ -353,7 +352,8 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
             $core['appid'],
             $expected_amount,
             (string) $order->get_meta( '_alipay_out_trade_no' ),
-            array( self::GATEWAY_ID )
+            array( self::GATEWAY_ID ),
+            isset( $core['seller_id'] ) ? $core['seller_id'] : ''
         );
         if ( is_wp_error( $context_check ) ) {
             Alipay_SDK_Helper::log( '条码支付通知上下文校验失败: ' . $context_check->get_error_code(), 'error' );
@@ -361,20 +361,38 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
             exit;
         }
 
-        if ( in_array( $status, array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
-            if ( $order->needs_payment() ) {
+        $transition = Alipay_SDK_Helper::validate_notify_transition( $order, $status );
+        if ( is_wp_error( $transition ) ) { echo 'fail'; exit; }
+        $lock = Alipay_SDK_Helper::acquire_lock( 'notify', $out_trade_no, 30 );
+        if ( false === $lock ) { echo 'fail'; exit; }
+        $order = wc_get_order( $order->get_id() );
+        $expected_amount = $this->format_amount_for_cny( $order );
+        $context_check = is_wp_error( $expected_amount ) ? $expected_amount : Alipay_SDK_Helper::validate_notify_context(
+            $params,
+            $order,
+            $core['appid'],
+            $expected_amount,
+            (string) $order->get_meta( '_alipay_out_trade_no' ),
+            array( self::GATEWAY_ID ),
+            isset( $core['seller_id'] ) ? $core['seller_id'] : ''
+        );
+        $transition = is_wp_error( $context_check ) ? $context_check : Alipay_SDK_Helper::validate_notify_transition( $order, $status );
+        if ( is_wp_error( $transition ) ) {
+            Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
+            echo 'fail';
+            exit;
+        }
+
+        if ( 'process_payment' === $transition ) {
+            if ( ! $order->is_paid() ) {
                 $order->payment_complete( $trade_no );
                 $order->add_order_note( __( '支付宝条码支付成功（异步通知）。', 'woo-alipay-barcode' ) );
             }
-            echo 'success';
-        } elseif ( 'TRADE_CLOSED' === $status ) {
-            if ( $order->has_status( array( 'pending', 'on-hold' ) ) ) {
-                $order->update_status( 'cancelled', __( '支付宝关闭交易。', 'woo-alipay-barcode' ) );
-            }
-            echo 'success';
-        } else {
-            echo 'success'; // 其他状态也返回 success，避免重复通知
+        } elseif ( 'process_close' === $transition ) {
+            $order->update_status( 'cancelled', __( '支付宝关闭交易。', 'woo-alipay-barcode' ) );
         }
+        Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
+        echo 'success';
         exit;
     }
 

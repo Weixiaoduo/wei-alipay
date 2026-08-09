@@ -25,3 +25,16 @@
 
 - Production/sandbox merchant network flows, real refund, agreement renewal, profit sharing, and settlement were not exercised.
 - Plaintext option-stored keys, external QR CDN, SDK packaging/SBOM, remote-close timeout state machine, legacy mini/cross-border cleanup, multisite lifecycle, and module split remain follow-up work described in the audit.
+
+## [CX] 2026-08-09 second-round payment security closure
+
+- Re-reviewed PR #1 and fixed a first-round false-positive HPOS claim: legacy `wc_get_orders(meta_query)` ignored the filter. Added data-store-aware exact lookup, duplicate fail-closed behavior, and applied it to core/F2F/Huabei/barcode/mini/cross-border/reconcile paths.
+- Added RSA2-only verification, strict timestamp/UTF-8/minor-unit amount parsing, seller/app/merchant/transaction binding, notification transition policy, DB replay locks with revalidation, refund request idempotency/response binding, and bounded redaction.
+- Added 40 contract assertions plus isolated concurrent replay, cross-order tamper, expiry/future, RSA downgrade, invalid encoding, transaction mismatch, late-close, and close-before-success runtime cases. Test RSA keys and 0.01 CNY orders were local only; no Alipay request was sent.
+- HPOS off exact lookup returned orders 17/18; HPOS on exact lookup returned 19/20 and a signed callback completed only 19. Store API Checkout Blocks created HPOS order 22 and returned the Alipay order-pay redirect without contacting Alipay.
+- PHPStan bootstrap: WooCommerce 10.2.2 stubs, WordPress extension, SDK boundary stubs, and `phpstan-baseline.neon` with 83 historical findings. Full first-party level-1 run exit 0; changed security files exit 0 with no errors.
+- `./scripts/tests/run-tests.sh all` exit 0: 61 first-party PHP files/JS syntax plus 40 security/compatibility contracts. Bundled SDK is deliberately excluded from this second-round first-party lint; it was unchanged and remains separately classified packaging debt.
+- PHPCS first-party-only exit 2: 16,007 errors / 1,343 warnings in 57 files, predominantly formatting; security categories and new-order-query warnings are classified in the audit. Plugin Check 2.0.0 first-party-only exit 0/no findings; release-candidate first-party scan exit 0/no findings; SDK explicitly excluded from both.
+- Candidate ZIP `/tmp/woo-alipay-round2-package-final/woo-alipay-3.2.0-round2-candidate.zip` passed integrity, isolated activation, and gateway registration. Final rebuild SHA-256: `85009231602985a37bcc806d068b92b05fb3e438c14caed33b05801ea1bd0454`.
+- Migration plans for SDK, secret storage, QR CDN, remote close, and multisite uninstall are recorded in `docs/audits/woo-alipay-comprehensive-audit-2026-08-09.md`. Mini-program MD5-era outgoing flow remains a decision-gated legacy blocker.
+- No production deployment, release, merge, real Alipay call/transaction, or historical-data deletion was performed.

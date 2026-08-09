@@ -340,7 +340,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         if (current_user_can('manage_woocommerce')) {
             return true;
         }
-        $order_key = isset($_POST['order_key']) ? wc_clean(wp_unslash($_POST['order_key'])) : '';
+        $order_key = isset($_POST['order_key']) && is_scalar($_POST['order_key']) ? sanitize_text_field(wp_unslash((string) $_POST['order_key'])) : '';
         return $order_key && hash_equals($order->get_order_key(), $order_key);
     }
 
@@ -369,9 +369,12 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             if (!$aop) {
                 wp_send_json_error(array('message' => 'SDK init failed'));
             }
-            $out_trade_no = Alipay_SDK_Helper::generate_out_trade_no($order_id, $this->order_prefix);
-            $order->update_meta_data('_alipay_out_trade_no', $out_trade_no);
-            $order->save();
+            $out_trade_no = (string) $order->get_meta('_alipay_out_trade_no');
+            if (!$out_trade_no) {
+                $out_trade_no = Alipay_SDK_Helper::generate_out_trade_no($order_id, $this->order_prefix);
+                $order->update_meta_data('_alipay_out_trade_no', $out_trade_no);
+                $order->save();
+            }
             $request = new AlipayTradePrecreateRequest();
             $biz_content = array(
                 'out_trade_no' => $out_trade_no,
@@ -438,6 +441,16 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         
         if (!is_wp_error($result) && $result['success']) {
             if (in_array($result['trade_status'], array('TRADE_SUCCESS', 'TRADE_FINISHED'), true)) {
+                $query_matches = !empty($result['trade_no'])
+                    && hash_equals((string) $out_trade_no, (string) $result['out_trade_no'])
+                    && Alipay_SDK_Helper::amounts_equal(
+                        Alipay_SDK_Helper::format_amount($this->convert_to_rmb($order->get_total())),
+                        $result['total_amount']
+                    );
+                if (!$query_matches) {
+                    self::log('当面付查询响应与订单上下文不一致', 'error');
+                    wp_send_json_error(array('message' => 'Payment query context mismatch'), 409);
+                }
                 if (!$order->is_paid()) {
                     $order->payment_complete($result['trade_no']);
                     $order->add_order_note(
@@ -457,43 +470,43 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
 
     public function check_alipay_response()
     {
+        $params = wp_unslash($_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Alipay webhooks are authenticated by RSA2 signatures.
+        if ('POST' !== strtoupper(isset($_SERVER['REQUEST_METHOD']) ? sanitize_text_field(wp_unslash((string) $_SERVER['REQUEST_METHOD'])) : '')) {
+            echo 'fail';
+            exit;
+        }
         require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         
         $main_gateway = new WC_Alipay(false);
         $alipay_public_key = $main_gateway->get_option('public_key');
         
-        if (!Alipay_SDK_Helper::verify_notify($_POST, $alipay_public_key)) {
+        if (!Alipay_SDK_Helper::verify_notify($params, $alipay_public_key)) {
             self::log('当面付通知签名验证失败', 'error');
             echo 'fail';
             exit;
         }
         
-        $out_trade_no = $_POST['out_trade_no'] ?? '';
-        $trade_no = $_POST['trade_no'] ?? '';
-        $trade_status = $_POST['trade_status'] ?? '';
+        $out_trade_no = $params['out_trade_no'] ?? '';
+        $trade_no = $params['trade_no'] ?? '';
+        $trade_status = $params['trade_status'] ?? '';
         
-        self::log('当面付支付通知: ' . wp_json_encode(Alipay_SDK_Helper::redact_notify_for_log($_POST)));
+        self::log('当面付支付通知: ' . wp_json_encode(Alipay_SDK_Helper::redact_notify_for_log($params)));
         
-        $orders = wc_get_orders(array(
-            'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $out_trade_no ) ),
-            'limit' => 1,
-        ));
-        
-        if (empty($orders)) {
-            self::log('未找到订单: ' . $out_trade_no, 'error');
+        $order = Alipay_SDK_Helper::find_order_by_out_trade_no($out_trade_no, array(self::GATEWAY_ID));
+        if (is_wp_error($order)) {
+            self::log('订单匹配失败: ' . $order->get_error_code(), 'error');
             echo 'fail';
             exit;
         }
-        
-        $order = $orders[0];
         $core = get_option('woocommerce_alipay_settings', array());
         $context_check = Alipay_SDK_Helper::validate_notify_context(
-            $_POST,
+            $params,
             $order,
             isset($core['appid']) ? $core['appid'] : '',
             Alipay_SDK_Helper::format_amount($this->convert_to_rmb($order->get_total())),
             (string) $order->get_meta('_alipay_out_trade_no'),
-            array('alipay_facetopay')
+            array('alipay_facetopay'),
+            isset($core['seller_id']) ? $core['seller_id'] : ''
         );
         if (is_wp_error($context_check)) {
             self::log('当面付通知上下文校验失败: ' . $context_check->get_error_code(), 'error');
@@ -501,18 +514,46 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             exit;
         }
 
-        if ($trade_status === 'TRADE_SUCCESS' || $trade_status === 'TRADE_FINISHED') {
+        $transition = Alipay_SDK_Helper::validate_notify_transition($order, $trade_status);
+        if (is_wp_error($transition)) {
+            self::log('当面付通知状态拒绝: ' . $transition->get_error_code(), 'error');
+            echo 'fail';
+            exit;
+        }
+        $lock = Alipay_SDK_Helper::acquire_lock('notify', $out_trade_no, 30);
+        if (false === $lock) {
+            echo 'fail';
+            exit;
+        }
+        $order = wc_get_order($order->get_id());
+        $context_check = Alipay_SDK_Helper::validate_notify_context(
+            $params,
+            $order,
+            isset($core['appid']) ? $core['appid'] : '',
+            Alipay_SDK_Helper::format_amount($this->convert_to_rmb($order->get_total())),
+            (string) $order->get_meta('_alipay_out_trade_no'),
+            array('alipay_facetopay'),
+            isset($core['seller_id']) ? $core['seller_id'] : ''
+        );
+        $transition = is_wp_error($context_check) ? $context_check : Alipay_SDK_Helper::validate_notify_transition($order, $trade_status);
+        if (is_wp_error($transition)) {
+            Alipay_SDK_Helper::release_lock('notify', $out_trade_no, $lock);
+            echo 'fail';
+            exit;
+        }
+
+        if ('process_payment' === $transition) {
             if (!$order->is_paid()) {
                 $order->payment_complete($trade_no);
                 $order->add_order_note(
                     sprintf(__('当面付支付完成 - 交易号: %s', 'woo-alipay'), $trade_no)
                 );
             }
-            echo 'success';
-        } else {
-            echo 'fail';
+        } elseif ('process_close' === $transition) {
+            $order->update_status('cancelled', __('支付宝已关闭当面付交易。', 'woo-alipay'));
         }
-        
+        Alipay_SDK_Helper::release_lock('notify', $out_trade_no, $lock);
+        echo 'success';
         exit;
     }
 
