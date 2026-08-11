@@ -50,3 +50,12 @@
 - Final first-party tests and PHPStan passed. Changed payment/security PHPCS security sniffs passed. Full release PHPCS, security PHPCS, and Plugin Check remain NOT PASS with classified first-party debt in `docs/audits/woo-alipay-round3-2026-08-09.md`.
 - Isolated HPOS off/on, Blocks, concurrent synthetic RSA2 notification and offline refund fixtures passed. No real Alipay endpoint was contacted.
 - Do not merge, deploy, publish or release this branch.
+
+## [CX] 2026-08-11 Woo Alipay fourth-round local release candidate
+
+- Kept candidate version 3.2.0 and aligned plugin/readme compatibility metadata: PHP 7.4, WordPress 6.6, WooCommerce 8.3, tested WC 10.2.2, HPOS and Checkout Blocks declarations. WP 6.6 + WC 8.3 was not executed as a real runtime pair and is not a PASS.
+- Secret migration now validates before mutation, keeps one encrypted rollback generation, supports active/retired key rotation, rolls back by re-wrapping under the active key, and fails closed on unreadable envelopes. Default uninstall retains settings/history; explicit purge removes plugin settings, schedules and rollback envelope per site without deleting orders.
+- Full first-party payment/security PHPCS categories now report 0 errors / 0 warnings. Plugin Check remains NOT PASS for classified non-security first-party debt, the external QR script and private-channel updater; the 8,829-file SDK remains separately NOT PASS for missing verified upstream archive/lock/license provenance.
+- Contract tests, PHPStan, PHP 7.4 syntax, HPOS off/on, Store API Checkout Blocks, eight-way synthetic callback concurrency, offline refund replay and secret migration/rotation/rollback passed locally. No real merchant secret or Alipay request/transaction/refund was used.
+- Added minimal credential-free Forgejo CI, deterministic release builder, SPDX SBOM, SDK/file manifests and a Board change template. The exact local commit and ZIP digest are written to an ignored local Board artifact after the clean-HEAD build.
+- FeiCode P0 `write_policy=board_required`: do not push until a Board change approves the exact HEAD and SHA-bound CI. Do not merge, release, deploy, approve CI, contact production Alipay or send a real transaction/refund.

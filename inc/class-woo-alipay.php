@@ -138,7 +138,7 @@ class Woo_Alipay {
 		$css_ext = ( $debug ) ? '.css' : '.min.css';
 		$version = filemtime( WOO_ALIPAY_PLUGIN_PATH . 'css/main' . $css_ext );
 
-		wp_enqueue_style( 'woo-alipay-main-style', WOO_ALIPAY_PLUGIN_URL . 'css/main.css', array(), $version );
+		wp_enqueue_style( 'woo-alipay', WOO_ALIPAY_PLUGIN_URL . 'css/main.css', array(), $version );
 		
 		// Enqueue payment polling only for the authorized Alipay order-pay page.
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
@@ -158,7 +158,7 @@ class Woo_Alipay {
 					: '3.3.0';
 				
 				wp_enqueue_script(
-					'woo-alipay-payment-polling',
+					'woo-alipay',
 					WOO_ALIPAY_PLUGIN_URL . 'js/payment-polling.js',
 					array( 'jquery' ),
 					$script_version,
@@ -171,7 +171,7 @@ class Woo_Alipay {
 				
 				// Localize script
 				wp_localize_script(
-					'woo-alipay-payment-polling',
+					'woo-alipay',
 					'woo_alipay_polling',
 					array(
 						'ajax_url'      => admin_url( 'admin-ajax.php' ),
@@ -199,7 +199,9 @@ class Woo_Alipay {
         }
 
         // Only load our admin assets on our gateway settings sections, not on the Payments list view.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only settings screen routing.
         $tab     = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only settings screen routing.
         $section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : '';
         $our_sections = array( 'alipay', 'alipay_installment', 'alipay_facetopay' );
         if ( 'checkout' !== $tab || ! in_array( $section, $our_sections, true ) ) {
@@ -213,7 +215,7 @@ class Woo_Alipay {
         $version_js  = filemtime( WOO_ALIPAY_PLUGIN_PATH . 'js/admin/main' . $js_ext );
 
         wp_enqueue_style(
-            'woo-alipay-main-style',
+            'woo-alipay',
             WOO_ALIPAY_PLUGIN_URL . 'css/admin/main' . $css_ext,
             array(),
             $version_css
@@ -225,13 +227,13 @@ class Woo_Alipay {
         );
 
         wp_enqueue_script(
-            'woo-alipay-admin-script',
+            'woo-alipay',
             WOO_ALIPAY_PLUGIN_URL . 'js/admin/main' . $js_ext,
             array( 'jquery' ),
             $version_js,
             true
         );
-        wp_localize_script( 'woo-alipay-admin-script', 'WooAlipay', $parameters );
+        wp_localize_script( 'woo-alipay', 'WooAlipay', $parameters );
     }
 
     public function add_admin_pages() {
@@ -244,7 +246,7 @@ class Woo_Alipay {
             __( '支付宝对账工具', 'woo-alipay' ),
             __( '支付宝对账', 'woo-alipay' ),
             'manage_woocommerce',
-            'woo-alipay-reconcile',
+            'woo-alipay',
             array( $this, 'render_admin_reconcile_page' )
         );
     }

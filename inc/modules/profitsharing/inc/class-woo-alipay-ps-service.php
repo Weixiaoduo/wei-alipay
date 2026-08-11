@@ -430,12 +430,12 @@ class Woo_Alipay_PS_Service {
         if ( empty( $trade_no ) ) {
             self::log( 'error', 'Missing trade_no for order', array( 'order_id' => $order->get_id() ) );
             self::append_trace( $order, array( 'error' => 'missing_trade_no' ) );
-            return array( 'error' => __( '未找到该订单的支付宝交易号（trade_no）。', 'woo-alipay-profitsharing' ) );
+            return array( 'error' => __( '未找到该订单的支付宝交易号（trade_no）。', 'woo-alipay' ) );
         }
 
         $aop = self::get_aop();
         if ( ! $aop ) {
-            return array( 'error' => __( '无法创建支付宝客户端，请检查凭据。', 'woo-alipay-profitsharing' ) );
+            return array( 'error' => __( '无法创建支付宝客户端，请检查凭据。', 'woo-alipay' ) );
         }
 
         // Prefer deterministic out_request_no and keep stable across retries
@@ -452,7 +452,7 @@ class Woo_Alipay_PS_Service {
             );
         }
         if ( empty( $royalties ) ) {
-            return array( 'error' => __( '没有可结算的分账项。', 'woo-alipay-profitsharing' ) );
+            return array( 'error' => __( '没有可结算的分账项。', 'woo-alipay' ) );
         }
 
         $biz = array(
@@ -482,7 +482,7 @@ class Woo_Alipay_PS_Service {
                 return $data;
             }
             $sub_code = isset( $res->sub_code ) ? (string) $res->sub_code : '';
-            $msg = ( $res->sub_msg ?? $res->msg ?? __( '分账结算失败', 'woo-alipay-profitsharing' ) );
+            $msg = ( $res->sub_msg ?? $res->msg ?? __( '分账结算失败', 'woo-alipay' ) );
             $err = array( 'error' => (string) $msg, 'out_request_no' => $out_request_no, 'trade_no' => $trade_no, 'hint' => self::hint_for_error( (string) $msg, $sub_code ) );
             self::append_trace( $order, array( 'error' => $err ) );
             self::log( 'error', 'Settle failed: ' . $msg, $err );
@@ -517,11 +517,11 @@ class Woo_Alipay_PS_Service {
     public static function query_settle( $args ) {
         $args = wp_parse_args( $args, array( 'out_request_no' => '', 'trade_no' => '' ) );
         if ( empty( $args['out_request_no'] ) && empty( $args['trade_no'] ) ) {
-            return array( 'error' => __( '需要提供 out_request_no 或 trade_no。', 'woo-alipay-profitsharing' ) );
+            return array( 'error' => __( '需要提供 out_request_no 或 trade_no。', 'woo-alipay' ) );
         }
         $aop = self::get_aop();
         if ( ! $aop ) {
-            return array( 'error' => __( '无法创建支付宝客户端，请检查凭据。', 'woo-alipay-profitsharing' ) );
+            return array( 'error' => __( '无法创建支付宝客户端，请检查凭据。', 'woo-alipay' ) );
         }
         $biz = array();
         if ( ! empty( $args['out_request_no'] ) ) { $biz['out_request_no'] = (string) $args['out_request_no']; }
@@ -553,7 +553,7 @@ class Woo_Alipay_PS_Service {
                 return $data;
             }
             $sub_code = isset( $res->sub_code ) ? (string) $res->sub_code : '';
-            $msg = ( $res->sub_msg ?? $res->msg ?? __( '查询失败', 'woo-alipay-profitsharing' ) );
+            $msg = ( $res->sub_msg ?? $res->msg ?? __( '查询失败', 'woo-alipay' ) );
             self::log( 'error', 'Query settle failed: ' . $msg, $biz );
             return array( 'error' => (string) $msg, 'hint' => self::hint_for_error( (string) $msg, $sub_code ), 'raw' => $resp );
         } catch ( Exception $e ) {

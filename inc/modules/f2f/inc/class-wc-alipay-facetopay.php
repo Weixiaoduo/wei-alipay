@@ -340,6 +340,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         if (current_user_can('manage_woocommerce')) {
             return true;
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Woo order-key authorization for guest checkout.
         $order_key = isset($_POST['order_key']) && is_scalar($_POST['order_key']) ? sanitize_text_field(wp_unslash((string) $_POST['order_key'])) : '';
         return $order_key && hash_equals($order->get_order_key(), $order_key);
     }
@@ -347,7 +348,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     public function ajax_refresh_qrcode()
     {
         check_ajax_referer('alipay_facetopay_query', 'nonce');
-        $order_id = intval($_POST['order_id'] ?? 0);
+        $order_id = isset( $_POST['order_id'] ) ? absint( wp_unslash( $_POST['order_id'] ) ) : 0;
         if (!$order_id) {
             wp_send_json_error(array('message' => 'Invalid order ID'));
         }
@@ -407,7 +408,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     {
         check_ajax_referer('alipay_facetopay_query', 'nonce');
         
-        $order_id = intval($_POST['order_id'] ?? 0);
+        $order_id = isset( $_POST['order_id'] ) ? absint( wp_unslash( $_POST['order_id'] ) ) : 0;
         
         if (!$order_id) {
             wp_send_json_error(array('message' => 'Invalid order ID'));

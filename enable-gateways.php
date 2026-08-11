@@ -31,5 +31,5 @@ add_action( 'init', function() {
     
     wp_cache_flush();
     
-    wp_die( '<h1>✓ 完成！</h1><p>所有支付网关已启用。</p><p><a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">查看支付设置</a></p>' );
+    wp_die( wp_kses_post( '<h1>✓ 完成！</h1><p>所有支付网关已启用。</p><p><a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) . '">查看支付设置</a></p>' ) );
 }, 1 );

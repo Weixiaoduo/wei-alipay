@@ -5,6 +5,8 @@ Requires at least: 6.6
 Tested up to: 7.0
 Stable tag: 3.2.0
 Requires PHP: 7.4
+WC requires at least: 8.3
+WC tested up to: 10.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -17,6 +19,7 @@ This Mainland China gateway allows customers to pay both in mobile browsers or f
 
 ### Requirements
 
+* WordPress 6.6 or later, PHP 7.4 or later, and WooCommerce 8.3 or later.
 * A [China Mainland Alipay merchant account](https://b.alipay.com/).
 * The Payment products "支付产品" Computer website payment "电脑网站支付" and Mobile website payment "手机网站支付" enabled.
 
@@ -55,6 +58,15 @@ This section describes how to install the plugin and get it working.
 1. Upload the plugin files to the `/wp-content/plugins/woo-alipay` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Edit plugin settings
+
+== Changelog ==
+
+= 3.2.0 =
+* Harden notification signature, merchant/order/trade/amount/time binding and replay handling.
+* Add explicit RSA2-first Mini-program migration policy without automatic MD5 downgrade.
+* Add encrypted secret migration, rotation and fail-closed rollback generation.
+* Declare and test WooCommerce HPOS and Checkout Blocks compatibility.
+* Add multisite lifecycle policy, first-party static analysis, SBOM and reproducible candidate packaging.
 
 = 1.1.3 =
 * Strip `%` from data sent to Alipay

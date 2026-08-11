@@ -31,7 +31,7 @@ class Woo_Alipay_Reconcile_Runner {
 
         $aop = Alipay_SDK_Helper::create_alipay_service( $config );
         if ( ! $aop ) {
-            return array( 'error' => __( '创建支付宝服务失败，请检查配置。', 'woo-alipay-reconcile-pro' ) );
+            return array( 'error' => __( '创建支付宝服务失败，请检查配置。', 'woo-alipay' ) );
         }
 
         $req = new AlipayDataDataserviceBillDownloadurlQueryRequest();
@@ -46,7 +46,7 @@ class Woo_Alipay_Reconcile_Runner {
             $node = 'alipay_data_dataservice_bill_downloadurl_query_response';
             $res  = $resp->$node ?? null;
             if ( ! $res || ! isset( $res->code ) || '10000' !== $res->code || empty( $res->bill_download_url ) ) {
-                return array( 'error' => __( '获取对账单下载链接失败。', 'woo-alipay-reconcile-pro' ), 'raw' => $resp );
+                return array( 'error' => __( '获取对账单下载链接失败。', 'woo-alipay' ), 'raw' => $resp );
             }
 
             $download_url = (string) $res->bill_download_url;
@@ -81,11 +81,11 @@ class Woo_Alipay_Reconcile_Runner {
             'alipaydev.com' === $host || '.alipaydev.com' === substr( $host, -14 )
         );
         if ( ! $allowed_host ) {
-            return new WP_Error( 'unsafe_download_url', __( '支付宝对账单下载地址未通过安全校验。', 'woo-alipay-reconcile-pro' ) );
+            return new WP_Error( 'unsafe_download_url', __( '支付宝对账单下载地址未通过安全校验。', 'woo-alipay' ) );
         }
 
         $uploads = wp_upload_dir();
-        $dir     = trailingslashit( $uploads['basedir'] ) . 'woo-alipay-reconcile';
+        $dir     = trailingslashit( $uploads['basedir'] ) . 'woo-alipay';
         wp_mkdir_p( $dir );
 
         $response = wp_safe_remote_get( $url, array( 'timeout' => 60, 'limit_response_size' => 25 * MB_IN_BYTES ) );
@@ -129,10 +129,10 @@ class Woo_Alipay_Reconcile_Runner {
                     $zip->close();
                 }
                 // If we reach here, we couldn’t extract CSV.
-                return new WP_Error( 'no_csv', __( '压缩包中未找到 CSV 文件。', 'woo-alipay-reconcile-pro' ) );
+                return new WP_Error( 'no_csv', __( '压缩包中未找到 CSV 文件。', 'woo-alipay' ) );
             }
             // ZipArchive not available; store the zip and ask user to process manually.
-            return new WP_Error( 'zip_archive_missing', sprintf( __( '已下载 ZIP 文件：%s，请手动解压后上传解析。', 'woo-alipay-reconcile-pro' ), $zip_path ) );
+            return new WP_Error( 'zip_archive_missing', sprintf( __( '已下载 ZIP 文件：%s，请手动解压后上传解析。', 'woo-alipay' ), $zip_path ) );
         }
 
         // Assume CSV text
@@ -146,12 +146,12 @@ class Woo_Alipay_Reconcile_Runner {
 
     private static function parse_and_reconcile( $csv_path ) {
         if ( ! file_exists( $csv_path ) ) {
-            return new WP_Error( 'file_missing', __( 'CSV 文件不存在。', 'woo-alipay-reconcile-pro' ) );
+            return new WP_Error( 'file_missing', __( 'CSV 文件不存在。', 'woo-alipay' ) );
         }
 
         $content = file_get_contents( $csv_path );
         if ( ! $content ) {
-            return new WP_Error( 'empty_file', __( 'CSV 文件为空。', 'woo-alipay-reconcile-pro' ) );
+            return new WP_Error( 'empty_file', __( 'CSV 文件为空。', 'woo-alipay' ) );
         }
 
         // Convert to UTF-8 if needed (many Alipay bills are GBK encoded)
@@ -179,7 +179,7 @@ class Woo_Alipay_Reconcile_Runner {
         }
 
         if ( $header_index < 0 ) {
-            return new WP_Error( 'csv_header', __( '未识别到对账单表头。', 'woo-alipay-reconcile-pro' ) );
+            return new WP_Error( 'csv_header', __( '未识别到对账单表头。', 'woo-alipay' ) );
         }
 
         $map = self::map_header( $headers );

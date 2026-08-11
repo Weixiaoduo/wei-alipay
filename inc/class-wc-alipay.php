@@ -366,7 +366,7 @@ class WC_Alipay extends WC_Payment_Gateway
         if (!in_array($this->current_currency, $this->supported_currencies, true)) {
             $current_rate = $this->get_option('exchange_rate', '7.0');
             $description = sprintf(
-                __('设置%s与人民币汇率（1 %s = %s 人民币）', 'woo-alipay'),
+                __('设置%1$s与人民币汇率（1 %2$s = %3$s 人民币）', 'woo-alipay'),
                 $this->current_currency,
                 $this->current_currency,
                 $current_rate
@@ -582,10 +582,10 @@ class WC_Alipay extends WC_Payment_Gateway
                 <fieldset>
                     <legend class="screen-reader-text"><span><?php echo wp_kses_post($data['title']); ?></span></legend>
                     <?php wp_nonce_field('_woo_alipay_test_nonce', 'woo_alipay_nonce'); ?>
-                    <button type="button" class="button-secondary" id="woo-alipay-test-connection">
+                    <button type="button" class="button-secondary" id="woo-alipay">
                         <?php echo esc_html(__('现在测试', 'woo-alipay')); ?>
                     </button>
-                    <div id="woo-alipay-test-result" style="margin-top: 10px;"></div>
+                    <div id="woo-alipay" style="margin-top: 10px;"></div>
                     <?php echo wp_kses_post( $this->get_description_html( $data ) ); ?>
                 </fieldset>
             </td>
@@ -690,7 +690,7 @@ class WC_Alipay extends WC_Payment_Gateway
         $order = new WC_Order($order_id);
 
         if (!$this->can_refund_order($order)) {
-            return new WP_Error('error', __('Refund failed', 'woocommerce') . ' - ' . $this->refundable_status['reason']);
+            return new WP_Error('error', __('Refund failed', 'woo-alipay') . ' - ' . $this->refundable_status['reason']);
         }
 
         Woo_Alipay::require_lib('refund');
@@ -1060,7 +1060,7 @@ class WC_Alipay extends WC_Payment_Gateway
         echo '<div class="card" style="padding:12px; margin:12px 0;">';
         echo '<h2 style="margin-top:0;">' . esc_html__( '工具与端点', 'woo-alipay' ) . '</h2>';
         echo '<p>' . esc_html__( '异步通知 URL（请在支付宝开放平台中配置为支付结果通知 URL）', 'woo-alipay' ) . '</p>';
-        echo '<p><code id="woo-alipay-notify-url">' . esc_html( $notify_url ) . '</code> ';
+        echo '<p><code id="woo-alipay">' . esc_html( $notify_url ) . '</code> ';
         echo '<button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-notify-url\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></p>';
 
         // 若支持订阅，展示签约相关端点
@@ -1072,9 +1072,9 @@ class WC_Alipay extends WC_Payment_Gateway
             echo '<hr/>';
             echo '<p>' . esc_html__( '签约端点（用于支付宝协议授权与回调）', 'woo-alipay' ) . '</p>';
             echo '<ul style="margin-left:1em;">';
-            echo '<li>' . esc_html__( '签约启动', 'woo-alipay' ) . ': <code id="woo-alipay-sign-start">' . esc_html( $start_url ) . '</code> <button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-sign-start\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></li>';
-            echo '<li>' . esc_html__( '签约通知', 'woo-alipay' ) . ': <code id="woo-alipay-sign-notify">' . esc_html( $notify_agre ) . '</code> <button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-sign-notify\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></li>';
-            echo '<li>' . esc_html__( '签约返回', 'woo-alipay' ) . ': <code id="woo-alipay-sign-return">' . esc_html( $return_agre ) . '</code> <button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-sign-return\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></li>';
+            echo '<li>' . esc_html__( '签约启动', 'woo-alipay' ) . ': <code id="woo-alipay">' . esc_html( $start_url ) . '</code> <button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-sign-start\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></li>';
+            echo '<li>' . esc_html__( '签约通知', 'woo-alipay' ) . ': <code id="woo-alipay">' . esc_html( $notify_agre ) . '</code> <button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-sign-notify\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></li>';
+            echo '<li>' . esc_html__( '签约返回', 'woo-alipay' ) . ': <code id="woo-alipay">' . esc_html( $return_agre ) . '</code> <button type="button" class="button" onclick="wooAlipayCopy(\'#woo-alipay-sign-return\')">' . esc_html__( '复制', 'woo-alipay' ) . '</button></li>';
             echo '</ul>';
         }
         echo '</div>';
@@ -1256,7 +1256,7 @@ class WC_Alipay extends WC_Payment_Gateway
 
             if (!$updated) {
 
-                return new WP_Error(__METHOD__, __('Update status event failed.', 'woocommerce'));
+                return new WP_Error(__METHOD__, __('Update status event failed.', 'woo-alipay'));
             }
         }
 
@@ -1386,7 +1386,7 @@ class WC_Alipay extends WC_Payment_Gateway
 
             if (!$updated) {
 
-                return new WP_Error(__METHOD__, __('Update status event failed.', 'woocommerce'));
+                return new WP_Error(__METHOD__, __('Update status event failed.', 'woo-alipay'));
             }
         }
 

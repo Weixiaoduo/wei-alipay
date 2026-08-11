@@ -12,7 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * application keys and legacy MD5 shared secrets are encrypted at rest.
  */
 final class Woo_Alipay_Secret_Store {
-	const PREFIX = 'woo-alipay-secret:v1:';
+	const PREFIX          = 'woo-alipay-secret:v1:';
+	const ROLLBACK_OPTION = 'woo_alipay_secret_rollback_v1';
 
 	/** @var array<string,array<int,string>> */
 	private static $option_fields = array(
@@ -138,12 +139,23 @@ final class Woo_Alipay_Secret_Store {
 		return $new_value;
 	}
 
-	/** Encrypt plaintext and rotate envelopes to the active key. */
+	/**
+	 * Encrypt plaintext and rotate envelopes to the active key.
+	 *
+	 * The previous encrypted values are saved as a single rollback generation.
+	 * Plaintext is encrypted before it reaches the rollback option. Validation is
+	 * completed for every configured secret before any gateway option is changed.
+	 *
+	 * @return true|WP_Error
+	 */
 	public static function migrate_current_site() {
 		$active = self::active_material();
 		if ( is_wp_error( $active ) ) {
 			return $active;
 		}
+
+		$updates  = array();
+		$rollback = array();
 		foreach ( self::$option_fields as $option => $fields ) {
 			$stored = self::raw_option( $option );
 			if ( ! is_array( $stored ) ) {
@@ -156,12 +168,85 @@ final class Woo_Alipay_Secret_Store {
 				$plaintext = self::decrypt_value( $stored[ $field ], self::keyring() );
 				if ( is_wp_error( $plaintext ) ) {
 					do_action( 'woo_alipay_secret_error', $plaintext, $option, $field );
-					continue;
+					return $plaintext;
 				}
-				$stored[ $field ] = self::encrypt_value( $plaintext, $active );
+				$previous = self::is_envelope( $stored[ $field ] ) ? $stored[ $field ] : self::encrypt_value( $plaintext, $active );
+				$rotated  = self::encrypt_value( $plaintext, $active );
+				if ( is_wp_error( $previous ) || is_wp_error( $rotated ) ) {
+					$error = is_wp_error( $previous ) ? $previous : $rotated;
+					do_action( 'woo_alipay_secret_error', $error, $option, $field );
+					return $error;
+				}
+				$rollback[ $option ][ $field ] = $previous;
+				$stored[ $field ]             = $rotated;
 			}
+			$updates[ $option ] = $stored;
+		}
+
+		if ( ! empty( $rollback ) ) {
+			update_option(
+				self::ROLLBACK_OPTION,
+				array(
+					'schema'     => 1,
+					'created_at' => time(),
+					'values'     => $rollback,
+				),
+				false
+			);
+		}
+		foreach ( $updates as $option => $stored ) {
 			update_option( $option, $stored, false );
 		}
+		return true;
+	}
+
+	/**
+	 * Restore the last encrypted rollback generation under the active key.
+	 *
+	 * Operators rotating an external key must keep the retired key in the
+	 * `woo_alipay_secret_keyring` filter until this rollback is complete.
+	 *
+	 * @return true|WP_Error
+	 */
+	public static function rollback_current_site() {
+		$active   = self::active_material();
+		$snapshot = get_option( self::ROLLBACK_OPTION, array() );
+		if ( is_wp_error( $active ) ) {
+			return $active;
+		}
+		if ( ! is_array( $snapshot ) || 1 !== (int) ( $snapshot['schema'] ?? 0 ) || ! is_array( $snapshot['values'] ?? null ) ) {
+			return new WP_Error( 'secret_rollback_unavailable', __( 'No valid Alipay secret rollback generation is available.', 'woo-alipay' ) );
+		}
+
+		$updates = array();
+		foreach ( $snapshot['values'] as $option => $fields ) {
+			if ( ! isset( self::$option_fields[ $option ] ) || ! is_array( $fields ) ) {
+				return new WP_Error( 'secret_rollback_invalid', __( 'The Alipay secret rollback generation is invalid.', 'woo-alipay' ) );
+			}
+			$stored = self::raw_option( $option );
+			$stored = is_array( $stored ) ? $stored : array();
+			foreach ( $fields as $field => $envelope ) {
+				if ( ! in_array( $field, self::$option_fields[ $option ], true ) || ! self::is_envelope( $envelope ) ) {
+					return new WP_Error( 'secret_rollback_invalid', __( 'The Alipay secret rollback generation is invalid.', 'woo-alipay' ) );
+				}
+				$plaintext = self::decrypt_value( $envelope, self::keyring() );
+				if ( is_wp_error( $plaintext ) ) {
+					do_action( 'woo_alipay_secret_error', $plaintext, $option, $field );
+					return $plaintext;
+				}
+				$restored = self::encrypt_value( $plaintext, $active );
+				if ( is_wp_error( $restored ) ) {
+					return $restored;
+				}
+				$stored[ $field ] = $restored;
+			}
+			$updates[ $option ] = $stored;
+		}
+
+		foreach ( $updates as $option => $stored ) {
+			update_option( $option, $stored, false );
+		}
+		delete_option( self::ROLLBACK_OPTION );
 		return true;
 	}
 
@@ -188,7 +273,7 @@ final class Woo_Alipay_Secret_Store {
 	}
 
 	private static function derive_key( $material ) {
-		return hash_hmac( 'sha256', 'woo-alipay-secret-store-v1', (string) $material, true );
+		return hash_hmac( 'sha256', 'woo-alipay', (string) $material, true );
 	}
 
 	private static function is_envelope( $value ) {
@@ -201,7 +286,7 @@ final class Woo_Alipay_Secret_Store {
 		}
 		$page    = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
 		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
-		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'acbop' ), true );
+		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'woo-alipay' ), true );
 	}
 
 	private static function raw_option( $option ) {
@@ -209,7 +294,7 @@ final class Woo_Alipay_Secret_Store {
 		if ( ! isset( $wpdb->options ) ) {
 			return array();
 		}
-		$value = $wpdb->get_var(
+		$value = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- atomic/raw primitive cannot use the option/order cache.
 			$wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s LIMIT 1", $option )
 		);
 		return null === $value ? array() : maybe_unserialize( $value );

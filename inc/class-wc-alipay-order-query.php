@@ -239,7 +239,7 @@ class WC_Alipay_Order_Query {
 			wp_send_json_error( array( 'message' => __( 'Order not found', 'woo-alipay' ) ), 404 );
 		}
 
-		$order_key = isset( $_POST['order_key'] ) ? wc_clean( wp_unslash( $_POST['order_key'] ) ) : '';
+		$order_key = isset( $_POST['order_key'] ) && is_scalar( $_POST['order_key'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['order_key'] ) ) : '';
 		$authorized = current_user_can( 'manage_woocommerce' ) || ( $order_key && hash_equals( $order->get_order_key(), $order_key ) );
 		if ( ! $authorized ) {
 			wp_send_json_error( array( 'message' => __( 'You are not allowed to query this order.', 'woo-alipay' ) ), 403 );

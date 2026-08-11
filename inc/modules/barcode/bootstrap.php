@@ -96,25 +96,25 @@ add_filter( 'rest_post_dispatch', function( $result, $server, $request ) {
             $links = array(
                 array(
                     'id'    => 'learn_more',
-                    'title' => __( 'Learn more', 'woo-alipay-barcode' ),
+                    'title' => __( 'Learn more', 'woo-alipay' ),
                     'href'  => 'https://woocn.com/document/woo-alipay-barcode',
                     'type'  => 'external',
                 ),
                 array(
                     'id'    => 'view_pricing_and_fees',
-                    'title' => __( 'View pricing and fees', 'woo-alipay-barcode' ),
+                    'title' => __( 'View pricing and fees', 'woo-alipay' ),
                     'href'  => 'https://woocn.com/pricing/woo-alipay',
                     'type'  => 'external',
                 ),
                 array(
                     'id'    => 'view_terms_of_service',
-                    'title' => __( 'View terms of service', 'woo-alipay-barcode' ),
+                    'title' => __( 'View terms of service', 'woo-alipay' ),
                     'href'  => 'https://woocn.com/terms',
                     'type'  => 'external',
                 ),
                 array(
                     'id'    => 'support',
-                    'title' => __( 'Support', 'woo-alipay-barcode' ),
+                    'title' => __( 'Support', 'woo-alipay' ),
                     'href'  => 'https://woocn.com/support',
                     'type'  => 'external',
                 ),

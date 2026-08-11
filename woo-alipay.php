@@ -14,6 +14,8 @@
 * Requires PHP: 7.4
 * Requires at least: 6.6
 * Requires Plugins: woocommerce
+* License: GPLv3
+* License URI: https://www.gnu.org/licenses/gpl-3.0.html
 */
 
 if ( ! defined( 'ABSPATH' ) ) {

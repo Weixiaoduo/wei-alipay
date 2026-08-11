@@ -281,6 +281,27 @@ class Alipay_SDK_Helper
     }
 
     /**
+     * Sanitize an SDK-generated payment form without allowing SDK scripts.
+     *
+     * Callers may add their own fixed auto-submit behavior after rendering.
+     *
+     * @param string $html SDK response HTML.
+     * @return string
+     */
+    public static function sanitize_payment_form($html)
+    {
+        $allowed = array(
+            'form' => array('action' => true, 'method' => true, 'id' => true, 'name' => true, 'class' => true, 'target' => true),
+            'input' => array('type' => true, 'name' => true, 'value' => true, 'id' => true, 'class' => true),
+            'button' => array('type' => true, 'name' => true, 'value' => true, 'id' => true, 'class' => true),
+            'div' => array('id' => true, 'class' => true),
+            'span' => array('id' => true, 'class' => true),
+            'p' => array('id' => true, 'class' => true),
+        );
+        return wp_kses((string) $html, $allowed, array('http', 'https'));
+    }
+
+    /**
      * Return a bounded notification payload suitable for WooCommerce logs.
      * Signature material and customer data are deliberately excluded.
      *

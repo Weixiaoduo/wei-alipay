@@ -5,16 +5,16 @@ if (!defined('ABSPATH')) {
 
 /**
  * 花呗分期支付网关
- * 
+ *
  * 支持花呗分期付款功能，用户可选择3期、6期、12期分期
  */
 class WC_Alipay_Installment extends WC_Payment_Gateway
 {
     const GATEWAY_ID = 'alipay_installment';
-    
+
     protected static $log_enabled = false;
     protected static $log = false;
-    
+
     protected $current_currency;
     protected $exchange_rate;
     protected $order_prefix;
@@ -29,16 +29,16 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
         $this->icon = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-huabei-icon.svg';
         $this->has_fields = true; // 在结账页面显示分期选择
         $this->charset = strtolower(get_bloginfo('charset'));
-        
+
         if (!in_array($this->charset, array('gbk', 'utf-8'), true)) {
             $this->charset = 'utf-8';
         }
-        
+
         // 加载设置
         $this->init_form_fields();
         $this->init_settings();
 
-        
+
         // 设置属性
         $this->title = $this->get_option('title', __('支付宝花呗分期', 'woo-alipay'));
         $this->description = $this->get_option('description');
@@ -47,15 +47,15 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
         $this->exchange_rate = $this->get_option('exchange_rate');
         $this->order_prefix = $this->get_option('order_prefix', 'HBFQ');
         $this->notify_url = WC()->api_request_url('WC_Alipay_Installment');
-        
+
         self::$log_enabled = ('yes' === $this->get_option('debug', 'no'));
-        
+
         // 支持的功能
         $this->supports = array(
             'products',
             'refunds',
         );
-        
+
         // 添加钩子
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
@@ -115,13 +115,13 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
                 'default' => __('使用支付宝花呗分期付款，支持3期、6期、12期免息或低息分期。', 'woo-alipay'),
                 'desc_tip' => true,
             ),
-            
+
             'alipay_config' => array(
                 'title' => __('支付宝配置', 'woo-alipay'),
                 'type' => 'title',
                 'description' => __('使用主支付宝网关的配置（App ID、公钥、私钥等）', 'woo-alipay'),
             ),
-            
+
             'installment_settings' => array(
                 'title' => __('分期设置', 'woo-alipay'),
                 'type' => 'title',
@@ -213,7 +213,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
                 ),
                 'desc_tip' => true,
             ),
-            
+
             'order_prefix' => array(
                 'title' => __('订单号前缀', 'woo-alipay'),
                 'type' => 'text',
@@ -221,7 +221,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
                 'default' => 'HBFQ',
                 'desc_tip' => true,
             ),
-            
+
             'debug' => array(
                 'title' => __('调试日志', 'woo-alipay'),
                 'type' => 'checkbox',
@@ -233,7 +233,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
                 ),
             ),
         );
-        
+
         // 如果不是人民币，添加汇率设置
         if (!in_array($this->current_currency, array('CNY', 'RMB'), true)) {
             $this->form_fields['exchange_rate'] = array(
@@ -260,25 +260,25 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
     {
         // 显示描述
         if ($this->description) {
-            echo wpautop(wptexturize($this->description));
+            echo wp_kses_post( wpautop( wptexturize( $this->description ) ) );
         }
-        
+
         // 获取购物车总额
         $cart_total = WC()->cart->get_total('');
         $min_amount = floatval($this->get_option('min_amount', 100));
         $available_periods = $this->get_option('available_periods', array('3', '6', '12'));
         $default_period = $this->get_option('default_period', '3');
-        
+
         // 转换为人民币
         $rmb_total = $this->convert_to_rmb($cart_total);
-        
+
         if ($rmb_total < $min_amount) {
-            echo '<p class="alipay-installment-notice">' . 
-                sprintf(__('订单金额需满 ¥%s 才能使用花呗分期', 'woo-alipay'), $min_amount) . 
+            echo '<p class="alipay-installment-notice">' .
+                esc_html( sprintf( __( '订单金额需满 ¥%s 才能使用花呗分期', 'woo-alipay' ), $min_amount ) ) .
                 '</p>';
             return;
         }
-        
+
         // 动态过滤可用分期期数（根据阈值）
         $filtered_periods = array();
         foreach ($available_periods as $p) {
@@ -295,27 +295,27 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
         }
         ?>
         <div class="alipay-installment-selector">
-            <p><strong><?php _e('选择分期期数：', 'woo-alipay'); ?></strong></p>
+            <p><strong><?php esc_html_e( '选择分期期数：', 'woo-alipay' ); ?></strong></p>
             <ul class="installment-periods">
                 <?php foreach ($filtered_periods as $period) : ?>
                     <li>
                         <label>
-                            <input type="radio" 
-                                   name="alipay_installment_period" 
+                            <input type="radio"
+                                   name="alipay_installment_period"
                                    value="<?php echo esc_attr($period); ?>"
                                    <?php checked($period, $default_period); ?> />
                             <span class="period-label">
-                                <?php echo sprintf(__('%s期', 'woo-alipay'), $period); ?>
+                                <?php echo esc_html( sprintf( __( '%s期', 'woo-alipay' ), $period ) ); ?>
                             </span>
                             <span class="period-amount">
-                                <?php 
+                                <?php
                                 $monthly = $rmb_total / intval($period);
-                                echo sprintf(__('每期 ¥%s', 'woo-alipay'), number_format($monthly, 2)); 
+                                echo esc_html( sprintf( __( '每期 ¥%s', 'woo-alipay' ), number_format_i18n( $monthly, 2 ) ) );
                                 ?>
                             </span>
                             <?php if ( $this->get_option('fee_bearer', 'user') === 'seller' && 'yes' === $this->get_option('show_interest_free_badge', 'yes') ) : ?>
                                 <span class="alipay-badge alipay-badge--free">
-                                    <?php _e('免息', 'woo-alipay'); ?>
+                                    <?php esc_html_e( '免息', 'woo-alipay' ); ?>
                                 </span>
                             <?php endif; ?>
                         </label>
@@ -323,11 +323,11 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
                 <?php endforeach; ?>
             </ul>
             <p class="alipay-installment-fee-note">
-                <?php 
+                <?php
                 $fee_bearer = $this->get_option('fee_bearer', 'user');
-                echo $fee_bearer === 'seller' 
-                    ? __('免息分期（手续费由商家承担）', 'woo-alipay') 
-                    : __('可能产生分期手续费，以支付宝支付页面为准', 'woo-alipay');
+                echo $fee_bearer === 'seller'
+                    ? esc_html__( '免息分期（手续费由商家承担）', 'woo-alipay' )
+                    : esc_html__( '可能产生分期手续费，以支付宝支付页面为准', 'woo-alipay' );
                 ?>
             </p>
         </div>
@@ -342,7 +342,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
         if (!is_checkout()) {
             return;
         }
-        
+
         $style_url  = apply_filters( 'woo_alipay_installment_style_url', WOO_ALIPAY_PLUGIN_URL . 'css/alipay-installment.css' );
         $script_url = apply_filters( 'woo_alipay_installment_script_url', WOO_ALIPAY_PLUGIN_URL . 'js/alipay-installment.js' );
 
@@ -352,7 +352,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             array(),
             WOO_ALIPAY_VERSION
         );
-        
+
         wp_enqueue_script(
             'alipay-installment',
             $script_url,
@@ -368,32 +368,32 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
     public function process_payment($order_id)
     {
         $order = wc_get_order($order_id);
-        
+
         // 获取分期期数 - 支持传统表单和 Blocks
         $installment_period = $this->get_option('default_period', '3');
-        
+
         // 从传统表单获取
-        if (isset($_POST['alipay_installment_period'])) {
-            $installment_period = is_scalar($_POST['alipay_installment_period']) ? sanitize_text_field(wp_unslash((string) $_POST['alipay_installment_period'])) : $installment_period;
+        if (isset($_POST['alipay_installment_period'])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout request; order/customer authorization is handled by checkout.
+            $installment_period = is_scalar($_POST['alipay_installment_period']) ? sanitize_text_field(wp_unslash((string) $_POST['alipay_installment_period'])) : $installment_period; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout request; order/customer authorization is handled by checkout.
         }
         // 从 Blocks 获取
-        elseif (isset($_POST['payment_data']) && is_scalar($_POST['payment_data'])) {
-            $payment_data = json_decode(wp_unslash((string) $_POST['payment_data']), true); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON is decoded, and the selected scalar field is sanitized below.
+        elseif (isset($_POST['payment_data']) && is_scalar($_POST['payment_data'])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce Blocks checkout payload.
+            $payment_data = json_decode(wp_unslash((string) $_POST['payment_data']), true); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- Woo Blocks JSON is decoded, and the selected scalar field is sanitized below.
             if (isset($payment_data['alipay_installment_period'])) {
                 $installment_period = sanitize_text_field($payment_data['alipay_installment_period']);
             }
         }
-        
+
         // 保存分期期数到订单
         $order->update_meta_data('_alipay_installment_period', $installment_period);
         $order->save();
-        
+
         // 标记订单为待支付
         $order->update_status('pending', __('等待花呗分期支付', 'woo-alipay'));
-        
+
         // 清空购物车
         WC()->cart->empty_cart();
-        
+
         // 跳转到支付页面
         return array(
             'result' => 'success',
@@ -407,14 +407,14 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
     public function receipt_page($order_id)
     {
         $order = wc_get_order($order_id);
-        
+
         if (!$order || $order->is_paid()) {
             return;
         }
-        
+
         // 加载辅助类
         require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
-        
+
         // 获取主支付宝网关配置
         $main_gateway = new WC_Alipay(false);
         $config = Alipay_SDK_Helper::get_alipay_config(array(
@@ -423,7 +423,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             'public_key' => $main_gateway->get_option('public_key'),
             'sandbox' => $main_gateway->get_option('sandbox'),
         ));
-        
+
         // 创建支付宝服务
         $aop = Alipay_SDK_Helper::create_alipay_service($config);
         if (!$aop) {
@@ -431,7 +431,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             wc_add_notice(__('支付初始化失败，请稍后重试', 'woo-alipay'), 'error');
             return;
         }
-        
+
         // 获取订单信息
         $total = $this->convert_to_rmb($order->get_total());
         $installment_period = $order->get_meta('_alipay_installment_period');
@@ -441,13 +441,13 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             $order->update_meta_data('_alipay_out_trade_no', $out_trade_no);
             $order->save();
         }
-        
+
         try {
             require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
             require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePagePayRequest.php';
-            
+
             $request = new AlipayTradePagePayRequest();
-            
+
             // 设置业务参数
             $biz_content = array(
                 'out_trade_no' => $out_trade_no,
@@ -462,18 +462,18 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
 'hb_fq_seller_percent' => ($this->get_option('fee_bearer', 'user') === 'seller' ? '100' : '0'),
                 ),
             );
-            
+
             $request->setBizContent(json_encode($biz_content));
             $request->setReturnUrl($order->get_checkout_order_received_url());
             $request->setNotifyUrl($this->notify_url);
-            
+
             // 生成支付表单
             $html = $aop->pageExecute($request, 'POST');
-            
+
             self::log('花呗分期支付请求: ' . print_r($biz_content, true));
-            
-            echo $html;
-            
+
+            echo Alipay_SDK_Helper::sanitize_payment_form( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist.
+
         } catch (Exception $e) {
             self::log('花呗分期支付异常: ' . $e->getMessage(), 'error');
             $order->update_status('failed', $e->getMessage());
@@ -493,24 +493,24 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
         }
         // 加载辅助类
         require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
-        
+
         // 获取支付宝公钥
         $main_gateway = new WC_Alipay(false);
         $alipay_public_key = $main_gateway->get_option('public_key');
-        
+
         // 验证签名
         if (!Alipay_SDK_Helper::verify_notify($params, $alipay_public_key)) {
             self::log('花呗分期通知签名验证失败', 'error');
             echo 'fail';
             exit;
         }
-        
+
         $out_trade_no = $params['out_trade_no'] ?? '';
         $trade_no = $params['trade_no'] ?? '';
         $trade_status = $params['trade_status'] ?? '';
-        
+
         self::log('花呗分期支付通知: ' . wp_json_encode(Alipay_SDK_Helper::redact_notify_for_log($params)));
-        
+
         // Match the signed merchant order number exactly across legacy and HPOS storage.
         $order = Alipay_SDK_Helper::find_order_by_out_trade_no($out_trade_no, array(self::GATEWAY_ID));
         if (is_wp_error($order)) {
@@ -533,7 +533,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             echo 'fail';
             exit;
         }
-        
+
         $transition = Alipay_SDK_Helper::validate_notify_transition($order, $trade_status);
         if (is_wp_error($transition)) {
             self::log('花呗分期通知状态拒绝: ' . $transition->get_error_code(), 'error');
@@ -583,15 +583,15 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
     public function process_refund($order_id, $amount = null, $reason = '')
     {
         $order = wc_get_order($order_id);
-        
+
         if (!$order) {
             return new WP_Error('error', __('订单不存在', 'woo-alipay'));
         }
-        
+
         require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
         require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeRefundRequest.php';
-        
+
         $main_gateway = new WC_Alipay(false);
         $config = Alipay_SDK_Helper::get_alipay_config(array(
             'appid' => $main_gateway->get_option('appid'),
@@ -599,19 +599,19 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             'public_key' => $main_gateway->get_option('public_key'),
             'sandbox' => $main_gateway->get_option('sandbox'),
         ));
-        
+
         $aop = Alipay_SDK_Helper::create_alipay_service($config);
         if (!$aop) {
             return new WP_Error('sdk_error', __('创建支付宝服务失败', 'woo-alipay'));
         }
-        
+
         $out_trade_no = $order->get_meta('_alipay_out_trade_no');
         if (!$out_trade_no) {
             return new WP_Error('missing_out_trade_no', __('退款失败：缺少原始支付宝商户订单号。', 'woo-alipay'));
         }
         $refund_amount = $amount ? floatval($amount) : floatval($order->get_total());
         $refund_reason = $reason ? $reason : __('订单退款', 'woo-alipay');
-        
+
         try {
             $request = new AlipayTradeRefundRequest();
             $biz_content = array(
@@ -655,7 +655,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             $cart_total = WC()->cart->get_total('');
             $min_amount = floatval($this->get_option('min_amount', 100));
             $rmb_total = $this->convert_to_rmb($cart_total);
-            
+
             if ($rmb_total < $min_amount) {
                 return false;
             }

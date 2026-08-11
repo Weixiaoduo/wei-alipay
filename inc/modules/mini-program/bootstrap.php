@@ -42,7 +42,7 @@ add_filter( 'woocommerce_get_order_item_totals', function( $total_rows, $order )
 
     $new_row = array(
         'alipay_trade_no' => array(
-            'label' => __( 'Alipay Trade No.:', 'alipay' ),
+            'label' => __( 'Alipay Trade No.:', 'woo-alipay' ),
             'value' => $trade_no,
         ),
     );

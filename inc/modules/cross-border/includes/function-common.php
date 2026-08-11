@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 require_once(dirname(__FILE__) . '/../lib/alipay_submit.class.php');
 require_once(dirname(__FILE__) . '/../lib/alipay_notify.class.php');
 

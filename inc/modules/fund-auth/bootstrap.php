@@ -57,7 +57,7 @@ add_action(
 // Handle admin capture
 add_action( 'admin_post_woo_alipay_fund_auth_capture', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-fund-auth' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_fund_auth_capture' );
     $order_id = absint( $_POST['order_id'] ?? 0 );
@@ -69,7 +69,7 @@ add_action( 'admin_post_woo_alipay_fund_auth_capture', function() {
     }
     $res = WC_Alipay_Fund_Auth::capture_order( $order_id, $amount );
     if ( is_wp_error( $res ) ) {
-        $order->add_order_note( __( 'Capture failed: ', 'woo-alipay-fund-auth' ) . $res->get_error_message() );
+        $order->add_order_note( __( 'Capture failed: ', 'woo-alipay' ) . $res->get_error_message() );
     }
     wp_safe_redirect( wp_get_referer() );
     exit;
@@ -78,7 +78,7 @@ add_action( 'admin_post_woo_alipay_fund_auth_capture', function() {
 // Handle admin unfreeze
 add_action( 'admin_post_woo_alipay_fund_auth_unfreeze', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-fund-auth' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_fund_auth_unfreeze' );
     $order_id = absint( $_POST['order_id'] ?? 0 );
@@ -89,7 +89,7 @@ add_action( 'admin_post_woo_alipay_fund_auth_unfreeze', function() {
     }
     $res = WC_Alipay_Fund_Auth::unfreeze_order( $order_id );
     if ( is_wp_error( $res ) ) {
-        $order->add_order_note( __( 'Unfreeze failed: ', 'woo-alipay-fund-auth' ) . $res->get_error_message() );
+        $order->add_order_note( __( 'Unfreeze failed: ', 'woo-alipay' ) . $res->get_error_message() );
     }
     wp_safe_redirect( wp_get_referer() );
     exit;
@@ -121,7 +121,7 @@ add_action( 'woocommerce_order_status_completed', function( $order_id ) {
     if ( $amount <= 0 ) { return; }
     $res = WC_Alipay_Fund_Auth::capture_order( $order_id, $amount );
     if ( is_wp_error( $res ) ) {
-        $order->add_order_note( __( 'Auto-capture failed: ', 'woo-alipay-fund-auth' ) . $res->get_error_message() );
+        $order->add_order_note( __( 'Auto-capture failed: ', 'woo-alipay' ) . $res->get_error_message() );
     }
 }, 10, 1 );
 
@@ -134,7 +134,7 @@ add_action( 'woocommerce_order_status_cancelled', function( $order_id ) {
     if ( empty( $settings['unfreeze_on_cancel'] ) || 'yes' !== $settings['unfreeze_on_cancel'] ) { return; }
     $res = WC_Alipay_Fund_Auth::unfreeze_order( $order_id );
     if ( is_wp_error( $res ) ) {
-        $order->add_order_note( __( 'Auto-unfreeze failed: ', 'woo-alipay-fund-auth' ) . $res->get_error_message() );
+        $order->add_order_note( __( 'Auto-unfreeze failed: ', 'woo-alipay' ) . $res->get_error_message() );
     }
 }, 10, 1 );
 

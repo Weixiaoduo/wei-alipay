@@ -19,7 +19,7 @@ add_action( 'init', function() {
     if ( ! function_exists( 'wcs_is_subscription' ) && ! class_exists( 'WC_Subscriptions' ) && ! class_exists( 'WC_Subscription' ) ) {
         if ( is_admin() ) {
             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Woo Alipay Subscriptions 需要 WooCommerce Subscriptions 插件支持。', 'woo-alipay-subscriptions' ) . '</p></div>';
+                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Woo Alipay Subscriptions 需要 WooCommerce Subscriptions 插件支持。', 'woo-alipay' ) . '</p></div>';
             } );
         }
         return;
@@ -28,7 +28,7 @@ add_action( 'init', function() {
     if ( ! class_exists( 'WC_Alipay' ) ) {
         if ( is_admin() ) {
             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-warning"><p>' . esc_html__( '请先安装并启用 Woo Alipay 核心插件。', 'woo-alipay-subscriptions' ) . '</p></div>';
+                echo '<div class="notice notice-warning"><p>' . esc_html__( '请先安装并启用 Woo Alipay 核心插件。', 'woo-alipay' ) . '</p></div>';
             } );
         }
         return;

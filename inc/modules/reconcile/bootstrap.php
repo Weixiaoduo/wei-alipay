@@ -28,7 +28,7 @@ add_action( 'plugins_loaded', function(){
 // Handle manual reconciliation submission
 add_action( 'admin_post_woo_alipay_reconcile_run', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-reconcile-pro' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_reconcile_run' );
 
@@ -36,13 +36,13 @@ add_action( 'admin_post_woo_alipay_reconcile_run', function() {
     $type = isset( $_POST['bill_type'] ) ? sanitize_key( wp_unslash( $_POST['bill_type'] ) ) : 'trade';
 
     if ( empty( $date ) ) {
-        set_transient( 'woo_alipay_reconcile_last_result', array( 'error' => __( '请选择日期。', 'woo-alipay-reconcile-pro' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_reconcile_last_result', array( 'error' => __( '请选择日期。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-reconcile-pro' ) );
         exit;
     }
 
     if ( ! class_exists( 'Woo_Alipay_Reconcile_Runner' ) ) {
-        set_transient( 'woo_alipay_reconcile_last_result', array( 'error' => __( '对账引擎未加载。', 'woo-alipay-reconcile-pro' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_reconcile_last_result', array( 'error' => __( '对账引擎未加载。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-reconcile-pro' ) );
         exit;
     }

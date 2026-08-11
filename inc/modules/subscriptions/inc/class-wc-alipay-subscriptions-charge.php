@@ -33,7 +33,7 @@ class WC_Alipay_Subscriptions_Charge {
         }
         if ( ! empty( $missing ) ) {
             self::log( 'error', 'Subscription charge blocked: missing core settings', array( 'order_id' => $order->get_id(), 'missing' => implode( '|', $missing ) ) );
-            return new WP_Error( 'config_missing', sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay-subscriptions' ), implode( ', ', $missing ) ) );
+            return new WP_Error( 'config_missing', sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing ) ) );
         }
 
         return $config;
@@ -70,7 +70,7 @@ class WC_Alipay_Subscriptions_Charge {
             $aop->charset = $config['charset'];
             $aop->signType = $config['sign_type'];
 
-            $subject = get_bloginfo( 'name' ) . ' - ' . sprintf( __( '订阅续费订单 #%s', 'woo-alipay-subscriptions' ), $order->get_id() );
+            $subject = get_bloginfo( 'name' ) . ' - ' . sprintf( __( '订阅续费订单 #%s', 'woo-alipay' ), $order->get_id() );
             $biz = array(
                 'out_trade_no'   => $out_trade_no,
                 'total_amount'   => number_format( (float) $amount, 2, '.', '' ),
@@ -100,7 +100,7 @@ class WC_Alipay_Subscriptions_Charge {
                     self::log( 'info', 'Subscription charge success', array( 'order_id' => $order->get_id(), 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no ) );
                     return array( 'success' => true, 'trade_no' => $trade_no );
                 }
-                return new WP_Error( 'no_trade_no', __( '支付宝返回成功但缺少交易号。', 'woo-alipay-subscriptions' ) );
+                return new WP_Error( 'no_trade_no', __( '支付宝返回成功但缺少交易号。', 'woo-alipay' ) );
             }
 
             $msg = isset( $result->sub_msg ) ? $result->sub_msg : ( isset( $result->msg ) ? $result->msg : 'Unknown error' );

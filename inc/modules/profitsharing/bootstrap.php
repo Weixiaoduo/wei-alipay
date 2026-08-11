@@ -77,7 +77,7 @@ add_action( 'plugins_loaded', function() {
 // Admin post handlers
 add_action( 'admin_post_woo_alipay_ps_save_settings', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_save_settings' );
 
@@ -95,14 +95,14 @@ add_action( 'admin_post_woo_alipay_ps_save_settings', function() {
     $settings['confirm_max_checks']  = isset( $_POST['confirm_max_checks'] ) ? max( 1, (int) $_POST['confirm_max_checks'] ) : 10;
 
     update_option( 'woo_alipay_ps_settings', $settings, false );
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '设置已保存。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '设置已保存。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
 
 add_action( 'admin_post_woo_alipay_ps_receivers_upsert', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_receivers_upsert' );
 
@@ -113,7 +113,7 @@ add_action( 'admin_post_woo_alipay_ps_receivers_upsert', function() {
     $id            = isset( $_POST['id'] ) ? sanitize_key( wp_unslash( $_POST['id'] ) ) : '';
 
     if ( empty( $identity ) || empty( $label ) ) {
-        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写标签与账号。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写标签与账号。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
         exit;
     }
@@ -133,14 +133,14 @@ add_action( 'admin_post_woo_alipay_ps_receivers_upsert', function() {
     );
 
     update_option( 'woo_alipay_ps_receivers', $list, false );
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '收款方已保存。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '收款方已保存。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
 
 add_action( 'admin_post_woo_alipay_ps_receivers_delete', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_receivers_delete' );
 
@@ -148,21 +148,21 @@ add_action( 'admin_post_woo_alipay_ps_receivers_delete', function() {
     $list = get_option( 'woo_alipay_ps_receivers', array() );
     if ( isset( $list[ $id ] ) ) { unset( $list[ $id ] ); }
     update_option( 'woo_alipay_ps_receivers', $list, false );
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '收款方已删除。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '收款方已删除。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
 
 add_action( 'admin_post_woo_alipay_ps_rules_save', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_rules_save' );
 
     $saved = get_option( 'woo_alipay_ps_rules', array( 'default' => array(), 'category' => array() ) );
     if ( ! isset( $saved['category'] ) || ! is_array( $saved['category'] ) ) { $saved['category'] = array(); }
 
-    $default_percent = isset( $_POST['default_percent'] ) && is_array( $_POST['default_percent'] ) ? $_POST['default_percent'] : array();
+    $default_percent = isset( $_POST['default_percent'] ) && is_array( $_POST['default_percent'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['default_percent'] ) ) : array();
     $rules = array( 'default' => array(), 'category' => $saved['category'] );
     $sum = 0.0;
     foreach ( $default_percent as $rid => $pct ) {
@@ -173,10 +173,10 @@ add_action( 'admin_post_woo_alipay_ps_rules_save', function() {
         }
     }
     if ( $sum > 100.0001 ) {
-        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '规则总比例超过 100%，请调整。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '规则总比例超过 100%，请调整。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     } else {
         update_option( 'woo_alipay_ps_rules', $rules, false );
-        set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '规则已保存。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '规则已保存。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     }
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
@@ -185,7 +185,7 @@ add_action( 'admin_post_woo_alipay_ps_rules_save', function() {
 // Category rule add
 add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_category_rule_add' );
 
@@ -194,7 +194,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
     $percent     = isset( $_POST['percent'] ) ? (float) $_POST['percent'] : 0;
 
     if ( empty( $cat_id ) || empty( $receiver_id ) || $percent <= 0 ) {
-        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写类目、收款方与比例。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写类目、收款方与比例。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
         exit;
     }
@@ -210,7 +210,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
         $sum += (float) ( $r['percent'] ?? 0 );
     }
     if ( $sum + $percent > 100.0001 ) {
-        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '该类目下的分账比例累计超过 100%，请调整。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '该类目下的分账比例累计超过 100%，请调整。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
         exit;
     }
@@ -218,7 +218,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
     $rules['category'][ $cat_id ][] = array( 'receiver_id' => $receiver_id, 'percent' => $percent );
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '类目规则已添加。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '类目规则已添加。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
@@ -226,11 +226,11 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
 // Product rule add
 add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_product_rule_add' );
 
-    $raw_product = isset( $_POST['product_id'] ) ? wp_unslash( $_POST['product_id'] ) : '';
+    $raw_product = isset( $_POST['product_id'] ) && is_scalar( $_POST['product_id'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['product_id'] ) ) : '';
     if ( is_string( $raw_product ) && preg_match( '/(\d{1,10})/', $raw_product, $m ) ) {
         $product_id = (string) absint( $m[1] );
     } else {
@@ -240,7 +240,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
     $percent     = isset( $_POST['percent'] ) ? (float) $_POST['percent'] : 0;
 
     if ( empty( $product_id ) || empty( $receiver_id ) || $percent <= 0 ) {
-        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写商品、收款方与比例。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写商品、收款方与比例。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
         exit;
     }
@@ -253,7 +253,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
     $sum = 0.0;
     foreach ( $rules['product'][ $product_id ] as $r ) { $sum += (float) ( $r['percent'] ?? 0 ); }
     if ( $sum + $percent > 100.0001 ) {
-        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '该商品下的分账比例累计超过 100%，请调整。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '该商品下的分账比例累计超过 100%，请调整。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
         exit;
     }
@@ -261,7 +261,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
     $rules['product'][ $product_id ][] = array( 'receiver_id' => $receiver_id, 'percent' => $percent );
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '商品规则已添加。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '商品规则已添加。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
@@ -269,11 +269,11 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
 // Product rule delete
 add_action( 'admin_post_woo_alipay_ps_product_rule_delete', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_product_rule_delete' );
 
-    $product_id  = isset( $_POST['product_id'] ) ? (string) absint( $_POST['product_id'] ) : '';
+    $product_id  = isset( $_POST['product_id'] ) ? (string) absint( wp_unslash( $_POST['product_id'] ) ) : '';
     $receiver_id = isset( $_POST['receiver_id'] ) ? sanitize_key( wp_unslash( $_POST['receiver_id'] ) ) : '';
 
     $rules = get_option( 'woo_alipay_ps_rules', array( 'default' => array(), 'category' => array(), 'product' => array() ) );
@@ -285,7 +285,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_delete', function() {
     }
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '商品规则已删除。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '商品规则已删除。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
@@ -293,7 +293,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_delete', function() {
 // Category rule delete
 add_action( 'admin_post_woo_alipay_ps_category_rule_delete', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_category_rule_delete' );
 
@@ -309,14 +309,14 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_delete', function() {
     }
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
-    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '类目规则已删除。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+    set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '类目规则已删除。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( admin_url( 'admin.php?page=woo-alipay-profitsharing' ) );
     exit;
 } );
 
 add_action( 'admin_post_woo_alipay_ps_settle_order', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_settle_order' );
 
@@ -336,7 +336,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order', function() {
     if ( 'sync' === $mode ) {
         $jobs = Woo_Alipay_PS_Service::compute_jobs_for_order( $order );
         if ( empty( $jobs ) ) {
-            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '没有可结算的分账项。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '没有可结算的分账项。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         } else {
             $res = Woo_Alipay_PS_Service::settle_order( $order, $jobs, array( 'reason' => 'manual' ) );
             if ( ! empty( $res['error'] ) ) {
@@ -345,15 +345,15 @@ add_action( 'admin_post_woo_alipay_ps_settle_order', function() {
                 // Schedule confirm
                 $ci = isset( $settings['confirm_interval'] ) ? max( 30, (int) $settings['confirm_interval'] ) : 60;
                 Woo_Alipay_PS_Service::schedule_as_job( $order_id, 'confirm', $ci );
-                set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已发起结算并安排确认。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+                set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已发起结算并安排确认。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
             }
         }
     } else {
         $jid = Woo_Alipay_PS_Service::enqueue_settle_job( $order_id, 'manual' );
         if ( ! $jid ) {
-            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '未能加入队列（可能因币种/支付方式不匹配）。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '未能加入队列（可能因币种/支付方式不匹配）。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         } else {
-            set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已加入后台队列处理。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已加入后台队列处理。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         }
     }
 
@@ -364,7 +364,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order', function() {
 // Cron schedules for job processor
 add_filter( 'cron_schedules', function( $schedules ) {
     if ( ! isset( $schedules['one_minute'] ) ) {
-        $schedules['one_minute'] = array( 'interval' => 60, 'display' => __( 'Every Minute', 'woo-alipay-profitsharing' ) );
+        $schedules['one_minute'] = array( 'interval' => 60, 'display' => __( 'Every Minute', 'woo-alipay' ) );
     }
     return $schedules;
 } );
@@ -382,6 +382,7 @@ add_action( 'init', function() {
 
 // AJAX: product search for admin autocomplete
 add_action( 'wp_ajax_woo_alipay_ps_search_products', function() {
+    check_ajax_referer( 'woo_alipay_ps_search', 'nonce' );
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
         wp_send_json_success( array() );
     }
@@ -408,6 +409,7 @@ add_action( 'wp_ajax_woo_alipay_ps_search_products', function() {
 
 // AJAX: category search for admin autocomplete
 add_action( 'wp_ajax_woo_alipay_ps_search_categories', function() {
+    check_ajax_referer( 'woo_alipay_ps_search', 'nonce' );
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
         wp_send_json_success( array() );
     }
@@ -459,7 +461,7 @@ add_action( 'woocommerce_order_refunded', function( $order_id, $refund_id ) {
 // Convert suggestion into compensation and send
 add_action( 'admin_post_woo_alipay_ps_compensate_from_suggestion', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_compensate_from_suggestion' );
     $order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
@@ -525,7 +527,7 @@ if ( function_exists( 'add_action' ) ) {
 // Clear succeeded jobs
 add_action( 'admin_post_woo_alipay_ps_jobs_clear', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_jobs_clear' );
     $jobs = get_option( 'woo_alipay_ps_jobs', array() );
@@ -544,7 +546,7 @@ add_action( 'admin_post_woo_alipay_ps_jobs_clear', function() {
 // Clear failed jobs older than N days
 add_action( 'admin_post_woo_alipay_ps_jobs_clear_old_failed', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_jobs_clear_old_failed' );
     $days = isset( $_POST['days'] ) ? max( 1, (int) $_POST['days'] ) : 7;
@@ -566,10 +568,11 @@ add_action( 'admin_post_woo_alipay_ps_jobs_clear_old_failed', function() {
 // Export jobs CSV
 add_action( 'admin_post_woo_alipay_ps_jobs_export', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
+    check_admin_referer( 'woo_alipay_ps_jobs_export' );
     $status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
-    $error_only = isset( $_GET['error_only'] ) && '1' === $_GET['error_only'];
+    $error_only = isset( $_GET['error_only'] ) && '1' === sanitize_text_field( wp_unslash( $_GET['error_only'] ) );
 
     $jobs = get_option( 'woo_alipay_ps_jobs', array() );
     if ( $status ) {
@@ -603,14 +606,14 @@ add_action( 'admin_post_woo_alipay_ps_jobs_export', function() {
             (string) ( $j['last_error'] ?? '' ),
         ) );
     }
-    fclose( $out );
+    fclose( $out ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- authorized CSV response stream is not a filesystem write.
     exit;
 } );
 
 // New round: clear out_request_no and settled flag, then enqueue
 add_action( 'admin_post_woo_alipay_ps_settle_order_new_round', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_settle_order_new_round' );
 
@@ -633,7 +636,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order_new_round', function() {
     if ( 'sync' === $mode ) {
         $jobs = Woo_Alipay_PS_Service::compute_jobs_for_order( $order );
         if ( empty( $jobs ) ) {
-            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '没有可结算的分账项。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '没有可结算的分账项。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         } else {
             $res = Woo_Alipay_PS_Service::settle_order( $order, $jobs, array( 'reason' => 'manual_new_round' ) );
             if ( ! empty( $res['error'] ) ) {
@@ -641,15 +644,15 @@ add_action( 'admin_post_woo_alipay_ps_settle_order_new_round', function() {
             } else {
                 $ci = isset( $settings['confirm_interval'] ) ? max( 30, (int) $settings['confirm_interval'] ) : 60;
                 Woo_Alipay_PS_Service::schedule_as_job( $order_id, 'confirm', $ci );
-                set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已发起新一轮结算并安排确认。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+                set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已发起新一轮结算并安排确认。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
             }
         }
     } else {
         $jid = Woo_Alipay_PS_Service::enqueue_settle_job( $order_id, 'manual_new_round' );
         if ( ! $jid ) {
-            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '未能加入队列（可能因币种/支付方式不匹配）。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '未能加入队列（可能因币种/支付方式不匹配）。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         } else {
-            set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已开始新一轮结算并加入队列。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '已开始新一轮结算并加入队列。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         }
     }
 
@@ -660,7 +663,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order_new_round', function() {
 // Query settlement result
 add_action( 'admin_post_woo_alipay_ps_query', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
-        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay-profitsharing' ) );
+        wp_die( esc_html__( 'You are not allowed to do this.', 'woo-alipay' ) );
     }
     check_admin_referer( 'woo_alipay_ps_query' );
 
@@ -672,7 +675,7 @@ add_action( 'admin_post_woo_alipay_ps_query', function() {
     }
 
     if ( empty( $out_request_no ) && empty( $trade_no ) ) {
-        set_transient( 'woo_alipay_ps_query_result', array( 'error' => __( '请提供 out_request_no 或 trade_no。', 'woo-alipay-profitsharing' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_query_result', array( 'error' => __( '请提供 out_request_no 或 trade_no。', 'woo-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     } else {
         $res = Woo_Alipay_PS_Service::query_settle( array( 'out_request_no' => $out_request_no, 'trade_no' => $trade_no ) );
         set_transient( 'woo_alipay_ps_query_result', $res, 10 * MINUTE_IN_SECONDS );

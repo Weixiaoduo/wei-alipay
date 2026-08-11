@@ -19,6 +19,7 @@ $purge_current_site = static function() {
 		'woocommerce_acbop_settings',
 		'woo_alipay_plugin_version',
 		'woo_alipay_schema_version',
+		'woo_alipay_secret_rollback_v1',
 	) as $option ) {
 		delete_option( $option );
 	}

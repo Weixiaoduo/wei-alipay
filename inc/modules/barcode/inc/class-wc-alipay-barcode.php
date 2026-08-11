@@ -22,8 +22,8 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
 
     public function __construct( $init_hooks = true ) {
         $this->id                 = self::GATEWAY_ID;
-        $this->method_title       = __( 'Alipay Barcode Pay', 'woo-alipay-barcode' );
-        $this->method_description = __( '使用支付宝条码/二维码完成当面收款（商户扫码枪或顾客出示付款码）。此网关复用 Woo Alipay 核心插件中的凭据。', 'woo-alipay-barcode' );
+        $this->method_title       = __( 'Alipay Barcode Pay', 'woo-alipay' );
+        $this->method_description = __( '使用支付宝条码/二维码完成当面收款（商户扫码枪或顾客出示付款码）。此网关复用 Woo Alipay 核心插件中的凭据。', 'woo-alipay' );
         $this->has_fields         = true; // 前台显示 auth_code 输入
         $this->icon               = apply_filters( 'woo_alipay_barcode_icon', WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-barcode-icon.svg' );
 
@@ -32,8 +32,8 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         $this->init_settings();
 
         $this->enabled               = $this->get_option( 'enabled', 'no' );
-        $this->title                 = $this->get_option( 'title', __( '支付宝条码支付', 'woo-alipay-barcode' ) );
-        $this->description           = $this->get_option( 'description', __( '请向收银员出示支付宝付款码，或在下方输入条码数字。', 'woo-alipay-barcode' ) );
+        $this->title                 = $this->get_option( 'title', __( '支付宝条码支付', 'woo-alipay' ) );
+        $this->description           = $this->get_option( 'description', __( '请向收银员出示支付宝付款码，或在下方输入条码数字。', 'woo-alipay' ) );
         $this->allow_frontend_input  = $this->get_option( 'allow_frontend_input', 'yes' );
         $this->pos_enabled           = $this->get_option( 'pos_enabled', 'yes' );
         $this->debug                 = $this->get_option( 'debug', 'no' );
@@ -52,45 +52,45 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
     public function init_form_fields() {
         $this->form_fields = array(
             'basic' => array(
-                'title'       => __( '基本设置', 'woo-alipay-barcode' ),
+                'title'       => __( '基本设置', 'woo-alipay' ),
                 'type'        => 'title',
-                'description' => __( '此网关使用 Woo Alipay 核心插件的凭据（应用ID/密钥/公钥等），无需在此重复配置。', 'woo-alipay-barcode' ),
+                'description' => __( '此网关使用 Woo Alipay 核心插件的凭据（应用ID/密钥/公钥等），无需在此重复配置。', 'woo-alipay' ),
             ),
             'enabled' => array(
-                'title'   => __( '启用/禁用', 'woo-alipay-barcode' ),
+                'title'   => __( '启用/禁用', 'woo-alipay' ),
                 'type'    => 'checkbox',
-                'label'   => __( '启用条码支付', 'woo-alipay-barcode' ),
+                'label'   => __( '启用条码支付', 'woo-alipay' ),
                 'default' => 'no',
             ),
             'title' => array(
-                'title'       => __( '结账页面标题', 'woo-alipay-barcode' ),
+                'title'       => __( '结账页面标题', 'woo-alipay' ),
                 'type'        => 'text',
-                'default'     => __( '支付宝条码支付', 'woo-alipay-barcode' ),
+                'default'     => __( '支付宝条码支付', 'woo-alipay' ),
                 'desc_tip'    => true,
-                'description' => __( '在结账页面显示的支付方式名称', 'woo-alipay-barcode' ),
+                'description' => __( '在结账页面显示的支付方式名称', 'woo-alipay' ),
             ),
             'description' => array(
-                'title'       => __( '结账页面说明', 'woo-alipay-barcode' ),
+                'title'       => __( '结账页面说明', 'woo-alipay' ),
                 'type'        => 'textarea',
-                'default'     => __( '请向收银员出示支付宝付款码，或在下方输入条码数字。', 'woo-alipay-barcode' ),
+                'default'     => __( '请向收银员出示支付宝付款码，或在下方输入条码数字。', 'woo-alipay' ),
             ),
             'allow_frontend_input' => array(
-                'title'       => __( '前台输入付款码', 'woo-alipay-barcode' ),
+                'title'       => __( '前台输入付款码', 'woo-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( '允许买家在结账页输入付款码', 'woo-alipay-barcode' ),
+                'label'       => __( '允许买家在结账页输入付款码', 'woo-alipay' ),
                 'default'     => 'yes',
-                'description' => __( '适用于自提/到店核销场景；线上邮寄通常不需要买家输入。', 'woo-alipay-barcode' ),
+                'description' => __( '适用于自提/到店核销场景；线上邮寄通常不需要买家输入。', 'woo-alipay' ),
             ),
             'pos_enabled' => array(
-                'title'       => __( '后台 POS', 'woo-alipay-barcode' ),
+                'title'       => __( '后台 POS', 'woo-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( '在订单编辑页显示“条码收款”模块', 'woo-alipay-barcode' ),
+                'label'       => __( '在订单编辑页显示“条码收款”模块', 'woo-alipay' ),
                 'default'     => 'yes',
             ),
             'debug' => array(
-                'title'       => __( '调试日志', 'woo-alipay-barcode' ),
+                'title'       => __( '调试日志', 'woo-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( '启用日志记录', 'woo-alipay-barcode' ),
+                'label'       => __( '启用日志记录', 'woo-alipay' ),
                 'default'     => 'no',
             ),
         );
@@ -118,17 +118,17 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
-        echo wpautop( wp_kses_post( $this->description ) );
+        echo wp_kses_post( wpautop( $this->description ) );
         if ( 'yes' === $this->allow_frontend_input ) {
-            echo '<p><label for="alipay_auth_code">' . esc_html__( '付款码', 'woo-alipay-barcode' ) . '</label><input type="text" id="alipay_auth_code" name="alipay_auth_code" style="width: 260px;" placeholder="2853 1234 5678 9012 345" /></p>';
+            echo '<p><label for="alipay_auth_code">' . esc_html__( '付款码', 'woo-alipay' ) . '</label><input type="text" id="alipay_auth_code" name="alipay_auth_code" style="width: 260px;" placeholder="2853 1234 5678 9012 345" /></p>';
         }
     }
 
     public function validate_fields() {
         if ( 'yes' === $this->allow_frontend_input ) {
-            $auth_code = isset( $_POST['alipay_auth_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['alipay_auth_code'] ) ) ) : '';
+            $auth_code = isset( $_POST['alipay_auth_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['alipay_auth_code'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout request; order/customer authorization is handled by checkout.
             if ( empty( $auth_code ) ) {
-                wc_add_notice( __( '请输入支付宝付款码。', 'woo-alipay-barcode' ), 'error' );
+                wc_add_notice( __( '请输入支付宝付款码。', 'woo-alipay' ), 'error' );
                 return false;
             }
         }
@@ -138,11 +138,11 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
     public function process_payment( $order_id ) {
         $order = wc_get_order( $order_id );
         if ( ! $order ) {
-            return array( 'result' => 'failure', 'messages' => __( '订单不存在。', 'woo-alipay-barcode' ) );
+            return array( 'result' => 'failure', 'messages' => __( '订单不存在。', 'woo-alipay' ) );
         }
 
         // Read auth code from classic checkout field.
-        $auth_code = isset( $_POST['alipay_auth_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['alipay_auth_code'] ) ) ) : '';
+        $auth_code = isset( $_POST['alipay_auth_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['alipay_auth_code'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout request; order/customer authorization is handled by checkout.
 
         // Fallback for Checkout Block: retrieve from order meta (saved during Store API request).
         if ( empty( $auth_code ) ) {
@@ -154,7 +154,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
 
         if ( empty( $auth_code ) ) {
             // Respect setting: if front-end input is required, enforce presence; otherwise still require as it is essential.
-            return array( 'result' => 'failure', 'messages' => __( '请输入支付宝付款码。', 'woo-alipay-barcode' ) );
+            return array( 'result' => 'failure', 'messages' => __( '请输入支付宝付款码。', 'woo-alipay' ) );
         }
 
         $result = $this->attempt_barcode_charge( $order, $auth_code );
@@ -187,7 +187,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
 
             $aop = Alipay_SDK_Helper::create_alipay_service( $config );
             if ( ! $aop ) {
-                return new WP_Error( 'sdk_error', __( '创建支付宝服务失败', 'woo-alipay-barcode' ) );
+                return new WP_Error( 'sdk_error', __( '创建支付宝服务失败', 'woo-alipay' ) );
             }
 
             $out_trade_no = (string) $order->get_meta( '_alipay_out_trade_no' );
@@ -220,7 +220,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
             $res      = isset( $response->$node ) ? $response->$node : null;
 
             if ( ! $res || ! isset( $res->code ) ) {
-                return new WP_Error( 'alipay_error', __( '支付宝响应异常。', 'woo-alipay-barcode' ) );
+                return new WP_Error( 'alipay_error', __( '支付宝响应异常。', 'woo-alipay' ) );
             }
 
             if ( '10000' === (string) $res->code ) {
@@ -229,22 +229,22 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
                 $response_out_trade_no = isset( $res->out_trade_no ) ? (string) $res->out_trade_no : '';
                 $response_amount = isset( $res->total_amount ) ? (string) $res->total_amount : '';
                 if ( !$trade_no || !hash_equals( $out_trade_no, $response_out_trade_no ) || !Alipay_SDK_Helper::amounts_equal( $total, $response_amount ) ) {
-                    return new WP_Error( 'alipay_context_mismatch', __( '支付宝即时响应与订单不匹配。', 'woo-alipay-barcode' ) );
+                    return new WP_Error( 'alipay_context_mismatch', __( '支付宝即时响应与订单不匹配。', 'woo-alipay' ) );
                 }
                 $order->payment_complete( $trade_no );
-                $order->add_order_note( __( '条码支付成功（即时返回）。', 'woo-alipay-barcode' ) );
+                $order->add_order_note( __( '条码支付成功（即时返回）。', 'woo-alipay' ) );
                 WC()->cart && WC()->cart->empty_cart();
                 return true;
             }
 
             if ( '10003' === (string) $res->code ) {
                 // 用户支付中，等待回调/查询
-                $order->update_status( 'on-hold', __( '用户正在支付中，等待确认。', 'woo-alipay-barcode' ) );
-                $order->add_order_note( __( '条码支付返回 USER_PAYING，等待异步通知或后续查询。', 'woo-alipay-barcode' ) );
+                $order->update_status( 'on-hold', __( '用户正在支付中，等待确认。', 'woo-alipay' ) );
+                $order->add_order_note( __( '条码支付返回 USER_PAYING，等待异步通知或后续查询。', 'woo-alipay' ) );
                 return true;
             }
 
-            $msg = isset( $res->sub_msg ) ? (string) $res->sub_msg : ( isset( $res->msg ) ? (string) $res->msg : __( '支付失败', 'woo-alipay-barcode' ) );
+            $msg = isset( $res->sub_msg ) ? (string) $res->sub_msg : ( isset( $res->msg ) ? (string) $res->msg : __( '支付失败', 'woo-alipay' ) );
             return new WP_Error( 'alipay_pay_failed', $msg );
         } catch ( Exception $e ) {
             return new WP_Error( 'exception', $e->getMessage() );
@@ -263,7 +263,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         }
         return new WP_Error(
             'unsupported_currency',
-            __( '当前订单币种需要先配置人民币汇率，已阻止发送错误金额。', 'woo-alipay-barcode' )
+            __( '当前订单币种需要先配置人民币汇率，已阻止发送错误金额。', 'woo-alipay' )
         );
     }
 
@@ -286,7 +286,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
     public function add_pos_metabox() {
         add_meta_box(
             'wc-alipay-barcode-pos',
-            __( '支付宝条码收款', 'woo-alipay-barcode' ),
+            __( '支付宝条码收款', 'woo-alipay' ),
             array( $this, 'render_pos_metabox' ),
             'shop_order',
             'side',
@@ -300,7 +300,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         if ( ! current_user_can( 'manage_woocommerce' ) ) { return; }
         wp_nonce_field( 'woo_alipay_barcode_pos', 'woo_alipay_barcode_nonce' );
         echo '<p><input type="text" id="alipay_auth_code_admin" placeholder="2853 1234 5678 9012 345" style="width:100%;" /></p>';
-        echo '<p><a href="#" class="button button-primary" id="alipay-barcode-charge" data-order-id="' . esc_attr( $order->get_id() ) . '">' . esc_html__( '条码收款', 'woo-alipay-barcode' ) . '</a></p>';
+        echo '<p><a href="#" class="button button-primary" id="alipay-barcode-charge" data-order-id="' . esc_attr( $order->get_id() ) . '">' . esc_html__( '条码收款', 'woo-alipay' ) . '</a></p>';
         echo '<div id="alipay-barcode-charge-result"></div>';
         // 简易内联脚本（仅订单页生效，不干扰支付设置 React）
         echo '<script>jQuery(function($){$("#alipay-barcode-charge").on("click",function(e){e.preventDefault();var $btn=$(this);var code=$("#alipay_auth_code_admin").val()||"";if(!code){alert("请输入付款码");return;} $btn.prop("disabled",true);$("#alipay-barcode-charge-result").text("处理中...");$.post(ajaxurl,{action:"woo_alipay_barcode_charge",order_id:$btn.data("order-id"),auth_code:code,nonce:$("#woo_alipay_barcode_nonce").val()},function(resp){$btn.prop("disabled",false);if(resp&&resp.success){$("#alipay-barcode-charge-result").html("<span style=\"color:green\">"+(resp.data&&resp.data.message?resp.data.message:"成功")+"</span>");}else{$("#alipay-barcode-charge-result").html("<span style=\"color:red\">"+(resp&&resp.data?resp.data:"失败")+"</span>");}});});});</script>';
@@ -308,23 +308,23 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
 
     public function ajax_pos_charge() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) {
-            wp_send_json_error( __( '权限不足', 'woo-alipay-barcode' ) );
+            wp_send_json_error( __( '权限不足', 'woo-alipay' ) );
         }
         check_admin_referer( 'woo_alipay_barcode_pos', 'nonce' );
         $order_id  = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
-        $auth_code = isset( $_POST['auth_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['auth_code'] ) ) ) : '';
+        $auth_code = isset( $_POST['auth_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['auth_code'] ) ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout request; order/customer authorization is handled by checkout.
         $order     = wc_get_order( $order_id );
         if ( ! $order ) {
-            wp_send_json_error( __( '订单不存在', 'woo-alipay-barcode' ) );
+            wp_send_json_error( __( '订单不存在', 'woo-alipay' ) );
         }
         if ( empty( $auth_code ) ) {
-            wp_send_json_error( __( '请输入付款码', 'woo-alipay-barcode' ) );
+            wp_send_json_error( __( '请输入付款码', 'woo-alipay' ) );
         }
         $res = $this->attempt_barcode_charge( $order, $auth_code );
         if ( is_wp_error( $res ) ) {
             wp_send_json_error( $res->get_error_message() );
         }
-        wp_send_json_success( array( 'message' => __( '已发起收款，请关注订单状态。', 'woo-alipay-barcode' ) ) );
+        wp_send_json_success( array( 'message' => __( '已发起收款，请关注订单状态。', 'woo-alipay' ) ) );
     }
 
     // 异步通知处理（基础占位，后续可增强签名校验与订单校验逻辑）
@@ -386,10 +386,10 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         if ( 'process_payment' === $transition ) {
             if ( ! $order->is_paid() ) {
                 $order->payment_complete( $trade_no );
-                $order->add_order_note( __( '支付宝条码支付成功（异步通知）。', 'woo-alipay-barcode' ) );
+                $order->add_order_note( __( '支付宝条码支付成功（异步通知）。', 'woo-alipay' ) );
             }
         } elseif ( 'process_close' === $transition ) {
-            $order->update_status( 'cancelled', __( '支付宝关闭交易。', 'woo-alipay-barcode' ) );
+            $order->update_status( 'cancelled', __( '支付宝关闭交易。', 'woo-alipay' ) );
         }
         Alipay_SDK_Helper::release_lock( 'notify', $out_trade_no, $lock );
         echo 'success';
