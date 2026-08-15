@@ -7,6 +7,7 @@ class WC_Payment_Token_Alipay_Agreement extends WC_Payment_Token {
 
     public function get_display_name( $deprecated = '' ) {
         $agreement = $this->get_agreement_no();
+        /* translators: %s: last 6 characters of the agreement number */
         return sprintf( __( '支付宝代扣协议 %s', 'woo-alipay' ), $agreement ? '#' . substr( $agreement, -6 ) : '' );
     }
 

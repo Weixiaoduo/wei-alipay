@@ -28,7 +28,10 @@ if (!defined('ABSPATH')) {
     <div class="alipay-qrcode-header">
         <h2><?php esc_html_e( '请使用支付宝扫码支付', 'woo-alipay' ); ?></h2>
         <div class="order-info">
-            <?php echo esc_html( sprintf( __( '订单号: #%s', 'woo-alipay' ), $order->get_id() ) ); ?>
+            <?php
+            /* translators: %s: order ID */
+            echo esc_html( sprintf( __( '订单号: #%s', 'woo-alipay' ), $order->get_id() ) );
+            ?>
         </div>
         <div class="order-amount">
             ¥<?php echo esc_html( number_format_i18n( $order->get_total(), 2 ) ); ?>

@@ -103,6 +103,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         }
         $missing = $this->get_missing_core_fields();
         if ( ! empty( $missing ) ) {
+            /* translators: %s: comma-separated list of missing configuration field names */
             echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay fund auth requires core credentials. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing ) ) ) . '</p></div>';
         }
     }
@@ -352,6 +353,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         $payment_id = $res['payment_id'] ?? '';
         // Update captured total
         $inst->add_captured_amount( $order, $amount );
+        /* translators: %1$s: payment ID. %2$.2f: captured amount. */
         $order->add_order_note( sprintf( __( 'Capture success: payment_id %1$s amount %2$.2f', 'woo-alipay' ), $payment_id ?: '-', $amount ) );
         // Complete order only if fully paid
         $captured_total = (float) $order->get_meta( '_alipay_captured_total', true );
@@ -376,6 +378,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         }
         $res = $inst->unfreeze_funds( $order, $amount );
         if ( is_wp_error( $res ) ) { return $res; }
+        /* translators: %.2f: unfrozen amount */
         $order->add_order_note( sprintf( __( 'Unfreeze success: amount %.2f', 'woo-alipay' ), $amount ) );
         return true;
     }
@@ -388,6 +391,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
 
         $missing_fields = $this->get_missing_core_fields();
         if ( ! empty( $missing_fields ) ) {
+            /* translators: %s: comma-separated list of missing configuration field names */
             $msg = sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) );
             wc_add_notice( $msg, 'error' );
             self::log_msg( 'Payment blocked: missing core settings', 'error', array( 'order_id' => $order_id, 'missing' => implode( '|', $missing_fields ) ) );
@@ -403,6 +407,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             $auth_no = 'SIM-AUTH-' . time();
             $order->update_meta_data( '_alipay_auth_no', $auth_no );
             $order->update_meta_data( '_alipay_auth_amount', number_format( $amount, 2, '.', '' ) );
+            /* translators: %1$s: authorization number. %2$.2f: frozen amount. */
             $order->add_order_note( sprintf( __( 'Simulated fund authorization: AUTH %1$s Frozen %2$.2f', 'woo-alipay' ), $auth_no, $amount ) );
             $order->update_status( 'on-hold', __( 'Funds authorized (simulated).', 'woo-alipay' ) );
             $order->save();
@@ -421,6 +426,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             self::log_msg( 'Freeze failed', 'error', array( 'order_id' => $order_id, 'error' => $freeze->get_error_message() ) );
             return array( 'result' => 'failure', 'messages' => $freeze->get_error_message() );
         }
+        /* translators: %1$s: authorization number. %2$.2f: frozen amount. */
         $order->add_order_note( sprintf( __( 'Fund authorized: AUTH %1$s Frozen %2$.2f', 'woo-alipay' ), $freeze['auth_no'] ?? '-', $amount ) );
         // Reset captured_total on new authorization
         $order->update_meta_data( '_alipay_captured_total', $this->format_amount( 0 ) );

@@ -33,6 +33,7 @@ class WC_Alipay_Subscriptions_Charge {
         }
         if ( ! empty( $missing ) ) {
             self::log( 'error', 'Subscription charge blocked: missing core settings', array( 'order_id' => $order->get_id(), 'missing' => implode( '|', $missing ) ) );
+            /* translators: %s: comma-separated list of missing configuration field names */
             return new WP_Error( 'config_missing', sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing ) ) );
         }
 
@@ -70,6 +71,7 @@ class WC_Alipay_Subscriptions_Charge {
             $aop->charset = $config['charset'];
             $aop->signType = $config['sign_type'];
 
+            /* translators: %s: order ID */
             $subject = get_bloginfo( 'name' ) . ' - ' . sprintf( __( '订阅续费订单 #%s', 'woo-alipay' ), $order->get_id() );
             $biz = array(
                 'out_trade_no'   => $out_trade_no,

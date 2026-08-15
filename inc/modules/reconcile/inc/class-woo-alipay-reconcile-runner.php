@@ -132,6 +132,7 @@ class Woo_Alipay_Reconcile_Runner {
                 return new WP_Error( 'no_csv', __( '压缩包中未找到 CSV 文件。', 'woo-alipay' ) );
             }
             // ZipArchive not available; store the zip and ask user to process manually.
+            /* translators: %s: path to the downloaded ZIP file */
             return new WP_Error( 'zip_archive_missing', sprintf( __( '已下载 ZIP 文件：%s，请手动解压后上传解析。', 'woo-alipay' ), $zip_path ) );
         }
 

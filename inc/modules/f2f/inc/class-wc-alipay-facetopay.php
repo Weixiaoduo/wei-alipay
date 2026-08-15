@@ -176,6 +176,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                 'label' => __('启用日志记录', 'woo-alipay'),
                 'default' => 'no',
                 'description' => sprintf(
+                    /* translators: %s: log file path */
                     __('记录当面付相关日志到 %s', 'woo-alipay'),
                     '<code>' . WC_Log_Handler_File::get_log_file_path($this->id) . '</code>'
                 ),
@@ -187,6 +188,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                 'title' => __('汇率', 'woo-alipay'),
                 'type' => 'number',
                 'description' => sprintf(
+                    /* translators: %s: store currency code */
                     __('设置 %s 与人民币的汇率', 'woo-alipay'),
                     $this->current_currency
                 ),
@@ -455,6 +457,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                 if (!$order->is_paid()) {
                     $order->payment_complete($result['trade_no']);
                     $order->add_order_note(
+                        /* translators: %s: Alipay transaction number */
                         sprintf(__('当面付支付完成 - 交易号: %s', 'woo-alipay'), $result['trade_no'])
                     );
                 }
@@ -547,6 +550,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             if (!$order->is_paid()) {
                 $order->payment_complete($trade_no);
                 $order->add_order_note(
+                    /* translators: %s: Alipay transaction number */
                     sprintf(__('当面付支付完成 - 交易号: %s', 'woo-alipay'), $trade_no)
                 );
             }
@@ -602,6 +606,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             $node = 'alipay_trade_refund_response';
             $result = $response->$node;
             if (isset($result->code) && $result->code === '10000') {
+                /* translators: %s: refunded amount */
                 $order->add_order_note(sprintf(__('支付宝退款成功，金额：¥%s', 'woo-alipay'), number_format($refund_amount, 2)));
                 return true;
             }
@@ -643,6 +648,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
 
     protected function get_order_title($order)
     {
+        /* translators: %s: order ID */
         $title = get_bloginfo('name') . ' - ' . sprintf(__('订单 #%s', 'woo-alipay'), $order->get_id());
         return mb_substr($title, 0, 256);
     }

@@ -135,11 +135,13 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
      */
     function requirement_checks() { 
         if (!array_key_exists($this->selected_currency, $this->function->getAliPaySupportedCurrencies())) {
+            /* translators: %1s: store currency code */
             echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay is enabled, but the store currency is %1s, which is not supported.', 'woo-alipay' ), $this->selected_currency ) ) . '</p></div>';
         }
 
 		$missing_fields = $this->get_missing_core_fields();
 		if ( ! empty( $missing_fields ) ) {
+			/* translators: %s: comma-separated list of missing configuration field names */
 			echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
 		}
     }
@@ -411,6 +413,7 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 
 		$missing_fields = $this->get_missing_core_fields();
 		if ( ! empty( $missing_fields ) ) {
+			/* translators: %s: comma-separated list of missing configuration field names */
 			wc_add_notice( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) ), 'error' );
 			$this->log( 'Payment init blocked: missing core settings', array(
 				'missing'  => implode( '|', $missing_fields ),
@@ -485,6 +488,7 @@ class Woo_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 		$biz_content = array(
 			'out_trade_no' => $out_trade_no,
 			'total_amount' => Alipay_SDK_Helper::format_amount( $order->get_total() ),
+			/* translators: %s: order number */
 			'subject'      => sprintf( __( 'Order #%s', 'woo-alipay' ), $order->get_order_number() ),
 			'product_code' => $product_code,
 		);

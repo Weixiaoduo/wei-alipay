@@ -119,6 +119,7 @@ class Woo_Alipay_Reconcile_Admin {
             } else {
                 echo '<div class="notice notice-success"><p>' . esc_html__( '对账执行完成。', 'woo-alipay' ) . '</p></div>';
                 echo '<p>';
+                /* translators: %1$s: bill date. %2$s: bill type. %3$d: total row count. %4$d: matched count. %5$d: mismatched count. %6$d: unmatched count. */
                 printf( esc_html__( '账单日期：%1$s，类型：%2$s。总行数：%3$d，匹配：%4$d，金额不一致：%5$d，未匹配：%6$d。', 'woo-alipay' ),
                     esc_html( $last['date'] ?? '' ),
                     esc_html( $last['bill_type'] ?? '' ),
@@ -129,6 +130,7 @@ class Woo_Alipay_Reconcile_Admin {
                 );
                 echo '</p>';
                 if ( ! empty( $last['file_url'] ) ) {
+                    /* translators: %s: link to the downloaded source file */
                     echo '<p>' . sprintf( esc_html__( '下载源文件：%s', 'woo-alipay' ), '<a href="' . esc_url( $last['file_url'] ) . '" target="_blank">' . esc_html( basename( $last['file'] ) ) . '</a>' ) . '</p>';
                 }
                 if ( ! empty( $last['notes'] ) && is_array( $last['notes'] ) ) {

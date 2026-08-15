@@ -143,12 +143,14 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
      */
     function requirement_checks() { 
         if ( !in_array( $this->current_currency, array( 'RMB', 'CNY') ) && !$this->exchange_rate ) {
+            /* translators: %1$s: link to the exchange rate settings page. %2$s: store currency code. */
             echo '<div class="error"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'woo-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $this->current_currency ) ) ) . '</p></div>';
         }
 
         $protocol = $this->selected_protocol();
         $missing_fields = $this->get_missing_core_fields();
         if ( Woo_Alipay_Mini_Protocol::RSA2 === $protocol && ! empty( $missing_fields ) ) {
+            /* translators: %s: comma-separated list of missing configuration field names */
             echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
         }
         if ( is_wp_error( $protocol ) ) {
@@ -357,6 +359,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                 'options'     => array(
                     'customer_name' => __('Customer Full Name|#Order ID', 'woo-alipay'),
                     'product_title' => __('Name of the first Product|#Order ID', 'woo-alipay'),
+                    /* translators: %s: site name */
                     'shop_name'     => sprintf( __( '[Customer Full Name]\'s Order From %s|#Order ID', 'woo-alipay' ), get_bloginfo('name') )
                 ),
                 'desc_tip'    => true,
@@ -375,6 +378,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             $this->form_fields['exchange_rate'] = array(
                 'title'       => __('Exchange Rate', 'woo-alipay'),
                 'type'        => 'text',
+                /* translators: %s: store currency code */
                 'description' => sprintf(__("Please set the %s against Chinese Yuan exchange rate, eg if your currency is US Dollar, then you should enter 6.19", 'woo-alipay'), $this->current_currency),
                 'css'         => 'width:80px;',
                 'desc_tip'    => true,
@@ -672,6 +676,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $missing_fields = $this->get_missing_core_fields();
         if ( ! empty( $missing_fields ) ) {
+            /* translators: %s: comma-separated list of missing configuration field names */
             wc_add_notice( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) ), 'error' );
             $this->log_event( 'Payment init blocked: missing core settings', array( 'missing' => implode( '|', $missing_fields ), 'order_id' => $order_id ) );
             return array( 'result' => 'fail' );
@@ -1054,10 +1059,12 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                     $customer_name = $order->billing_last_name . $order->billing_first_name;
                 }
                 if( !empty($customer_name) ){
+                    /* translators: %1$s: customer name. %2$s: site name. */
                     $title = sprintf( __( 'Order of %1$s from %2$s', 'woo-alipay'), $customer_name, get_bloginfo( 'name' ) );
                 } else{
+                    /* translators: %s: site name */
                     $title = sprintf( __( 'Your order from %s', 'woo-alipay' ) , get_bloginfo( 'name' ) );
-                }               
+                }
                 $title .= '|#'.$order_id;
                 break;
 

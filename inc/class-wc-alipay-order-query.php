@@ -178,11 +178,12 @@ class WC_Alipay_Order_Query {
 				if ( 'TRADE_SUCCESS' === $trade_status || 'TRADE_FINISHED' === $trade_status ) {
 					// Payment successful
 					$order->payment_complete( $trade_no );
-					$order->add_order_note( 
-						sprintf( 
-							__( 'Payment status confirmed via query. Trade Status: %s', 'woo-alipay' ), 
-							$trade_status 
-						) 
+					$order->add_order_note(
+						sprintf(
+							/* translators: %s: Alipay trade status */
+							__( 'Payment status confirmed via query. Trade Status: %s', 'woo-alipay' ),
+							$trade_status
+						)
 					);
 
 					if ( 'TRADE_FINISHED' === $trade_status ) {

@@ -152,10 +152,11 @@ class WC_Alipay_Order_Timeout {
 		// Cancel the order
 		$order->update_status( 
 			'cancelled', 
-			sprintf( 
-				__( 'Order cancelled due to payment timeout (%d minutes)', 'woo-alipay' ), 
-				$this->get_timeout_duration() 
-			) 
+			sprintf(
+				/* translators: %d: timeout duration in minutes */
+				__( 'Order cancelled due to payment timeout (%d minutes)', 'woo-alipay' ),
+				$this->get_timeout_duration()
+			)
 		);
 		
 		$this->log( 'Order #' . $order->get_id() . ' cancelled due to timeout' );

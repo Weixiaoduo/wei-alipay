@@ -194,6 +194,7 @@ class WC_Alipay extends WC_Payment_Gateway
                 && Alipay_SDK_Helper::amounts_equal( $total, $query['total_amount'] );
             if ( $query_matches && ! empty( $query['trade_status'] ) && in_array( $query['trade_status'], array( 'TRADE_SUCCESS', 'TRADE_FINISHED' ), true ) ) {
                 $renewal_order->payment_complete( $query['trade_no'] );
+                /* translators: %s: Alipay transaction number */
                 $renewal_order->add_order_note( sprintf( __( '自动续费成功，交易号：%s', 'woo-alipay' ), $query['trade_no'] ) );
             } else {
                 // 等待异步通知回调完成订单
@@ -243,6 +244,7 @@ class WC_Alipay extends WC_Payment_Gateway
                 'title' => __('支付宝应用ID', 'woo-alipay'),
                 'type' => 'text',
                 'description' => sprintf(
+                    /* translators: %s: link to the Alipay Open Platform */
                     __('在支付宝开放平台获取的应用ID。%s', 'woo-alipay'),
                     '<a href="https://openhome.alipay.com/platform/developerIndex.htm" target="_blank">' . __('前往支付宝开放平台', 'woo-alipay') . '</a>'
                 ),
@@ -260,6 +262,7 @@ class WC_Alipay extends WC_Payment_Gateway
                 'title' => __('支付宝公钥', 'woo-alipay'),
                 'type' => 'textarea',
                 'description' => sprintf(
+                    /* translators: %s: link to the configuration tutorial */
                     __('支付宝公钥，在支付宝开放平台应用详情页面获取。%s', 'woo-alipay'),
                     '<a href="https://woocn.com/product/woo-alipay.html" target="_blank">' . __('查看配置教程', 'woo-alipay') . '</a>'
                 ),
@@ -271,6 +274,7 @@ class WC_Alipay extends WC_Payment_Gateway
                 'title' => __('支付宝商户应用程序私钥', 'woo-alipay'),
                 'type' => 'textarea',
                 'description' => sprintf(
+                    /* translators: %s: link to the key generation tutorial */
                     __('应用私钥，使用支付宝密钥生成工具或openssl命令生成。<br/><strong>此密钥为机密信息，请勿泄露给任何人</strong>。%s', 'woo-alipay'),
                     '<a href="https://woocn.com/product/woo-alipay.html" target="_blank">' . __('查看密钥生成教程', 'woo-alipay') . '</a>'
                 ),
@@ -290,7 +294,8 @@ class WC_Alipay extends WC_Payment_Gateway
                 'label' => __('启用沙箱模式', 'woo-alipay'),
                 'default' => 'no',
                 'description' => sprintf(
-                    __('启用沙箱模式进行测试，使用%s中的配置。', 'woo-alipay'), 
+                    /* translators: %s: link to the Alipay sandbox environment */
+                    __('启用沙箱模式进行测试，使用%s中的配置。', 'woo-alipay'),
                     '<a href="https://openhome.alipay.com/platform/appDaily.htm" target="_blank">支付宝沙箱环境</a>'
                 ),
                 'desc_tip' => false,
@@ -301,7 +306,8 @@ class WC_Alipay extends WC_Payment_Gateway
                 'label' => __('启用日志记录', 'woo-alipay'),
                 'default' => 'no',
                 'description' => sprintf(
-                    __('在%s内记录支付宝事件<br/><strong>注意：这可能会记录个人信息。 我们建议仅将其用于调试目的，并在完成后删除日志。</strong>', 'woo-alipay'), 
+                    /* translators: %s: log file path */
+                    __('在%s内记录支付宝事件<br/><strong>注意：这可能会记录个人信息。 我们建议仅将其用于调试目的，并在完成后删除日志。</strong>', 'woo-alipay'),
                     '<code>' . WC_Log_Handler_File::get_log_file_path($this->id) . '</code>'
                 ),
                 'desc_tip' => false,
@@ -366,6 +372,7 @@ class WC_Alipay extends WC_Payment_Gateway
         if (!in_array($this->current_currency, $this->supported_currencies, true)) {
             $current_rate = $this->get_option('exchange_rate', '7.0');
             $description = sprintf(
+                /* translators: %1$s: store currency code (also used for %2$s). %3$s: current exchange rate against Chinese Yuan. */
                 __('设置%1$s与人民币汇率（1 %2$s = %3$s 人民币）', 'woo-alipay'),
                 $this->current_currency,
                 $this->current_currency,
@@ -1047,6 +1054,7 @@ class WC_Alipay extends WC_Payment_Gateway
         echo '<p>';
         echo wp_kses_post(
             sprintf(
+                /* translators: %1$s: link to the official documentation */
                 __('需要配置帮助？请查看 %1$s 获取详细的配置指南和文档。', 'woo-alipay'),
                 '<a href="https://woocn.com/document/woo-alipay" target="_blank" rel="noopener noreferrer">' . esc_html__('官方文档', 'woo-alipay') . '</a>'
             )

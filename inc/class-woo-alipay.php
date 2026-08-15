@@ -374,6 +374,7 @@ class Woo_Alipay {
                             $error = __( '查询结果与订单支付方式、金额或交易号不一致，已拒绝同步。', 'woo-alipay' );
                         } elseif ( ! $order->is_paid() ) {
                             $order->payment_complete( $result['trade_no'] );
+                            /* translators: %s: Alipay transaction number */
                             $order->add_order_note( sprintf( __( '对账同步：标记为已支付，交易号: %s', 'woo-alipay' ), $result['trade_no'] ) );
                         }
                     }
@@ -436,6 +437,7 @@ class Woo_Alipay {
         if ( $order->get_payment_method() === 'alipay_installment' ) {
             $period = $order->get_meta('_alipay_installment_period');
             if ( $period ) {
+                /* translators: %s: number of installment periods */
                 $label = sprintf( __( '分期：%s期', 'woo-alipay' ), esc_html( $period ) );
                 // 判断是否免息
                 $fee_note = '';

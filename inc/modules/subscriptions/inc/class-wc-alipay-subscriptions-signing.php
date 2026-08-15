@@ -158,8 +158,10 @@ class WC_Alipay_Subscriptions_Signing {
                     $charge = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $order, $amount, $agreement_no, $product_code );
                     if ( ! is_wp_error( $charge ) ) {
                         $order->payment_complete( $charge['trade_no'] );
+                        /* translators: %s: Alipay transaction number */
                         $order->add_order_note( sprintf( __( '首单签约并扣款成功 - 交易号: %s', 'woo-alipay' ), $charge['trade_no'] ) );
                     } else {
+                        /* translators: %s: error message */
                         $order->add_order_note( sprintf( __( '首单签约完成，但扣款失败：%s', 'woo-alipay' ), $charge->get_error_message() ) );
                     }
                 }
@@ -192,6 +194,7 @@ class WC_Alipay_Subscriptions_Signing {
 
         $missing_core = $this->get_missing_core_fields();
         if ( ! empty( $missing_core ) ) {
+            /* translators: %s: comma-separated list of missing configuration field names */
             wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'woo-alipay' ), implode( ', ', $missing_core ) ), 'error' );
             $this->log( 'error', 'Sign start blocked: missing core settings', array( 'missing' => implode( '|', $missing_core ) ) );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
@@ -277,6 +280,7 @@ class WC_Alipay_Subscriptions_Signing {
 
         $missing_core = $this->get_missing_core_fields();
         if ( ! empty( $missing_core ) ) {
+            /* translators: %s: comma-separated list of missing configuration field names */
             wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'woo-alipay' ), implode( ', ', $missing_core ) ), 'error' );
             $this->log( 'error', 'Unsign blocked: missing core settings', array( 'missing' => implode( '|', $missing_core ) ) );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
