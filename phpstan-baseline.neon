@@ -1,0 +1,379 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 4
+			path: inc/class-alipay-sdk-helper.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeCloseRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-alipay-sdk-helper.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeQueryRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-alipay-sdk-helper.php
+
+		-
+			message: '#^Instantiated class AlipayUserAgreementPageSignRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/class-wc-alipay-agreement.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 2
+			path: inc/class-wc-alipay-agreement.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayUserAgreementPageSignRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-wc-alipay-agreement.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-wc-alipay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-wc-alipay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeCreateRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-wc-alipay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-woo-alipay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-wc\-email\-alipay\-orphan\-transaction\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-woo-alipay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/uninstall\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/class-woo-alipay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 2
+			path: inc/modules/barcode/inc/class-wc-alipay-barcode.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/barcode/inc/class-wc-alipay-barcode.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradePayRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/barcode/inc/class-wc-alipay-barcode.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeQueryRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/barcode/inc/class-wc-alipay-barcode.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 2
+			path: inc/modules/cross-border/includes/class-wc-acbop.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/cross-border/includes/class-wc-acbop.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradePagePayRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/cross-border/includes/class-wc-acbop.php
+
+		-
+			message: '#^Variable \$clean might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: inc/modules/cross-border/includes/function-common.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 6
+			path: inc/modules/f2f/inc/class-wc-alipay-facetopay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/f2f/inc/class-wc-alipay-facetopay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradePrecreateRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 2
+			path: inc/modules/f2f/inc/class-wc-alipay-facetopay.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeRefundRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/f2f/inc/class-wc-alipay-facetopay.php
+
+		-
+			message: '#^Instantiated class AlipayFundAuthOrderFreezeRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Instantiated class AlipayFundAuthOrderUnfreezeRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Instantiated class AlipayFundAuthOrderVoucherCreateRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayFundAuthOrderFreezeRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayFundAuthOrderUnfreezeRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayFundAuthOrderVoucherCreateRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 3
+			path: inc/modules/huabei/inc/class-wc-alipay-installment.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 2
+			path: inc/modules/huabei/inc/class-wc-alipay-installment.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradePagePayRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/huabei/inc/class-wc-alipay-installment.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeRefundRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/huabei/inc/class-wc-alipay-installment.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 2
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradePagePayRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Variable \$html_text in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Variable \$log might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Variable \$parameter might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Variable \$send_goods might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: inc/modules/mini-program/class-wc-alipay-wap.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/modules/profitsharing/inc/class\-woo\-alipay\-ps\-service\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-comp-admin.php
+
+		-
+			message: '#^Instantiated class AlipayTradeOrderSettleQueryRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-service.php
+
+		-
+			message: '#^Instantiated class AlipayTradeOrderSettleRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-service.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-service.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-service.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeOrderSettleQueryRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-service.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeOrderSettleRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/profitsharing/inc/class-woo-alipay-ps-service.php
+
+		-
+			message: '#^Instantiated class AlipayDataDataserviceBillDownloadurlQueryRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/reconcile/inc/class-woo-alipay-reconcile-runner.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/inc/class\-alipay\-sdk\-helper\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/reconcile/inc/class-woo-alipay-reconcile-runner.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/reconcile/inc/class-woo-alipay-reconcile-runner.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayDataDataserviceBillDownloadurlQueryRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/reconcile/inc/class-woo-alipay-reconcile-runner.php
+
+		-
+			message: '#^Variable \$row in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: inc/modules/reconcile/inc/class-woo-alipay-reconcile-runner.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-charge.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayTradeCreateRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-charge.php
+
+		-
+			message: '#^Instantiated class AlipayUserAgreementPageSignRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php
+
+		-
+			message: '#^Instantiated class AlipayUserAgreementUnsignRequest not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/AopClient\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 3
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayUserAgreementPageSignRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php
+
+		-
+			message: '#^Path in require_once\(\) "/tmp/woo\-alipay/lib/alipay/aop/request/AlipayUserAgreementUnsignRequest\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php
+
+		-
+			message: '#^Call to an undefined method WC_Payment_Token_Alipay_Agreement\:\:set_meta\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: inc/modules/subscriptions/inc/class-wc-payment-token-alipay-agreement.php

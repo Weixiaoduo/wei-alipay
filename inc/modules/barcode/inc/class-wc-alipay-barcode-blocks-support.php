@@ -38,7 +38,7 @@ final class WC_Alipay_Barcode_Blocks_Support extends AbstractPaymentMethodType {
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-barcode-payments-blocks', 'woo-alipay-barcode', WOO_ALIPAY_BARCODE_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-barcode-payments-blocks', 'woo-alipay', WOO_ALIPAY_BARCODE_PLUGIN_PATH . 'languages' );
         }
 
         return array( 'wc-alipay-barcode-payments-blocks' );
@@ -51,8 +51,8 @@ final class WC_Alipay_Barcode_Blocks_Support extends AbstractPaymentMethodType {
     public function get_payment_method_data() {
         $icon = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-barcode-icon.svg';
         return array(
-            'title'       => isset( $this->settings['title'] ) ? $this->settings['title'] : __( '支付宝条码支付', 'woo-alipay-barcode' ),
-            'description' => isset( $this->settings['description'] ) ? $this->settings['description'] : __( '请输入或出示支付宝付款码完成支付', 'woo-alipay-barcode' ),
+            'title'       => isset( $this->settings['title'] ) ? $this->settings['title'] : __( '支付宝条码支付', 'woo-alipay' ),
+            'description' => isset( $this->settings['description'] ) ? $this->settings['description'] : __( '请输入或出示支付宝付款码完成支付', 'woo-alipay' ),
             'supports'    => $this->get_supported_features(),
             'icon'        => $icon,
         );

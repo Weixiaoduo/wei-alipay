@@ -52,13 +52,13 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 	<li>
 	<?php
 		/* translators: %1$s: the order ID  */
-		printf( esc_html__( 'Order ID: %1$s' ), esc_html( $order_id ) );
+		printf( esc_html__( 'Order ID: %1$s', 'woo-alipay' ), esc_html( $order_id ) );
 	?>
 	</li>
 	<li>
 	<?php
 		/* translators: %1$s: the Alipay transaction ID  */
-		printf( esc_html__( 'Alipay transaction ID: %1$s' ), esc_html( $transaction_id ) );
+		printf( esc_html__( 'Alipay transaction ID: %1$s', 'woo-alipay' ), esc_html( $transaction_id ) );
 	?>
 	</li>
 </ul>

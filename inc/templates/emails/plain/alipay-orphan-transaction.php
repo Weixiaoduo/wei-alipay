@@ -44,11 +44,11 @@ esc_html_e(
 echo "\n\n";
 echo '-';
 /* translators: %1$s: the order ID  */
-printf( esc_html__( 'Order ID: %1$s' ), esc_html( $order_id ) );
+printf( esc_html__( 'Order ID: %1$s', 'woo-alipay' ), esc_html( $order_id ) );
 echo "\n";
 echo '-';
 /* translators: %1$s: the Alipay transaction ID  */
-printf( esc_html__( 'Alipay transaction ID: %1$s' ), esc_html( $transaction_id ) );
+printf( esc_html__( 'Alipay transaction ID: %1$s', 'woo-alipay' ), esc_html( $transaction_id ) );
 echo "\n\n";
 printf(
 	/* translators: %1$s: Log path  */

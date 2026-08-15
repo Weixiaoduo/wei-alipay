@@ -45,20 +45,51 @@ class Woo_Alipay {
 	 * Public methods
 	 *******************************************************************/
 
-	public static function activate() {
+	public static function activate( $network_wide = false ) {
+		if ( is_multisite() && $network_wide ) {
+			$site_ids = get_sites( array( 'fields' => 'ids', 'number' => 0 ) );
+			foreach ( $site_ids as $site_id ) {
+				switch_to_blog( (int) $site_id );
+				self::upgrade_current_site();
+				restore_current_blog();
+			}
+		} else {
+			self::upgrade_current_site();
+		}
 		wp_cache_flush();
+	}
 
-		if ( ! get_option( 'woo_alipay_plugin_version' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-			$plugin_data = get_plugin_data( WOO_ALIPAY_PLUGIN_FILE );
-			$version     = $plugin_data['Version'];
-
-			update_option( 'woo_alipay_plugin_version', $version );
+	public static function maybe_upgrade() {
+		if ( '3.2.0-r3' !== get_option( 'woo_alipay_schema_version' ) ) {
+			self::upgrade_current_site();
 		}
 	}
 
-	public static function deactivate() {}
+	private static function upgrade_current_site() {
+		$mini = get_option( 'woocommerce_alipay_wap_settings', array() );
+		if ( is_array( $mini ) && ! isset( $mini['protocol_mode'] ) ) {
+			$has_legacy = ! empty( $mini['partnerID'] ) || ! empty( $mini['secure_key'] );
+			$mini['protocol_mode']   = $has_legacy ? 'legacy_md5' : 'rsa2';
+			$mini['legacy_md5_ack']  = 'no';
+			update_option( 'woocommerce_alipay_wap_settings', $mini, false );
+		}
+		if ( class_exists( 'Woo_Alipay_Secret_Store' ) ) {
+			Woo_Alipay_Secret_Store::migrate_current_site();
+		}
+		update_option( 'woo_alipay_plugin_version', WOO_ALIPAY_VERSION, false );
+		update_option( 'woo_alipay_schema_version', '3.2.0-r3', false );
+	}
+
+	public static function deactivate() {
+		foreach ( array(
+			'woo_alipay_check_pending_orders',
+			'woo_alipay_check_timeout_orders',
+			'woo_alipay_retry_failed_webhooks',
+			'woo_alipay_ps_process_jobs',
+		) as $hook ) {
+			wp_clear_scheduled_hook( $hook );
+		}
+	}
 
 	public static function uninstall() {
 		require_once WOO_ALIPAY_PLUGIN_PATH . 'uninstall.php';
@@ -107,22 +138,27 @@ class Woo_Alipay {
 		$css_ext = ( $debug ) ? '.css' : '.min.css';
 		$version = filemtime( WOO_ALIPAY_PLUGIN_PATH . 'css/main' . $css_ext );
 
-		wp_enqueue_style( 'woo-alipay-main-style', WOO_ALIPAY_PLUGIN_URL . 'css/main.css', array(), $version );
+		wp_enqueue_style( 'woo-alipay', WOO_ALIPAY_PLUGIN_URL . 'css/main.css', array(), $version );
 		
-		// Enqueue payment polling script on order-pay page
+		// Enqueue payment polling only for the authorized Alipay order-pay page.
 		if ( is_wc_endpoint_url( 'order-pay' ) ) {
-			// Get gateway settings
+			$order_id  = absint( get_query_var( 'order-pay' ) );
+			$order     = $order_id ? wc_get_order( $order_id ) : false;
+			$order_key = isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce order key authorizes this read-only asset decision.
+			if ( ! $order || 'alipay' !== $order->get_payment_method() || ! hash_equals( $order->get_order_key(), $order_key ) ) {
+				return;
+			}
+
 			$gateways = WC()->payment_gateways->payment_gateways();
 			$gateway = isset( $gateways['alipay'] ) ? $gateways['alipay'] : null;
-			
-			// Check if polling is enabled
+
 			if ( $gateway && 'yes' === $gateway->get_option( 'enable_payment_polling', 'yes' ) ) {
 				$script_version = file_exists( WOO_ALIPAY_PLUGIN_PATH . 'js/payment-polling.js' ) 
 					? filemtime( WOO_ALIPAY_PLUGIN_PATH . 'js/payment-polling.js' ) 
 					: '3.3.0';
 				
 				wp_enqueue_script(
-					'woo-alipay-payment-polling',
+					'woo-alipay',
 					WOO_ALIPAY_PLUGIN_URL . 'js/payment-polling.js',
 					array( 'jquery' ),
 					$script_version,
@@ -135,11 +171,13 @@ class Woo_Alipay {
 				
 				// Localize script
 				wp_localize_script(
-					'woo-alipay-payment-polling',
+					'woo-alipay',
 					'woo_alipay_polling',
 					array(
 						'ajax_url'      => admin_url( 'admin-ajax.php' ),
 						'nonce'         => wp_create_nonce( 'woo_alipay_query_order' ),
+						'order_id'      => $order_id,
+						'order_key'     => $order_key,
 						'poll_interval' => $polling_interval,
 						'max_attempts'  => $max_attempts,
 						'strings'       => array(
@@ -161,7 +199,9 @@ class Woo_Alipay {
         }
 
         // Only load our admin assets on our gateway settings sections, not on the Payments list view.
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only settings screen routing.
         $tab     = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only settings screen routing.
         $section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : '';
         $our_sections = array( 'alipay', 'alipay_installment', 'alipay_facetopay' );
         if ( 'checkout' !== $tab || ! in_array( $section, $our_sections, true ) ) {
@@ -175,7 +215,7 @@ class Woo_Alipay {
         $version_js  = filemtime( WOO_ALIPAY_PLUGIN_PATH . 'js/admin/main' . $js_ext );
 
         wp_enqueue_style(
-            'woo-alipay-main-style',
+            'woo-alipay',
             WOO_ALIPAY_PLUGIN_URL . 'css/admin/main' . $css_ext,
             array(),
             $version_css
@@ -187,13 +227,13 @@ class Woo_Alipay {
         );
 
         wp_enqueue_script(
-            'woo-alipay-admin-script',
+            'woo-alipay',
             WOO_ALIPAY_PLUGIN_URL . 'js/admin/main' . $js_ext,
             array( 'jquery' ),
             $version_js,
             true
         );
-        wp_localize_script( 'woo-alipay-admin-script', 'WooAlipay', $parameters );
+        wp_localize_script( 'woo-alipay', 'WooAlipay', $parameters );
     }
 
     public function add_admin_pages() {
@@ -206,7 +246,7 @@ class Woo_Alipay {
             __( '支付宝对账工具', 'woo-alipay' ),
             __( '支付宝对账', 'woo-alipay' ),
             'manage_woocommerce',
-            'woo-alipay-reconcile',
+            'woo-alipay',
             array( $this, 'render_admin_reconcile_page' )
         );
     }
@@ -295,12 +335,13 @@ class Woo_Alipay {
 
     public function render_admin_reconcile_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) {
-            wp_die( __( '权限不足', 'woo-alipay' ) );
+			wp_die( esc_html__( '权限不足', 'woo-alipay' ) );
         }
         $result = null; $error = '';
-        if ( isset( $_POST['woo_alipay_reconcile_nonce'] ) && wp_verify_nonce( $_POST['woo_alipay_reconcile_nonce'], 'woo_alipay_reconcile' ) ) {
-            $out_trade_no = sanitize_text_field( $_POST['out_trade_no'] ?? '' );
-            $trade_no = sanitize_text_field( $_POST['trade_no'] ?? '' );
+		$nonce = isset( $_POST['woo_alipay_reconcile_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['woo_alipay_reconcile_nonce'] ) ) : '';
+		if ( '' !== $nonce && wp_verify_nonce( $nonce, 'woo_alipay_reconcile' ) ) {
+			$out_trade_no = isset( $_POST['out_trade_no'] ) ? sanitize_text_field( wp_unslash( $_POST['out_trade_no'] ) ) : '';
+			$trade_no = isset( $_POST['trade_no'] ) ? sanitize_text_field( wp_unslash( $_POST['trade_no'] ) ) : '';
             require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
             $main_gateway = new WC_Alipay(false);
             $config = Alipay_SDK_Helper::get_alipay_config(array(
@@ -316,11 +357,24 @@ class Woo_Alipay {
                 $result = $query;
                 // 可选：尝试同步 Woo 订单状态
                 if ( isset($_POST['sync_order']) && $result['success'] && in_array( $result['trade_status'], array('TRADE_SUCCESS','TRADE_FINISHED'), true ) ) {
-                    $orders = wc_get_orders( array( 'meta_key' => '_alipay_out_trade_no', 'meta_value' => $result['out_trade_no'], 'limit' => 1 ) );
+                    $orders = wc_get_orders( array( 'meta_query' => array( array( 'key' => '_alipay_out_trade_no', 'value' => $result['out_trade_no'] ) ), 'limit' => 1 ) );
                     if ( ! empty( $orders ) ) {
                         $order = $orders[0];
-                        if ( ! $order->is_paid() ) {
+                        $expected_amount = Alipay_SDK_Helper::convert_currency(
+                            $order->get_total(),
+                            $order->get_currency(),
+                            $main_gateway->get_option( 'exchange_rate', 0 )
+                        );
+                        $amount_matches = hash_equals(
+                            Alipay_SDK_Helper::format_amount( $expected_amount ),
+                            Alipay_SDK_Helper::format_amount( $result['total_amount'] )
+                        );
+                        $transaction_matches = ! $order->get_transaction_id() || hash_equals( (string) $order->get_transaction_id(), (string) $result['trade_no'] );
+                        if ( 'alipay' !== $order->get_payment_method() || ! $amount_matches || ! $transaction_matches ) {
+                            $error = __( '查询结果与订单支付方式、金额或交易号不一致，已拒绝同步。', 'woo-alipay' );
+                        } elseif ( ! $order->is_paid() ) {
                             $order->payment_complete( $result['trade_no'] );
+                            /* translators: %s: Alipay transaction number */
                             $order->add_order_note( sprintf( __( '对账同步：标记为已支付，交易号: %s', 'woo-alipay' ), $result['trade_no'] ) );
                         }
                     }
@@ -383,6 +437,7 @@ class Woo_Alipay {
         if ( $order->get_payment_method() === 'alipay_installment' ) {
             $period = $order->get_meta('_alipay_installment_period');
             if ( $period ) {
+                /* translators: %s: number of installment periods */
                 $label = sprintf( __( '分期：%s期', 'woo-alipay' ), esc_html( $period ) );
                 // 判断是否免息
                 $fee_note = '';

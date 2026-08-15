@@ -10,7 +10,12 @@
 * Text Domain: woo-alipay
 * Domain Path: /languages
 * WC tested up to: 10.2.2
+* WC requires at least: 8.3
+* Requires PHP: 7.4
+* Requires at least: 6.6
 * Requires Plugins: woocommerce
+* License: GPLv3
+* License URI: https://www.gnu.org/licenses/gpl-3.0.html
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -34,13 +39,15 @@ if ( ! defined( 'WOO_ALIPAY_VERSION' ) ) {
 }
 
 require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-woo-alipay.php';
+require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-woo-alipay-secret-store.php';
+Woo_Alipay_Secret_Store::register();
 
 if ( file_exists( WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php' ) ) {
 	require_once WOO_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php';
 }
 
-if ( class_exists( 'WenPai_Updater' ) ) {
-	new WenPai_Updater( plugin_basename( WOO_ALIPAY_PLUGIN_FILE ), WOO_ALIPAY_VERSION );
+if ( class_exists( 'Woo_Alipay_WenPai_Updater' ) ) {
+	new Woo_Alipay_WenPai_Updater( plugin_basename( WOO_ALIPAY_PLUGIN_FILE ), WOO_ALIPAY_VERSION );
 }
 
 if ( ! defined( 'WOO_ALIPAY_PS_PLUGIN_PATH' ) ) {
@@ -175,6 +182,7 @@ add_action( 'before_woocommerce_init', function() {
 register_activation_hook( WOO_ALIPAY_PLUGIN_FILE, array( 'Woo_Alipay', 'activate' ) );
 register_deactivation_hook( WOO_ALIPAY_PLUGIN_FILE, array( 'Woo_Alipay', 'deactivate' ) );
 register_uninstall_hook( WOO_ALIPAY_PLUGIN_FILE, array( 'Woo_Alipay', 'uninstall' ) );
+add_action( 'admin_init', array( 'Woo_Alipay', 'maybe_upgrade' ), 1 );
 
 function woo_alipay_run() {
 	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {

@@ -20,4 +20,4 @@
 </div>
 <?php
  
-echo $dispatcher_form; // WPCS: XSS OK ?>
+echo Alipay_SDK_Helper::sanitize_payment_form( $dispatcher_form ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist. ?>

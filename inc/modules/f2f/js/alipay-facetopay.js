@@ -63,6 +63,7 @@
                     data: {
                         action: 'alipay_facetopay_query',
                         order_id: orderId,
+                        order_key: $('#alipay-facetopay-order-key').val(),
                         nonce: nonce
                     },
                     success: function(response) {
@@ -161,6 +162,7 @@
                 data: {
                     action: 'alipay_facetopay_refresh_qrcode',
                     order_id: orderId,
+                    order_key: $('#alipay-facetopay-order-key').val(),
                     nonce: nonce
                 },
                 success: function(response) {

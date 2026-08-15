@@ -40,8 +40,10 @@ class WC_Alipay_Webhook_Retry {
 	 * Initialize hooks
 	 */
 	private function init_hooks() {
-		// Create table on plugin activation
+		// The class is loaded on init, which can be too late to register activation hooks.
+		// Keep the hook for direct loads and add a versioned admin repair path.
 		register_activation_hook( WOO_ALIPAY_PLUGIN_FILE, array( $this, 'create_table' ) );
+		add_action( 'admin_init', array( $this, 'maybe_create_table' ) );
 		
 		// Log webhook attempts
 		add_action( 'woocommerce_api_wc_alipay', array( $this, 'log_webhook_attempt' ), 5 );
@@ -49,12 +51,22 @@ class WC_Alipay_Webhook_Retry {
 		// Schedule retry cron
 		add_action( 'wp', array( $this, 'schedule_retry_cron' ) );
 		add_action( 'woo_alipay_retry_failed_webhooks', array( $this, 'retry_failed_webhooks' ) );
+		add_action( 'woo_alipay_webhook_processed', array( $this, 'record_processing_result' ), 10, 3 );
 		
 		// Add admin menu for webhook logs
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ), 60 );
 		
 		// AJAX handler for manual retry
 		add_action( 'wp_ajax_woo_alipay_retry_webhook', array( $this, 'ajax_retry_webhook' ) );
+	}
+
+	/**
+	 * Create or upgrade the webhook table only when its schema version changes.
+	 */
+	public function maybe_create_table() {
+		if ( '1' !== get_option( 'woo_alipay_webhook_schema_version' ) ) {
+			$this->create_table();
+		}
 	}
 
 	/**
@@ -87,6 +99,7 @@ class WC_Alipay_Webhook_Retry {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		dbDelta( $sql );
+		update_option( 'woo_alipay_webhook_schema_version', '1', false );
 	}
 
 	/**
@@ -102,12 +115,19 @@ class WC_Alipay_Webhook_Retry {
 		}
 		
 		// Only log POST requests with data
-		if ( 'POST' !== $_SERVER['REQUEST_METHOD'] || empty( $_POST ) ) {
+		$request_method = isset( $_SERVER['REQUEST_METHOD'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput -- signed callback; scalar allowlist is sanitized below.
+		$raw_request = wp_unslash( $_POST );
+		if ( 'POST' !== $request_method || empty( $raw_request ) ) {
 			return;
 		}
-
-		$request_data = $_POST;
-		$out_trade_no = isset( $request_data['out_trade_no'] ) ? sanitize_text_field( $request_data['out_trade_no'] ) : '';
+		$request_data = array();
+		foreach ( array( 'notify_id', 'notify_type', 'out_trade_no', 'trade_no', 'trade_status', 'total_amount', 'app_id', 'sign_type' ) as $field ) {
+			if ( isset( $raw_request[ $field ] ) && is_scalar( $raw_request[ $field ] ) ) {
+				$request_data[ $field ] = sanitize_text_field( (string) $raw_request[ $field ] );
+			}
+		}
+		$out_trade_no = isset( $request_data['out_trade_no'] ) ? $request_data['out_trade_no'] : '';
 		$trade_no = isset( $request_data['trade_no'] ) ? sanitize_text_field( $request_data['trade_no'] ) : '';
 		
 		if ( empty( $out_trade_no ) ) {
@@ -120,11 +140,12 @@ class WC_Alipay_Webhook_Retry {
 
 		// Check if this webhook was already logged recently
 		$table_name = $wpdb->prefix . self::TABLE_NAME;
-		$existing = $wpdb->get_var( $wpdb->prepare(
-			"SELECT id FROM $table_name 
+		$existing = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+			"SELECT id FROM %i
 			WHERE out_trade_no = %s 
 			AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)
 			ORDER BY id DESC LIMIT 1",
+			$table_name,
 			$out_trade_no
 		) );
 
@@ -132,7 +153,7 @@ class WC_Alipay_Webhook_Retry {
 
 		if ( $existing ) {
 			// Update existing log
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
 				$table_name,
 				array(
 					'request_data' => wp_json_encode( $request_data ),
@@ -145,7 +166,7 @@ class WC_Alipay_Webhook_Retry {
 			);
 		} else {
 			// Insert new log
-			$wpdb->insert(
+			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
 				$table_name,
 				array(
 					'order_id'      => $order_id,
@@ -187,19 +208,31 @@ class WC_Alipay_Webhook_Retry {
 		}
 
 		if ( 'failed' === $status ) {
-			$wpdb->query( $wpdb->prepare(
-				"UPDATE $table_name SET retry_count = retry_count + 1 WHERE out_trade_no = %s",
+			$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+				"UPDATE %i SET retry_count = retry_count + 1 WHERE out_trade_no = %s",
+				$table_name,
 				$out_trade_no
 			) );
 		}
 
-		$wpdb->update(
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
 			$table_name,
 			$data,
 			array( 'out_trade_no' => $out_trade_no ),
 			$format,
 			array( '%s' )
 		);
+	}
+
+
+	/**
+	 * Persist the outcome emitted by the main callback processor.
+	 */
+	public function record_processing_result( $out_trade_no, $success, $error = '' ) {
+		if ( !$out_trade_no ) {
+			return;
+		}
+		$this->update_webhook_status( $out_trade_no, $success ? 'success' : 'failed', $error );
 	}
 
 	/**
@@ -243,13 +276,14 @@ class WC_Alipay_Webhook_Retry {
 		$retry_interval = absint( $gateway->get_option( 'webhook_retry_interval', '10' ) );
 		
 		// Get failed webhooks that haven't exceeded max retries
-		$failed_webhooks = $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM $table_name 
+		$failed_webhooks = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+			"SELECT * FROM %i
 			WHERE status = 'failed' 
 			AND retry_count < %d 
 			AND updated_at < DATE_SUB(NOW(), INTERVAL %d MINUTE)
 			ORDER BY created_at ASC
 			LIMIT 10",
+			$table_name,
 			$max_retries,
 			$retry_interval
 		) );
@@ -317,7 +351,7 @@ class WC_Alipay_Webhook_Retry {
 			__( 'Alipay Webhook Logs', 'woo-alipay' ),
 			__( 'Alipay Webhooks', 'woo-alipay' ),
 			'manage_woocommerce',
-			'woo-alipay-webhooks',
+			'woo-alipay',
 			array( $this, 'render_admin_page' )
 		);
 	}
@@ -326,17 +360,23 @@ class WC_Alipay_Webhook_Retry {
 	 * Render admin page
 	 */
 	public function render_admin_page() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'You do not have permission to view webhook logs.', 'woo-alipay' ) );
+		}
+
 		global $wpdb;
 		
 		$table_name = $wpdb->prefix . self::TABLE_NAME;
 		
 		// Handle bulk actions
-		if ( isset( $_POST['action'] ) && 'retry_selected' === $_POST['action'] && ! empty( $_POST['webhook_ids'] ) ) {
+		if ( isset( $_POST['action'], $_POST['webhook_ids'] ) && 'retry_selected' === sanitize_key( wp_unslash( $_POST['action'] ) ) ) {
 			check_admin_referer( 'bulk-webhooks' );
-			
-			foreach ( $_POST['webhook_ids'] as $webhook_id ) {
-				$webhook = $wpdb->get_row( $wpdb->prepare(
-					"SELECT * FROM $table_name WHERE id = %d",
+			$webhook_ids = array_map( 'absint', wp_unslash( (array) $_POST['webhook_ids'] ) );
+
+			foreach ( $webhook_ids as $webhook_id ) {
+				$webhook = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+					"SELECT * FROM %i WHERE id = %d",
+					$table_name,
 					absint( $webhook_id )
 				) );
 				
@@ -345,42 +385,44 @@ class WC_Alipay_Webhook_Retry {
 				}
 			}
 			
-			echo '<div class="notice notice-success"><p>' . __( 'Selected webhooks have been retried.', 'woo-alipay' ) . '</p></div>';
+			echo '<div class="notice notice-success"><p>' . esc_html__( 'Selected webhooks have been retried.', 'woo-alipay' ) . '</p></div>';
 		}
 
 		// Get statistics
-		$total = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name" );
-		$pending = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE status = 'pending'" );
-		$success = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE status = 'success'" );
-		$failed = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE status = 'failed'" );
+		$total = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+		$pending = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE status = 'pending'", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+		$success = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE status = 'success'", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+		$failed = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE status = 'failed'", $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
 
 		// Get recent webhooks
-		$current_status = isset( $_GET['status'] ) ? sanitize_text_field( $_GET['status'] ) : 'all';
+		$current_status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : 'all'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter.
+		$current_status = in_array( $current_status, array( 'all', 'pending', 'success', 'failed' ), true ) ? $current_status : 'all';
 		$per_page = 20;
-		$paged = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1;
+		$paged = isset( $_GET['paged'] ) ? absint( $_GET['paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination.
 		$offset = ( $paged - 1 ) * $per_page;
 
-		$where = '';
-		if ( 'all' !== $current_status ) {
-			$where = $wpdb->prepare( "WHERE status = %s", $current_status );
+		if ( 'all' === $current_status ) {
+			$webhooks = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+				$wpdb->prepare( 'SELECT * FROM %i ORDER BY created_at DESC LIMIT %d OFFSET %d', $table_name, $per_page, $offset )
+			);
+			$total_items = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+		} else {
+			$webhooks = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+				$wpdb->prepare( 'SELECT * FROM %i WHERE status = %s ORDER BY created_at DESC LIMIT %d OFFSET %d', $table_name, $current_status, $per_page, $offset )
+			);
+			$total_items = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE status = %s', $table_name, $current_status ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
 		}
-
-		$webhooks = $wpdb->get_results( 
-			"SELECT * FROM $table_name $where ORDER BY created_at DESC LIMIT $per_page OFFSET $offset"
-		);
-
-		$total_items = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name $where" );
 		$total_pages = ceil( $total_items / $per_page );
 
 		?>
 		<div class="wrap">
-			<h1><?php _e( 'Alipay Webhook Logs', 'woo-alipay' ); ?></h1>
+			<h1><?php esc_html_e( 'Alipay Webhook Logs', 'woo-alipay' ); ?></h1>
 			
 			<ul class="subsubsub">
-				<li><a href="?page=woo-alipay-webhooks&status=all" <?php echo 'all' === $current_status ? 'class="current"' : ''; ?>><?php printf( __( 'All (%d)', 'woo-alipay' ), $total ); ?></a> |</li>
-				<li><a href="?page=woo-alipay-webhooks&status=pending" <?php echo 'pending' === $current_status ? 'class="current"' : ''; ?>><?php printf( __( 'Pending (%d)', 'woo-alipay' ), $pending ); ?></a> |</li>
-				<li><a href="?page=woo-alipay-webhooks&status=success" <?php echo 'success' === $current_status ? 'class="current"' : ''; ?>><?php printf( __( 'Success (%d)', 'woo-alipay' ), $success ); ?></a> |</li>
-				<li><a href="?page=woo-alipay-webhooks&status=failed" <?php echo 'failed' === $current_status ? 'class="current"' : ''; ?>><?php printf( __( 'Failed (%d)', 'woo-alipay' ), $failed ); ?></a></li>
+				<li><a href="?page=woo-alipay-webhooks&status=all" <?php echo 'all' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: total webhook log count */ printf( esc_html__( 'All (%d)', 'woo-alipay' ), esc_html( number_format_i18n( $total ) ) ); ?></a> |</li>
+				<li><a href="?page=woo-alipay-webhooks&status=pending" <?php echo 'pending' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: pending webhook log count */ printf( esc_html__( 'Pending (%d)', 'woo-alipay' ), esc_html( number_format_i18n( $pending ) ) ); ?></a> |</li>
+				<li><a href="?page=woo-alipay-webhooks&status=success" <?php echo 'success' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: successful webhook log count */ printf( esc_html__( 'Success (%d)', 'woo-alipay' ), esc_html( number_format_i18n( $success ) ) ); ?></a> |</li>
+				<li><a href="?page=woo-alipay-webhooks&status=failed" <?php echo 'failed' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: failed webhook log count */ printf( esc_html__( 'Failed (%d)', 'woo-alipay' ), esc_html( number_format_i18n( $failed ) ) ); ?></a></li>
 			</ul>
 
 			<form method="post">
@@ -389,7 +431,7 @@ class WC_Alipay_Webhook_Retry {
 				
 				<div class="tablenav top">
 					<div class="alignleft actions">
-						<input type="submit" class="button action" value="<?php _e( 'Retry Selected', 'woo-alipay' ); ?>" />
+						<input type="submit" class="button action" value="<?php esc_html_e( 'Retry Selected', 'woo-alipay' ); ?>" />
 					</div>
 				</div>
 
@@ -397,18 +439,18 @@ class WC_Alipay_Webhook_Retry {
 					<thead>
 						<tr>
 							<td class="check-column"><input type="checkbox" /></td>
-							<th><?php _e( 'Order', 'woo-alipay' ); ?></th>
-							<th><?php _e( 'Trade No', 'woo-alipay' ); ?></th>
-							<th><?php _e( 'Status', 'woo-alipay' ); ?></th>
-							<th><?php _e( 'Retry Count', 'woo-alipay' ); ?></th>
-							<th><?php _e( 'Error', 'woo-alipay' ); ?></th>
-							<th><?php _e( 'Created', 'woo-alipay' ); ?></th>
-							<th><?php _e( 'Actions', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Order', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Trade No', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Status', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Retry Count', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Error', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Created', 'woo-alipay' ); ?></th>
+							<th><?php esc_html_e( 'Actions', 'woo-alipay' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 						<?php if ( empty( $webhooks ) ) : ?>
-							<tr><td colspan="8"><?php _e( 'No webhook logs found.', 'woo-alipay' ); ?></td></tr>
+							<tr><td colspan="8"><?php esc_html_e( 'No webhook logs found.', 'woo-alipay' ); ?></td></tr>
 						<?php else : ?>
 							<?php foreach ( $webhooks as $webhook ) : ?>
 								<tr>
@@ -426,13 +468,13 @@ class WC_Alipay_Webhook_Retry {
 											<?php echo esc_html( ucfirst( $webhook->status ) ); ?>
 										</span>
 									</td>
-									<td><?php echo esc_html( $webhook->retry_count ); ?> / <?php echo self::MAX_RETRIES; ?></td>
+									<td><?php echo esc_html( $webhook->retry_count ); ?> / <?php echo esc_html( self::MAX_RETRIES ); ?></td>
 									<td><?php echo esc_html( $webhook->last_error ? substr( $webhook->last_error, 0, 50 ) . '...' : '-' ); ?></td>
 									<td><?php echo esc_html( $webhook->created_at ); ?></td>
 									<td>
 										<?php if ( 'failed' === $webhook->status && $webhook->retry_count < self::MAX_RETRIES ) : ?>
 											<button type="button" class="button button-small woo-alipay-retry-webhook" data-webhook-id="<?php echo esc_attr( $webhook->id ); ?>">
-												<?php _e( 'Retry', 'woo-alipay' ); ?>
+												<?php esc_html_e( 'Retry', 'woo-alipay' ); ?>
 											</button>
 										<?php endif; ?>
 									</td>
@@ -446,12 +488,12 @@ class WC_Alipay_Webhook_Retry {
 					<div class="tablenav bottom">
 						<div class="tablenav-pages">
 							<?php
-							echo paginate_links( array(
+							echo wp_kses_post( paginate_links( array(
 								'base'    => add_query_arg( 'paged', '%#%' ),
 								'format'  => '',
 								'current' => $paged,
 								'total'   => $total_pages,
-							) );
+							) ) );
 							?>
 						</div>
 					</div>
@@ -465,7 +507,7 @@ class WC_Alipay_Webhook_Retry {
 				var $btn = $(this);
 				var webhookId = $btn.data('webhook-id');
 				
-				$btn.prop('disabled', true).text('<?php _e( 'Retrying...', 'woo-alipay' ); ?>');
+				$btn.prop('disabled', true).text(<?php echo wp_json_encode( __( 'Retrying...', 'woo-alipay' ) ); ?>);
 				
 				$.ajax({
 					url: ajaxurl,
@@ -473,14 +515,14 @@ class WC_Alipay_Webhook_Retry {
 					data: {
 						action: 'woo_alipay_retry_webhook',
 						webhook_id: webhookId,
-						nonce: '<?php echo wp_create_nonce( 'woo_alipay_retry_webhook' ); ?>'
+						nonce: <?php echo wp_json_encode( wp_create_nonce( 'woo_alipay_retry_webhook' ) ); ?>
 					},
 					success: function(response) {
 						if (response.success) {
 							location.reload();
 						} else {
 							alert(response.data.message);
-							$btn.prop('disabled', false).text('<?php _e( 'Retry', 'woo-alipay' ); ?>');
+							$btn.prop('disabled', false).text('<?php esc_html_e( 'Retry', 'woo-alipay' ); ?>');
 						}
 					}
 				});
@@ -506,7 +548,7 @@ class WC_Alipay_Webhook_Retry {
 			wp_send_json_error( array( 'message' => __( 'Permission denied', 'woo-alipay' ) ) );
 		}
 
-		$webhook_id = isset( $_POST['webhook_id'] ) ? absint( $_POST['webhook_id'] ) : 0;
+		$webhook_id = isset( $_POST['webhook_id'] ) ? absint( wp_unslash( $_POST['webhook_id'] ) ) : 0;
 		
 		if ( ! $webhook_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid webhook ID', 'woo-alipay' ) ) );
@@ -515,8 +557,9 @@ class WC_Alipay_Webhook_Retry {
 		global $wpdb;
 		$table_name = $wpdb->prefix . self::TABLE_NAME;
 		
-		$webhook = $wpdb->get_row( $wpdb->prepare(
-			"SELECT * FROM $table_name WHERE id = %d",
+		$webhook = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned retry table requires current operational state.
+			"SELECT * FROM %i WHERE id = %d",
+			$table_name,
 			$webhook_id
 		) );
 

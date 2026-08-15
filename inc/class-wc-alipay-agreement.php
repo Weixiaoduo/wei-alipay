@@ -78,7 +78,7 @@ class WC_Alipay_Agreement {
 		$aop->charset           = 'utf-8';
 		$aop->signType          = 'RSA2';
 
-		$params = wp_unslash( $_POST );
+		$params = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- signed Alipay server callback; verified before fields are used.
 		$verified = $aop->rsaCheckV1( $params, $aop->alipayrsaPublicKey, $aop->signType );
 		if ( ! $verified ) {
 			echo 'fail';
@@ -119,20 +119,22 @@ class WC_Alipay_Agreement {
 
 	public static function handle_agreement_start() {
 		if ( ! is_user_logged_in() ) {
-			wp_die( __( '请先登录后再进行签约授权。', 'woo-alipay' ) );
+			wp_die( esc_html__( '请先登录后再进行签约授权。', 'woo-alipay' ) );
 		}
 		$user_id = get_current_user_id();
 		$context = [];
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only signed-flow return target, sanitized below.
 		if ( isset( $_GET['return_url'] ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only signed-flow return target.
 			$context['return_url'] = esc_url_raw( wp_unslash( $_GET['return_url'] ) );
 		}
 		$result = self::get_sign_url( $user_id, $context );
 		if ( is_array( $result ) && ! empty( $result['payload'] ) ) {
 			// 输出表单/HTML，通常将自动跳转到支付宝
-			echo $result['payload'];
+			echo Alipay_SDK_Helper::sanitize_payment_form( $result['payload'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist.
 			exit;
 		}
-		wp_die( __( '无法生成签约请求，请稍后重试。', 'woo-alipay' ) );
+		wp_die( esc_html__( '无法生成签约请求，请稍后重试。', 'woo-alipay' ) );
 	}
 
 }

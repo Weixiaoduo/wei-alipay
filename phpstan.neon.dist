@@ -1,0 +1,25 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 1
+    paths:
+        - woo-alipay.php
+        - enable-gateways.php
+        - inc
+        - includes
+    excludePaths:
+        analyse:
+            - inc/modules/*/lib/*
+            - inc/templates/*
+            - inc/modules/*/templates/*
+    scanFiles:
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+        - tests/phpstan/alipay-sdk-stubs.php
+    tmpDir: /tmp/woo-alipay-phpstan
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - identifier: return.void
+        - identifier: constructor.unusedParameter

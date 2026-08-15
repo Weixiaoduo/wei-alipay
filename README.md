@@ -144,4 +144,7 @@ redirected-pay.php
 The template of the page displayed when users are redirected before payment. The template acts as a placeholder before showing the Alipay payment UI.  
 
 **Associated style enqueued with key:**  
-`woo-alipay-main-style`  
+`woo-alipay-main-style`
+## Candidate compatibility (3.2.0)
+
+Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+; tested through WordPress 7.0 and WooCommerce 10.2.2 in the isolated candidate environment. HPOS and Checkout Blocks are declared compatible. Mini-program defaults to RSA2; legacy MD5 requires explicit transition controls and never activates by fallback.

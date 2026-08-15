@@ -7,7 +7,8 @@
       source: function(request, response){
         $.getJSON((window.WooAlipayPSAdmin ? WooAlipayPSAdmin.ajax_url : ajaxurl), {
           action: (window.WooAlipayPSAdmin ? WooAlipayPSAdmin.actions[actionKey] : ''),
-          term: request.term
+          term: request.term,
+          nonce: (window.WooAlipayPSAdmin ? WooAlipayPSAdmin.nonce : '')
         }).done(function(data){
           // Expect an array of { label, value }
           var arr = Array.isArray(data) ? data : (data && data.data ? data.data : []);

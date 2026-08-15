@@ -16,6 +16,7 @@ add_action( 'plugins_loaded', function() {
         return;
     }
 
+    require_once WOO_ALIPAY_MINIPROGRAM_PATH . 'class-mini-protocol.php';
     $class_file = WOO_ALIPAY_MINIPROGRAM_PATH . 'class-wc-alipay-wap.php';
     if ( file_exists( $class_file ) ) {
         require_once $class_file;
@@ -41,7 +42,7 @@ add_filter( 'woocommerce_get_order_item_totals', function( $total_rows, $order )
 
     $new_row = array(
         'alipay_trade_no' => array(
-            'label' => __( 'Alipay Trade No.:', 'alipay' ),
+            'label' => __( 'Alipay Trade No.:', 'woo-alipay' ),
             'value' => $trade_no,
         ),
     );

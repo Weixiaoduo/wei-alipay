@@ -55,8 +55,9 @@ class WC_Alipay_Subscriptions {
 
         $missing_core = $this->get_missing_core_fields();
         if ( ! empty( $missing_core ) ) {
-            $renewal_order->add_order_note( sprintf( __( '自动代扣不可用：Alipay 核心配置缺失（%s）。', 'woo-alipay-subscriptions' ), implode( ', ', $missing_core ) ) );
-            $renewal_order->update_status( 'failed', __( '核心配置不完整，自动代扣失败。', 'woo-alipay-subscriptions' ) );
+            /* translators: %s: comma-separated list of missing configuration field names */
+            $renewal_order->add_order_note( sprintf( __( '自动代扣不可用：Alipay 核心配置缺失（%s）。', 'woo-alipay' ), implode( ', ', $missing_core ) ) );
+            $renewal_order->update_status( 'failed', __( '核心配置不完整，自动代扣失败。', 'woo-alipay' ) );
             $logger->log( 'error', 'Auto debit blocked: missing core settings', array_merge( $context, array( 'order_id' => $renewal_order->get_id(), 'missing' => implode( '|', $missing_core ) ) ) );
             return;
         }
@@ -65,8 +66,8 @@ class WC_Alipay_Subscriptions {
         $auto_debit_enabled = ( 'yes' === get_option( 'woo_alipay_subscriptions_enable_auto_debit', 'no' ) );
 
         if ( ! $auto_debit_enabled ) {
-            $renewal_order->add_order_note( __( '未启用自动代扣或未完成签约：将使用手动续费。', 'woo-alipay-subscriptions' ) );
-            $renewal_order->update_status( 'failed', __( '自动代扣未启用或未签约，标记为失败以触发手动续费。', 'woo-alipay-subscriptions' ) );
+            $renewal_order->add_order_note( __( '未启用自动代扣或未完成签约：将使用手动续费。', 'woo-alipay' ) );
+            $renewal_order->update_status( 'failed', __( '自动代扣未启用或未签约，标记为失败以触发手动续费。', 'woo-alipay' ) );
             $logger->log( 'info', 'Auto debit disabled, renewal order set to failed: #' . $renewal_order->get_id(), $context );
             return;
         }
@@ -76,8 +77,8 @@ class WC_Alipay_Subscriptions {
         $token   = $this->get_user_agreement_token( $user_id );
 
         if ( ! $token ) {
-            $renewal_order->add_order_note( __( '未找到支付宝代扣协议，无法自动续费。', 'woo-alipay-subscriptions' ) );
-            $renewal_order->update_status( 'failed', __( '未找到支付宝代扣协议，标记为失败以触发手动续费。', 'woo-alipay-subscriptions' ) );
+            $renewal_order->add_order_note( __( '未找到支付宝代扣协议，无法自动续费。', 'woo-alipay' ) );
+            $renewal_order->update_status( 'failed', __( '未找到支付宝代扣协议，标记为失败以触发手动续费。', 'woo-alipay' ) );
             $logger->log( 'warning', 'No Alipay agreement token for user #' . $user_id . ', order #' . $renewal_order->get_id(), $context );
             return;
         }
@@ -89,7 +90,8 @@ class WC_Alipay_Subscriptions {
         $result = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $renewal_order, $amount_to_charge, $agreement_no, $product_code );
 
         if ( is_wp_error( $result ) ) {
-            $renewal_order->add_order_note( sprintf( __( '自动代扣失败：%s', 'woo-alipay-subscriptions' ), $result->get_error_message() ) );
+            /* translators: %s: error message */
+            $renewal_order->add_order_note( sprintf( __( '自动代扣失败：%s', 'woo-alipay' ), $result->get_error_message() ) );
             $logger->log( 'error', 'Auto debit failed for order #' . $renewal_order->get_id() . ' - ' . $result->get_error_message(), array_merge( $context, array( 'order_id' => $renewal_order->get_id() ) ) );
             // Schedule retry according to plan
             $this->maybe_schedule_retry( $renewal_order );
@@ -99,7 +101,8 @@ class WC_Alipay_Subscriptions {
 
         // Payment created successfully; mark as paid
         $renewal_order->payment_complete( $result['trade_no'] );
-        $renewal_order->add_order_note( sprintf( __( '自动代扣成功 - 交易号: %s', 'woo-alipay-subscriptions' ), $result['trade_no'] ) );
+        /* translators: %s: Alipay transaction number */
+        $renewal_order->add_order_note( sprintf( __( '自动代扣成功 - 交易号: %s', 'woo-alipay' ), $result['trade_no'] ) );
     }
 
     /**
@@ -160,13 +163,15 @@ class WC_Alipay_Subscriptions {
         $product_code = get_option( 'woo_alipay_subscriptions_product_code', 'GENERAL_WITHHOLDING' );
         $result = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $order, $amount, $agreement_no, $product_code );
         if ( is_wp_error( $result ) ) {
-            $order->add_order_note( sprintf( __( '自动代扣重试失败：%s', 'woo-alipay-subscriptions' ), $result->get_error_message() ) );
+            /* translators: %s: error message */
+            $order->add_order_note( sprintf( __( '自动代扣重试失败：%s', 'woo-alipay' ), $result->get_error_message() ) );
             wc_get_logger()->log( 'warning', 'Auto debit retry failed', array( 'source' => 'alipay-subscriptions', 'order_id' => $order->get_id(), 'error' => $result->get_error_message() ) );
             $this->maybe_schedule_retry( $order );
             return;
         }
         $order->payment_complete( $result['trade_no'] );
-        $order->add_order_note( sprintf( __( '自动代扣成功（重试） - 交易号: %s', 'woo-alipay-subscriptions' ), $result['trade_no'] ) );
+        /* translators: %s: Alipay transaction number */
+        $order->add_order_note( sprintf( __( '自动代扣成功（重试） - 交易号: %s', 'woo-alipay' ), $result['trade_no'] ) );
     }
 }
 

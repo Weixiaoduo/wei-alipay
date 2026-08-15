@@ -14,6 +14,11 @@ add_action( 'init', function() {
     if ( ! isset( $_GET['enable_alipay_gateways'] ) || ! current_user_can( 'manage_woocommerce' ) ) {
         return;
     }
+
+    $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+    if ( ! wp_verify_nonce( $nonce, 'woo_alipay_enable_gateways' ) ) {
+        wp_die( esc_html__( '无效的安全令牌。', 'woo-alipay' ), 403 );
+    }
     
     $gateways = ['alipay', 'alipay_installment', 'alipay_facetopay'];
     
@@ -26,5 +31,5 @@ add_action( 'init', function() {
     
     wp_cache_flush();
     
-    wp_die( '<h1>✓ 完成！</h1><p>所有支付网关已启用。</p><p><a href="' . admin_url( 'admin.php?page=wc-settings&tab=checkout' ) . '">查看支付设置</a></p>' );
+    wp_die( wp_kses_post( '<h1>✓ 完成！</h1><p>所有支付网关已启用。</p><p><a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) . '">查看支付设置</a></p>' ) );
 }, 1 );

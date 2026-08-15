@@ -10,7 +10,7 @@
  * 此更新器会通过 wenpai_updater_override filter 自动让位。
  *
  * @package  WenPai
- * @version  1.0.0
+ * @version  1.2.1
  * @requires WordPress 5.8+
  * @requires PHP 7.4+
  * @link     https://feicode.com/WenPai-org
@@ -20,11 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( class_exists( 'WenPai_Updater' ) ) {
+if ( class_exists( 'Woo_Alipay_WenPai_Updater' ) ) {
     return;
 }
 
-class WenPai_Updater {
+class Woo_Alipay_WenPai_Updater {
 
     /**
      * 更新器版本号。
@@ -274,7 +274,7 @@ class WenPai_Updater {
      * @return string HTML。
      */
     private function markdown_to_html( string $text ): string {
-        if ( empty( $text ) || str_starts_with( trim( $text ), '<' ) ) {
+        if ( empty( $text ) || 0 === strpos( trim( $text ), '<' ) ) {
             return $text;
         }
 
