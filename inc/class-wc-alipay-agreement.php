@@ -21,8 +21,8 @@ class WC_Alipay_Agreement {
 		$notify_url = add_query_arg( [], WC()->api_request_url( 'WC_Alipay_Agreement_Notify' ) );
 		$return_url = add_query_arg( [], WC()->api_request_url( 'WC_Alipay_Agreement_Return' ) );
 
-		require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-		require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayUserAgreementPageSignRequest.php';
+		require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+		require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayUserAgreementPageSignRequest.php';
 
 		$aop = new AopClient();
 		$aop->gatewayUrl        = ( 'yes' === $gateway->get_option( 'sandbox' ) ) ? WC_Alipay::GATEWAY_SANDBOX_URL : WC_Alipay::GATEWAY_URL;
@@ -72,7 +72,7 @@ class WC_Alipay_Agreement {
 
 	public static function handle_agreement_notify() {
 		$gateway = new WC_Alipay( false );
-		require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+		require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
 		$aop = new AopClient();
 		$aop->alipayrsaPublicKey= $gateway->get_option( 'public_key' );
 		$aop->charset           = 'utf-8';
@@ -119,7 +119,7 @@ class WC_Alipay_Agreement {
 
 	public static function handle_agreement_start() {
 		if ( ! is_user_logged_in() ) {
-			wp_die( esc_html__( '请先登录后再进行签约授权。', 'woo-alipay' ) );
+			wp_die( esc_html__( '请先登录后再进行签约授权。', 'wei-alipay' ) );
 		}
 		$user_id = get_current_user_id();
 		$context = [];
@@ -134,7 +134,7 @@ class WC_Alipay_Agreement {
 			echo Alipay_SDK_Helper::sanitize_payment_form( $result['payload'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist.
 			exit;
 		}
-		wp_die( esc_html__( '无法生成签约请求，请稍后重试。', 'woo-alipay' ) );
+		wp_die( esc_html__( '无法生成签约请求，请稍后重试。', 'wei-alipay' ) );
 	}
 
 }

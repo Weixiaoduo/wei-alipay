@@ -4,7 +4,7 @@
  *
  * This template can be overridden by copying it to yourtheme/woocommerce/emails/alipay-orphan-transaction.php.
  *
- * HOWEVER, on occasion Woo Alipay will need to update template files and you
+ * HOWEVER, on occasion Wei Alipay will need to update template files and you
  * (the theme developer) will need to copy the new files to your theme to
  * maintain compatibility. We try to do this as little as possible, but it does
  * happen. When this occurs the version of the template file will be bumped and
@@ -28,37 +28,37 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		/* translators: %1$s: Website name  */
 		esc_html__(
 			'Alipay returned a notification of successful payment but the order does not appear to exist on %1$s.',
-			'woo-alipay'
+			'wei-alipay'
 		),
 		esc_html( $site_name )
 	);
 	?>
 	<br/>
 	<?php if ( 'auto_refund_error' === $type ) : ?>
-		<?php esc_html_e( 'Woo Alipay attempted to automatically refund the order but encountered an error.', 'woo-alipay' ); ?>
+		<?php esc_html_e( 'Wei Alipay attempted to automatically refund the order but encountered an error.', 'wei-alipay' ); ?>
 	<?php elseif ( 'transaction_closed' === $type ) : ?>
 		<?php
 		esc_html_e(
-			'Woo Alipay could not automatically refund the order because Alipay closed the transaction.',
-			'woo-alipay'
+			'Wei Alipay could not automatically refund the order because Alipay closed the transaction.',
+			'wei-alipay'
 		);
 		?>
 	<?php endif; ?>
 </p>
 <p>
-	<?php esc_html_e( 'See the following basic information:', 'woo-alipay' ); ?>
+	<?php esc_html_e( 'See the following basic information:', 'wei-alipay' ); ?>
 </p>
 <ul>
 	<li>
 	<?php
 		/* translators: %1$s: the order ID  */
-		printf( esc_html__( 'Order ID: %1$s', 'woo-alipay' ), esc_html( $order_id ) );
+		printf( esc_html__( 'Order ID: %1$s', 'wei-alipay' ), esc_html( $order_id ) );
 	?>
 	</li>
 	<li>
 	<?php
 		/* translators: %1$s: the Alipay transaction ID  */
-		printf( esc_html__( 'Alipay transaction ID: %1$s', 'woo-alipay' ), esc_html( $transaction_id ) );
+		printf( esc_html__( 'Alipay transaction ID: %1$s', 'wei-alipay' ), esc_html( $transaction_id ) );
 	?>
 	</li>
 </ul>
@@ -68,7 +68,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
 		/* translators: %1$s: Log path  */
 		esc_html__(
 			'The complete error data can be found in the log files on the server at the following location: %1$s',
-			'woo-alipay'
+			'wei-alipay'
 		),
 		'<code>' . esc_html( $log_path ) . '</code>'
 	);

@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Payment gateway for WooCommerce - Woo Alipay\n"
+"Project-Id-Version: Payment gateway for WooCommerce - Wei Alipay\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-10 16:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -73,7 +73,7 @@ msgid "Alipay App ID"
 msgstr ""
 
 #: inc/class-wc-alipay.php:31
-msgid "Alipay by Woo Alipay"
+msgid "Alipay by Wei Alipay"
 msgstr ""
 
 #. In Chinese, can simply be translated as 支付宝. Mentionning "China" in English and other languages to make it clear to international customers this is NOT a crossborder payment method.
@@ -129,7 +129,7 @@ msgid "Alipay payment completed"
 msgstr ""
 
 #: inc/class-wc-alipay.php:319
-msgid "Alipay payment gateway by Woo Alipay"
+msgid "Alipay payment gateway by Wei Alipay"
 msgstr ""
 
 #: inc/class-wc-alipay.php:591 inc/templates/admin/config-help.php:180
@@ -311,7 +311,7 @@ msgstr ""
 #, php-format
 msgid ""
 "Go to the app information page - accessible via %1$s (replace %2$s with the "
-"App ID to be used by Woo Alipay)."
+"App ID to be used by Wei Alipay)."
 msgstr ""
 
 #. %1$s is <code>url with placeholder</code>, %2$s is <code>placeholder</code>
@@ -319,7 +319,7 @@ msgstr ""
 #, php-format
 msgid ""
 "Go to the app overview page - accessible via %1$s (replace %2$s with the App "
-"ID to be used by Woo Alipay)."
+"ID to be used by Wei Alipay)."
 msgstr ""
 
 #. Author URI of the plugin
@@ -327,7 +327,7 @@ msgid "https://froger.me"
 msgstr ""
 
 #. URI of the plugin
-msgid "https://github.com/froger-me/woo-alipay"
+msgid "https://github.com/froger-me/wei-alipay"
 msgstr ""
 
 #. %1$s is <code>url</code>
@@ -419,7 +419,7 @@ msgstr ""
 #, php-format
 msgid ""
 "Once the app is created, go to the app information page - accessible "
-"directly via %1$s (replace %2$s with the App ID to be used by Woo Alipay)."
+"directly via %1$s (replace %2$s with the App ID to be used by Wei Alipay)."
 msgstr ""
 
 #: inc/templates/admin/config-help.php:296
@@ -465,7 +465,7 @@ msgid "Pay with Alipay"
 msgstr ""
 
 #. Name of the plugin
-msgid "Payment gateway for WooCommerce - Woo Alipay"
+msgid "Payment gateway for WooCommerce - Wei Alipay"
 msgstr ""
 
 #: inc/class-wc-alipay.php:174
@@ -518,7 +518,7 @@ msgid ""
 "Chinese Yuan)"
 msgstr ""
 
-#: inc/class-woo-alipay.php:146
+#: inc/class-wei-alipay.php:146
 msgid "Settings"
 msgstr ""
 
@@ -579,7 +579,7 @@ msgstr ""
 msgid "transaction not found."
 msgstr ""
 
-#: inc/class-woo-alipay.php:158
+#: inc/class-wei-alipay.php:158
 msgid "Transaction:"
 msgstr ""
 
@@ -630,19 +630,19 @@ msgstr ""
 #: inc/templates/emails/alipay-orphan-transaction.php:38
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:34
 msgid ""
-"Woo Alipay attempted to automatically refund the order but encountered an "
+"Wei Alipay attempted to automatically refund the order but encountered an "
 "error."
 msgstr ""
 
 #: inc/templates/emails/alipay-orphan-transaction.php:41
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:36
 msgid ""
-"Woo Alipay could not automatically refund the order because Alipay closed "
+"Wei Alipay could not automatically refund the order because Alipay closed "
 "the transaction."
 msgstr ""
 
 #: inc/class-wc-alipay.php:441
-msgid "Woo Alipay error: WooCommerce Order not found."
+msgid "Wei Alipay error: WooCommerce Order not found."
 msgstr ""
 
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:40

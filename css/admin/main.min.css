@@ -1,55 +1,55 @@
-.woo-alipay-settings .spinner,
-.woo-alipay-settings .test-status {
+.wei-alipay-settings .spinner,
+.wei-alipay-settings .test-status {
 	display: inline-block;
     float: none;
     vertical-align: middle;
 }
 
-.woo-alipay-settings .spinner {
+.wei-alipay-settings .spinner {
     background-size: 20px 20px;
     opacity: .7;
     filter: alpha(opacity=70);
 }
 
-.woo-alipay-settings .test-status .success {
+.wei-alipay-settings .test-status .success {
 	color: #46b450;
 }
 
-.woo-alipay-settings .test-status .failure,
-.woo-alipay-settings .test-status .error {
+.wei-alipay-settings .test-status .failure,
+.wei-alipay-settings .test-status .error {
 	color: #dc3232;
 }
 
-.woo-alipay-settings .test-status .dashicons {
+.wei-alipay-settings .test-status .dashicons {
 	margin: 4px 10px 8px;
 	display: none;
 }
 
-.woo-alipay-settings .test-status .dashicons.is-active {
+.wei-alipay-settings .test-status .dashicons.is-active {
 	display: inline-block;
 }
 
-.woo-alipay-settings .test-status-message.success,
-.woo-alipay-settings .test-status-message.failure,
-.woo-alipay-settings .test-status-message.error,
-.woo-alipay-settings .description.help {
+.wei-alipay-settings .test-status-message.success,
+.wei-alipay-settings .test-status-message.failure,
+.wei-alipay-settings .test-status-message.error,
+.wei-alipay-settings .description.help {
 	display: none;
 }
 
-.woo-alipay-settings .test-status-message.is-active,
-.woo-alipay-settings .description.help.is-active {
+.wei-alipay-settings .test-status-message.is-active,
+.wei-alipay-settings .description.help.is-active {
 	display: block;
 }
 
-.woo-alipay-settings .form-table th[scope="row"] {
+.wei-alipay-settings .form-table th[scope="row"] {
     padding-left: 0;
 }
 
-.woo-alipay-settings .form-table .titledesc {
+.wei-alipay-settings .form-table .titledesc {
     font-weight: 600;
 }
 
-.woo-alipay-settings .form-table tr[data-field-type="title"] th {
+.wei-alipay-settings .form-table tr[data-field-type="title"] th {
     background: #f9f9f9;
     border-left: 4px solid #0073aa;
     padding: 15px 20px;
@@ -58,50 +58,50 @@
     color: #23282d;
 }
 
-.woo-alipay-settings .form-table tr[data-field-type="title"] td {
+.wei-alipay-settings .form-table tr[data-field-type="title"] td {
     background: #f9f9f9;
     padding: 15px 20px;
     border-left: 4px solid #0073aa;
 }
 
-.woo-alipay-settings .form-table tr[data-field-type="title"] + tr {
+.wei-alipay-settings .form-table tr[data-field-type="title"] + tr {
     border-top: none;
 }
 
-.woo-alipay-settings .form-table tr[data-field-type="title"] th,
-.woo-alipay-settings .form-table tr[data-field-type="title"] td {
+.wei-alipay-settings .form-table tr[data-field-type="title"] th,
+.wei-alipay-settings .form-table tr[data-field-type="title"] td {
     border-bottom: 1px solid #ddd;
 }
 
-.woo-alipay-settings textarea {
+.wei-alipay-settings textarea {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     font-size: 12px;
     line-height: 1.4;
 }
 
-.woo-alipay-settings .description {
+.wei-alipay-settings .description {
     font-style: normal;
     color: #666;
 }
 
-.woo-alipay-settings .description strong {
+.wei-alipay-settings .description strong {
     color: #d63638;
 }
 
-#woo-alipay-test-result {
+#wei-alipay-test-result {
     padding: 10px;
     border-radius: 4px;
     margin-top: 10px;
     display: none;
 }
 
-#woo-alipay-test-result.success {
+#wei-alipay-test-result.success {
     background: #d4edda;
     border: 1px solid #c3e6cb;
     color: #155724;
 }
 
-#woo-alipay-test-result.error {
+#wei-alipay-test-result.error {
     background: #f8d7da;
     border: 1px solid #f5c6cb;
     color: #721c24;

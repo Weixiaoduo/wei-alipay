@@ -5,7 +5,7 @@ includes:
 parameters:
     level: 1
     paths:
-        - woo-alipay.php
+        - wei-alipay.php
         - enable-gateways.php
         - inc
         - includes
@@ -18,7 +18,7 @@ parameters:
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
         - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
         - tests/phpstan/alipay-sdk-stubs.php
-    tmpDir: /tmp/woo-alipay-phpstan
+    tmpDir: /tmp/wei-alipay-phpstan
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - identifier: return.void

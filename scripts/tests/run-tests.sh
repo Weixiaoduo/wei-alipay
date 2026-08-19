@@ -10,8 +10,8 @@ run_static() {
   info 'PHP syntax checks (first-party PHP; bundled SDK excluded)'
   local count
   count="$(find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print | wc -l | tr -d ' ')"
-  if ! find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l >/tmp/woo-alipay-php-lint.txt; then
-    grep -v '^No syntax errors detected' /tmp/woo-alipay-php-lint.txt >&2 || true
+  if ! find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l >/tmp/wei-alipay-php-lint.txt; then
+    grep -v '^No syntax errors detected' /tmp/wei-alipay-php-lint.txt >&2 || true
     fail "one or more of $count PHP files failed syntax checks"
   fi
   while IFS= read -r -d '' file; do node --check "$file" >/dev/null; done < <(find "$ROOT_DIR/js" "$ROOT_DIR/inc/modules" -type f -name '*.js' ! -name '*.min.js' -print0)
@@ -20,24 +20,25 @@ run_static() {
 }
 
 run_contracts() {
+  php "$ROOT_DIR/tests/rename-contracts.php"
   php "$ROOT_DIR/tests/security-contracts.php"
   php "$ROOT_DIR/tests/multisite-lifecycle-contracts.php"
   php "$ROOT_DIR/tests/uninstall-retention-contracts.php"
   php "$ROOT_DIR/tests/uninstall-purge-contracts.php"
-  ! grep -RInE "(get|update|delete)_post_meta\(" "$ROOT_DIR/inc/modules" --include='*.php' --exclude-dir=lib >/tmp/woo-alipay-direct-order-meta.txt || {
-    cat /tmp/woo-alipay-direct-order-meta.txt >&2
+  ! grep -RInE "(get|update|delete)_post_meta\(" "$ROOT_DIR/inc/modules" --include='*.php' --exclude-dir=lib >/tmp/wei-alipay-direct-order-meta.txt || {
+    cat /tmp/wei-alipay-direct-order-meta.txt >&2
     fail 'direct post-meta access remains in payment modules (HPOS contract)'
   }
-  ! grep -RIn "str_starts_with(" "$ROOT_DIR/includes" --include='*.php' >/tmp/woo-alipay-php8-only.txt || {
-    cat /tmp/woo-alipay-php8-only.txt >&2
+  ! grep -RIn "str_starts_with(" "$ROOT_DIR/includes" --include='*.php' >/tmp/wei-alipay-php8-only.txt || {
+    cat /tmp/wei-alipay-php8-only.txt >&2
     fail 'PHP 8-only updater call remains'
   }
   pass 'security and compatibility contracts'
 }
 
 run_runtime() {
-  local wp_path="${WOO_ALIPAY_TEST_WP_PATH:-}"
-  [[ -n "$wp_path" && -f "$wp_path/wp-config.php" ]] || fail 'set WOO_ALIPAY_TEST_WP_PATH to an isolated test WordPress installation'
+  local wp_path="${WEI_ALIPAY_TEST_WP_PATH:-}"
+  [[ -n "$wp_path" && -f "$wp_path/wp-config.php" ]] || fail 'set WEI_ALIPAY_TEST_WP_PATH to an isolated test WordPress installation'
   [[ "$wp_path" != *'.local/share/Trash/'* ]] || fail 'refusing trashed/historical WordPress path'
   wp --path="$wp_path" eval 'if (!class_exists("WooCommerce")) { throw new Exception("WooCommerce missing"); } $g=WC()->payment_gateways()->payment_gateways(); foreach (["alipay","alipay_facetopay","alipay_installment","alipay_barcode"] as $id) { if (!isset($g[$id])) { throw new Exception("gateway missing: ".$id); } } echo "runtime gateways:ok\n";'
   pass 'isolated WordPress runtime gateway registration'

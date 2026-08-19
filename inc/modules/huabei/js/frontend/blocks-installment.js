@@ -5,8 +5,8 @@ const { __ } = window.wp.i18n;
 const { decodeEntities } = window.wp.htmlEntities;
 
 const settings = window.wc.wcSettings.getSetting( 'alipay_installment_data', {} );
-const defaultLabel = __( '支付宝花呗分期', 'woo-alipay' );
-const defaultDescription = __( '使用支付宝花呗分期付款，支持3期、6期、12期免息或低息分期。', 'woo-alipay' );
+const defaultLabel = __( '支付宝花呗分期', 'wei-alipay' );
+const defaultDescription = __( '使用支付宝花呗分期付款，支持3期、6期、12期免息或低息分期。', 'wei-alipay' );
 
 const Label = ( props ) => {
     const { PaymentMethodLabel } = props.components;
@@ -69,7 +69,7 @@ const Content = ( props ) => {
                 color: '#856404',
                 marginTop: '10px'
             }
-        }, __( '订单金额需满 ￥' + minAmount + ' 才能使用花呗分期', 'woo-alipay' ) );
+        }, __( '订单金额需满 ￥' + minAmount + ' 才能使用花呗分期', 'wei-alipay' ) );
     }
     
     return createElement( 'div', {
@@ -82,7 +82,7 @@ const Content = ( props ) => {
         createElement( 'p', {
             key: 'fee-note',
             style: { margin: '6px 0', fontSize: '12px', color: '#666' }
-        }, settings.feePayer === 'seller' ? __( '免息分期（手续费由商家承担）', 'woo-alipay' ) : __( '可能产生分期手续费，以支付宝支付页面为准', 'woo-alipay' ) ),
+        }, settings.feePayer === 'seller' ? __( '免息分期（手续费由商家承担）', 'wei-alipay' ) : __( '可能产生分期手续费，以支付宝支付页面为准', 'wei-alipay' ) ),
         
         createElement( 'div', {
             key: 'period-info',
@@ -101,7 +101,7 @@ const Content = ( props ) => {
                     marginBottom: '8px',
                     fontSize: '14px'
                 }
-            }, __( '选择分期期数：', 'woo-alipay' ) ),
+            }, __( '选择分期期数：', 'wei-alipay' ) ),
             
             createElement( 'div', {
                 key: 'periods',
@@ -129,7 +129,7 @@ const Content = ( props ) => {
                     } ),
                     createElement( 'span', { key: 'label-' + period }, [
                         period + ' 期（每期 ￥' + monthlyAmount,
-                        (settings.feePayer === 'seller' && settings.showInterestFreeBadge) ? createElement('span', { key: 'free-'+period, className: 'alipay-badge alipay-badge--free', style: { marginLeft: '4px' } }, __('免息', 'woo-alipay')) : null,
+                        (settings.feePayer === 'seller' && settings.showInterestFreeBadge) ? createElement('span', { key: 'free-'+period, className: 'alipay-badge alipay-badge--free', style: { marginLeft: '4px' } }, __('免息', 'wei-alipay')) : null,
                         '）'
                     ] )
                 ] );
@@ -143,7 +143,7 @@ const Content = ( props ) => {
                 fontSize: '12px',
                 color: '#666'
             }
-        }, __( '在支付页面将可以选择具体的分期期数', 'woo-alipay' ) )
+        }, __( '在支付页面将可以选择具体的分期期数', 'wei-alipay' ) )
     ]);
 };
 

@@ -28,14 +28,14 @@ final class WC_Alipay_Installment_Blocks_Support extends AbstractPaymentMethodTy
 
     public function get_payment_method_script_handles() {
         $script_path = 'js/frontend/blocks-installment.js';
-        $script_asset_path = apply_filters( 'woo_alipay_installment_blocks_asset_path', WOO_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks-installment.asset.php' );
+        $script_asset_path = apply_filters( 'woo_alipay_installment_blocks_asset_path', WEI_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks-installment.asset.php' );
         $script_asset = file_exists( $script_asset_path )
             ? require( $script_asset_path )
             : array(
                 'dependencies' => array( 'wc-blocks-registry', 'wp-element', 'wp-html-entities', 'wp-i18n' ),
-                'version'      => WOO_ALIPAY_VERSION
+                'version'      => WEI_ALIPAY_VERSION
             );
-        $script_url = apply_filters( 'woo_alipay_installment_blocks_script_url', trailingslashit( WOO_ALIPAY_PLUGIN_URL ) . $script_path );
+        $script_url = apply_filters( 'woo_alipay_installment_blocks_script_url', trailingslashit( WEI_ALIPAY_PLUGIN_URL ) . $script_path );
 
         wp_register_script(
             'wc-alipay-installment-payments-blocks',
@@ -46,7 +46,7 @@ final class WC_Alipay_Installment_Blocks_Support extends AbstractPaymentMethodTy
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-installment-payments-blocks', 'woo-alipay', WOO_ALIPAY_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-installment-payments-blocks', 'wei-alipay', WEI_ALIPAY_PLUGIN_PATH . 'languages' );
         }
 
         return [ 'wc-alipay-installment-payments-blocks' ];
@@ -86,7 +86,7 @@ final class WC_Alipay_Installment_Blocks_Support extends AbstractPaymentMethodTy
             'title'            => $this->get_setting( 'title', '支付宝花呗分期' ),
             'description'      => $this->get_setting( 'description', '使用支付宝花呗分期付款，支持3期、6期、12期免息或低息分期。' ),
             'supports'         => $this->get_supported_features(),
-'icon'             => WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-huabei-icon.svg',
+'icon'             => WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-huabei-icon.svg',
             'minAmount'        => floatval($min_amount),
             'cartTotal'        => floatval($cart_total),
 'meetsMinAmount'   => $meets_min_amount,

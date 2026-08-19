@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) || ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit; // Exit if accessed directly
 }
 
-$delete_data = defined( 'WOO_ALIPAY_DELETE_DATA' ) && true === WOO_ALIPAY_DELETE_DATA;
+$delete_data = defined( 'WEI_ALIPAY_DELETE_DATA' ) && true === WEI_ALIPAY_DELETE_DATA;
 $delete_data = (bool) apply_filters( 'woo_alipay_uninstall_delete_data', $delete_data );
 
 // Payment settings and historical order metadata are retained by default.

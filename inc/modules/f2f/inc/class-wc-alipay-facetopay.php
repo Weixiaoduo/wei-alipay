@@ -25,9 +25,9 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     public function __construct()
     {
         $this->id = self::GATEWAY_ID;
-        $this->method_title = __('支付宝当面付', 'woo-alipay');
-        $this->method_description = __('支持当面付扫码支付，商家展示二维码供用户扫描。适用于收银台、实体店等场景。需要在支付宝商户后台开通当面付功能。', 'woo-alipay');
-        $this->icon = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-f2f-icon.svg';
+        $this->method_title = __('支付宝当面付', 'wei-alipay');
+        $this->method_description = __('支持当面付扫码支付，商家展示二维码供用户扫描。适用于收银台、实体店等场景。需要在支付宝商户后台开通当面付功能。', 'wei-alipay');
+        $this->icon = WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-f2f-icon.svg';
         $this->has_fields = false;
         $this->charset = strtolower(get_bloginfo('charset'));
         $this->current_currency = get_option('woocommerce_currency');
@@ -40,7 +40,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         $this->init_settings();
 
         
-        $this->title = $this->get_option('title', __('支付宝扫码支付', 'woo-alipay'));
+        $this->title = $this->get_option('title', __('支付宝扫码支付', 'wei-alipay'));
         $this->description = $this->get_option('description');
         $this->enabled = $this->get_option('enabled');
         $this->exchange_rate = $this->get_option('exchange_rate');
@@ -66,8 +66,8 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
 
     public function admin_options()
     {
-        echo '<h3>' . esc_html__('支付宝当面付', 'woo-alipay') . '</h3>';
-        echo '<p>' . esc_html__('用于线下扫码场景的当面付支付方式。', 'woo-alipay') . '</p>';
+        echo '<h3>' . esc_html__('支付宝当面付', 'wei-alipay') . '</h3>';
+        echo '<p>' . esc_html__('用于线下扫码场景的当面付支付方式。', 'wei-alipay') . '</p>';
 
 
         echo '<table class="form-table">';
@@ -94,34 +94,34 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     {
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __('启用/禁用', 'woo-alipay'),
+                'title' => __('启用/禁用', 'wei-alipay'),
                 'type' => 'checkbox',
-                'label' => __('启用支付宝当面付', 'woo-alipay'),
+                'label' => __('启用支付宝当面付', 'wei-alipay'),
                 'default' => 'no',
             ),
             'title' => array(
-                'title' => __('标题', 'woo-alipay'),
+                'title' => __('标题', 'wei-alipay'),
                 'type' => 'text',
-                'description' => __('用户在结账时看到的支付方式名称', 'woo-alipay'),
-                'default' => __('支付宝扫码支付', 'woo-alipay'),
+                'description' => __('用户在结账时看到的支付方式名称', 'wei-alipay'),
+                'default' => __('支付宝扫码支付', 'wei-alipay'),
                 'desc_tip' => true,
             ),
             'description' => array(
-                'title' => __('描述', 'woo-alipay'),
+                'title' => __('描述', 'wei-alipay'),
                 'type' => 'textarea',
-                'description' => __('支付方式描述', 'woo-alipay'),
-                'default' => __('使用支付宝扫描二维码完成支付', 'woo-alipay'),
+                'description' => __('支付方式描述', 'wei-alipay'),
+                'default' => __('使用支付宝扫描二维码完成支付', 'wei-alipay'),
                 'desc_tip' => true,
             ),
             
             'qrcode_settings' => array(
-                'title' => __('二维码设置', 'woo-alipay'),
+                'title' => __('二维码设置', 'wei-alipay'),
                 'type' => 'title',
             ),
             'qrcode_size' => array(
-                'title' => __('二维码尺寸', 'woo-alipay'),
+                'title' => __('二维码尺寸', 'wei-alipay'),
                 'type' => 'number',
-                'description' => __('二维码显示尺寸（像素）', 'woo-alipay'),
+                'description' => __('二维码显示尺寸（像素）', 'wei-alipay'),
                 'default' => '300',
                 'desc_tip' => true,
                 'custom_attributes' => array(
@@ -131,28 +131,28 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                 ),
             ),
             'qrcode_timeout' => array(
-                'title' => __('二维码有效期', 'woo-alipay'),
+                'title' => __('二维码有效期', 'wei-alipay'),
                 'type' => 'select',
-                'description' => __('二维码的有效时间', 'woo-alipay'),
+                'description' => __('二维码的有效时间', 'wei-alipay'),
                 'default' => '120',
                 'options' => array(
-                    '60' => __('1分钟', 'woo-alipay'),
-                    '120' => __('2分钟', 'woo-alipay'),
-                    '180' => __('3分钟', 'woo-alipay'),
-                    '300' => __('5分钟', 'woo-alipay'),
-                    '600' => __('10分钟', 'woo-alipay'),
+                    '60' => __('1分钟', 'wei-alipay'),
+                    '120' => __('2分钟', 'wei-alipay'),
+                    '180' => __('3分钟', 'wei-alipay'),
+                    '300' => __('5分钟', 'wei-alipay'),
+                    '600' => __('10分钟', 'wei-alipay'),
                 ),
                 'desc_tip' => true,
             ),
             
             'polling_settings' => array(
-                'title' => __('轮询设置', 'woo-alipay'),
+                'title' => __('轮询设置', 'wei-alipay'),
                 'type' => 'title',
             ),
             'polling_interval' => array(
-                'title' => __('轮询间隔', 'woo-alipay'),
+                'title' => __('轮询间隔', 'wei-alipay'),
                 'type' => 'number',
-                'description' => __('查询支付状态的间隔时间（秒）', 'woo-alipay'),
+                'description' => __('查询支付状态的间隔时间（秒）', 'wei-alipay'),
                 'default' => '2',
                 'desc_tip' => true,
                 'custom_attributes' => array(
@@ -163,21 +163,21 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             ),
             
             'order_prefix' => array(
-                'title' => __('订单号前缀', 'woo-alipay'),
+                'title' => __('订单号前缀', 'wei-alipay'),
                 'type' => 'text',
-                'description' => __('当面付订单号的前缀', 'woo-alipay'),
+                'description' => __('当面付订单号的前缀', 'wei-alipay'),
                 'default' => 'F2F',
                 'desc_tip' => true,
             ),
             
             'debug' => array(
-                'title' => __('调试日志', 'woo-alipay'),
+                'title' => __('调试日志', 'wei-alipay'),
                 'type' => 'checkbox',
-                'label' => __('启用日志记录', 'woo-alipay'),
+                'label' => __('启用日志记录', 'wei-alipay'),
                 'default' => 'no',
                 'description' => sprintf(
                     /* translators: %s: log file path */
-                    __('记录当面付相关日志到 %s', 'woo-alipay'),
+                    __('记录当面付相关日志到 %s', 'wei-alipay'),
                     '<code>' . WC_Log_Handler_File::get_log_file_path($this->id) . '</code>'
                 ),
             ),
@@ -185,11 +185,11 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         
         if (!in_array($this->current_currency, array('CNY', 'RMB'), true)) {
             $this->form_fields['exchange_rate'] = array(
-                'title' => __('汇率', 'woo-alipay'),
+                'title' => __('汇率', 'wei-alipay'),
                 'type' => 'number',
                 'description' => sprintf(
                     /* translators: %s: store currency code */
-                    __('设置 %s 与人民币的汇率', 'woo-alipay'),
+                    __('设置 %s 与人民币的汇率', 'wei-alipay'),
                     $this->current_currency
                 ),
                 'default' => '7.0',
@@ -208,14 +208,14 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             return;
         }
         
-        $style_url  = apply_filters( 'woo_alipay_facetopay_style_url', WOO_ALIPAY_F2F_PLUGIN_URL . 'css/alipay-facetopay.css' );
-        $script_url = apply_filters( 'woo_alipay_facetopay_script_url', WOO_ALIPAY_F2F_PLUGIN_URL . 'js/alipay-facetopay.js' );
+        $style_url  = apply_filters( 'woo_alipay_facetopay_style_url', WEI_ALIPAY_F2F_PLUGIN_URL . 'css/alipay-facetopay.css' );
+        $script_url = apply_filters( 'woo_alipay_facetopay_script_url', WEI_ALIPAY_F2F_PLUGIN_URL . 'js/alipay-facetopay.js' );
 
         wp_enqueue_style(
             'alipay-facetopay',
             $style_url,
             array(),
-            WOO_ALIPAY_VERSION
+            WEI_ALIPAY_VERSION
         );
         
         wp_enqueue_script(
@@ -230,7 +230,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             'alipay-facetopay',
             $script_url,
             array('jquery', 'qrcodejs'),
-            WOO_ALIPAY_VERSION,
+            WEI_ALIPAY_VERSION,
             true
         );
         
@@ -245,7 +245,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     {
         $order = wc_get_order($order_id);
         
-        $order->update_status('pending', __('等待扫码支付', 'woo-alipay'));
+        $order->update_status('pending', __('等待扫码支付', 'wei-alipay'));
         WC()->cart->empty_cart();
         
         return array(
@@ -262,7 +262,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             return;
         }
         
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         
         $main_gateway = new WC_Alipay(false);
         $config = Alipay_SDK_Helper::get_alipay_config(array(
@@ -274,7 +274,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         
         $aop = Alipay_SDK_Helper::create_alipay_service($config);
         if (!$aop) {
-            wc_add_notice(__('支付初始化失败', 'woo-alipay'), 'error');
+            wc_add_notice(__('支付初始化失败', 'wei-alipay'), 'error');
             return;
         }
         
@@ -290,7 +290,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         }
         
         try {
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePrecreateRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePrecreateRequest.php';
             
             $request = new AlipayTradePrecreateRequest();
             
@@ -319,12 +319,12 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                 $this->display_qrcode_page($order, $qr_code);
             } else {
                 self::log('当面付二维码生成失败: ' . ($result->sub_msg ?? $result->msg), 'error');
-                wc_add_notice(__('生成支付二维码失败', 'woo-alipay'), 'error');
+                wc_add_notice(__('生成支付二维码失败', 'wei-alipay'), 'error');
             }
             
         } catch (Exception $e) {
             self::log('当面付异常: ' . $e->getMessage(), 'error');
-            wc_add_notice(__('支付请求失败', 'woo-alipay'), 'error');
+            wc_add_notice(__('支付请求失败', 'wei-alipay'), 'error');
         }
     }
 
@@ -333,7 +333,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         $qrcode_size = intval($this->get_option('qrcode_size', 300));
         $timeout = intval($this->get_option('qrcode_timeout', 120));
         
-        $template_path = apply_filters( 'woo_alipay_facetopay_qrcode_template', WOO_ALIPAY_PLUGIN_PATH . 'inc/templates/payment-qrcode.php', $order, $qr_code, $qrcode_size, $timeout );
+        $template_path = apply_filters( 'woo_alipay_facetopay_qrcode_template', WEI_ALIPAY_PLUGIN_PATH . 'inc/templates/payment-qrcode.php', $order, $qr_code, $qrcode_size, $timeout );
         include $template_path;
     }
 
@@ -358,7 +358,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         if (!$order || 'alipay_facetopay' !== $order->get_payment_method() || !$this->is_authorized_order_request($order) || $order->is_paid()) {
             wp_send_json_error(array('message' => 'Invalid order'), 403);
         }
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         $main_gateway = new WC_Alipay(false);
         $config = Alipay_SDK_Helper::get_alipay_config(array(
             'appid' => $main_gateway->get_option('appid'),
@@ -367,7 +367,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             'sandbox' => $main_gateway->get_option('sandbox'),
         ));
         try {
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePrecreateRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePrecreateRequest.php';
             $aop = Alipay_SDK_Helper::create_alipay_service($config);
             if (!$aop) {
                 wp_send_json_error(array('message' => 'SDK init failed'));
@@ -429,7 +429,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             ));
         }
         
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         
         $main_gateway = new WC_Alipay(false);
         $config = Alipay_SDK_Helper::get_alipay_config(array(
@@ -458,7 +458,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                     $order->payment_complete($result['trade_no']);
                     $order->add_order_note(
                         /* translators: %s: Alipay transaction number */
-                        sprintf(__('当面付支付完成 - 交易号: %s', 'woo-alipay'), $result['trade_no'])
+                        sprintf(__('当面付支付完成 - 交易号: %s', 'wei-alipay'), $result['trade_no'])
                     );
                 }
                 
@@ -479,7 +479,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             echo 'fail';
             exit;
         }
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         
         $main_gateway = new WC_Alipay(false);
         $alipay_public_key = $main_gateway->get_option('public_key');
@@ -551,11 +551,11 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
                 $order->payment_complete($trade_no);
                 $order->add_order_note(
                     /* translators: %s: Alipay transaction number */
-                    sprintf(__('当面付支付完成 - 交易号: %s', 'woo-alipay'), $trade_no)
+                    sprintf(__('当面付支付完成 - 交易号: %s', 'wei-alipay'), $trade_no)
                 );
             }
         } elseif ('process_close' === $transition) {
-            $order->update_status('cancelled', __('支付宝已关闭当面付交易。', 'woo-alipay'));
+            $order->update_status('cancelled', __('支付宝已关闭当面付交易。', 'wei-alipay'));
         }
         Alipay_SDK_Helper::release_lock('notify', $out_trade_no, $lock);
         echo 'success';
@@ -567,12 +567,12 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         $order = wc_get_order($order_id);
         
         if (!$order) {
-            return new WP_Error('error', __('订单不存在', 'woo-alipay'));
+            return new WP_Error('error', __('订单不存在', 'wei-alipay'));
         }
         
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeRefundRequest.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeRefundRequest.php';
         
         $main_gateway = new WC_Alipay(false);
         $config = Alipay_SDK_Helper::get_alipay_config(array(
@@ -584,15 +584,15 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         
         $aop = Alipay_SDK_Helper::create_alipay_service($config);
         if (!$aop) {
-            return new WP_Error('sdk_error', __('创建支付宝服务失败', 'woo-alipay'));
+            return new WP_Error('sdk_error', __('创建支付宝服务失败', 'wei-alipay'));
         }
         
         $out_trade_no = $order->get_meta('_alipay_out_trade_no');
         if (!$out_trade_no) {
-            return new WP_Error('missing_out_trade_no', __('退款失败：缺少原始支付宝商户订单号。', 'woo-alipay'));
+            return new WP_Error('missing_out_trade_no', __('退款失败：缺少原始支付宝商户订单号。', 'wei-alipay'));
         }
         $refund_amount = $amount ? floatval($amount) : floatval($order->get_total());
-        $refund_reason = $reason ? $reason : __('订单退款', 'woo-alipay');
+        $refund_reason = $reason ? $reason : __('订单退款', 'wei-alipay');
         
         try {
             $request = new AlipayTradeRefundRequest();
@@ -607,10 +607,10 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
             $result = $response->$node;
             if (isset($result->code) && $result->code === '10000') {
                 /* translators: %s: refunded amount */
-                $order->add_order_note(sprintf(__('支付宝退款成功，金额：¥%s', 'woo-alipay'), number_format($refund_amount, 2)));
+                $order->add_order_note(sprintf(__('支付宝退款成功，金额：¥%s', 'wei-alipay'), number_format($refund_amount, 2)));
                 return true;
             }
-            return new WP_Error('refund_failed', $result->sub_msg ?? $result->msg ?? __('退款失败', 'woo-alipay'));
+            return new WP_Error('refund_failed', $result->sub_msg ?? $result->msg ?? __('退款失败', 'wei-alipay'));
         } catch (Exception $e) {
             return new WP_Error('exception', $e->getMessage());
         }
@@ -638,7 +638,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
 
     protected function convert_to_rmb($amount)
     {
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         return Alipay_SDK_Helper::convert_currency(
             $amount,
             $this->current_currency,
@@ -649,7 +649,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     protected function get_order_title($order)
     {
         /* translators: %s: order ID */
-        $title = get_bloginfo('name') . ' - ' . sprintf(__('订单 #%s', 'woo-alipay'), $order->get_id());
+        $title = get_bloginfo('name') . ' - ' . sprintf(__('订单 #%s', 'wei-alipay'), $order->get_id());
         return mb_substr($title, 0, 256);
     }
 

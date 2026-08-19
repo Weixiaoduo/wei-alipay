@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * not confidential and must remain available to verify notifications. Private
  * application keys and legacy MD5 shared secrets are encrypted at rest.
  */
-final class Woo_Alipay_Secret_Store {
+final class Wei_Alipay_Secret_Store {
 	const PREFIX          = 'woo-alipay-secret:v1:';
 	const ROLLBACK_OPTION = 'woo_alipay_secret_rollback_v1';
 
@@ -34,7 +34,7 @@ final class Woo_Alipay_Secret_Store {
 			return (string) $plaintext;
 		}
 		if ( ! function_exists( 'openssl_encrypt' ) ) {
-			return new WP_Error( 'secret_crypto_unavailable', __( 'OpenSSL is required to protect Alipay secrets.', 'woo-alipay' ) );
+			return new WP_Error( 'secret_crypto_unavailable', __( 'OpenSSL is required to protect Alipay secrets.', 'wei-alipay' ) );
 		}
 
 		$key = self::derive_key( $material );
@@ -42,7 +42,7 @@ final class Woo_Alipay_Secret_Store {
 		$tag = '';
 		$ciphertext = openssl_encrypt( (string) $plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag, 'woo-alipay:v1' );
 		if ( false === $ciphertext ) {
-			return new WP_Error( 'secret_encrypt_failed', __( 'Alipay secret encryption failed.', 'woo-alipay' ) );
+			return new WP_Error( 'secret_encrypt_failed', __( 'Alipay secret encryption failed.', 'wei-alipay' ) );
 		}
 
 		$payload = array(
@@ -61,7 +61,7 @@ final class Woo_Alipay_Secret_Store {
 		$encoded = substr( (string) $value, strlen( self::PREFIX ) );
 		$payload = json_decode( (string) base64_decode( $encoded, true ), true );
 		if ( ! is_array( $payload ) || ! isset( $payload['iv'], $payload['tag'], $payload['ct'] ) ) {
-			return new WP_Error( 'secret_envelope_invalid', __( 'Stored Alipay secret is malformed.', 'woo-alipay' ) );
+			return new WP_Error( 'secret_envelope_invalid', __( 'Stored Alipay secret is malformed.', 'wei-alipay' ) );
 		}
 
 		foreach ( array_values( array_unique( array_filter( (array) $materials ) ) ) as $material ) {
@@ -79,7 +79,7 @@ final class Woo_Alipay_Secret_Store {
 			}
 		}
 
-		return new WP_Error( 'secret_decrypt_failed', __( 'Stored Alipay secret cannot be decrypted with the configured key ring.', 'woo-alipay' ) );
+		return new WP_Error( 'secret_decrypt_failed', __( 'Stored Alipay secret cannot be decrypted with the configured key ring.', 'wei-alipay' ) );
 	}
 
 	public static function decrypt_option( $settings, $option ) {
@@ -215,19 +215,19 @@ final class Woo_Alipay_Secret_Store {
 			return $active;
 		}
 		if ( ! is_array( $snapshot ) || 1 !== (int) ( $snapshot['schema'] ?? 0 ) || ! is_array( $snapshot['values'] ?? null ) ) {
-			return new WP_Error( 'secret_rollback_unavailable', __( 'No valid Alipay secret rollback generation is available.', 'woo-alipay' ) );
+			return new WP_Error( 'secret_rollback_unavailable', __( 'No valid Alipay secret rollback generation is available.', 'wei-alipay' ) );
 		}
 
 		$updates = array();
 		foreach ( $snapshot['values'] as $option => $fields ) {
 			if ( ! isset( self::$option_fields[ $option ] ) || ! is_array( $fields ) ) {
-				return new WP_Error( 'secret_rollback_invalid', __( 'The Alipay secret rollback generation is invalid.', 'woo-alipay' ) );
+				return new WP_Error( 'secret_rollback_invalid', __( 'The Alipay secret rollback generation is invalid.', 'wei-alipay' ) );
 			}
 			$stored = self::raw_option( $option );
 			$stored = is_array( $stored ) ? $stored : array();
 			foreach ( $fields as $field => $envelope ) {
 				if ( ! in_array( $field, self::$option_fields[ $option ], true ) || ! self::is_envelope( $envelope ) ) {
-					return new WP_Error( 'secret_rollback_invalid', __( 'The Alipay secret rollback generation is invalid.', 'woo-alipay' ) );
+					return new WP_Error( 'secret_rollback_invalid', __( 'The Alipay secret rollback generation is invalid.', 'wei-alipay' ) );
 				}
 				$plaintext = self::decrypt_value( $envelope, self::keyring() );
 				if ( is_wp_error( $plaintext ) ) {
@@ -251,6 +251,10 @@ final class Woo_Alipay_Secret_Store {
 	}
 
 	private static function active_material() {
+		if ( defined( 'WEI_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WEI_ALIPAY_ENCRYPTION_KEY ) {
+			return (string) WEI_ALIPAY_ENCRYPTION_KEY;
+		}
+		// Preserve decryptability during the controlled mall.weixiaoduo.com key-name cutover.
 		if ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY ) {
 			return (string) WOO_ALIPAY_ENCRYPTION_KEY;
 		}
@@ -261,7 +265,7 @@ final class Woo_Alipay_Secret_Store {
 			}
 		}
 		if ( empty( $parts ) ) {
-			return new WP_Error( 'secret_key_unavailable', __( 'WordPress security keys are required to protect Alipay secrets.', 'woo-alipay' ) );
+			return new WP_Error( 'secret_key_unavailable', __( 'WordPress security keys are required to protect Alipay secrets.', 'wei-alipay' ) );
 		}
 		return implode( '|', $parts );
 	}
@@ -286,7 +290,7 @@ final class Woo_Alipay_Secret_Store {
 		}
 		$page    = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
 		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
-		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'woo-alipay' ), true );
+		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'wei-alipay', 'woo-alipay' ), true );
 	}
 
 	private static function raw_option( $option ) {

@@ -33,6 +33,6 @@ add_action('plugins_loaded', 'wc_acbop_init');
 
 function add_wc_acbop_class($methods)
 {
-    $methods[] = 'Woo_Alipay_Cross_Border_Gateway';
+    $methods[] = 'Wei_Alipay_Cross_Border_Gateway';
     return $methods;
 }

@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Woo Alipay\n"
+"Project-Id-Version: Wei Alipay\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-01-29 01:11+0000\n"
 "PO-Revision-Date: 2020-01-29 13:39+0000\n"
@@ -73,7 +73,7 @@ msgid "Alipay App ID"
 msgstr "支付宝 App ID"
 
 #: inc/class-wc-alipay.php:31
-msgid "Alipay by Woo Alipay"
+msgid "Alipay by Wei Alipay"
 msgstr "支付宝"
 
 #. In Chinese, can simply be translated as 支付宝. Mentionning "China" in English and other languages to make it clear to international customers this is NOT a crossborder payment method.
@@ -129,7 +129,7 @@ msgid "Alipay payment completed"
 msgstr "支付宝付款完成"
 
 #: inc/class-wc-alipay.php:319
-msgid "Alipay payment gateway by Woo Alipay"
+msgid "Alipay payment gateway by Wei Alipay"
 msgstr "支付宝商家支付网关"
 
 #: inc/class-wc-alipay.php:591 inc/templates/admin/config-help.php:180
@@ -293,7 +293,7 @@ msgstr "你还可以用命令行在终端中通过 %1$s 生成应用密钥  %2$s
 msgid ""
 "Generate the application keys with the Alipay Open Platform Development "
 "Assistant application %1$s:"
-msgstr "通过支付宝开放平台的密钥工具生成密钥（方式一）："
+msgstr "通过支付宝开放平台的密钥工具生成密钥 %1$s："
 
 #. %1$s is <a target="_blank" href="[url]">Alipay tools documentation page</a>
 #: inc/templates/admin/config-help.php:203
@@ -316,7 +316,7 @@ msgstr "前往 %1$s ，并登陆。"
 #, php-format
 msgid ""
 "Go to the app information page - accessible via %1$s (replace %2$s with the "
-"App ID to be used by Woo Alipay)."
+"App ID to be used by Wei Alipay)."
 msgstr "进入“应用信息”页面，你可以从这个URL %1$s 进入 (其中的 %2$s 替换为你的APPID)."
 
 #. %1$s is <code>url with placeholder</code>, %2$s is <code>placeholder</code>
@@ -324,18 +324,15 @@ msgstr "进入“应用信息”页面，你可以从这个URL %1$s 进入 (其�
 #, php-format
 msgid ""
 "Go to the app overview page - accessible via %1$s (replace %2$s with the App "
-"ID to be used by Woo Alipay)."
-msgstr ""
-"前往支付宝开放平台，在“我的应用”页面，先点击“网页&移动应用”菜单，你能看到你的应用，点击你创建的应用，你能看到相关信息，在左侧信息栏，你能看到APPID，这个数字就是你的APPID。此时，你的URL地址是"
-" https://openhome.alipay.com/platform/appManage.htm#/app/[[YOUR_APP_ID]]"
-"/appInfo URL中的 [[YOUR_APP_ID]] 就是你的APPID。"
+"ID to be used by Wei Alipay)."
+msgstr "进入应用概览页面：%1$s（请将 %2$s 替换为 APP ID）。"
 
 #. Author URI of the plugin
 msgid "https://froger.me"
 msgstr ""
 
 #. URI of the plugin
-msgid "https://github.com/froger-me/woo-alipay"
+msgid "https://github.com/froger-me/wei-alipay"
 msgstr ""
 
 #. %1$s is <code>url</code>
@@ -431,7 +428,7 @@ msgstr "手机网站支付"
 #, php-format
 msgid ""
 "Once the app is created, go to the app information page - accessible "
-"directly via %1$s (replace %2$s with the App ID to be used by Woo Alipay)."
+"directly via %1$s (replace %2$s with the App ID to be used by Wei Alipay)."
 msgstr ""
 "当应用的支付接入申请被批准后，前往支付宝开放平台，在“我的应用”页面，先点击“网页&移动应用”菜单，你能看到你的应用，点击你创建的应用，你能看到相关信息，在左侧信息栏，你能看到APPID，这个数字就是你的APPID。此时，你的URL地址是"
 " %1$s URL中的 %2$s 就是你的APPID。"
@@ -528,7 +525,7 @@ msgid ""
 "Chinese Yuan)"
 msgstr "设置 %1$s 对人民币汇率 <br/>(1 %1$s = [field value] 人民币)"
 
-#: inc/class-woo-alipay.php:146
+#: inc/class-wei-alipay.php:146
 msgid "Settings"
 msgstr "设置"
 
@@ -569,7 +566,7 @@ msgid ""
 "NOT SHARE THIS VALUE WITH ANYONE</strong>."
 msgstr ""
 "这个应用私钥请参考设置指南的说明通过支付宝开放平台助手工具或者<code>openssl</code> 命令行工具生成。<br/>"
-"这个应用私钥不会保存在支付宝开放平台，请自己保存好。- <strong>不要把它分享给任何人</strong>.\n"
+"这个应用私钥不会保存在支付宝开放平台，请自己保存好。- <strong>不要把它分享给任何人</strong>."
 
 #: inc/templates/admin/config-help.php:71
 msgid ""
@@ -594,7 +591,7 @@ msgstr "切换面板：支付宝网关配置帮助"
 msgid "transaction not found."
 msgstr "交易没有发现。"
 
-#: inc/class-woo-alipay.php:158
+#: inc/class-wei-alipay.php:158
 msgid "Transaction:"
 msgstr "交易："
 
@@ -645,25 +642,25 @@ msgstr ""
 "\"PKCS1非Java使用\" 选项，然后点击  \"生成密钥\" 按钮 ，在“应用密钥”文本区生成“应用密钥”。"
 
 #. Name of the plugin
-msgid "Woo Alipay"
+msgid "Wei Alipay"
 msgstr "支付宝付款"
 
 #: inc/templates/emails/alipay-orphan-transaction.php:38 
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:34
 msgid ""
-"Woo Alipay attempted to automatically refund the order but encountered an "
+"Wei Alipay attempted to automatically refund the order but encountered an "
 "error."
 msgstr "支付宝尝试自动退款，但遇到错误。"
 
 #: inc/templates/emails/alipay-orphan-transaction.php:41 
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:36
 msgid ""
-"Woo Alipay could not automatically refund the order because Alipay closed "
+"Wei Alipay could not automatically refund the order because Alipay closed "
 "the transaction."
 msgstr "支付宝不能为此订单自动退款，因为支付宝关闭此交易。"
 
 #: inc/class-wc-alipay.php:441
-msgid "Woo Alipay error: WooCommerce Order not found."
+msgid "Wei Alipay error: WooCommerce Order not found."
 msgstr "支付宝错误：订单不存在。"
 
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:40

@@ -9,11 +9,11 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 
 	public function __construct() {
 		$this->id             = 'alipay_orphan_transaction';
-		$this->title          = __( 'Alipay Orphan Transaction', 'woo-alipay' );
-		$this->description    = __( 'Alipay Orphan Transaction emails are sent when an Alipay transaction has no counterpart in WooCommerce and could not be refunded automatically.', 'woo-alipay' );
+		$this->title          = __( 'Alipay Orphan Transaction', 'wei-alipay' );
+		$this->description    = __( 'Alipay Orphan Transaction emails are sent when an Alipay transaction has no counterpart in WooCommerce and could not be refunded automatically.', 'wei-alipay' );
 		$this->template_html  = 'emails/alipay-orphan-transaction.php';
 		$this->template_plain = 'emails/plain/alipay-orphan-transaction.php';
-		$this->template_base  = WOO_ALIPAY_PLUGIN_PATH . 'inc/templates/';
+		$this->template_base  = WEI_ALIPAY_PLUGIN_PATH . 'inc/templates/';
 		$this->recipient      = $this->get_option( 'recipient' );
 		$this->placeholders   = array(
 			'{transaction_number}' => '',
@@ -36,12 +36,12 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 
 	public function get_default_subject() {
 
-		return __( '[{site_title}]: Order #{order_number} was not found but an Alipay transaction was registered', 'woo-alipay' );
+		return __( '[{site_title}]: Order #{order_number} was not found but an Alipay transaction was registered', 'wei-alipay' );
 	}
 
 	public function get_default_heading() {
 
-		return __( 'Orphan order: #{order_number} - Alipay transaction: #{transaction_id}', 'woo-alipay' );
+		return __( 'Orphan order: #{order_number} - Alipay transaction: #{transaction_id}', 'wei-alipay' );
 	}
 
 	public function trigger( $order_id, $transaction_id, $log_path, $type ) {
@@ -101,7 +101,7 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 
 	public function get_default_additional_content() {
 
-		return __( 'You may need to double check the Alipay transactions in the merchant platform and take care of refunds by other means if necessary.', 'woo-alipay' );
+		return __( 'You may need to double check the Alipay transactions in the merchant platform and take care of refunds by other means if necessary.', 'wei-alipay' );
 	}
 
 	public function init_form_fields() {
@@ -118,11 +118,11 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 		$subject_desc = $this->form_fields['subject']['description'];
 		$heading_desc = $this->form_fields['heading']['description'];
 
-		$this->form_fields['subject']['description']  = __( 'Default value: ', 'woo-alipay' );
+		$this->form_fields['subject']['description']  = __( 'Default value: ', 'wei-alipay' );
 		$this->form_fields['subject']['description'] .= $this->form_fields['subject']['placeholder'] . '<br/>';
 		$this->form_fields['subject']['description'] .= $subject_desc;
 
-		$this->form_fields['heading']['description']  = __( 'Default value: ', 'woo-alipay' );
+		$this->form_fields['heading']['description']  = __( 'Default value: ', 'wei-alipay' );
 		$this->form_fields['heading']['description'] .= $this->form_fields['heading']['placeholder'] . '<br/>';
 		$this->form_fields['heading']['description'] .= $subject_desc;
 	}

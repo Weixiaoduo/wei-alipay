@@ -4,8 +4,8 @@ const { __ } = window.wp.i18n;
 const { decodeEntities } = window.wp.htmlEntities;
 
 const settings = window.wc.wcSettings.getSetting( 'alipay_data', {} );
-const defaultLabel = __( '支付宝', 'woo-alipay' );
-const defaultDescription = __( '通过支付宝付款（中国大陆，包括香港和澳门）。', 'woo-alipay' );
+const defaultLabel = __( '支付宝', 'wei-alipay' );
+const defaultDescription = __( '通过支付宝付款（中国大陆，包括香港和澳门）。', 'wei-alipay' );
 
 const Label = ( props ) => {
     const { PaymentMethodLabel } = props.components;

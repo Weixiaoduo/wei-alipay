@@ -1,14 +1,14 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-if ( ! defined( 'WOO_ALIPAY_MINIPROGRAM_FILE' ) ) {
-    define( 'WOO_ALIPAY_MINIPROGRAM_FILE', __FILE__ );
+if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_FILE' ) ) {
+    define( 'WEI_ALIPAY_MINIPROGRAM_FILE', __FILE__ );
 }
-if ( ! defined( 'WOO_ALIPAY_MINIPROGRAM_PATH' ) ) {
-    define( 'WOO_ALIPAY_MINIPROGRAM_PATH', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_PATH' ) ) {
+    define( 'WEI_ALIPAY_MINIPROGRAM_PATH', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'WOO_ALIPAY_MINIPROGRAM_URL' ) ) {
-    define( 'WOO_ALIPAY_MINIPROGRAM_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_URL' ) ) {
+    define( 'WEI_ALIPAY_MINIPROGRAM_URL', plugin_dir_url( __FILE__ ) );
 }
 
 add_action( 'plugins_loaded', function() {
@@ -16,15 +16,15 @@ add_action( 'plugins_loaded', function() {
         return;
     }
 
-    require_once WOO_ALIPAY_MINIPROGRAM_PATH . 'class-mini-protocol.php';
-    $class_file = WOO_ALIPAY_MINIPROGRAM_PATH . 'class-wc-alipay-wap.php';
+    require_once WEI_ALIPAY_MINIPROGRAM_PATH . 'class-mini-protocol.php';
+    $class_file = WEI_ALIPAY_MINIPROGRAM_PATH . 'class-wc-alipay-wap.php';
     if ( file_exists( $class_file ) ) {
         require_once $class_file;
     }
 
     add_filter( 'woocommerce_payment_gateways', function( $methods ) {
-        if ( class_exists( 'Woo_Alipay_Mini_Program_Gateway' ) ) {
-            $methods[] = 'Woo_Alipay_Mini_Program_Gateway';
+        if ( class_exists( 'Wei_Alipay_Mini_Program_Gateway' ) ) {
+            $methods[] = 'Wei_Alipay_Mini_Program_Gateway';
         }
         return $methods;
     } );
@@ -42,7 +42,7 @@ add_filter( 'woocommerce_get_order_item_totals', function( $total_rows, $order )
 
     $new_row = array(
         'alipay_trade_no' => array(
-            'label' => __( 'Alipay Trade No.:', 'woo-alipay' ),
+            'label' => __( 'Alipay Trade No.:', 'wei-alipay' ),
             'value' => $trade_no,
         ),
     );

@@ -25,14 +25,14 @@ final class WC_Alipay_Blocks_Support extends AbstractPaymentMethodType {
 
     public function get_payment_method_script_handles() {
         $script_path = 'js/frontend/blocks.js';
-        $script_asset_path = WOO_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks.asset.php';
+        $script_asset_path = WEI_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks.asset.php';
         $script_asset = file_exists( $script_asset_path )
             ? require( $script_asset_path )
             : array(
                 'dependencies' => array( 'wc-blocks-registry', 'wp-element', 'wp-html-entities', 'wp-i18n' ),
                 'version'      => '3.1.0'
             );
-        $script_url = trailingslashit( WOO_ALIPAY_PLUGIN_URL ) . $script_path;
+        $script_url = trailingslashit( WEI_ALIPAY_PLUGIN_URL ) . $script_path;
 
         wp_register_script(
             'wc-alipay-payments-blocks',
@@ -43,7 +43,7 @@ final class WC_Alipay_Blocks_Support extends AbstractPaymentMethodType {
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-payments-blocks', 'woo-alipay', WOO_ALIPAY_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-payments-blocks', 'wei-alipay', WEI_ALIPAY_PLUGIN_PATH . 'languages' );
         }
 
         return [ 'wc-alipay-payments-blocks' ];
@@ -58,7 +58,7 @@ final class WC_Alipay_Blocks_Support extends AbstractPaymentMethodType {
             'title'       => $this->get_setting( 'title', '支付宝' ),
             'description' => $this->get_setting( 'description', '通过支付宝付款（中国大陆，包括香港和澳门）。' ),
             'supports'    => $this->get_supported_features(),
-            'icon'        => WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg',
+            'icon'        => WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg',
         ];
     }
 

@@ -1,10 +1,10 @@
 <?php
 /**
  * Alipay Order Timeout Class
- * 
+ *
  * Handles automatic cancellation of unpaid orders
- * 
- * @package Woo_Alipay
+ *
+ * @package Wei_Alipay
  * @since 3.3.0
  */
 
@@ -33,7 +33,7 @@ class WC_Alipay_Order_Timeout {
 		// Schedule cron job for checking timeout orders
 		add_action( 'wp', array( $this, 'schedule_timeout_check' ) );
 		add_action( 'woo_alipay_check_timeout_orders', array( $this, 'check_timeout_orders' ) );
-		
+
 		// Add timeout info to order
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'add_timeout_meta' ), 10, 3 );
 	}
@@ -43,7 +43,7 @@ class WC_Alipay_Order_Timeout {
 	 */
 	public function schedule_timeout_check() {
 		$gateway = $this->get_gateway();
-		
+
 		// Check if feature is enabled
 		if ( ! $gateway || 'yes' !== $gateway->get_option( 'enable_order_timeout', 'yes' ) ) {
 			// Unschedule if disabled
@@ -53,7 +53,7 @@ class WC_Alipay_Order_Timeout {
 			}
 			return;
 		}
-		
+
 		if ( ! wp_next_scheduled( 'woo_alipay_check_timeout_orders' ) ) {
 			// Check every 10 minutes
 			wp_schedule_event( time(), 'woo_alipay_10min', 'woo_alipay_check_timeout_orders' );
@@ -65,14 +65,14 @@ class WC_Alipay_Order_Timeout {
 	 */
 	public function check_timeout_orders() {
 		$gateway = $this->get_gateway();
-		
+
 		// Check if feature is enabled
 		if ( ! $gateway || 'yes' !== $gateway->get_option( 'enable_order_timeout', 'yes' ) ) {
 			return;
 		}
-		
+
 		$timeout = $this->get_timeout_duration();
-		
+
 		// Get pending/on-hold Alipay orders
 		$args = array(
 			'status'         => array( 'pending', 'on-hold' ),
@@ -103,7 +103,7 @@ class WC_Alipay_Order_Timeout {
 
 		// Check if order has timeout meta
 		$timeout_time = $order->get_meta( '_alipay_timeout_time' );
-		
+
 		if ( $timeout_time && time() < $timeout_time ) {
 			// Not timeout yet
 			return false;
@@ -111,16 +111,16 @@ class WC_Alipay_Order_Timeout {
 
 		// Check if order was sent to Alipay
 		$out_trade_no = $order->get_meta( 'alipay_initalRequest' );
-		
+
 		if ( empty( $out_trade_no ) ) {
 			// Order wasn't sent to Alipay, safe to cancel
-			$order->update_status( 
-				'cancelled', 
-				__( 'Order cancelled due to payment timeout (not sent to Alipay)', 'woo-alipay' ) 
+			$order->update_status(
+				'cancelled',
+				__( 'Order cancelled due to payment timeout (not sent to Alipay)', 'wei-alipay' )
 			);
-			
+
 			$this->log( 'Order #' . $order->get_id() . ' cancelled due to timeout (not sent to Alipay)' );
-			
+
 			return true;
 		}
 
@@ -138,10 +138,10 @@ class WC_Alipay_Order_Timeout {
 				$this->log( 'Order #' . $order->get_id() . ' remains pending at Alipay; timeout cancellation skipped', 'warning' );
 				return false;
 			}
-			
+
 			// Reload order after query
 			$order = wc_get_order( $order->get_id() );
-			
+
 			if ( $order->is_paid() ) {
 				// Payment was completed
 				$this->log( 'Order #' . $order->get_id() . ' was paid, not cancelling' );
@@ -150,20 +150,20 @@ class WC_Alipay_Order_Timeout {
 		}
 
 		// Cancel the order
-		$order->update_status( 
-			'cancelled', 
+		$order->update_status(
+			'cancelled',
 			sprintf(
 				/* translators: %d: timeout duration in minutes */
-				__( 'Order cancelled due to payment timeout (%d minutes)', 'woo-alipay' ),
+				__( 'Order cancelled due to payment timeout (%d minutes)', 'wei-alipay' ),
 				$this->get_timeout_duration()
 			)
 		);
-		
+
 		$this->log( 'Order #' . $order->get_id() . ' cancelled due to timeout' );
-		
+
 		// Trigger action for other plugins
 		do_action( 'woo_alipay_order_timeout_cancelled', $order );
-		
+
 		return true;
 	}
 
@@ -178,9 +178,9 @@ class WC_Alipay_Order_Timeout {
 		if ( $order->get_payment_method() !== 'alipay' ) {
 			return;
 		}
-		
+
 		$gateway = $this->get_gateway();
-		
+
 		// Check if feature is enabled
 		if ( ! $gateway || 'yes' !== $gateway->get_option( 'enable_order_timeout', 'yes' ) ) {
 			return;
@@ -188,7 +188,7 @@ class WC_Alipay_Order_Timeout {
 
 		$timeout = $this->get_timeout_duration();
 		$timeout_time = time() + ( $timeout * 60 );
-		
+
 		$order->update_meta_data( '_alipay_timeout_time', $timeout_time );
 		$order->update_meta_data( '_alipay_timeout_duration', $timeout );
 		$order->save();
@@ -201,13 +201,13 @@ class WC_Alipay_Order_Timeout {
 	 */
 	private function get_timeout_duration() {
 		$gateway = $this->get_gateway();
-		
+
 		if ( ! $gateway ) {
 			return self::DEFAULT_TIMEOUT;
 		}
 
 		$timeout = $gateway->get_option( 'order_timeout', self::DEFAULT_TIMEOUT );
-		
+
 		return absint( $timeout ) > 0 ? absint( $timeout ) : self::DEFAULT_TIMEOUT;
 	}
 
@@ -230,10 +230,10 @@ class WC_Alipay_Order_Timeout {
 	 */
 	private function log( $message, $level = 'info' ) {
 		$gateway = $this->get_gateway();
-		
+
 		if ( $gateway && method_exists( $gateway, 'get_option' ) ) {
 			$log_enabled = ( 'yes' === $gateway->get_option( 'debug', 'no' ) );
-			
+
 			if ( $log_enabled ) {
 				$logger = wc_get_logger();
 				$logger->log( $level, $message, array( 'source' => 'alipay-timeout' ) );

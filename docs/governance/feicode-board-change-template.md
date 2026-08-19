@@ -1,16 +1,26 @@
-# [CX] Woo Alipay PR #1 candidate change
+# [CX] Wei Alipay 4.0.0 rename candidate change
 
-## Allowed write
+## Requested writes
 
-- Repository: `Weixiaoduo/woo-alipay` on FeiCode.
-- Source: WenPai isolated branch `codex/woo-alipay-audit-20260809`.
-- Operation: one ordinary push of the exact reviewed local HEAD to the existing PR #1 review ref.
-- CI: approval must be bound to that exact commit SHA; no floating branch approval.
+Each write requires a Board record bound to the exact reviewed SHA.
+
+1. Push the exact local HEAD from cx/wei-alipay-4.0.0 to a new FeiCode review branch in the existing canonical repository Weixiaoduo/woo-alipay.
+2. Run candidate CI for that exact SHA and review the resulting pull request.
+3. After candidate acceptance, rename the FeiCode repository to Weixiaoduo/wei-alipay.
+4. Rename the GitHub repository to Weixiaoduo/wei-alipay and configure a repository-scoped deploy key.
+5. Only after an approved merge to FeiCode master, manually run sync-github-downstream with the approved master SHA and Board change ID.
+
+Repository rename, branch push, CI approval, merge, tag, release, public mirror synchronization, and mall deployment are separate writes. Approval of one does not authorize another.
 
 ## Prohibited operations
 
-No default-branch merge, release/tag creation, deployment, production configuration change, live Alipay request, real payment, real refund, or deletion of historical data. A changed HEAD invalidates the approval and requires a new Board record.
+No force push, full-ref mirror, unreviewed default-branch merge, release/tag creation, production deployment, production configuration change, live Alipay request, real payment, real refund, or deletion of historical data. A changed HEAD invalidates the approval.
 
-## Required Board fields
+## Required Board evidence
 
-Paste the generated local artifact `build/board-change-<HEAD>.md`, including the full 40-character SHA, candidate ZIP SHA-256, validation commands and exit codes. The operator must compare `git rev-parse HEAD` immediately before the single push.
+- Full 40-character local candidate SHA.
+- FeiCode base SHA.
+- Candidate ZIP SHA-256 and manifest.
+- Commands, sample counts, and exit codes for contracts, PHPStan, reproducible build, and isolated WordPress runtime.
+- Confirmation that GitHub master is an ancestor of the approved FeiCode master.
+- Rollback owner and procedure for each repository rename and the mall plugin-path cutover.

@@ -4,7 +4,7 @@
  * 
  * Handles querying order payment status from Alipay
  * 
- * @package Woo_Alipay
+ * @package Wei_Alipay
  * @since 3.3.0
  */
 
@@ -114,7 +114,7 @@ class WC_Alipay_Order_Query {
 
 		$gateway = $this->get_gateway();
 		if ( ! $gateway ) {
-			return new WP_Error( 'gateway_not_found', __( 'Alipay gateway not found', 'woo-alipay' ) );
+			return new WP_Error( 'gateway_not_found', __( 'Alipay gateway not found', 'wei-alipay' ) );
 		}
 
 		// Get the out_trade_no from order meta
@@ -129,7 +129,7 @@ class WC_Alipay_Order_Query {
 		}
 
 		try {
-			Woo_Alipay::require_lib( 'dummy_query' );
+			Wei_Alipay::require_lib( 'dummy_query' );
 
 			$config = $this->get_config( $order->get_id() );
 			$aop = new AlipayTradeService( $config );
@@ -145,7 +145,7 @@ class WC_Alipay_Order_Query {
 			$response = $response->alipay_trade_query_response;
 
 			if ( ! is_object( $response ) ) {
-				return new WP_Error( 'invalid_response', __( 'Invalid response from Alipay', 'woo-alipay' ) );
+				return new WP_Error( 'invalid_response', __( 'Invalid response from Alipay', 'wei-alipay' ) );
 			}
 
 			// Log only bounded diagnostic fields; query responses can include buyer data.
@@ -164,7 +164,7 @@ class WC_Alipay_Order_Query {
 				$response_amount = isset( $response->total_amount ) ? (string) $response->total_amount : '';
 				$expected_amount = Alipay_SDK_Helper::convert_currency( $order->get_total(), $order->get_currency(), $gateway->get_option( 'exchange_rate', 0 ) );
 				if ( ! hash_equals( (string) $out_trade_no, $response_out_trade_no ) || ! is_numeric( $response_amount ) || ! hash_equals( Alipay_SDK_Helper::format_amount( $expected_amount ), Alipay_SDK_Helper::format_amount( $response_amount ) ) ) {
-					return new WP_Error( 'query_context_mismatch', __( 'Alipay query response does not match the order', 'woo-alipay' ) );
+					return new WP_Error( 'query_context_mismatch', __( 'Alipay query response does not match the order', 'wei-alipay' ) );
 				}
 
 				// Query successful
@@ -172,7 +172,7 @@ class WC_Alipay_Order_Query {
 				$trade_no = isset( $response->trade_no ) ? (string) $response->trade_no : '';
 				$existing_trade_no = (string) $order->get_transaction_id();
 				if ( $existing_trade_no && $trade_no && ! hash_equals( $existing_trade_no, $trade_no ) ) {
-					return new WP_Error( 'query_trade_no_mismatch', __( 'Alipay query transaction ID does not match the order', 'woo-alipay' ) );
+					return new WP_Error( 'query_trade_no_mismatch', __( 'Alipay query transaction ID does not match the order', 'wei-alipay' ) );
 				}
 
 				if ( 'TRADE_SUCCESS' === $trade_status || 'TRADE_FINISHED' === $trade_status ) {
@@ -181,7 +181,7 @@ class WC_Alipay_Order_Query {
 					$order->add_order_note(
 						sprintf(
 							/* translators: %s: Alipay trade status */
-							__( 'Payment status confirmed via query. Trade Status: %s', 'woo-alipay' ),
+							__( 'Payment status confirmed via query. Trade Status: %s', 'wei-alipay' ),
 							$trade_status
 						)
 					);
@@ -194,14 +194,14 @@ class WC_Alipay_Order_Query {
 					return true;
 				} elseif ( 'TRADE_CLOSED' === $trade_status ) {
 					// Trade closed
-					$order->update_status( 'cancelled', __( 'Alipay trade closed', 'woo-alipay' ) );
+					$order->update_status( 'cancelled', __( 'Alipay trade closed', 'wei-alipay' ) );
 					$order->update_meta_data( 'alipay_transaction_closed', true );
 					$order->save_meta_data();
 					
 					return true;
 				} elseif ( 'WAIT_BUYER_PAY' === $trade_status ) {
 					// Still waiting for payment
-					$order->add_order_note( __( 'Payment status: Still waiting for buyer to pay', 'woo-alipay' ) );
+					$order->add_order_note( __( 'Payment status: Still waiting for buyer to pay', 'wei-alipay' ) );
 					return false;
 				}
 			} elseif ( '40004' === $response->code && 'ACQ.TRADE_NOT_EXIST' === $response->sub_code ) {
@@ -231,26 +231,26 @@ class WC_Alipay_Order_Query {
 		$order_id = isset( $_POST['order_id'] ) ? absint( $_POST['order_id'] ) : 0;
 		
 		if ( ! $order_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid order ID', 'woo-alipay' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid order ID', 'wei-alipay' ) ) );
 		}
 
 		$order = wc_get_order( $order_id );
 
 		if ( ! $order || 'alipay' !== $order->get_payment_method() ) {
-			wp_send_json_error( array( 'message' => __( 'Order not found', 'woo-alipay' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Order not found', 'wei-alipay' ) ), 404 );
 		}
 
 		$order_key = isset( $_POST['order_key'] ) && is_scalar( $_POST['order_key'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['order_key'] ) ) : '';
 		$authorized = current_user_can( 'manage_woocommerce' ) || ( $order_key && hash_equals( $order->get_order_key(), $order_key ) );
 		if ( ! $authorized ) {
-			wp_send_json_error( array( 'message' => __( 'You are not allowed to query this order.', 'woo-alipay' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'You are not allowed to query this order.', 'wei-alipay' ) ), 403 );
 		}
 
 		// Check if order is already paid
 		if ( $order->is_paid() ) {
 			wp_send_json_success( array(
 				'status' => 'paid',
-				'message' => __( 'Order is already paid', 'woo-alipay' ),
+				'message' => __( 'Order is already paid', 'wei-alipay' ),
 				'redirect' => $order->get_checkout_order_received_url(),
 			) );
 		}
@@ -268,14 +268,14 @@ class WC_Alipay_Order_Query {
 			
 			wp_send_json_success( array(
 				'status' => $order->get_status(),
-				'message' => __( 'Payment confirmed', 'woo-alipay' ),
+				'message' => __( 'Payment confirmed', 'wei-alipay' ),
 				'redirect' => $order->get_checkout_order_received_url(),
 			) );
 		}
 
 		wp_send_json_success( array(
 			'status' => 'pending',
-			'message' => __( 'Payment is still pending', 'woo-alipay' ),
+			'message' => __( 'Payment is still pending', 'wei-alipay' ),
 		) );
 	}
 

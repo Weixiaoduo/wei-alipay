@@ -11,11 +11,11 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id                 = self::GATEWAY_ID;
-        $this->method_title       = __( 'Alipay Fund Authorization', 'woo-alipay' );
-        $this->method_description = __( 'Freeze customer funds first, then capture or unfreeze later.', 'woo-alipay' );
-        $this->title              = __( 'Alipay Fund Authorization', 'woo-alipay' );
-        $this->description        = __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'woo-alipay' );
-        $this->icon               = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg';
+        $this->method_title       = __( 'Alipay Fund Authorization', 'wei-alipay' );
+        $this->method_description = __( 'Freeze customer funds first, then capture or unfreeze later.', 'wei-alipay' );
+        $this->title              = __( 'Alipay Fund Authorization', 'wei-alipay' );
+        $this->description        = __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'wei-alipay' );
+        $this->icon               = WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg';
         $this->has_fields         = false;
         $this->supports           = array( 'products' );
 
@@ -37,54 +37,54 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
-                'title'   => __( 'Enable/Disable', 'woo-alipay' ),
+                'title'   => __( 'Enable/Disable', 'wei-alipay' ),
                 'type'    => 'checkbox',
-                'label'   => __( 'Enable Alipay Fund Authorization', 'woo-alipay' ),
+                'label'   => __( 'Enable Alipay Fund Authorization', 'wei-alipay' ),
                 'default' => 'no',
             ),
             'title' => array(
-                'title'       => __( 'Title', 'woo-alipay' ),
+                'title'       => __( 'Title', 'wei-alipay' ),
                 'type'        => 'text',
-                'default'     => __( 'Alipay Fund Authorization', 'woo-alipay' ),
+                'default'     => __( 'Alipay Fund Authorization', 'wei-alipay' ),
             ),
             'description' => array(
-                'title'       => __( 'Description', 'woo-alipay' ),
+                'title'       => __( 'Description', 'wei-alipay' ),
                 'type'        => 'textarea',
-                'default'     => __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'woo-alipay' ),
+                'default'     => __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'wei-alipay' ),
             ),
             'capture_on_complete' => array(
-                'title'       => __( 'Auto-capture on order complete', 'woo-alipay' ),
+                'title'       => __( 'Auto-capture on order complete', 'wei-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( 'When order is marked completed, automatically capture authorized funds', 'woo-alipay' ),
+                'label'       => __( 'When order is marked completed, automatically capture authorized funds', 'wei-alipay' ),
                 'default'     => 'no',
             ),
             'unfreeze_on_cancel' => array(
-                'title'       => __( 'Auto-unfreeze on cancel', 'woo-alipay' ),
+                'title'       => __( 'Auto-unfreeze on cancel', 'wei-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( 'When order is cancelled, automatically unfreeze funds', 'woo-alipay' ),
+                'label'       => __( 'When order is cancelled, automatically unfreeze funds', 'wei-alipay' ),
                 'default'     => 'yes',
             ),
             'allow_partial_capture' => array(
-                'title'       => __( 'Allow partial capture', 'woo-alipay' ),
+                'title'       => __( 'Allow partial capture', 'wei-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( 'Allow capturing less than the authorized amount', 'woo-alipay' ),
+                'label'       => __( 'Allow capturing less than the authorized amount', 'wei-alipay' ),
                 'default'     => 'no',
             ),
             'auto_capture_amount_mode' => array(
-                'title'       => __( 'Auto-capture amount mode', 'woo-alipay' ),
+                'title'       => __( 'Auto-capture amount mode', 'wei-alipay' ),
                 'type'        => 'select',
-                'description' => __( 'When auto-capture is enabled, choose how much to capture.', 'woo-alipay' ),
+                'description' => __( 'When auto-capture is enabled, choose how much to capture.', 'wei-alipay' ),
                 'default'     => 'authorized',
                 'options'     => array(
-                    'authorized' => __( 'Authorized amount', 'woo-alipay' ),
-                    'order_total'=> __( 'Order total', 'woo-alipay' ),
-                    'remaining'  => __( 'Remaining authorized amount', 'woo-alipay' ),
+                    'authorized' => __( 'Authorized amount', 'wei-alipay' ),
+                    'order_total'=> __( 'Order total', 'wei-alipay' ),
+                    'remaining'  => __( 'Remaining authorized amount', 'wei-alipay' ),
                 ),
             ),
             'debug' => array(
-                'title'       => __( 'Debug log', 'woo-alipay' ),
+                'title'       => __( 'Debug log', 'wei-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( 'Enable logging', 'woo-alipay' ),
+                'label'       => __( 'Enable logging', 'wei-alipay' ),
                 'default'     => 'no',
             ),
         );
@@ -104,7 +104,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         $missing = $this->get_missing_core_fields();
         if ( ! empty( $missing ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay fund auth requires core credentials. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing ) ) ) . '</p></div>';
+            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay fund auth requires core credentials. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing ) ) ) . '</p></div>';
         }
     }
 
@@ -149,8 +149,8 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
     }
 
     private function create_aop_from_core() {
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
 
         $missing_fields = $this->get_missing_core_fields();
         if ( ! empty( $missing_fields ) ) {
@@ -182,10 +182,10 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         try {
             list( $aop, $config ) = $this->create_aop_from_core();
             if ( ! $aop ) {
-                return new WP_Error( 'sdk', __( 'Failed to init Alipay service.', 'woo-alipay' ) );
+                return new WP_Error( 'sdk', __( 'Failed to init Alipay service.', 'wei-alipay' ) );
             }
 
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayFundAuthOrderFreezeRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayFundAuthOrderFreezeRequest.php';
 
             $nos = $this->generate_out_nos( $order );
             $biz = array(
@@ -206,11 +206,11 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             $res  = $resp->$node ?? null;
 
             if ( ! $res || ! isset( $res->code ) ) {
-                return new WP_Error( 'alipay', __( 'Empty response from Alipay.', 'woo-alipay' ) );
+                return new WP_Error( 'alipay', __( 'Empty response from Alipay.', 'wei-alipay' ) );
             }
             if ( '10000' !== (string) $res->code ) {
                 self::log_msg( array( 'freeze_error' => $resp ), 'error' );
-                $msg = ( isset( $res->sub_msg ) && $res->sub_msg ) ? $res->sub_msg : ( $res->msg ?? __( 'Freeze failed', 'woo-alipay' ) );
+                $msg = ( isset( $res->sub_msg ) && $res->sub_msg ) ? $res->sub_msg : ( $res->msg ?? __( 'Freeze failed', 'wei-alipay' ) );
                 return new WP_Error( 'alipay', $msg );
             }
 
@@ -234,12 +234,12 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         try {
             list( $aop, $config ) = $this->create_aop_from_core();
             if ( ! $aop ) {
-                return new WP_Error( 'sdk', __( 'Failed to init Alipay service.', 'woo-alipay' ) );
+                return new WP_Error( 'sdk', __( 'Failed to init Alipay service.', 'wei-alipay' ) );
             }
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayFundAuthOrderVoucherCreateRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayFundAuthOrderVoucherCreateRequest.php';
             $auth_no = (string) $order->get_meta( '_alipay_auth_no' );
             if ( ! $auth_no ) {
-                return new WP_Error( 'param', __( 'Missing auth_no.', 'woo-alipay' ) );
+                return new WP_Error( 'param', __( 'Missing auth_no.', 'wei-alipay' ) );
             }
             $out_request_no = 'FAC-' . ( is_multisite() ? get_current_blog_id() . '-' : '' ) . $order->get_id() . '-' . time();
             $biz = array(
@@ -255,11 +255,11 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             $node = 'alipay_fund_auth_order_voucher_create_response';
             $res  = $resp->$node ?? null;
             if ( ! $res || ! isset( $res->code ) ) {
-                return new WP_Error( 'alipay', __( 'Empty response from Alipay.', 'woo-alipay' ) );
+                return new WP_Error( 'alipay', __( 'Empty response from Alipay.', 'wei-alipay' ) );
             }
             if ( '10000' !== (string) $res->code ) {
                 self::log_msg( array( 'capture_error' => $resp ), 'error' );
-                $msg = ( $res->sub_msg ?? $res->msg ?? __( 'Capture failed', 'woo-alipay' ) );
+                $msg = ( $res->sub_msg ?? $res->msg ?? __( 'Capture failed', 'wei-alipay' ) );
                 return new WP_Error( 'alipay', $msg );
             }
             $payment_id = isset( $res->payment_id ) ? (string) $res->payment_id : '';
@@ -273,20 +273,20 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         try {
             list( $aop, $config ) = $this->create_aop_from_core();
             if ( ! $aop ) {
-                return new WP_Error( 'sdk', __( 'Failed to init Alipay service.', 'woo-alipay' ) );
+                return new WP_Error( 'sdk', __( 'Failed to init Alipay service.', 'wei-alipay' ) );
             }
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayFundAuthOrderUnfreezeRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayFundAuthOrderUnfreezeRequest.php';
             $auth_no      = (string) $order->get_meta( '_alipay_auth_no' );
             $auth_amount  = (float) ( null === $amount ? $this->get_remaining_authorized( $order ) : $amount );
             if ( ! $auth_no ) {
-                return new WP_Error( 'param', __( 'Missing auth_no.', 'woo-alipay' ) );
+                return new WP_Error( 'param', __( 'Missing auth_no.', 'wei-alipay' ) );
             }
             $out_request_no = 'FAU-' . ( is_multisite() ? get_current_blog_id() . '-' : '' ) . $order->get_id() . '-' . time();
             $biz = array(
                 'auth_no'        => $auth_no,
                 'out_request_no' => $out_request_no,
                 'amount'         => $this->format_amount( $auth_amount ),
-                'remark'         => 'Woo Alipay unfreeze',
+                'remark'         => 'Wei Alipay unfreeze',
             );
             $req = new AlipayFundAuthOrderUnfreezeRequest();
             $req->setBizContent( wp_json_encode( $biz, JSON_UNESCAPED_UNICODE ) );
@@ -295,11 +295,11 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             $node = 'alipay_fund_auth_order_unfreeze_response';
             $res  = $resp->$node ?? null;
             if ( ! $res || ! isset( $res->code ) ) {
-                return new WP_Error( 'alipay', __( 'Empty response from Alipay.', 'woo-alipay' ) );
+                return new WP_Error( 'alipay', __( 'Empty response from Alipay.', 'wei-alipay' ) );
             }
             if ( '10000' !== (string) $res->code ) {
                 self::log_msg( array( 'unfreeze_error' => $resp ), 'error' );
-                $msg = ( $res->sub_msg ?? $res->msg ?? __( 'Unfreeze failed', 'woo-alipay' ) );
+                $msg = ( $res->sub_msg ?? $res->msg ?? __( 'Unfreeze failed', 'wei-alipay' ) );
                 return new WP_Error( 'alipay', $msg );
             }
             return array( 'unfrozen' => true, 'amount' => $this->format_amount( $auth_amount ) );
@@ -346,7 +346,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         // Validate remaining
         $remaining = (float) $inst->get_remaining_authorized( $order );
         if ( $amount <= 0 || $amount > $remaining + 0.0001 ) {
-            return new WP_Error( 'amount', __( 'Invalid capture amount (exceeds remaining authorized).', 'woo-alipay' ) );
+            return new WP_Error( 'amount', __( 'Invalid capture amount (exceeds remaining authorized).', 'wei-alipay' ) );
         }
         $res = $inst->capture_funds( $order, $amount );
         if ( is_wp_error( $res ) ) { return $res; }
@@ -354,7 +354,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         // Update captured total
         $inst->add_captured_amount( $order, $amount );
         /* translators: %1$s: payment ID. %2$.2f: captured amount. */
-        $order->add_order_note( sprintf( __( 'Capture success: payment_id %1$s amount %2$.2f', 'woo-alipay' ), $payment_id ?: '-', $amount ) );
+        $order->add_order_note( sprintf( __( 'Capture success: payment_id %1$s amount %2$.2f', 'wei-alipay' ), $payment_id ?: '-', $amount ) );
         // Complete order only if fully paid
         $captured_total = (float) $order->get_meta( '_alipay_captured_total', true );
         if ( $captured_total + 0.0001 >= (float) $order->get_total() ) {
@@ -362,7 +362,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         } else {
             // keep on-hold for partial capture
             if ( ! $order->has_status( array( 'on-hold' ) ) ) {
-                $order->update_status( 'on-hold', __( 'Partially captured.', 'woo-alipay' ) );
+                $order->update_status( 'on-hold', __( 'Partially captured.', 'wei-alipay' ) );
             }
         }
         return true;
@@ -374,25 +374,25 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         $inst  = new self();
         $amount = $inst->get_remaining_authorized( $order );
         if ( $amount <= 0 ) {
-            return new WP_Error( 'amount', __( 'Nothing to unfreeze.', 'woo-alipay' ) );
+            return new WP_Error( 'amount', __( 'Nothing to unfreeze.', 'wei-alipay' ) );
         }
         $res = $inst->unfreeze_funds( $order, $amount );
         if ( is_wp_error( $res ) ) { return $res; }
         /* translators: %.2f: unfrozen amount */
-        $order->add_order_note( sprintf( __( 'Unfreeze success: amount %.2f', 'woo-alipay' ), $amount ) );
+        $order->add_order_note( sprintf( __( 'Unfreeze success: amount %.2f', 'wei-alipay' ), $amount ) );
         return true;
     }
 
     public function process_payment( $order_id ) {
         $order = wc_get_order( $order_id );
         if ( ! $order ) {
-            return array( 'result' => 'failure', 'messages' => __( 'Order not found.', 'woo-alipay' ) );
+            return array( 'result' => 'failure', 'messages' => __( 'Order not found.', 'wei-alipay' ) );
         }
 
         $missing_fields = $this->get_missing_core_fields();
         if ( ! empty( $missing_fields ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            $msg = sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) );
+            $msg = sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) );
             wc_add_notice( $msg, 'error' );
             self::log_msg( 'Payment blocked: missing core settings', 'error', array( 'order_id' => $order_id, 'missing' => implode( '|', $missing_fields ) ) );
             return array( 'result' => 'failure', 'messages' => $msg );
@@ -408,8 +408,8 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             $order->update_meta_data( '_alipay_auth_no', $auth_no );
             $order->update_meta_data( '_alipay_auth_amount', number_format( $amount, 2, '.', '' ) );
             /* translators: %1$s: authorization number. %2$.2f: frozen amount. */
-            $order->add_order_note( sprintf( __( 'Simulated fund authorization: AUTH %1$s Frozen %2$.2f', 'woo-alipay' ), $auth_no, $amount ) );
-            $order->update_status( 'on-hold', __( 'Funds authorized (simulated).', 'woo-alipay' ) );
+            $order->add_order_note( sprintf( __( 'Simulated fund authorization: AUTH %1$s Frozen %2$.2f', 'wei-alipay' ), $auth_no, $amount ) );
+            $order->update_status( 'on-hold', __( 'Funds authorized (simulated).', 'wei-alipay' ) );
             $order->save();
             self::log_msg( 'Sandbox authorization success', 'info', array( 'order_id' => $order_id, 'auth_no' => $auth_no, 'amount' => number_format( $amount, 2, '.', '' ) ) );
 
@@ -427,10 +427,10 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             return array( 'result' => 'failure', 'messages' => $freeze->get_error_message() );
         }
         /* translators: %1$s: authorization number. %2$.2f: frozen amount. */
-        $order->add_order_note( sprintf( __( 'Fund authorized: AUTH %1$s Frozen %2$.2f', 'woo-alipay' ), $freeze['auth_no'] ?? '-', $amount ) );
+        $order->add_order_note( sprintf( __( 'Fund authorized: AUTH %1$s Frozen %2$.2f', 'wei-alipay' ), $freeze['auth_no'] ?? '-', $amount ) );
         // Reset captured_total on new authorization
         $order->update_meta_data( '_alipay_captured_total', $this->format_amount( 0 ) );
-        $order->update_status( 'on-hold', __( 'Funds authorized.', 'woo-alipay' ) );
+        $order->update_status( 'on-hold', __( 'Funds authorized.', 'wei-alipay' ) );
         $order->save();
 
         return array(
@@ -442,7 +442,7 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
     public function add_authorization_metabox() {
         add_meta_box(
             'wc-alipay-fund-auth-box',
-            __( 'Alipay Authorization', 'woo-alipay' ),
+            __( 'Alipay Authorization', 'wei-alipay' ),
             array( $this, 'render_authorization_metabox' ),
             'shop_order',
             'side',
@@ -455,8 +455,8 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         if ( ! $order ) { return; }
         $auth_no   = $order->get_meta( '_alipay_auth_no' );
         $auth_amt  = $order->get_meta( '_alipay_auth_amount' );
-        echo '<p><strong>' . esc_html__( 'Auth No:', 'woo-alipay' ) . '</strong> ' . esc_html( $auth_no ?: '-' ) . '</p>';
-        echo '<p><strong>' . esc_html__( 'Authorized Amount:', 'woo-alipay' ) . '</strong> ' . esc_html( $auth_amt ?: '-' ) . '</p>';
+        echo '<p><strong>' . esc_html__( 'Auth No:', 'wei-alipay' ) . '</strong> ' . esc_html( $auth_no ?: '-' ) . '</p>';
+        echo '<p><strong>' . esc_html__( 'Authorized Amount:', 'wei-alipay' ) . '</strong> ' . esc_html( $auth_amt ?: '-' ) . '</p>';
 
         if ( $auth_no && $auth_amt ) {
             // Capture form
@@ -464,8 +464,8 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             wp_nonce_field( 'woo_alipay_fund_auth_capture' );
             echo '<input type="hidden" name="action" value="woo_alipay_fund_auth_capture" />';
             echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '" />';
-            echo '<p><label>' . esc_html__( 'Capture Amount', 'woo-alipay' ) . ': <input type="number" step="0.01" min="0" name="amount" value="' . esc_attr( $auth_amt ) . '" style="width:90px;" /></label></p>';
-            submit_button( esc_html__( 'Capture', 'woo-alipay' ), 'primary', 'submit', false );
+            echo '<p><label>' . esc_html__( 'Capture Amount', 'wei-alipay' ) . ': <input type="number" step="0.01" min="0" name="amount" value="' . esc_attr( $auth_amt ) . '" style="width:90px;" /></label></p>';
+            submit_button( esc_html__( 'Capture', 'wei-alipay' ), 'primary', 'submit', false );
             echo '</form>';
 
             // Unfreeze form
@@ -473,10 +473,10 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
             wp_nonce_field( 'woo_alipay_fund_auth_unfreeze' );
             echo '<input type="hidden" name="action" value="woo_alipay_fund_auth_unfreeze" />';
             echo '<input type="hidden" name="order_id" value="' . esc_attr( $order->get_id() ) . '" />';
-            submit_button( esc_html__( 'Unfreeze', 'woo-alipay' ), 'secondary', 'submit', false );
+            submit_button( esc_html__( 'Unfreeze', 'wei-alipay' ), 'secondary', 'submit', false );
             echo '</form>';
         } else {
-            echo '<p>' . esc_html__( 'Capture and Unfreeze actions will be available after authorization.', 'woo-alipay' ) . '</p>';
+            echo '<p>' . esc_html__( 'Capture and Unfreeze actions will be available after authorization.', 'wei-alipay' ) . '</p>';
         }
     }
 }

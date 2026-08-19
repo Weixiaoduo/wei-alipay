@@ -28,14 +28,14 @@ final class WC_Alipay_FaceToPay_Blocks_Support extends AbstractPaymentMethodType
 
     public function get_payment_method_script_handles() {
         $script_path = 'js/frontend/blocks-facetopay.js';
-        $script_asset_path = apply_filters( 'woo_alipay_facetopay_blocks_asset_path', WOO_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks-facetopay.asset.php' );
+        $script_asset_path = apply_filters( 'woo_alipay_facetopay_blocks_asset_path', WEI_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks-facetopay.asset.php' );
         $script_asset = file_exists( $script_asset_path )
             ? require( $script_asset_path )
             : array(
                 'dependencies' => array( 'wc-blocks-registry', 'wp-element', 'wp-html-entities', 'wp-i18n' ),
-                'version'      => WOO_ALIPAY_VERSION
+                'version'      => WEI_ALIPAY_VERSION
             );
-        $script_url = apply_filters( 'woo_alipay_facetopay_blocks_script_url', trailingslashit( WOO_ALIPAY_PLUGIN_URL ) . $script_path );
+        $script_url = apply_filters( 'woo_alipay_facetopay_blocks_script_url', trailingslashit( WEI_ALIPAY_PLUGIN_URL ) . $script_path );
 
         wp_register_script(
             'wc-alipay-facetopay-payments-blocks',
@@ -46,7 +46,7 @@ final class WC_Alipay_FaceToPay_Blocks_Support extends AbstractPaymentMethodType
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-facetopay-payments-blocks', 'woo-alipay', WOO_ALIPAY_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-facetopay-payments-blocks', 'wei-alipay', WEI_ALIPAY_PLUGIN_PATH . 'languages' );
         }
 
         return [ 'wc-alipay-facetopay-payments-blocks' ];
@@ -61,7 +61,7 @@ final class WC_Alipay_FaceToPay_Blocks_Support extends AbstractPaymentMethodType
             'title'       => $this->get_setting( 'title', '支付宝扫码支付' ),
             'description' => $this->get_setting( 'description', '使用支付宝扫描二维码完成支付' ),
             'supports'    => $this->get_supported_features(),
-'icon'        => WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-f2f-icon.svg',
+'icon'        => WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-f2f-icon.svg',
         ];
     }
 

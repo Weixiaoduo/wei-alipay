@@ -23,7 +23,7 @@ class WC_Alipay_Subscriptions_Emails {
         if ( ! $hint ) {
             return;
         }
-        echo '<div class="woo-alipay" style="margin:10px 0;padding:10px;background:#f6f7f7;border-left:4px solid #1d2327;">' . wp_kses_post( wpautop( $hint ) ) . '</div>';
+        echo '<div class="wei-alipay" style="margin:10px 0;padding:10px;background:#f6f7f7;border-left:4px solid #1d2327;">' . wp_kses_post( wpautop( $hint ) ) . '</div>';
     }
 }
 

@@ -40,7 +40,7 @@ class Alipay_SDK_Helper
     public static function create_alipay_service($config)
     {
         try {
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
             
             $aop = new AopClient();
             $aop->gatewayUrl = $config['gatewayUrl'];
@@ -71,7 +71,7 @@ class Alipay_SDK_Helper
         }
 
         try {
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
             
             $aop = new AopClient();
             $aop->alipayrsaPublicKey = $alipay_public_key;
@@ -94,8 +94,8 @@ class Alipay_SDK_Helper
     public static function query_order($out_trade_no, $trade_no, $config)
     {
         try {
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeQueryRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeQueryRequest.php';
             
             $aop = self::create_alipay_service($config);
             if (!$aop) {
@@ -148,8 +148,8 @@ class Alipay_SDK_Helper
     public static function close_order($out_trade_no, $config)
     {
         try {
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-            require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeCloseRequest.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeCloseRequest.php';
             
             $aop = self::create_alipay_service($config);
             if (!$aop) {
@@ -231,7 +231,7 @@ class Alipay_SDK_Helper
     {
         $out_trade_no = is_scalar($out_trade_no) ? trim((string) $out_trade_no) : '';
         if ('' === $out_trade_no || strlen($out_trade_no) > 128) {
-            return new WP_Error('invalid_out_trade_no', __('Merchant order number is invalid.', 'woo-alipay'));
+            return new WP_Error('invalid_out_trade_no', __('Merchant order number is invalid.', 'wei-alipay'));
         }
 
         $args = array(
@@ -275,9 +275,9 @@ class Alipay_SDK_Helper
             return $matches[0];
         }
         if (count($matches) > 1) {
-            return new WP_Error('ambiguous_out_trade_no', __('Merchant order number matches multiple orders.', 'woo-alipay'));
+            return new WP_Error('ambiguous_out_trade_no', __('Merchant order number matches multiple orders.', 'wei-alipay'));
         }
-        return new WP_Error('order_not_found', __('Order not found.', 'woo-alipay'));
+        return new WP_Error('order_not_found', __('Order not found.', 'wei-alipay'));
     }
 
     /**
@@ -337,69 +337,69 @@ class Alipay_SDK_Helper
     public static function validate_notify_context($params, $order, $expected_app_id, $expected_amount, $expected_out_trade_no = '', $allowed_methods = array(), $expected_seller_id = '', $max_age_seconds = 259200, $now = null)
     {
         if (!($order instanceof WC_Order)) {
-            return new WP_Error('invalid_order', __('Invalid order.', 'woo-alipay'));
+            return new WP_Error('invalid_order', __('Invalid order.', 'wei-alipay'));
         }
 
         $params = wp_unslash($params);
         foreach (array('app_id', 'seller_id', 'out_trade_no', 'trade_no', 'trade_status', 'total_amount', 'notify_id', 'notify_time', 'sign_type', 'charset') as $field) {
             if (isset($params[$field]) && (!is_scalar($params[$field]) || 1 !== preg_match('//u', (string) $params[$field]))) {
-                return new WP_Error('invalid_encoding', __('Alipay notification contains invalid text encoding.', 'woo-alipay'));
+                return new WP_Error('invalid_encoding', __('Alipay notification contains invalid text encoding.', 'wei-alipay'));
             }
         }
 
         $sign_type = isset($params['sign_type']) ? strtoupper(trim((string) $params['sign_type'])) : '';
         if ('RSA2' !== $sign_type) {
-            return new WP_Error('unsupported_sign_type', __('Alipay notification must use RSA2.', 'woo-alipay'));
+            return new WP_Error('unsupported_sign_type', __('Alipay notification must use RSA2.', 'wei-alipay'));
         }
 
         $notify_time = isset($params['notify_time']) ? trim((string) $params['notify_time']) : '';
         $notify_timestamp = self::parse_notify_time($notify_time);
         $now = null === $now ? time() : (int) $now;
         if (false === $notify_timestamp) {
-            return new WP_Error('invalid_notify_time', __('Alipay notification time is invalid.', 'woo-alipay'));
+            return new WP_Error('invalid_notify_time', __('Alipay notification time is invalid.', 'wei-alipay'));
         }
         if ($notify_timestamp > $now + 300) {
-            return new WP_Error('future_notify', __('Alipay notification time is in the future.', 'woo-alipay'));
+            return new WP_Error('future_notify', __('Alipay notification time is in the future.', 'wei-alipay'));
         }
         if ($max_age_seconds > 0 && $notify_timestamp < $now - (int) $max_age_seconds) {
-            return new WP_Error('expired_notify', __('Alipay notification is too old.', 'woo-alipay'));
+            return new WP_Error('expired_notify', __('Alipay notification is too old.', 'wei-alipay'));
         }
 
         $app_id = isset($params['app_id']) ? (string) $params['app_id'] : '';
         if ('' === $app_id || '' === (string) $expected_app_id || !hash_equals((string) $expected_app_id, $app_id)) {
-            return new WP_Error('app_id_mismatch', __('Alipay application ID does not match.', 'woo-alipay'));
+            return new WP_Error('app_id_mismatch', __('Alipay application ID does not match.', 'wei-alipay'));
         }
 
         $seller_id = isset($params['seller_id']) ? trim((string) $params['seller_id']) : '';
         if ('' === $seller_id || ('' !== (string) $expected_seller_id && !hash_equals((string) $expected_seller_id, $seller_id))) {
-            return new WP_Error('seller_id_mismatch', __('Alipay seller ID does not match.', 'woo-alipay'));
+            return new WP_Error('seller_id_mismatch', __('Alipay seller ID does not match.', 'wei-alipay'));
         }
 
         $out_trade_no = isset($params['out_trade_no']) ? (string) $params['out_trade_no'] : '';
         if ('' === $out_trade_no || '' === (string) $expected_out_trade_no || !hash_equals((string) $expected_out_trade_no, $out_trade_no)) {
-            return new WP_Error('out_trade_no_mismatch', __('Merchant order number does not match.', 'woo-alipay'));
+            return new WP_Error('out_trade_no_mismatch', __('Merchant order number does not match.', 'wei-alipay'));
         }
 
         if (!isset($params['total_amount']) || !is_numeric($params['total_amount'])) {
-            return new WP_Error('invalid_amount', __('Alipay notification amount is invalid.', 'woo-alipay'));
+            return new WP_Error('invalid_amount', __('Alipay notification amount is invalid.', 'wei-alipay'));
         }
 
         if (!self::amounts_equal($expected_amount, $params['total_amount'])) {
-            return new WP_Error('amount_mismatch', __('Alipay notification amount does not match the order.', 'woo-alipay'));
+            return new WP_Error('amount_mismatch', __('Alipay notification amount does not match the order.', 'wei-alipay'));
         }
 
         if (!empty($allowed_methods) && !in_array($order->get_payment_method(), $allowed_methods, true)) {
-            return new WP_Error('payment_method_mismatch', __('Order payment method does not match.', 'woo-alipay'));
+            return new WP_Error('payment_method_mismatch', __('Order payment method does not match.', 'wei-alipay'));
         }
 
         $stored_transaction_id = (string) $order->get_transaction_id();
         $notified_trade_no = isset($params['trade_no']) ? (string) $params['trade_no'] : '';
         $trade_status = isset($params['trade_status']) ? (string) $params['trade_status'] : '';
         if (in_array($trade_status, array('TRADE_SUCCESS', 'TRADE_FINISHED', 'WAIT_SELLER_SEND_GOODS'), true) && '' === $notified_trade_no) {
-            return new WP_Error('missing_trade_no', __('Alipay transaction ID is missing.', 'woo-alipay'));
+            return new WP_Error('missing_trade_no', __('Alipay transaction ID is missing.', 'wei-alipay'));
         }
         if ('' !== $stored_transaction_id && !hash_equals($stored_transaction_id, $notified_trade_no)) {
-            return new WP_Error('trade_no_mismatch', __('Alipay transaction ID does not match.', 'woo-alipay'));
+            return new WP_Error('trade_no_mismatch', __('Alipay transaction ID does not match.', 'wei-alipay'));
         }
 
         return true;
@@ -409,7 +409,7 @@ class Alipay_SDK_Helper
     public static function validate_notify_transition($order, $trade_status)
     {
         if (!($order instanceof WC_Order)) {
-            return new WP_Error('invalid_order', __('Invalid order.', 'woo-alipay'));
+            return new WP_Error('invalid_order', __('Invalid order.', 'wei-alipay'));
         }
         $order_status = (string) $order->get_status();
         if ($order->is_paid()) {
@@ -419,7 +419,7 @@ class Alipay_SDK_Helper
             if ('TRADE_CLOSED' === $trade_status || 'WAIT_BUYER_PAY' === $trade_status) {
                 return 'acknowledge';
             }
-            return new WP_Error('terminal_order_state', __('The WooCommerce order is already terminal.', 'woo-alipay'));
+            return new WP_Error('terminal_order_state', __('The WooCommerce order is already terminal.', 'wei-alipay'));
         }
         if (in_array($trade_status, array('TRADE_SUCCESS', 'TRADE_FINISHED', 'WAIT_SELLER_SEND_GOODS'), true)) {
             return 'process_payment';
@@ -430,7 +430,7 @@ class Alipay_SDK_Helper
         if ('WAIT_BUYER_PAY' === $trade_status) {
             return 'acknowledge';
         }
-        return new WP_Error('unsupported_trade_status', __('Unsupported Alipay trade status.', 'woo-alipay'));
+        return new WP_Error('unsupported_trade_status', __('Unsupported Alipay trade status.', 'wei-alipay'));
     }
 
     /** Acquire a short database-backed lock for notification/refund idempotency. */

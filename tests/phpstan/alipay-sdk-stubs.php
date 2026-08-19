@@ -1,8 +1,8 @@
 <?php
-define('WOO_ALIPAY_PLUGIN_PATH', '/tmp/woo-alipay/');
-define('WOO_ALIPAY_PLUGIN_URL', 'https://example.test/woo-alipay/');
-define('WOO_ALIPAY_PLUGIN_FILE', '/tmp/woo-alipay/woo-alipay.php');
-define('WOO_ALIPAY_VERSION', '3.2.0');
+define('WEI_ALIPAY_PLUGIN_PATH', '/tmp/wei-alipay/');
+define('WEI_ALIPAY_PLUGIN_URL', 'https://example.test/wei-alipay/');
+define('WEI_ALIPAY_PLUGIN_FILE', '/tmp/wei-alipay/wei-alipay.php');
+define('WEI_ALIPAY_VERSION', '3.2.0');
 class AopClient {
     public $gatewayUrl;
     public $appId;

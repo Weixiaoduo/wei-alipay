@@ -1,9 +1,9 @@
-=== Payment gateway for WooCommerce - Woo Alipay ===
+=== Wei Alipay Payment Gateway for WooCommerce ===
 Contributors: frogerme
 Tags: alipay, alibaba, payments, payment gateway, 支付宝, 阿里巴巴
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 3.2.0
+Stable tag: 4.0.0
 Requires PHP: 7.4
 WC requires at least: 8.3
 WC tested up to: 10.2.2
@@ -14,7 +14,7 @@ Alipay China payment gateway for WooCommerce.
 
 == Description ==
 
-Woo Alipay adds an Alipay China payment gateway to WooCommerce-powered websites.
+Wei Alipay adds an Alipay China payment gateway to WooCommerce-powered websites.
 This Mainland China gateway allows customers to pay both in mobile browsers or from their computer.
 
 ### Requirements
@@ -26,7 +26,7 @@ This Mainland China gateway allows customers to pay both in mobile browsers or f
 ### Important Notes
 
 * The primary gateway is for Mainland China Alipay. Optional bundled modules include cross-border, face-to-face QR, Huabei instalments, barcode/POS, mini-program, subscriptions, fund authorization, profit sharing, and reconciliation. Enable only the modules covered by your merchant agreement and testing.
-* Make sure to read the "TROUBLESHOOT, FEATURE REQUESTS AND 3RD PARTY INTEGRATION" section below and [the full documentation](https://github.com/froger-me/woo-alipay/blob/master/README.md) before contacting the author.
+* Make sure to read the "TROUBLESHOOT, FEATURE REQUESTS AND 3RD PARTY INTEGRATION" section below and [the full documentation](https://github.com/froger-me/wei-alipay/blob/master/README.md) before contacting the author.
 
 ### Overview
 
@@ -39,27 +39,28 @@ This plugin adds the following major features to WooCommerce:
 
 Compatible with [WooCommerce Multilingual](https://wordpress.org/plugins/woocommerce-multilingual/), [WPML](http://wpml.org/), [Ultimate Member](https://wordpress.org/plugins/ultimate-member/), and any caching plugin compatible with WooCommerce.
 
-### Troubleshoot, feature requests and 3rd party integration
+### Support and source repository
 
-Unlike most Alipay Mainland China integration plugins, Woo Alipay is provided for free.  
+Wei Alipay Payment Gateway for WooCommerce is developed by Weixiaoduo.com.
 
-Woo Alipay is regularly updated, and bug reports are welcome, preferably on [Github](https://github.com/froger-me/woo-alipay/issues). Each bug report will be addressed in a timely manner, but issues reported on WordPress may take significantly longer to receive a response.  
+The canonical source, pull requests, candidate CI, tags, and releases are maintained in the FeiCode Weixiaoduo organization. The GitHub Weixiaoduo/wei-alipay repository is a public downstream mirror and is not the development upstream.
 
-Woo Alipay has been tested with the latest version of WordPress and WooCommerce - in case of issue, please ensure you are able to reproduce it with a default installation of WordPress, WooCommerce plugin, and Storefront theme and any of the aforementioned supported plugins if used before reporting a bug.  
-
-Feature requests (such as "it would be nice to have XYZ") or 3rd party integration requests (such as "it is not working with XYZ plugin" or "it is not working with my theme") will be considered only after receiving a red envelope (红包) of a minimum RMB 500 on WeChat (guarantee of best effort, no guarantee of result). 
-
-To add the author on WeChat, click [here](https://froger.me/wp-content/uploads/2018/04/wechat-qr.png), scan the WeChat QR code, and add "Woo Alipay" as a comment in your contact request.  
+The project retains upstream copyright and license notices. Do not include merchant private keys, shared secrets, transaction payloads, or customer data in issue reports.
 
 == Installation ==
 
 This section describes how to install the plugin and get it working.
 
-1. Upload the plugin files to the `/wp-content/plugins/woo-alipay` directory.
+1. Upload the plugin files to the `/wp-content/plugins/wei-alipay` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Edit plugin settings
 
 == Changelog ==
+
+= 4.0.0 =
+* Rename the plugin and package to Wei Alipay Payment Gateway for WooCommerce.
+* Keep Alipay financial identities stable for existing orders, refunds, settings, and callbacks.
+* Establish FeiCode as the canonical upstream and GitHub as a controlled public downstream mirror.
 
 = 3.2.0 =
 * Harden notification signature, merchant/order/trade/amount/time binding and replay handling.

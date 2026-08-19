@@ -5,8 +5,8 @@
 	const { decodeEntities } = window.wp.htmlEntities;
 	const settings = window.wc.wcSettings.getSetting( 'alipay_fund_auth_data', {} );
 
-	const defaultLabel = __( 'Alipay Fund Authorization', 'woo-alipay-fund-auth' );
-	const defaultDescription = __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'woo-alipay-fund-auth' );
+	const defaultLabel = __( 'Alipay Fund Authorization', 'wei-alipay-fund-auth' );
+	const defaultDescription = __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'wei-alipay-fund-auth' );
 
 	const Label = ( props ) => {
 		const { PaymentMethodLabel } = props.components;

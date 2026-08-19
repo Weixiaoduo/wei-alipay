@@ -21,12 +21,12 @@ final class WC_Alipay_Fund_Auth_Blocks_Support extends AbstractPaymentMethodType
     }
 
     public function get_payment_method_script_handles() {
-        $asset_path = WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'js/frontend/blocks-fund-auth.asset.php';
+        $asset_path = WEI_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'js/frontend/blocks-fund-auth.asset.php';
         $asset      = file_exists( $asset_path ) ? require $asset_path : array(
             'dependencies' => array( 'wc-blocks-registry', 'wc-settings', 'wp-element', 'wp-i18n', 'wp-html-entities' ),
             'version'      => '0.1.0',
         );
-        $script_url = WOO_ALIPAY_FUNDAUTH_PLUGIN_URL . 'js/frontend/blocks-fund-auth.js';
+        $script_url = WEI_ALIPAY_FUNDAUTH_PLUGIN_URL . 'js/frontend/blocks-fund-auth.js';
 
         wp_register_script(
             'wc-alipay-fund-auth-blocks',
@@ -37,7 +37,7 @@ final class WC_Alipay_Fund_Auth_Blocks_Support extends AbstractPaymentMethodType
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-fund-auth-blocks', 'woo-alipay', WOO_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-fund-auth-blocks', 'wei-alipay', WEI_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'languages' );
         }
 
         return array( 'wc-alipay-fund-auth-blocks' );
@@ -48,10 +48,10 @@ final class WC_Alipay_Fund_Auth_Blocks_Support extends AbstractPaymentMethodType
     }
 
     public function get_payment_method_data() {
-        $icon = WOO_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg';
+        $icon = WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-icon.svg';
         return array(
-            'title'       => isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Alipay Fund Authorization', 'woo-alipay' ),
-            'description' => isset( $this->settings['description'] ) ? $this->settings['description'] : __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'woo-alipay' ),
+            'title'       => isset( $this->settings['title'] ) ? $this->settings['title'] : __( 'Alipay Fund Authorization', 'wei-alipay' ),
+            'description' => isset( $this->settings['description'] ) ? $this->settings['description'] : __( 'Your payment will be authorized (frozen) now and captured upon fulfillment.', 'wei-alipay' ),
             'supports'    => $this->get_supported_features(),
             'icon'        => $icon,
         );

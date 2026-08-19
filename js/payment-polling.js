@@ -1,9 +1,9 @@
 /**
  * Alipay Payment Status Polling
- * 
+ *
  * Polls order payment status and redirects when payment is confirmed
- * 
- * @package Woo_Alipay
+ *
+ * @package Wei_Alipay
  * @since 3.3.0
  */
 
@@ -69,7 +69,7 @@
         getOrderId: function() {
             // Try to get from data attribute
             var orderId = $('body').data('order-id');
-            
+
             if (orderId) {
                 return orderId;
             }
@@ -77,7 +77,7 @@
             // Try to get from URL parameter
             var urlParams = new URLSearchParams(window.location.search);
             orderId = urlParams.get('order_id');
-            
+
             if (orderId) {
                 return orderId;
             }
@@ -142,7 +142,7 @@
                             // Payment confirmed
                             self.stopPolling();
                             self.showMessage('success', response.data.message);
-                            
+
                             // Redirect after a short delay
                             setTimeout(function() {
                                 window.location.href = response.data.redirect;
@@ -176,7 +176,7 @@
          */
         showMessage: function(type, message) {
             var messageClass = 'woocommerce-message';
-            
+
             if (type === 'error') {
                 messageClass = 'woocommerce-error';
             } else if (type === 'warning') {
@@ -184,13 +184,13 @@
             }
 
             var $message = $('<div class="' + messageClass + '">' + message + '</div>');
-            
+
             // Remove existing messages
             $('.woocommerce-message, .woocommerce-error, .woocommerce-info').remove();
-            
+
             // Add new message
             $('.woocommerce').prepend($message);
-            
+
             // Scroll to message
             $('html, body').animate({
                 scrollTop: $message.offset().top - 100
@@ -202,24 +202,24 @@
          */
         addManualCheckButton: function() {
             var self = this;
-            
+
             // Find a good place to add the button
             var $container = $('.wooalipay-loader, .woocommerce-order-pay');
-            
+
             if ($container.length === 0) {
                 return;
             }
 
-            var $button = $('<button type="button" class="button woo-alipay-check-status" style="margin-top: 20px;">' + 
+            var $button = $('<button type="button" class="button wei-alipay-check-status" style="margin-top: 20px;">' +
                           woo_alipay_polling.strings.check_status + '</button>');
-            
+
             $container.append($button);
 
             $button.on('click', function(e) {
                 e.preventDefault();
-                
+
                 $button.prop('disabled', true).text(woo_alipay_polling.strings.checking);
-                
+
                 $.ajax({
                     url: woo_alipay_polling.ajax_url,
                     type: 'POST',
@@ -233,7 +233,7 @@
                         if (response.success) {
                             if (response.data.status === 'paid' || response.data.redirect) {
                                 self.showMessage('success', response.data.message);
-                                
+
                                 setTimeout(function() {
                                     window.location.href = response.data.redirect;
                                 }, 1000);

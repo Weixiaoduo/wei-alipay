@@ -86,7 +86,7 @@ class WC_Alipay_Subscriptions_Signing {
             exit;
         }
         $alipay_public_key = $core['public_key'];
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
         $aop = new AopClient();
         $aop->alipayrsaPublicKey = $alipay_public_key;
         $notify_params = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- signed Alipay server callback; verified before fields are used.
@@ -159,10 +159,10 @@ class WC_Alipay_Subscriptions_Signing {
                     if ( ! is_wp_error( $charge ) ) {
                         $order->payment_complete( $charge['trade_no'] );
                         /* translators: %s: Alipay transaction number */
-                        $order->add_order_note( sprintf( __( '首单签约并扣款成功 - 交易号: %s', 'woo-alipay' ), $charge['trade_no'] ) );
+                        $order->add_order_note( sprintf( __( '首单签约并扣款成功 - 交易号: %s', 'wei-alipay' ), $charge['trade_no'] ) );
                     } else {
                         /* translators: %s: error message */
-                        $order->add_order_note( sprintf( __( '首单签约完成，但扣款失败：%s', 'woo-alipay' ), $charge->get_error_message() ) );
+                        $order->add_order_note( sprintf( __( '首单签约完成，但扣款失败：%s', 'wei-alipay' ), $charge->get_error_message() ) );
                     }
                 }
             }
@@ -177,7 +177,7 @@ class WC_Alipay_Subscriptions_Signing {
      * Handle user browser return after agreement signing.
      */
     public function handle_agreement_return() {
-        wc_add_notice( __( '支付宝代扣签约回跳：签约结果稍后将通过服务器通知同步。', 'woo-alipay' ), 'notice' );
+        wc_add_notice( __( '支付宝代扣签约回跳：签约结果稍后将通过服务器通知同步。', 'wei-alipay' ), 'notice' );
         wp_safe_redirect( self::agreement_return_url() );
         exit;
     }
@@ -187,7 +187,7 @@ class WC_Alipay_Subscriptions_Signing {
      */
     public function handle_sign_start() {
         if ( ! is_user_logged_in() ) {
-            wc_add_notice( __( '请先登录后再发起签约。', 'woo-alipay' ), 'error' );
+            wc_add_notice( __( '请先登录后再发起签约。', 'wei-alipay' ), 'error' );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
         }
@@ -195,7 +195,7 @@ class WC_Alipay_Subscriptions_Signing {
         $missing_core = $this->get_missing_core_fields();
         if ( ! empty( $missing_core ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'woo-alipay' ), implode( ', ', $missing_core ) ), 'error' );
+            wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'wei-alipay' ), implode( ', ', $missing_core ) ), 'error' );
             $this->log( 'error', 'Sign start blocked: missing core settings', array( 'missing' => implode( '|', $missing_core ) ) );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
@@ -219,8 +219,8 @@ class WC_Alipay_Subscriptions_Signing {
         $return_url = WC()->api_request_url( 'WC_Alipay_Subscriptions_Agreement_Return' );
         $notify_url = WC()->api_request_url( 'WC_Alipay_Subscriptions_Agreement' );
 
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayUserAgreementPageSignRequest.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayUserAgreementPageSignRequest.php';
 
         $aop = new AopClient();
         $aop->gatewayUrl = $config['gatewayUrl'];
@@ -264,8 +264,8 @@ class WC_Alipay_Subscriptions_Signing {
         }
         $unsign_url = home_url( '/?wc-api=wc_alipay_subscriptions_agreement_unsign' );
         echo '<div class="woocommerce-info" style="margin-bottom:15px">'
-           . esc_html__( '您已开启自动代扣功能。若尚未完成支付宝签约，请在下次结账时完成授权。', 'woo-alipay' )
-           . ' <a href="' . esc_url( $unsign_url ) . '" class="button" style="margin-left:8px">' . esc_html__( '解绑代扣协议', 'woo-alipay' ) . '</a>'
+           . esc_html__( '您已开启自动代扣功能。若尚未完成支付宝签约，请在下次结账时完成授权。', 'wei-alipay' )
+           . ' <a href="' . esc_url( $unsign_url ) . '" class="button" style="margin-left:8px">' . esc_html__( '解绑代扣协议', 'wei-alipay' ) . '</a>'
            . '</div>';
     }
 
@@ -281,7 +281,7 @@ class WC_Alipay_Subscriptions_Signing {
         $missing_core = $this->get_missing_core_fields();
         if ( ! empty( $missing_core ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'woo-alipay' ), implode( ', ', $missing_core ) ), 'error' );
+            wc_add_notice( sprintf( __( 'Alipay 核心配置不完整，缺少：%s。', 'wei-alipay' ), implode( ', ', $missing_core ) ), 'error' );
             $this->log( 'error', 'Unsign blocked: missing core settings', array( 'missing' => implode( '|', $missing_core ) ) );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
@@ -289,7 +289,7 @@ class WC_Alipay_Subscriptions_Signing {
         $user_id = get_current_user_id();
         $tokens = WC_Payment_Tokens::get_customer_tokens( $user_id, 'alipay_agreement' );
         if ( empty( $tokens ) ) {
-            wc_add_notice( __( '未找到代扣协议。', 'woo-alipay' ), 'error' );
+            wc_add_notice( __( '未找到代扣协议。', 'wei-alipay' ), 'error' );
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
         }
@@ -297,8 +297,8 @@ class WC_Alipay_Subscriptions_Signing {
         $agreement_no = method_exists( $token, 'get_agreement_no' ) ? $token->get_agreement_no() : $token->get_token();
 
         // Call unsign API
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayUserAgreementUnsignRequest.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayUserAgreementUnsignRequest.php';
         $main_gateway = new WC_Alipay(false);
         $aop = new AopClient();
         $aop->gatewayUrl = ( 'yes' === $main_gateway->get_option('sandbox') ) ? 'https://openapi.alipaydev.com/gateway.do' : 'https://openapi.alipay.com/gateway.do';
@@ -320,9 +320,9 @@ class WC_Alipay_Subscriptions_Signing {
         if ( is_object( $res ) && isset( $res->code ) && '10000' === (string) $res->code ) {
             // Delete local token
             WC_Payment_Tokens::delete( $token->get_id() );
-            wc_add_notice( __( '协议已解绑。', 'woo-alipay' ), 'success' );
+            wc_add_notice( __( '协议已解绑。', 'wei-alipay' ), 'success' );
         } else {
-            wc_add_notice( __( '协议解绑失败，请稍后再试。', 'woo-alipay' ), 'error' );
+            wc_add_notice( __( '协议解绑失败，请稍后再试。', 'wei-alipay' ), 'error' );
         }
         wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
         exit;

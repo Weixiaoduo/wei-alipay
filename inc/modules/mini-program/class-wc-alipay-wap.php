@@ -6,12 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  *
  * Provides an Alipay Payment Gateway.
  *
- * @class       Woo_Alipay_Mini_Program_Gateway
+ * @class       Wei_Alipay_Mini_Program_Gateway
  * @extends     WC_Payment_Gateway
  * @version     1.3.3
  */
 
-class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
+class Wei_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
     var $current_currency;
     var $multi_currency_enabled;
@@ -61,9 +61,9 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         $this->id                     = 'alipay_wap';
         $this->icon                   = apply_filters( 'woocommerce_alipay_icon', plugins_url( 'images/alipay.png', __FILE__ ) );
         $this->has_fields             = false;
-        $this->method_title           = __( 'Alipay', 'woo-alipay' );
-        $this->order_button_text      = __( 'Proceed to Alipay', 'woo-alipay' );
-        $this->notify_url             = WC()->api_request_url( 'Woo_Alipay_Mini_Program_Gateway' );
+        $this->method_title           = __( 'Alipay', 'wei-alipay' );
+        $this->order_button_text      = __( 'Proceed to Alipay', 'wei-alipay' );
+        $this->notify_url             = WC()->api_request_url( 'Wei_Alipay_Mini_Program_Gateway' );
 
         // Load the settings.
         $this->init_form_fields();
@@ -117,9 +117,9 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             $protocol = $this->selected_protocol();
             if ( is_wp_error( $protocol ) ) {
                 $is_available = false;
-            } elseif ( Woo_Alipay_Mini_Protocol::RSA2 === $protocol && ! $this->has_core_credentials() ) {
+            } elseif ( Wei_Alipay_Mini_Protocol::RSA2 === $protocol && ! $this->has_core_credentials() ) {
                 $is_available = false;
-            } elseif ( Woo_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol && ( empty( $this->partnerID ) || empty( $this->secure_key ) || empty( $this->alipay_account ) ) ) {
+            } elseif ( Wei_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol && ( empty( $this->partnerID ) || empty( $this->secure_key ) || empty( $this->alipay_account ) ) ) {
                 $is_available = false;
             }
         }
@@ -144,14 +144,14 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
     function requirement_checks() { 
         if ( !in_array( $this->current_currency, array( 'RMB', 'CNY') ) && !$this->exchange_rate ) {
             /* translators: %1$s: link to the exchange rate settings page. %2$s: store currency code. */
-            echo '<div class="error"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'woo-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $this->current_currency ) ) ) . '</p></div>';
+            echo '<div class="error"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'wei-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $this->current_currency ) ) ) . '</p></div>';
         }
 
         $protocol = $this->selected_protocol();
         $missing_fields = $this->get_missing_core_fields();
-        if ( Woo_Alipay_Mini_Protocol::RSA2 === $protocol && ! empty( $missing_fields ) ) {
+        if ( Wei_Alipay_Mini_Protocol::RSA2 === $protocol && ! empty( $missing_fields ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
+            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
         }
         if ( is_wp_error( $protocol ) ) {
             echo '<div class="error"><p>' . esc_html( $protocol->get_error_message() ) . '</p></div>';
@@ -204,10 +204,10 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
     }
 
     protected function selected_protocol() {
-        return Woo_Alipay_Mini_Protocol::resolve(
+        return Wei_Alipay_Mini_Protocol::resolve(
             $this->protocol_mode,
             'yes' === $this->legacy_md5_ack,
-            Woo_Alipay_Mini_Protocol::legacy_allowed()
+            Wei_Alipay_Mini_Protocol::legacy_allowed()
         );
     }
 
@@ -249,8 +249,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
     public function admin_options() {
 
         ?>
-        <h3><?php esc_html_e('Alipay', 'woo-alipay'); ?></h3>
-        <p><?php esc_html_e('Alipay is a simple, secure and fast online payment method, customer can pay via debit card, credit card or alipay balance.', 'woo-alipay'); ?></p>
+        <h3><?php esc_html_e('Alipay', 'wei-alipay'); ?></h3>
+        <p><?php esc_html_e('Alipay is a simple, secure and fast online payment method, customer can pay via debit card, credit card or alipay balance.', 'wei-alipay'); ?></p>
        
         <table class="form-table">
             <?php
@@ -271,115 +271,115 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $this->form_fields = array(
             'enabled' => array(
-                'title'     => __('Enable/Disable', 'woo-alipay'),
+                'title'     => __('Enable/Disable', 'wei-alipay'),
                 'type'      => 'checkbox',
-                'label'     => __('Enable Alipay Payment', 'woo-alipay'),
+                'label'     => __('Enable Alipay Payment', 'wei-alipay'),
                 'default'   => 'no'
             ),
             'title' => array(
-                'title'       => __('Title', 'woo-alipay'),
+                'title'       => __('Title', 'wei-alipay'),
                 'type'        => 'text',
-                'description' => __('This controls the title which the user sees during checkout.', 'woo-alipay'),
-                'default'     => __('Alipay', 'woo-alipay'),
+                'description' => __('This controls the title which the user sees during checkout.', 'wei-alipay'),
+                'default'     => __('Alipay', 'wei-alipay'),
                 'desc_tip'    => true,
             ),
             'description' => array(
-                'title'       => __('Description', 'woo-alipay'),
+                'title'       => __('Description', 'wei-alipay'),
                 'type'        => 'textarea',
-                'description' => __('This controls the description which the user sees during checkout.', 'woo-alipay'),
-                'default'     => __('Pay via Alipay, if you don\'t have an Alipay account, you can also pay with your debit card or credit card', 'woo-alipay'),
+                'description' => __('This controls the description which the user sees during checkout.', 'wei-alipay'),
+                'default'     => __('Pay via Alipay, if you don\'t have an Alipay account, you can also pay with your debit card or credit card', 'wei-alipay'),
                 'desc_tip'    => true,
             ),
 //            'payment_method' => array(
-//                'title'       => __('Alipay Payment Gateway Type', 'woo-alipay'),
+//                'title'       => __('Alipay Payment Gateway Type', 'wei-alipay'),
 //                'type'        => 'select',
-//                'description' => __('Please choose a payment method, note that the Dual requires a corporate account', 'woo-alipay'),
+//                'description' => __('Please choose a payment method, note that the Dual requires a corporate account', 'wei-alipay'),
 //                'options'     => array(
-//                    'escrow'  => __('Escrow Payment', 'woo-alipay'),
-//                    'dualfun' => __('Dual(Direct Payment + Escrow payment)', 'woo-alipay'),
-//                    'direct'  => __('Direct Payment', 'woo-alipay')
+//                    'escrow'  => __('Escrow Payment', 'wei-alipay'),
+//                    'dualfun' => __('Dual(Direct Payment + Escrow payment)', 'wei-alipay'),
+//                    'direct'  => __('Direct Payment', 'wei-alipay')
 //                ),
 //                'desc_tip'    => true,
 //            ),
             'protocol_mode' => array(
-                'title'       => __( 'Signing protocol', 'woo-alipay' ),
+                'title'       => __( 'Signing protocol', 'wei-alipay' ),
                 'type'        => 'select',
                 'default'     => 'rsa2',
                 'options'     => array(
-                    'rsa2'       => __( 'RSA2 (recommended)', 'woo-alipay' ),
-                    'legacy_md5' => __( 'Legacy MD5 (migration only)', 'woo-alipay' ),
+                    'rsa2'       => __( 'RSA2 (recommended)', 'wei-alipay' ),
+                    'legacy_md5' => __( 'Legacy MD5 (migration only)', 'wei-alipay' ),
                 ),
-                'description' => __( 'RSA2 never falls back to MD5. Legacy MD5 also requires an operator policy in wp-config.php.', 'woo-alipay' ),
+                'description' => __( 'RSA2 never falls back to MD5. Legacy MD5 also requires an operator policy in wp-config.php.', 'wei-alipay' ),
             ),
             'legacy_md5_ack' => array(
-                'title'       => __( 'Acknowledge legacy risk', 'woo-alipay' ),
+                'title'       => __( 'Acknowledge legacy risk', 'wei-alipay' ),
                 'type'        => 'checkbox',
-                'label'       => __( 'Temporarily allow this site to use the legacy MD5 protocol.', 'woo-alipay' ),
+                'label'       => __( 'Temporarily allow this site to use the legacy MD5 protocol.', 'wei-alipay' ),
                 'default'     => 'no',
-                'description' => __( 'Also define WOO_ALIPAY_ALLOW_LEGACY_MD5 as true. Remove both controls after migrating to RSA2.', 'woo-alipay' ),
+                'description' => __( 'Also define WEI_ALIPAY_ALLOW_LEGACY_MD5 as true. Remove both controls after migrating to RSA2.', 'wei-alipay' ),
             ),
             'partnerID' => array(
-                'title'       => __('Partner ID', 'woo-alipay'),
+                'title'       => __('Partner ID', 'wei-alipay'),
                 'type'        => 'text',
-                'description' => __('Please enter the partner ID<br />If you don\'t have one, <a href="https://b.alipay.com/newIndex.htm" target="_blank">click here</a> to get.', 'woo-alipay'),
+                'description' => __('Please enter the partner ID<br />If you don\'t have one, <a href="https://b.alipay.com/newIndex.htm" target="_blank">click here</a> to get.', 'wei-alipay'),
                 'css'         => 'width:400px'
             ),
             'secure_key' => array(
-                'title'       => __('Security Key', 'woo-alipay'),
+                'title'       => __('Security Key', 'wei-alipay'),
                 'type'        => 'password',
-                'description' => __('Please enter the security key<br />If you don\'t have one, <a href="https://b.alipay.com/newIndex.htm" target="_blank">click here</a> to get.', 'woo-alipay'),
+                'description' => __('Please enter the security key<br />If you don\'t have one, <a href="https://b.alipay.com/newIndex.htm" target="_blank">click here</a> to get.', 'wei-alipay'),
                 'css'         => 'width:400px'
             ),
             'alipay_account' => array(
-                'title'       => __('Alipay Account', 'woo-alipay'),
+                'title'       => __('Alipay Account', 'wei-alipay'),
                 'type'        => 'text',
-                'description' => __('Please enter your Alipay account ( Email or Phone Number ); this is needed in order to take payment.', 'woo-alipay'),
+                'description' => __('Please enter your Alipay account ( Email or Phone Number ); this is needed in order to take payment.', 'wei-alipay'),
                 'css'         => 'width:200px',
                 'desc_tip'    => true,
             ),
             'order_prefix' => array(
-                'title'       => __( 'Order No. Prefix', 'woo-alipay' ),
+                'title'       => __( 'Order No. Prefix', 'wei-alipay' ),
                 'type'        => 'text',
-                'description' => __( 'eg.WC-. If you <strong>use your Alipay account for multiple stores</strong>, Please enter this prefix and make sure it is unique as Alipay will not allow orders with the same merchant order number.', 'woo-alipay' ),
+                'description' => __( 'eg.WC-. If you <strong>use your Alipay account for multiple stores</strong>, Please enter this prefix and make sure it is unique as Alipay will not allow orders with the same merchant order number.', 'wei-alipay' ),
                 'default'     => 'WC-'
             ),
             'form_submission_method' => array(
-                'title'       => __('Submission method', 'woo-alipay'),
+                'title'       => __('Submission method', 'wei-alipay'),
                 'type'        => 'checkbox',
-                'label'       => __('Use form submission method.', 'woo-alipay'),
-                'description' => __('Enable this to post order data to Alipay via a form instead of using a redirect/querystring.', 'woo-alipay'),
+                'label'       => __('Use form submission method.', 'wei-alipay'),
+                'description' => __('Enable this to post order data to Alipay via a form instead of using a redirect/querystring.', 'wei-alipay'),
                 'default'     => 'no',
                 'desc_tip'    => true,
             ),
             'order_title_format' => array(
-                'title'       => __('Preferred format for order title', 'woo-alipay'),
+                'title'       => __('Preferred format for order title', 'wei-alipay'),
                 'type'        => 'select',
-                'label'       => __('Select your preferred order title format', 'woo-alipay'),
-                'description' => __('Select the format of order title when making payment at Alipay', 'woo-alipay'),
+                'label'       => __('Select your preferred order title format', 'wei-alipay'),
+                'description' => __('Select the format of order title when making payment at Alipay', 'wei-alipay'),
                 'options'     => array(
-                    'customer_name' => __('Customer Full Name|#Order ID', 'woo-alipay'),
-                    'product_title' => __('Name of the first Product|#Order ID', 'woo-alipay'),
+                    'customer_name' => __('Customer Full Name|#Order ID', 'wei-alipay'),
+                    'product_title' => __('Name of the first Product|#Order ID', 'wei-alipay'),
                     /* translators: %s: site name */
-                    'shop_name'     => sprintf( __( '[Customer Full Name]\'s Order From %s|#Order ID', 'woo-alipay' ), get_bloginfo('name') )
+                    'shop_name'     => sprintf( __( '[Customer Full Name]\'s Order From %s|#Order ID', 'wei-alipay' ), get_bloginfo('name') )
                 ),
                 'desc_tip'    => true,
             ),
             'debug' => array(
-                'title'       => __('Debug Log', 'woo-alipay'),
+                'title'       => __('Debug Log', 'wei-alipay'),
                 'type'        => 'checkbox',
-                'label'       => __('Enable logging', 'woo-alipay'),
+                'label'       => __('Enable logging', 'wei-alipay'),
                 'default'     => 'no',
-                'description' => __('Log Alipay events, such as trade status, inside <code>woocommerce/logs/alipay.txt</code>', 'woo-alipay')
+                'description' => __('Log Alipay events, such as trade status, inside <code>woocommerce/logs/alipay.txt</code>', 'wei-alipay')
             )
         );
 
         if (!in_array( $this->current_currency, array( 'RMB', 'CNY') )) {
 
             $this->form_fields['exchange_rate'] = array(
-                'title'       => __('Exchange Rate', 'woo-alipay'),
+                'title'       => __('Exchange Rate', 'wei-alipay'),
                 'type'        => 'text',
                 /* translators: %s: store currency code */
-                'description' => sprintf(__("Please set the %s against Chinese Yuan exchange rate, eg if your currency is US Dollar, then you should enter 6.19", 'woo-alipay'), $this->current_currency),
+                'description' => sprintf(__("Please set the %s against Chinese Yuan exchange rate, eg if your currency is US Dollar, then you should enter 6.19", 'wei-alipay'), $this->current_currency),
                 'css'         => 'width:80px;',
                 'desc_tip'    => true,
             );
@@ -564,8 +564,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         if ( is_wp_error( $protocol ) ) {
             return;
         }
-        if ( Woo_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
-            $verified = Woo_Alipay_Mini_Protocol::verify_legacy_md5( $params, $this->secure_key );
+        if ( Wei_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
+            $verified = Wei_Alipay_Mini_Protocol::verify_legacy_md5( $params, $this->secure_key );
         } else {
             $core = $this->get_core_settings();
             $verified = ! empty( $core['public_key'] ) && Alipay_SDK_Helper::verify_notify( $params, $core['public_key'] );
@@ -575,7 +575,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         if ( ! $verified || '' === $trade_no || ! hash_equals( (string) $order->get_meta( '_alipay_out_trade_no' ), $out_trade_no ) ) {
             return;
         }
-        echo '<ul class="order_details"><li class="alipayNo">' . esc_html__( 'Your Alipay Trade No.: ', 'woo-alipay' ) . '<strong>' . esc_html( $trade_no ) . '</strong></li></ul>';
+        echo '<ul class="order_details"><li class="alipayNo">' . esc_html__( 'Your Alipay Trade No.: ', 'wei-alipay' ) . '<strong>' . esc_html( $trade_no ) . '</strong></li></ul>';
     }
 
     /**
@@ -589,10 +589,10 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $order = wc_get_order( $order_id );
         if ( ! $order ) {
-            return '<p>' . esc_html__( 'Invalid order.', 'woo-alipay' ) . '</p>';
+            return '<p>' . esc_html__( 'Invalid order.', 'wei-alipay' ) . '</p>';
         }
-        if ( Woo_Alipay_Mini_Protocol::LEGACY_MD5 !== $this->selected_protocol() ) {
-            return '<p>' . esc_html__( 'Legacy payment form is disabled; start a new RSA2 payment from checkout.', 'woo-alipay' ) . '</p>';
+        if ( Wei_Alipay_Mini_Protocol::LEGACY_MD5 !== $this->selected_protocol() ) {
+            return '<p>' . esc_html__( 'Legacy payment form is disabled; start a new RSA2 payment from checkout.', 'wei-alipay' ) . '</p>';
         }
         require_once __DIR__ . '/lib/alipay_submit.class.php';
 
@@ -609,7 +609,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         wc_enqueue_js( '
             $.blockUI({
-                    message: "' . esc_js( __( 'Thank you for your order. We are now redirecting you to Alipay to make payment.', 'woo-alipay' ) ) . '",
+                    message: "' . esc_js( __( 'Thank you for your order. We are now redirecting you to Alipay to make payment.', 'wei-alipay' ) ) . '",
                     baseZ: 99999,
                     overlayCSS:
                     {
@@ -633,7 +633,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         return '<form id="alipaysubmit" name="alipaysubmit" action="' . esc_url( $alipay_adr . '_input_charset=' . trim( strtolower( $alipay_config['input_charset'] ) ) ) . '" method="post" target="_top">' . implode('', $alipay_args_array) . '
                     <!-- Button Fallback -->
                     <div class="payment_buttons">
-                        <input type="submit" class="button-alt" id="submit_alipay_payment_form" value="' . esc_attr__( 'Pay via Alipay', 'woo-alipay' ) . '" /> <a class="button cancel" href="' . esc_url($order->get_cancel_order_url()) . '">' . esc_html__( 'Cancel order &amp; restore cart', 'woo-alipay' ) . '</a>
+                        <input type="submit" class="button-alt" id="submit_alipay_payment_form" value="' . esc_attr__( 'Pay via Alipay', 'wei-alipay' ) . '" /> <a class="button cancel" href="' . esc_url($order->get_cancel_order_url()) . '">' . esc_html__( 'Cancel order &amp; restore cart', 'wei-alipay' ) . '</a>
                     </div>
                 </form>';
     }
@@ -649,7 +649,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $order = wc_get_order( $order_id );
         if ( ! $order ) {
-            wc_add_notice( __( 'Invalid order.', 'woo-alipay' ), 'error' );
+            wc_add_notice( __( 'Invalid order.', 'wei-alipay' ), 'error' );
             return array( 'result' => 'fail' );
         }
 
@@ -659,10 +659,10 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             return array( 'result' => 'fail' );
         }
 
-        if ( Woo_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
+        if ( Wei_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
             $args = $this->get_alipay_args( $order );
             $order->update_meta_data( '_alipay_out_trade_no', $args['out_trade_no'] );
-            $order->update_meta_data( '_woo_alipay_mini_protocol', Woo_Alipay_Mini_Protocol::LEGACY_MD5 );
+            $order->update_meta_data( '_woo_alipay_mini_protocol', Wei_Alipay_Mini_Protocol::LEGACY_MD5 );
             $order->save();
             return array(
                 'result'   => 'success',
@@ -670,14 +670,14 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             );
         }
 
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePagePayRequest.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradePagePayRequest.php';
 
         $missing_fields = $this->get_missing_core_fields();
         if ( ! empty( $missing_fields ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            wc_add_notice( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'woo-alipay' ), implode( ', ', $missing_fields ) ), 'error' );
+            wc_add_notice( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) ), 'error' );
             $this->log_event( 'Payment init blocked: missing core settings', array( 'missing' => implode( '|', $missing_fields ), 'order_id' => $order_id ) );
             return array( 'result' => 'fail' );
         }
@@ -692,7 +692,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
 
         $aop = Alipay_SDK_Helper::create_alipay_service( $config );
         if ( ! $aop ) {
-            wc_add_notice( __( 'Alipay service initialization failed.', 'woo-alipay' ), 'error' );
+            wc_add_notice( __( 'Alipay service initialization failed.', 'wei-alipay' ), 'error' );
             return array( 'result' => 'fail' );
         }
 
@@ -702,7 +702,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         $this->log_event( 'Payment init', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no ) );
 
         $order->update_meta_data( '_alipay_out_trade_no', $out_trade_no );
-        $order->update_meta_data( '_woo_alipay_mini_protocol', Woo_Alipay_Mini_Protocol::RSA2 );
+        $order->update_meta_data( '_woo_alipay_mini_protocol', Wei_Alipay_Mini_Protocol::RSA2 );
         $order->save();
 
         $request = new AlipayTradePagePayRequest();
@@ -734,7 +734,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
      */
     function receipt_page( $order ) {
 
-        echo '<p>' . esc_html__( 'Thank you for your order, please click the button below to pay with Alipay.', 'woo-alipay' ) . '</p>';
+        echo '<p>' . esc_html__( 'Thank you for your order, please click the button below to pay with Alipay.', 'wei-alipay' ) . '</p>';
 
         echo wp_kses(
             $this->generate_alipay_form( $order ),
@@ -760,15 +760,15 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         $params = wp_unslash( $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- provider callback is authenticated by signature and replay lock.
         @ob_clean();
 
-        require_once WOO_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
 
         $main_settings = $this->get_core_settings();
         $protocol = $this->selected_protocol();
         if ( is_wp_error( $protocol ) ) {
             wp_die( 'Fail' );
         }
-        if ( Woo_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
-            if ( ! Woo_Alipay_Mini_Protocol::verify_legacy_md5( $params, $this->secure_key ) ) {
+        if ( Wei_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
+            if ( ! Wei_Alipay_Mini_Protocol::verify_legacy_md5( $params, $this->secure_key ) ) {
                 $this->log_event( 'Legacy notify verify failed' );
                 wp_die( 'Fail' );
             }
@@ -813,8 +813,8 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         $context_params = $params;
         $expected_app_id = $main_settings['appid'];
         $expected_seller = $main_settings['seller_id'];
-        if ( Woo_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
-            $legacy_identity = Woo_Alipay_Mini_Protocol::validate_legacy_identity( $params, $this->partnerID, $this->alipay_account );
+        if ( Wei_Alipay_Mini_Protocol::LEGACY_MD5 === $protocol ) {
+            $legacy_identity = Wei_Alipay_Mini_Protocol::validate_legacy_identity( $params, $this->partnerID, $this->alipay_account );
             if ( is_wp_error( $legacy_identity ) ) {
                 $this->log_event( 'Notify rejected: legacy merchant mismatch', array( 'reason' => $legacy_identity->get_error_code(), 'order_id' => $order_id ) );
                 wp_die( 'Fail' );
@@ -873,7 +873,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             $order->save();
             $this->log_event( 'Notify paid', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
         } elseif ( 'process_close' === $transition ) {
-            $order->update_status( 'cancelled', __( 'Alipay closed the transaction.', 'woo-alipay' ) );
+            $order->update_status( 'cancelled', __( 'Alipay closed the transaction.', 'wei-alipay' ) );
         } else {
             $this->log_event( 'Notify replay/pending acknowledged', array( 'order_id' => $order_id, 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no, 'trade_status' => $trade_status ) );
         }
@@ -909,9 +909,9 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
     function send_goods_confirm( $trade_no, $order, $force_send_goods = false, $require_shipping = false ){
 
         if( empty( $trade_no ) ){
-            return 'error: ' . __( 'Trade No. is not provided.', 'woo-alipay' );
+            return 'error: ' . __( 'Trade No. is not provided.', 'wei-alipay' );
         } else if( !function_exists('curl_version') ){
-            return 'error: ' . __( 'cURL is not installed on this server', 'woo-alipay' );
+            return 'error: ' . __( 'cURL is not installed on this server', 'wei-alipay' );
         }
 
         // Decide if goodes need to be send automatically
@@ -1048,7 +1048,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                 }               
 
                 if( count($line_items) > 1 ){
-                    $title .= __( ' etc.', 'woo-alipay');
+                    $title .= __( ' etc.', 'wei-alipay');
                 }
 
                 $title .= '|#'.$order_id;
@@ -1060,10 +1060,10 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
                 }
                 if( !empty($customer_name) ){
                     /* translators: %1$s: customer name. %2$s: site name. */
-                    $title = sprintf( __( 'Order of %1$s from %2$s', 'woo-alipay'), $customer_name, get_bloginfo( 'name' ) );
+                    $title = sprintf( __( 'Order of %1$s from %2$s', 'wei-alipay'), $customer_name, get_bloginfo( 'name' ) );
                 } else{
                     /* translators: %s: site name */
-                    $title = sprintf( __( 'Your order from %s', 'woo-alipay' ) , get_bloginfo( 'name' ) );
+                    $title = sprintf( __( 'Your order from %s', 'wei-alipay' ) , get_bloginfo( 'name' ) );
                 }
                 $title .= '|#'.$order_id;
                 break;
@@ -1106,7 +1106,7 @@ class Woo_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
     function wc_alipay_wap_display_order_meta_for_admin( $order ){
         $trade_no = $order instanceof WC_Order ? $order->get_meta( 'Alipay Trade No.' ) : '';
         if( !empty($trade_no ) ){
-            echo '<p><strong>' . esc_html__( 'Alipay Trade No.:', 'woo-alipay') . '</strong><br />' . esc_html( $trade_no ) . '</p>';
+            echo '<p><strong>' . esc_html__( 'Alipay Trade No.:', 'wei-alipay') . '</strong><br />' . esc_html( $trade_no ) . '</p>';
         }
     }
 }

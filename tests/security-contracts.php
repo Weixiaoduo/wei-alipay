@@ -39,7 +39,7 @@ function get_option($key, $default = false) { return array_key_exists($key, $GLO
 function delete_option($key) { unset($GLOBALS['test_options'][$key]); return true; }
 define('ABSPATH', __DIR__);
 require dirname(__DIR__) . '/inc/class-alipay-sdk-helper.php';
-require dirname(__DIR__) . '/inc/class-woo-alipay-secret-store.php';
+require dirname(__DIR__) . '/inc/class-wei-alipay-secret-store.php';
 require dirname(__DIR__) . '/inc/modules/mini-program/class-mini-protocol.php';
 
 $failures = 0;
@@ -148,11 +148,11 @@ $redacted = Alipay_SDK_Helper::redact_notify_for_log($valid);
 expect_true(!isset($redacted['sign']) && !isset($redacted['buyer_logon_id']), 'redact signature and buyer identity');
 expect_true('WooA42-1' === $redacted['out_trade_no'], 'retain bounded diagnostic fields');
 
-expect_true('rsa2' === Woo_Alipay_Mini_Protocol::resolve('', false, false), 'new Mini configuration defaults to RSA2');
-expect_error(Woo_Alipay_Mini_Protocol::resolve('legacy_md5', false, true), 'legacy_md5_policy_required', 'legacy MD5 requires site acknowledgement');
-expect_error(Woo_Alipay_Mini_Protocol::resolve('legacy_md5', true, false), 'legacy_md5_policy_required', 'legacy MD5 requires operator policy');
-expect_true('legacy_md5' === Woo_Alipay_Mini_Protocol::resolve('legacy_md5', true, true), 'legacy MD5 works only with both migration controls');
-expect_error(Woo_Alipay_Mini_Protocol::fallback_mode('rsa2', 'signature_failed'), 'protocol_fallback_forbidden', 'RSA2 signature failure cannot downgrade');
+expect_true('rsa2' === Wei_Alipay_Mini_Protocol::resolve('', false, false), 'new Mini configuration defaults to RSA2');
+expect_error(Wei_Alipay_Mini_Protocol::resolve('legacy_md5', false, true), 'legacy_md5_policy_required', 'legacy MD5 requires site acknowledgement');
+expect_error(Wei_Alipay_Mini_Protocol::resolve('legacy_md5', true, false), 'legacy_md5_policy_required', 'legacy MD5 requires operator policy');
+expect_true('legacy_md5' === Wei_Alipay_Mini_Protocol::resolve('legacy_md5', true, true), 'legacy MD5 works only with both migration controls');
+expect_error(Wei_Alipay_Mini_Protocol::fallback_mode('rsa2', 'signature_failed'), 'protocol_fallback_forbidden', 'RSA2 signature failure cannot downgrade');
 
 $legacy = array(
     'notify_id' => 'legacy-notify-1',
@@ -165,34 +165,34 @@ $legacy = array(
     'trade_status' => 'TRADE_SUCCESS',
     'sign_type' => 'MD5',
 );
-$legacy['sign'] = Woo_Alipay_Mini_Protocol::sign_legacy_md5($legacy, 'migration-secret');
-expect_true(Woo_Alipay_Mini_Protocol::verify_legacy_md5($legacy, 'migration-secret'), 'explicit legacy MD5 notification verifies locally');
-expect_true(true === Woo_Alipay_Mini_Protocol::validate_legacy_identity($legacy, '2088000000000000', '2088000000000001'), 'legacy callback binds signed partner and seller identities');
+$legacy['sign'] = Wei_Alipay_Mini_Protocol::sign_legacy_md5($legacy, 'migration-secret');
+expect_true(Wei_Alipay_Mini_Protocol::verify_legacy_md5($legacy, 'migration-secret'), 'explicit legacy MD5 notification verifies locally');
+expect_true(true === Wei_Alipay_Mini_Protocol::validate_legacy_identity($legacy, '2088000000000000', '2088000000000001'), 'legacy callback binds signed partner and seller identities');
 $legacy_missing_seller = $legacy;
 unset($legacy_missing_seller['seller_id']);
-expect_error(Woo_Alipay_Mini_Protocol::validate_legacy_identity($legacy_missing_seller, '2088000000000000', '2088000000000001'), 'seller_id_mismatch', 'legacy callback cannot infer a missing seller identity');
+expect_error(Wei_Alipay_Mini_Protocol::validate_legacy_identity($legacy_missing_seller, '2088000000000000', '2088000000000001'), 'seller_id_mismatch', 'legacy callback cannot infer a missing seller identity');
 $legacy_wrong_partner = $legacy;
 $legacy_wrong_partner['partner'] = '2088000000000999';
-expect_error(Woo_Alipay_Mini_Protocol::validate_legacy_identity($legacy_wrong_partner, '2088000000000000', '2088000000000001'), 'partner_mismatch', 'legacy callback rejects a different partner identity');
+expect_error(Wei_Alipay_Mini_Protocol::validate_legacy_identity($legacy_wrong_partner, '2088000000000000', '2088000000000001'), 'partner_mismatch', 'legacy callback rejects a different partner identity');
 $legacy_cross_order = $legacy;
 $legacy_cross_order['out_trade_no'] = 'WC-43';
-expect_true(!Woo_Alipay_Mini_Protocol::verify_legacy_md5($legacy_cross_order, 'migration-secret'), 'cross-order mutation invalidates legacy signature');
+expect_true(!Wei_Alipay_Mini_Protocol::verify_legacy_md5($legacy_cross_order, 'migration-secret'), 'cross-order mutation invalidates legacy signature');
 $legacy_downgrade = $legacy;
 $legacy_downgrade['sign_type'] = 'RSA2';
-expect_true(!Woo_Alipay_Mini_Protocol::verify_legacy_md5($legacy_downgrade, 'migration-secret'), 'legacy verifier rejects algorithm confusion');
+expect_true(!Wei_Alipay_Mini_Protocol::verify_legacy_md5($legacy_downgrade, 'migration-secret'), 'legacy verifier rejects algorithm confusion');
 
-$envelope = Woo_Alipay_Secret_Store::encrypt_value('test-private-key-not-real', 'old-key-material');
-expect_true(is_string($envelope) && 0 === strpos($envelope, Woo_Alipay_Secret_Store::PREFIX), 'plaintext secret migrates to versioned envelope');
+$envelope = Wei_Alipay_Secret_Store::encrypt_value('test-private-key-not-real', 'old-key-material');
+expect_true(is_string($envelope) && 0 === strpos($envelope, Wei_Alipay_Secret_Store::PREFIX), 'plaintext secret migrates to versioned envelope');
 expect_true(false === strpos($envelope, 'test-private-key-not-real'), 'encrypted envelope does not expose plaintext secret');
-expect_true('test-private-key-not-real' === Woo_Alipay_Secret_Store::decrypt_value($envelope, array('old-key-material')), 'encrypted secret decrypts with active key');
-expect_true('test-private-key-not-real' === Woo_Alipay_Secret_Store::decrypt_value($envelope, array('new-key-material', 'old-key-material')), 'key ring supports rotation grace period');
-expect_error(Woo_Alipay_Secret_Store::decrypt_value($envelope, array('wrong-key-material')), 'secret_decrypt_failed', 'unreadable secret fails closed');
-$rotated = Woo_Alipay_Secret_Store::encrypt_value(Woo_Alipay_Secret_Store::decrypt_value($envelope, array('old-key-material')), 'new-key-material');
-expect_true('test-private-key-not-real' === Woo_Alipay_Secret_Store::decrypt_value($rotated, array('new-key-material')), 'secret rotates to new active key');
-expect_error(Woo_Alipay_Secret_Store::decrypt_value($rotated, array('old-key-material')), 'secret_decrypt_failed', 'rotated secret no longer decrypts with retired key');
+expect_true('test-private-key-not-real' === Wei_Alipay_Secret_Store::decrypt_value($envelope, array('old-key-material')), 'encrypted secret decrypts with active key');
+expect_true('test-private-key-not-real' === Wei_Alipay_Secret_Store::decrypt_value($envelope, array('new-key-material', 'old-key-material')), 'key ring supports rotation grace period');
+expect_error(Wei_Alipay_Secret_Store::decrypt_value($envelope, array('wrong-key-material')), 'secret_decrypt_failed', 'unreadable secret fails closed');
+$rotated = Wei_Alipay_Secret_Store::encrypt_value(Wei_Alipay_Secret_Store::decrypt_value($envelope, array('old-key-material')), 'new-key-material');
+expect_true('test-private-key-not-real' === Wei_Alipay_Secret_Store::decrypt_value($rotated, array('new-key-material')), 'secret rotates to new active key');
+expect_error(Wei_Alipay_Secret_Store::decrypt_value($rotated, array('old-key-material')), 'secret_decrypt_failed', 'rotated secret no longer decrypts with retired key');
 $GLOBALS['test_is_admin'] = true;
 $_GET = array('page' => 'wc-settings', 'section' => 'alipay');
-$masked = Woo_Alipay_Secret_Store::decrypt_option(array('private_key' => 'synthetic-private-key-not-real'), 'woocommerce_alipay_settings');
+$masked = Wei_Alipay_Secret_Store::decrypt_option(array('private_key' => 'synthetic-private-key-not-real'), 'woocommerce_alipay_settings');
 expect_true('' === $masked['private_key'], 'settings screen never renders stored or externally supplied private key');
 $GLOBALS['test_is_admin'] = false;
 $_GET = array();

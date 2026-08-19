@@ -14,7 +14,7 @@
 			</span>
 		</div>
 		<div class="wooalipay-loader-description">
-			<?php esc_html_e( 'Contacting Alipay...', 'woo-alipay' ); ?>
+			<?php esc_html_e( 'Contacting Alipay...', 'wei-alipay' ); ?>
 		</div>
 	</div>
 </div>

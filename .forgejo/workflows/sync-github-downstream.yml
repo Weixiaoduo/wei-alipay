@@ -1,0 +1,40 @@
+name: sync-github-downstream
+
+on:
+  workflow_dispatch:
+    inputs:
+      approved_sha:
+        description: Full FeiCode master SHA approved by Board and candidate CI
+        required: true
+      board_change_id:
+        description: Approved devops Board change ID bound to this SHA
+        required: true
+      release_tag:
+        description: Optional approved release tag, for example v4.0.0
+        required: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure GitHub deploy key
+        env:
+          MIRROR_KEY: ${{ secrets.GITHUB_MIRROR_SSH_KEY }}
+          GITHUB_KNOWN_HOSTS: ${{ secrets.GITHUB_KNOWN_HOSTS }}
+        run: |
+          test -n "$MIRROR_KEY"
+          test -n "$GITHUB_KNOWN_HOSTS"
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' "$MIRROR_KEY" > "$HOME/.ssh/id_ed25519"
+          printf '%s\n' "$GITHUB_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/id_ed25519" "$HOME/.ssh/known_hosts"
+      - name: Fast-forward approved SHA to public downstream
+        env:
+          BOARD_CHANGE_ID: ${{ inputs.board_change_id }}
+          GITHUB_REMOTE_URL: git@github.com:Weixiaoduo/wei-alipay.git
+        run: ./scripts/sync-github-downstream.sh '${{ inputs.approved_sha }}' '${{ inputs.release_tag }}'

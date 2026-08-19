@@ -2,21 +2,21 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // Define extension path/url constants
-if ( ! defined( 'WOO_ALIPAY_HUABEI_PLUGIN_FILE' ) ) {
-    define( 'WOO_ALIPAY_HUABEI_PLUGIN_FILE', __FILE__ );
+if ( ! defined( 'WEI_ALIPAY_HUABEI_PLUGIN_FILE' ) ) {
+    define( 'WEI_ALIPAY_HUABEI_PLUGIN_FILE', __FILE__ );
 }
-if ( ! defined( 'WOO_ALIPAY_HUABEI_PLUGIN_PATH' ) ) {
-    define( 'WOO_ALIPAY_HUABEI_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'WEI_ALIPAY_HUABEI_PLUGIN_PATH' ) ) {
+    define( 'WEI_ALIPAY_HUABEI_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'WOO_ALIPAY_HUABEI_PLUGIN_URL' ) ) {
-    define( 'WOO_ALIPAY_HUABEI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'WEI_ALIPAY_HUABEI_PLUGIN_URL' ) ) {
+    define( 'WEI_ALIPAY_HUABEI_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 
-// Ensure WooCommerce and core Woo Alipay are active before loading classes
+// Ensure WooCommerce and core Wei Alipay are active before loading classes
 add_action( 'plugins_loaded', function () {
-    if ( class_exists( 'WC_Payment_Gateway' ) && class_exists( 'Woo_Alipay' ) ) {
+    if ( class_exists( 'WC_Payment_Gateway' ) && class_exists( 'Wei_Alipay' ) ) {
         // Load gateway class from this extension
-        $gateway_file = WOO_ALIPAY_HUABEI_PLUGIN_PATH . 'inc/class-wc-alipay-installment.php';
+        $gateway_file = WEI_ALIPAY_HUABEI_PLUGIN_PATH . 'inc/class-wc-alipay-installment.php';
         if ( file_exists( $gateway_file ) ) {
             require_once $gateway_file;
         }
@@ -43,7 +43,7 @@ add_action(
             return;
         }
 
-        $file = WOO_ALIPAY_HUABEI_PLUGIN_PATH . 'inc/class-wc-alipay-installment-blocks-support.php';
+        $file = WEI_ALIPAY_HUABEI_PLUGIN_PATH . 'inc/class-wc-alipay-installment-blocks-support.php';
         if ( file_exists( $file ) ) {
             require_once $file;
         }

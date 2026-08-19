@@ -20,11 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if ( class_exists( 'Woo_Alipay_WenPai_Updater' ) ) {
+if ( class_exists( 'Wei_Alipay_WenPai_Updater' ) ) {
     return;
 }
 
-class Woo_Alipay_WenPai_Updater {
+class Wei_Alipay_WenPai_Updater {
 
     /**
      * 更新器版本号。

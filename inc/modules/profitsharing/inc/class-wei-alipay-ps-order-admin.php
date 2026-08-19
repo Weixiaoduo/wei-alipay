@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-class Woo_Alipay_PS_Order_Admin {
+class Wei_Alipay_PS_Order_Admin {
     public function __construct() {
         add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
     }
@@ -9,7 +9,7 @@ class Woo_Alipay_PS_Order_Admin {
     public function add_metabox() {
         add_meta_box(
             'woo_alipay_ps_box',
-            __( 'Alipay Profit Sharing', 'woo-alipay' ),
+            __( 'Alipay Profit Sharing', 'wei-alipay' ),
             array( $this, 'render_box' ),
             'shop_order',
             'side',
@@ -24,9 +24,9 @@ class Woo_Alipay_PS_Order_Admin {
 
         $trace = (array) $order->get_meta( '_alipay_settle_trace', true );
         $done  = (int) $order->get_meta( '_alipay_settle_done' );
-        echo '<p>' . esc_html__( 'Settled:', 'woo-alipay' ) . ' ' . ( $done ? '✔' : '✖' ) . '</p>';
+        echo '<p>' . esc_html__( 'Settled:', 'wei-alipay' ) . ' ' . ( $done ? '✔' : '✖' ) . '</p>';
         if ( ! empty( $trace ) ) {
-            echo '<p><strong>' . esc_html__( 'Recent activity', 'woo-alipay' ) . '</strong></p><ul style="max-height:120px;overflow:auto">';
+            echo '<p><strong>' . esc_html__( 'Recent activity', 'wei-alipay' ) . '</strong></p><ul style="max-height:120px;overflow:auto">';
             $last = array_slice( $trace, -5 );
             foreach ( $last as $t ) {
                 $line = ( $t['time'] ?? '' ) . ': ';
@@ -45,7 +45,7 @@ class Woo_Alipay_PS_Order_Admin {
         // Compensation log
         $comp = (array) $order->get_meta( '_alipay_ps_comp', true );
         if ( ! empty( $comp ) ) {
-            echo '<p><strong>' . esc_html__( 'Compensations', 'woo-alipay' ) . '</strong></p><ul style="max-height:120px;overflow:auto">';
+            echo '<p><strong>' . esc_html__( 'Compensations', 'wei-alipay' ) . '</strong></p><ul style="max-height:120px;overflow:auto">';
             foreach ( array_slice( $comp, -5 ) as $c ) {
                 $line = ( $c['time'] ?? '' ) . ' #' . ( $c['out_request_no'] ?? '' ) . ' ' . ( $c['receiver_id'] ?? '' ) . ' ' . ( $c['amount'] ?? '' );
                 echo '<li>' . esc_html( $line ) . '</li>';
@@ -56,7 +56,7 @@ class Woo_Alipay_PS_Order_Admin {
         // Suggestions
         $sugs = (array) $order->get_meta( '_alipay_ps_suggestions', true );
         if ( ! empty( $sugs ) ) {
-            echo '<p><strong>' . esc_html__( 'Refund compensation suggestions', 'woo-alipay' ) . '</strong></p><ul style="max-height:120px;overflow:auto">';
+            echo '<p><strong>' . esc_html__( 'Refund compensation suggestions', 'wei-alipay' ) . '</strong></p><ul style="max-height:120px;overflow:auto">';
             foreach ( $sugs as $idx => $sg ) {
                 if ( (string) ( $sg['status'] ?? 'pending' ) !== 'pending' ) { continue; }
                 $line = ( $sg['receiver_id'] ?? '' ) . ' ' . number_format( (float) ( $sg['amount'] ?? 0 ), 2 );
@@ -66,7 +66,7 @@ class Woo_Alipay_PS_Order_Admin {
                 echo '<input type="hidden" name="action" value="woo_alipay_ps_compensate_from_suggestion" />';
                 echo '<input type="hidden" name="order_id" value="' . esc_attr( (string) $order->get_id() ) . '" />';
                 echo '<input type="hidden" name="suggest_key" value="' . esc_attr( (string) $idx ) . '" />';
-                submit_button( esc_html__( 'Send', 'woo-alipay' ), 'secondary small', '', false );
+                submit_button( esc_html__( 'Send', 'wei-alipay' ), 'secondary small', '', false );
                 echo '</form>';
                 echo '</li>';
             }
@@ -74,10 +74,10 @@ class Woo_Alipay_PS_Order_Admin {
         }
 
         // Preview computed jobs
-        if ( class_exists( 'Woo_Alipay_PS_Service' ) ) {
-            $jobs = Woo_Alipay_PS_Service::compute_jobs_for_order( $order );
+        if ( class_exists( 'Wei_Alipay_PS_Service' ) ) {
+            $jobs = Wei_Alipay_PS_Service::compute_jobs_for_order( $order );
             if ( ! empty( $jobs ) ) {
-                echo '<p><strong>' . esc_html__( 'Preview', 'woo-alipay' ) . '</strong></p><ul>';
+                echo '<p><strong>' . esc_html__( 'Preview', 'wei-alipay' ) . '</strong></p><ul>';
                 foreach ( $jobs as $j ) {
                     $txt = ( $j['label'] ? $j['label'] . ' - ' : '' ) . ( $j['identity'] ?? '' ) . ' : ' . number_format( (float) $j['amount'], 2 );
                     echo '<li>' . esc_html( $txt ) . '</li>';
@@ -90,7 +90,7 @@ class Woo_Alipay_PS_Order_Admin {
         wp_nonce_field( 'woo_alipay_ps_settle_order' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_settle_order" />';
         echo '<input type="hidden" name="order_id" value="' . esc_attr( (string) $order->get_id() ) . '" />';
-        submit_button( esc_html__( 'Settle Now', 'woo-alipay' ), 'primary', 'submit', false );
+        submit_button( esc_html__( 'Settle Now', 'wei-alipay' ), 'primary', 'submit', false );
         echo '</form>';
 
         // Start new round: clear out_request_no and settled flag, then enqueue
@@ -98,7 +98,7 @@ class Woo_Alipay_PS_Order_Admin {
         wp_nonce_field( 'woo_alipay_ps_settle_order_new_round' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_settle_order_new_round" />';
         echo '<input type="hidden" name="order_id" value="' . esc_attr( (string) $order->get_id() ) . '" />';
-        submit_button( esc_html__( 'Start New Round', 'woo-alipay' ), 'secondary', 'submit', false );
+        submit_button( esc_html__( 'Start New Round', 'wei-alipay' ), 'secondary', 'submit', false );
         echo '</form>';
     }
 }

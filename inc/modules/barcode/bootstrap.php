@@ -2,21 +2,21 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // Define extension path/url constants
-if ( ! defined( 'WOO_ALIPAY_BARCODE_PLUGIN_FILE' ) ) {
-    define( 'WOO_ALIPAY_BARCODE_PLUGIN_FILE', __FILE__ );
+if ( ! defined( 'WEI_ALIPAY_BARCODE_PLUGIN_FILE' ) ) {
+    define( 'WEI_ALIPAY_BARCODE_PLUGIN_FILE', __FILE__ );
 }
-if ( ! defined( 'WOO_ALIPAY_BARCODE_PLUGIN_PATH' ) ) {
-    define( 'WOO_ALIPAY_BARCODE_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+if ( ! defined( 'WEI_ALIPAY_BARCODE_PLUGIN_PATH' ) ) {
+    define( 'WEI_ALIPAY_BARCODE_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 }
-if ( ! defined( 'WOO_ALIPAY_BARCODE_PLUGIN_URL' ) ) {
-    define( 'WOO_ALIPAY_BARCODE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+if ( ! defined( 'WEI_ALIPAY_BARCODE_PLUGIN_URL' ) ) {
+    define( 'WEI_ALIPAY_BARCODE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 
-// Ensure WooCommerce and core Woo Alipay are active before loading classes
+// Ensure WooCommerce and core Wei Alipay are active before loading classes
 add_action( 'plugins_loaded', function () {
-    if ( class_exists( 'WC_Payment_Gateway' ) && class_exists( 'Woo_Alipay' ) ) {
+    if ( class_exists( 'WC_Payment_Gateway' ) && class_exists( 'Wei_Alipay' ) ) {
         // Load gateway class from this extension
-        $gateway_file = WOO_ALIPAY_BARCODE_PLUGIN_PATH . 'inc/class-wc-alipay-barcode.php';
+        $gateway_file = WEI_ALIPAY_BARCODE_PLUGIN_PATH . 'inc/class-wc-alipay-barcode.php';
         if ( file_exists( $gateway_file ) ) {
             require_once $gateway_file;
         }
@@ -65,7 +65,7 @@ add_action(
             return;
         }
 
-        $file = WOO_ALIPAY_BARCODE_PLUGIN_PATH . 'inc/class-wc-alipay-barcode-blocks-support.php';
+        $file = WEI_ALIPAY_BARCODE_PLUGIN_PATH . 'inc/class-wc-alipay-barcode-blocks-support.php';
         if ( file_exists( $file ) ) {
             require_once $file;
         }
@@ -96,26 +96,26 @@ add_filter( 'rest_post_dispatch', function( $result, $server, $request ) {
             $links = array(
                 array(
                     'id'    => 'learn_more',
-                    'title' => __( 'Learn more', 'woo-alipay' ),
-                    'href'  => 'https://woocn.com/document/woo-alipay-barcode',
+                    'title' => __( 'Learn more', 'wei-alipay' ),
+                    'href'  => 'https://weixiaoduo.com/document/wei-alipay-barcode',
                     'type'  => 'external',
                 ),
                 array(
                     'id'    => 'view_pricing_and_fees',
-                    'title' => __( 'View pricing and fees', 'woo-alipay' ),
-                    'href'  => 'https://woocn.com/pricing/woo-alipay',
+                    'title' => __( 'View pricing and fees', 'wei-alipay' ),
+                    'href'  => 'https://weixiaoduo.com/pricing/wei-alipay',
                     'type'  => 'external',
                 ),
                 array(
                     'id'    => 'view_terms_of_service',
-                    'title' => __( 'View terms of service', 'woo-alipay' ),
-                    'href'  => 'https://woocn.com/terms',
+                    'title' => __( 'View terms of service', 'wei-alipay' ),
+                    'href'  => 'https://weixiaoduo.com/terms',
                     'type'  => 'external',
                 ),
                 array(
                     'id'    => 'support',
-                    'title' => __( 'Support', 'woo-alipay' ),
-                    'href'  => 'https://woocn.com/support',
+                    'title' => __( 'Support', 'wei-alipay' ),
+                    'href'  => 'https://weixiaoduo.com/support',
                     'type'  => 'external',
                 ),
             );

@@ -5,8 +5,8 @@ const { __ } = window.wp.i18n;
 const { decodeEntities } = window.wp.htmlEntities;
 
 const settings = window.wc.wcSettings.getSetting( 'alipay_facetopay_data', {} );
-const defaultLabel = __( '支付宝扫码支付', 'woo-alipay' );
-const defaultDescription = __( '使用支付宝扫描二维码完成支付', 'woo-alipay' );
+const defaultLabel = __( '支付宝扫码支付', 'wei-alipay' );
+const defaultDescription = __( '使用支付宝扫描二维码完成支付', 'wei-alipay' );
 
 const Label = ( props ) => {
     const { PaymentMethodLabel } = props.components;
@@ -55,12 +55,12 @@ const Content = () => {
             createElement( 'p', {
                 key: 'tip1',
                 style: { margin: '4px 0' }
-            }, __( '点击下单后会显示支付二维码', 'woo-alipay' ) ),
+            }, __( '点击下单后会显示支付二维码', 'wei-alipay' ) ),
             
             createElement( 'p', {
                 key: 'tip2',
                 style: { margin: '4px 0' }
-            }, __( '请使用支付宝APP扫描二维码完成支付', 'woo-alipay' ) )
+            }, __( '请使用支付宝APP扫描二维码完成支付', 'wei-alipay' ) )
         ])
     ]);
 };

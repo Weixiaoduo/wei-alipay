@@ -1,7 +1,8 @@
 {
-    "name": "weixiaoduo/woo-alipay",
-    "description": "WooCommerce Alipay gateway",
+    "name": "weixiaoduo/wei-alipay",
+    "description": "Wei Alipay Payment Gateway for WooCommerce",
     "type": "wordpress-plugin",
+    "license": "GPL-3.0-only",
     "require": {
         "php": ">=7.4"
     },

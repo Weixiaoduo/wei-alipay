@@ -5,8 +5,8 @@
 	const { decodeEntities } = window.wp.htmlEntities;
 	const settings = window.wc.wcSettings.getSetting( 'alipay_barcode_data', {} );
 
-	const defaultLabel = __( 'Alipay Barcode Pay', 'woo-alipay-barcode' );
-	const defaultDescription = __( 'Enter or show your Alipay auth code to complete payment.', 'woo-alipay-barcode' );
+	const defaultLabel = __( 'Alipay Barcode Pay', 'wei-alipay-barcode' );
+	const defaultDescription = __( 'Enter or show your Alipay auth code to complete payment.', 'wei-alipay-barcode' );
 
 	const Label = ( props ) => {
 		const { PaymentMethodLabel } = props.components;
@@ -31,7 +31,7 @@
 				if ( typeof onPaymentSetup === 'function' ) {
 					onPaymentSetup( ( { setPaymentMethodData, responseTypes } ) => {
 						if ( ! authCode ) {
-							return { type: responseTypes.ERROR, message: __( 'Please enter the Alipay auth code.', 'woo-alipay-barcode' ) };
+							return { type: responseTypes.ERROR, message: __( 'Please enter the Alipay auth code.', 'wei-alipay-barcode' ) };
 						}
 						// Provide data to the checkout store so the gateway can read it server-side.
 						if ( typeof setPaymentMethodData === 'function' ) {
@@ -45,7 +45,7 @@
 
 		return createElement( 'div', { style: { padding: '10px 0' } }, [
 			createElement( 'p', { key: 'description', style: { marginBottom: '8px' } }, decodeEntities( settings.description || defaultDescription ) ),
-			createElement( 'label', { key: 'label', htmlFor: 'alipay_auth_code_blocks', style: { display: 'block', marginBottom: '6px' } }, __( 'Alipay auth code', 'woo-alipay-barcode' ) ),
+			createElement( 'label', { key: 'label', htmlFor: 'alipay_auth_code_blocks', style: { display: 'block', marginBottom: '6px' } }, __( 'Alipay auth code', 'wei-alipay-barcode' ) ),
 			createElement( 'input', {
 				key: 'input', id: 'alipay_auth_code_blocks', type: 'text',
 				placeholder: '2853 1234 5678 9012 345',

@@ -1,7 +1,7 @@
 <?php
 define( 'ABSPATH', __DIR__ . '/' );
 define( 'WP_UNINSTALL_PLUGIN', true );
-define( 'WOO_ALIPAY_DELETE_DATA', true );
+define( 'WEI_ALIPAY_DELETE_DATA', true );
 $GLOBALS['blog_id'] = 1;
 $GLOBALS['deleted'] = array();
 function apply_filters($hook, $value) { return $value; }
