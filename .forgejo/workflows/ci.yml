@@ -7,15 +7,20 @@ jobs:
   first-party:
     strategy:
       matrix:
-        php: ['7.4', '8.3']
-    # The default FeiCode ubuntu-latest image is Alpine; setup-php requires Debian/Ubuntu.
-    runs-on: gz-debian
+        include:
+          - php: "7.4"
+            runner: php-7.4
+          - php: "8.3"
+            runner: php-8.3
+    runs-on: ${{ matrix.runner }}
+    env:
+      COMPOSER_ALLOW_SUPERUSER: "1"
     steps:
       - uses: https://github.com/actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: https://github.com/shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
-        with:
-          php-version: ${{ matrix.php }}
-          tools: composer:v2
+      - name: Verify immutable PHP runtime
+        run: php -r "exit(strpos(PHP_VERSION, (string) getenv(\"EXPECTED_PHP\")) === 0 ? 0 : 1);"
+        env:
+          EXPECTED_PHP: ${{ matrix.php }}
       - run: composer install --no-interaction --prefer-dist
       - run: ./scripts/tests/run-tests.sh all
       - if: matrix.php == '8.3'
