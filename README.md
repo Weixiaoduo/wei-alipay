@@ -1,150 +1,94 @@
 # Wei Alipay Payment Gateway for WooCommerce
 
-* [General Description](#user-content-general-description)
-	* [Requirements](#user-content-requirements)
-	* [Overview](#user-content-overview)
-* [Settings](#user-content-settings)
-	* [Gateway settings](#user-content-gateway-settings)
-* [Gateway configuration help](#user-content-gateway-configuration-help)
-	* [Configuration process overview](#user-content-configuration-process-overview)
-	* [Register features, website URL and callback](#user-content-register-features-website-url-and-callback)
-	* [Key management](#user-content-key-management
-	)
-* [Templates](#user-content-templates)
+Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixiaoduo.com/) 维护的 WooCommerce 支付宝网关。项目面向中国大陆支付宝商户，主网关支持电脑网站支付、手机网站支付、退款、异步通知和人民币换算，并提供若干按商户签约能力启用的扩展模块。
 
-## General Description
+> 4.0.0 目前是发布候选，不等于已经发布或部署。FeiCode 是开发上游；当前 GitHub `Weixiaoduo/woo-alipay` 只作为公开下游；远端完成审批改名后目标为 `Weixiaoduo/wei-alipay`。
 
-Wei Alipay adds an Alipay China payment gateway to WooCommerce-powered websites.
-This Mainland China gateway allows customers to pay both in mobile browsers or from their computer.
+## 运行要求
 
-### Requirements
+- PHP 7.4 或更高版本
+- WordPress 6.6 或更高版本
+- WooCommerce 8.3 或更高版本
+- 支持 HTTPS 的站点
+- 已签约相应支付产品的中国大陆支付宝商户应用
 
-* A [China Mainland Alipay merchant account](https://b.alipay.com/).
-* The Payment products "支付产品" Computer website payment "电脑网站支付" and Mobile website payment "手机网站支付" enabled.
+候选已在 WordPress 7.0.2、WooCommerce 10.2.2、PHP 8.3 的隔离环境验证主网关注册、HPOS 开关和 Checkout Blocks 加载。最低版本组合尚未完成真实运行验证，因此不能将其记为已通过矩阵。
 
-### Overview
+## 功能边界
 
-This plugin adds the following major features to WooCommerce:
+### 主网关
 
-* **Payment of WooCommerce orders in mobile web browser app:** calls the Alipay mobile app for a seamless experience.
-* **Payment of WooCommerce orders standard in web browser:** authentication performed via credentials or QR code on desktop/laptop.
-* **Refund of WooCommerce orders:** manual WooCommerce refunds use the original stored merchant order number. Automatic orphan-payment refund is not enabled.
-* **Multi-currency support:** using an exchange rate against Chinese Yuan configured in the settings.
+- 电脑网站支付和手机网站支付
+- RSA2 请求签名与通知验签
+- `app_id`、卖家、商户订单号、支付宝交易号、金额和通知时间绑定
+- 重复与并发通知幂等处理
+- WooCommerce 后台退款
+- 非人民币商店按配置汇率换算成人民币
+- HPOS 与传统订单存储
+- Classic Checkout 与 Checkout Blocks
 
-Compatible with [WooCommerce Multilingual](https://wordpress.org/plugins/woocommerce-multilingual/), [WPML](http://wpml.org/), [Ultimate Member](https://wordpress.org/plugins/ultimate-member/), and any caching plugin compatible with WooCommerce.
+### 可选模块
 
-## Settings
+仓库还包含当面付、花呗分期、条码支付、小程序、跨境支付、订阅签约、资金授权、分账和账单对账。模块存在不表示商户已获得对应能力，也不表示每个模块都完成生产验收。只启用已经签约、在支付宝沙箱或离线桩中验证并纳入运维监控的模块。
 
-The settings below are added to WooCommerce and WP Weixin when the plugin is active.
+小程序协议默认使用 RSA2。旧 MD5 只允许在同时完成站点确认和运维常量授权的过渡模式下启用，系统不会从 RSA2 自动降级。
 
-### Gateway settings
+## 安装与配置
 
-The following settings can be accessed in WooCommerce > Settings > Payments > Alipay:
+1. 将发布 ZIP 安装到 WordPress；不要从开发工作树直接覆盖生产插件。
+2. 启用 WooCommerce，再启用本插件。
+3. 打开 **WooCommerce → 设置 → 付款 → Alipay**。
+4. 配置支付宝应用 ID、支付宝公钥和应用私钥。
+5. 首次联调必须启用支付宝沙箱，确认订单创建、跳转、异步通知、重复通知和退款桩流程。
+6. 在支付宝开放平台将异步通知地址设置为：
 
-| Name                                    | Type     | Description                                                                                                                                                                                                     |
-| --------------------------------------- |:--------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Enable/Disable                          | checkbox | Used to enable/disable the payment gateway.                                                                                                                                                                     |
-| Checkout page title                     | text     | Title displayed for the payment gateway on the checkout page.                                                                                                                                                   |
-| Checkout page description               | text     | Description displayed for the payment gateway on the checkout page.                                                                                                                                             |
-| Alipay App ID                           | text     | The App ID found in Alipay Open Platform.                                                                                                                                                                       |
-| Alipay public key                       | textarea | The Alipay public key generated in the Alipay Open Platform ("支付宝公钥").                                                                                                                                      |
-| Alipay Merchant application private key | textarea | The private key generated with the provided Alipay tool application or the `openssl` command line.<br/>This key is secret and is not recorded in Alipay Open Platform - **DO NOT SHARE THIS VALUE WITH ANYONE**.|
-| Sandbox                                 | checkbox | If checked, Run Alipay in sandbox mode, with the settings found in [https://openhome.alipay.com/platform/appDaily.htm](https://openhome.alipay.com/platform/appDaily.htm).                                      |
-| Exchange Rate                           | number   | Exchange rate against Chinese Yuan (shows if the store currency is not set to Chinese Yuan)                                                                                                                     |
+   ```text
+   https://example.com/wc-api/WC_Alipay/
+   ```
 
-## Gateway configuration help
+7. 生产启用前核对商户应用、卖家账号、币种、汇率、回调域名、证书和监控告警。
 
-### Configuration process overview
+支付宝公钥与应用公钥不是同一个值。应用私钥不得写入工单、截图、日志、仓库、CI 变量输出或普通导出文件。
 
-* Go to the [Alipay Open Platform](https://openhome.alipay.com/platform/developerIndex.htm) and log in.
-* If necessary, create a new app by following the options under the create application "创建应用" menu: website & mobile application "网页&移动应用" > payment access "支付接入". The application type "应用类型" should be web page application "网页应用" and the website URL "网址url" should be `https://[[your-homepage-url]]` where `[[your-homepage-url]]` is the home URL of your website. Creating an app will require one or two working day(s) audit of your website content by Alipay.
-* Once the app is created, go to the app information page - accessible directly via `https://openhome.alipay.com/platform/appManage.htm#/app/[[YOUR_APP_ID]]/appInfo` (replace `[[YOUR_APP_ID]]` with the App ID to be used by Wei Alipay).
-* Activate payment features and configure the app with the gateway information (see ["Register features, website URL and callback"](#user-content-register-features-website-url-and-callback) below).
-* If necessary, generate the application public and private keys, register the application public key in the Alipay Open Platform, and generate the Alipay public key (see ["Key management"](#user-content-key-management) below).
-* Fill in the configuration fields below.
+## 密钥与数据
 
+插件将支持的私钥设置迁移到版本化 AES-256-GCM 密文，并在无法解密时失败关闭。生产环境应通过 `WEI_ALIPAY_ENCRYPTION_KEY` 或受控外部密钥提供器提供独立密钥；不要依赖可与数据库一起导出的默认材料。
 
-### Register features, website URL and callback
-To communicate with the payment gateway, Alipay needs some features activated, to know your website URL, and to be aware of the WooCommerce gateway callback endpoint.  
+以下运行身份在 4.0.0 中仍保持稳定，以保护商城订单与回调数据：
 
-* Go to the app overview page - accessible via `https://openhome.alipay.com/platform/appManage.htm#/app/[[YOUR_APP_ID]]/overview` (replace `[[YOUR_APP_ID]]` with the App ID to be used by Wei Alipay).
-* Click the add feature button "添加功能" and add the computer website payment "电脑网站支付" and the mobile website payment "手机网站支付" features - these features need to have been activated beforehand (process not describe in this guide - see the Payment products "支付产品" [Computer website payment "电脑网站支付"](https://b.alipay.com/signing/productDetailV2.htm?productId=I1011000290000001000) and [Mobile website payment "手机网站支付"](https://b.alipay.com/signing/productDetailV2.htm?productId=I1011000290000001001)).
-* Go to the app information page - accessible via `https://openhome.alipay.com/platform/appManage.htm#/app/[[YOUR_APP_ID]]/appInfo` (replace `[[YOUR_APP_ID]]` with the App ID to be used by Wei Alipay).
-* Click the setup link "设置" (or modify link "修改") of the application gateway "应用网关" field.
-* In the application gateway "应用网关" modal, enter `https://[[your-domain.com]]` (replace `[[your-domain.com]]` with the domain or subdomain running WordPress and Wei Alipay) and click the confirm "确定" button.
-* Click the setup link "设置" (or modify link "修改") of the authorization callback address "授权回调地址" field.
-* In the authorization callback address "授权回调地址" modal, enter `https` in the callback address type "回调地址类型" field, `https://[[your-homepage-url]]/wc-api/WC_Alipay/` in the callback address "回调地址" field (replace `[[your-homepage-url]]` with the home URL of your website), and leave the verify domain only "只验证域名" checkbox unchecked for added security, then click the confirm "确定" button.
+- 网关 ID：`alipay`
+- 设置项：`woocommerce_alipay_settings`
+- 订单元数据：`_alipay_*`
+- 回调路由：`WC_Alipay`
+- 计划任务与钩子：`woo_alipay_*`
 
-### Key management
+默认卸载会保留支付设置和订单财务记录。只有经过明确授权的按站点清理流程才会删除插件设置；卸载不会删除订单。
 
-#### 1 - Generating keys:
+## 模板覆盖
 
-To complete the payment gateway configuration, you need to generate an application public key, an application private key and an Alipay public key.
+主题可以按优先级在下列目录提供 `redirected-pay.php`：
 
-___
+1. `plugins/wei-alipay/`
+2. `wei-alipay/`
+3. `woocommerce/wei-alipay/`
+4. 主题根目录
 
-##### Generate the application keys with the Alipay Open Platform Development Assistant application (option 1):
+升级前应盘点商城当前使用的模板覆盖，避免插件目录改名后静默回退到默认模板。
 
-* Go to the [Alipay tools documentation page](https://docs.open.alipay.com/291/106097/) and download the Alipay Open Platform Development Assistant application for the operating system of your choice (Windows or MacOS).
-* Within the Alipay Open Platform Development Assistant application, in the "生成密钥" section (default screen when opening the Assistant), select "UTF-8" and "PKCS1非Java使用" options and click the "生成密钥" button to populate the text areas.
-* Copy the application public key displayed in the "应用公钥" text area in a text file on your computer (referred to as `alipay_app_public_key.txt` below).
-* Copy the application private key displayed in the "应用私钥" text area in a text file on your computer (referred to as `alipay_app_private_key.txt` below) - **DO NOT SHARE THIS VALUE WITH ANYONE**.
+## 开发与维护
 
-___
+- [开发指南](docs/DEVELOPMENT.md)
+- `AI原生配置.md`（仅开发源，不进入发布 ZIP）
+- [SDK 维护与更新评估](docs/SDK-MAINTENANCE.md)
+- [FeiCode → GitHub 下游镜像规则](docs/governance/github-downstream-mirror.md)
+- [SBOM](docs/sbom/wei-alipay.spdx.json)
 
-##### Generate the application keys with openssl command line in a terminal (option 2):
+## 源码、问题与安全报告
 
-* Type `openssl` to open the OpenSSL command line tool.
-* Type `genrsa -out alipay_app_private_key.txt 2048` to generate the application private key file (referred to as `alipay_app_private_key.txt` below) - **DO NOT SHARE THIS VALUE WITH ANYONE**.
-* Type `rsa -in alipay_app_private_key.txt -pubout -out alipay_app_public_key.txt` to generate the application public key file (referred to as `alipay_app_public_key.txt` below).
-* Type `exit` to quit the command line tool.
-* Open both files with a text editor, remove all the header, footer, space and carriage return characters to have each key as a single-line long string, and save the files.
+开发、评审、CI、标签和 Release 以 FeiCode `Weixiaoduo/woo-alipay` 的精确提交为准；仓库正式改名完成前不要根据显示名称猜测远端地址。GitHub（当前 `Weixiaoduo/woo-alipay`，计划改名为 `Weixiaoduo/wei-alipay`）仅接收审批后精确 SHA 的单向快进同步，不接受反向开发。
 
-___
+问题报告不得包含真实私钥、应用密钥、完整通知报文、客户身份信息或可用交易凭据。支付安全问题请通过 Weixiaoduo.com 的私有支持渠道提交脱敏复现材料。
 
-##### Register the application public key in Alipay Open Platform and generate the Alipay public key (requires completing option 1 or option 2 above):
+## 许可证
 
-* Go to the app information page - accessible via `https://openhome.alipay.com/platform/appManage.htm#/app/[[YOUR_APP_ID]]/appInfo` (replace `[[YOUR_APP_ID]]` with the App ID to be used by Wei Alipay).
-* Click the link "接口加签方式" > "设置/查看" to open the configuration modal.
-* Use the associated phone number or password to authenticate.
-* In the signature key configuration form (加签管理 | 1 - 加签内容配置), select the public key option "公钥".
-* Paste the content of the previously saved file `alipay_app_public_key.txt` in the "填写公钥字符" text area.
-* Click the "保存设置" button to register the application public key and generate the Alipay public key.
-
-___
-
-#### 2 - Using the application private key and finding the Alipay public key:
-
-* Go to the app information page - accessible via `https://openhome.alipay.com/platform/appManage.htm#/app/[[YOUR_APP_ID]]/appInfo` (replace `[[YOUR_APP_ID]]` with the App ID to be used by Wei Alipay).
-* Click the link "接口加签方式" > "设置/查看" to open the configuration modal.
-* If necessary, use the associated Alipay account's phone number or password to authenticate.
-* In the signature completed configuration form (加签管理 | 2 - 加签配置完成), copy the Alipay public key displayed under "支付宝公钥".
-* Paste the Alipay public key in the "Alipay public key" field below.
-* Paste the content of the previously saved file `alipay_app_private_key.txt` in the "Alipay merchant application private key" field below.
-* Click the "Save changes" button.
-
-## Templates
-
-The following template file is selected using the `locate_template()` and included with `load_template()` functions provided by WordPress. This means it can be overloaded in the active WordPress theme. Developers may place their custom template file in the following directories under the theme's folder (in order of selection priority):
-
-* `plugins/wei-alipay/`
-* `wei-alipay/`
-* `woocommerce/wei-alipay/`
-* at the root of the theme's folder
-
-___
-
-### redirected-pay
-
-```
-redirected-pay.php
-```  
-
-**Description**  
-The template of the page displayed when users are redirected before payment. The template acts as a placeholder before showing the Alipay payment UI.  
-
-**Associated style enqueued with key:**  
-`wei-alipay-main-style`
-## Candidate compatibility (4.0.0)
-
-Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+; tested through WordPress 7.0 and WooCommerce 10.2.2 in the isolated candidate environment. HPOS and Checkout Blocks are declared compatible. Mini-program defaults to RSA2; legacy MD5 requires explicit transition controls and never activates by fallback.
+第一方插件代码按 GPL-3.0-only 分发。内置第三方组件适用各自许可证；发布前必须以 [SBOM](docs/sbom/wei-alipay.spdx.json) 和 SDK 维护文档复核来源与许可证。当前支付宝 v2 SDK 上游仓库没有可确认的随附许可证，因此仍是发布门，不得用插件 GPL 声明覆盖第三方许可缺口。

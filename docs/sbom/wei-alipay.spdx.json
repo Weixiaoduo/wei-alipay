@@ -25,12 +25,18 @@
       "name": "alipay-sdk-php-all",
       "SPDXID": "SPDXRef-Package-AlipaySDK",
       "versionInfo": "4.20.807.ALL",
-      "downloadLocation": "https://github.com/alipay/alipay-sdk-php-all",
+      "downloadLocation": "https://github.com/alipay/alipay-sdk-php-all/archive/d37c264fd5fd94a6291f8c682e905e6cdb193866.tar.gz",
       "filesAnalyzed": false,
       "licenseConcluded": "NOASSERTION",
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
-      "comment": "Vendored provenance and license are not independently verified; release blocker."
+      "comment": "Main v2 provenance verified against upstream commit d37c264fd5fd94a6291f8c682e905e6cdb193866, v2 tree b708b3d0bdc49e7014cdf532b16d2bf2a9f2dfad: all 8,815 upstream files are present, 8,812 byte-identical and 3 locally patched. The 14 additional helper files and all license terms remain unresolved; release blocker.",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "66f3571eb14121254791b944826a677eb749216785ce1ee57ed3b07133b8c2ab"
+        }
+      ]
     },
     {
       "name": "alipay-wap-legacy-sample",

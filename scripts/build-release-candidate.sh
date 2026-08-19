@@ -12,6 +12,7 @@ find "$OUT" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 mkdir -p "$STAGE"
 rsync -a --delete \
   --exclude='.git' --exclude='.git/' --exclude='.gitignore' --exclude='.wp-env.json' \
+  --exclude='AI原生配置.md' \
   --exclude='.forgejo/' --exclude='vendor/' --exclude='node_modules/' \
   --exclude='composer.json' --exclude='composer.lock' \
   --exclude='.phpstan.cache' --exclude='phpstan*.neon*' --exclude='tests/' --exclude='scripts/' \

@@ -1,6 +1,6 @@
 === Wei Alipay Payment Gateway for WooCommerce ===
-Contributors: frogerme
-Tags: alipay, alibaba, payments, payment gateway, 支付宝, 阿里巴巴
+Contributors: weixiaoduo
+Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
 Stable tag: 4.0.0
@@ -10,82 +10,91 @@ WC tested up to: 10.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Alipay China payment gateway for WooCommerce.
+Alipay payment gateway for WooCommerce, developed by Weixiaoduo.com.
 
 == Description ==
 
-Wei Alipay adds an Alipay China payment gateway to WooCommerce-powered websites.
-This Mainland China gateway allows customers to pay both in mobile browsers or from their computer.
+Wei Alipay Payment Gateway for WooCommerce integrates Mainland China Alipay payments with WooCommerce.
 
-### Requirements
+The primary gateway supports desktop and mobile web payments, RSA2 signing and notification verification, replay-safe callbacks, WooCommerce refunds, CNY conversion, High-Performance Order Storage (HPOS), and Checkout Blocks.
 
-* WordPress 6.6 or later, PHP 7.4 or later, and WooCommerce 8.3 or later.
-* A [China Mainland Alipay merchant account](https://b.alipay.com/).
-* The Payment products "支付产品" Computer website payment "电脑网站支付" and Mobile website payment "手机网站支付" enabled.
+Optional modules for face-to-face QR, Huabei instalments, barcode/POS, mini-program, cross-border, subscriptions, fund authorization, profit sharing, and reconciliation are bundled. Enable an optional module only when the merchant account is entitled to that product and the flow has been tested in an isolated sandbox or offline fixture.
 
-### Important Notes
+= Security and operational notes =
 
-* The primary gateway is for Mainland China Alipay. Optional bundled modules include cross-border, face-to-face QR, Huabei instalments, barcode/POS, mini-program, subscriptions, fund authorization, profit sharing, and reconciliation. Enable only the modules covered by your merchant agreement and testing.
-* Make sure to read the "TROUBLESHOOT, FEATURE REQUESTS AND 3RD PARTY INTEGRATION" section below and [the full documentation](https://github.com/froger-me/wei-alipay/blob/master/README.md) before contacting the author.
+* Configure HTTPS before accepting payments.
+* Never paste a merchant private key, application secret, complete callback payload, or customer data into a public issue.
+* The Alipay public key is not the merchant application public key.
+* Mini-program payments use RSA2 by default. Legacy MD5 requires two explicit transition controls and cannot be selected by automatic fallback.
+* Unreadable encrypted credentials fail closed.
+* Uninstall retains payment settings and financial order metadata by default. It never deletes orders.
+* A successful local test or candidate ZIP does not prove that a production merchant flow has passed.
 
-### Overview
+= Compatibility =
 
-This plugin adds the following major features to WooCommerce:
+Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+. The 4.0.0 candidate was exercised with WordPress 7.0.2, WooCommerce 10.2.2, and PHP 8.3 for activation, gateway registration, HPOS on/off, and Checkout Blocks loading. The declared minimum combination has not yet completed the same runtime matrix.
 
-* **Payment of WooCommerce orders in mobile web browser app:** calls the Alipay mobile app for a seamless experience.
-* **Payment of WooCommerce orders standard in web browser:** authentication performed via credentials or QR code on desktop/laptop.
-* **Refund of WooCommerce orders:** manual WooCommerce refunds use the original stored merchant order number. Automatic orphan-payment refund is not enabled.
-* **Multi-currency support:** using an exchange rate against Chinese Yuan configured in the settings.
+= Source and support =
 
-Compatible with [WooCommerce Multilingual](https://wordpress.org/plugins/woocommerce-multilingual/), [WPML](http://wpml.org/), [Ultimate Member](https://wordpress.org/plugins/ultimate-member/), and any caching plugin compatible with WooCommerce.
+Wei Alipay is developed by Weixiaoduo.com. FeiCode is the canonical development upstream. The current `Weixiaoduo/woo-alipay` GitHub repository is a downstream mirror. After an approved remote rename, its target name is `Weixiaoduo/wei-alipay`; only approved FeiCode commits may be synchronized.
 
-### Support and source repository
-
-Wei Alipay Payment Gateway for WooCommerce is developed by Weixiaoduo.com.
-
-The canonical source, pull requests, candidate CI, tags, and releases are maintained in the FeiCode Weixiaoduo organization. The GitHub Weixiaoduo/wei-alipay repository is a public downstream mirror and is not the development upstream.
-
-The project retains upstream copyright and license notices. Do not include merchant private keys, shared secrets, transaction payloads, or customer data in issue reports.
+The project preserves applicable upstream copyright and license notices. Third-party component provenance and license status are recorded in the package SBOM.
 
 == Installation ==
 
-This section describes how to install the plugin and get it working.
+1. Install the release ZIP from the WordPress Plugins screen.
+2. Activate WooCommerce, then activate Wei Alipay.
+3. Open WooCommerce > Settings > Payments > Alipay.
+4. Enter the Alipay application ID, Alipay public key, and merchant application private key.
+5. Use Alipay sandbox for the first integration test.
+6. Configure the asynchronous notification URL as `https://example.com/wc-api/WC_Alipay/`.
+7. Verify order creation, signed notification handling, exact replay, amount mismatch rejection, and an offline or sandbox refund before production approval.
 
-1. Upload the plugin files to the `/wp-content/plugins/wei-alipay` directory.
-2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Edit plugin settings
+== Frequently Asked Questions ==
+
+= Does the plugin rename the WooCommerce gateway ID? =
+
+No. The product and package are named Wei Alipay, while the financial runtime gateway ID remains `alipay` so existing orders, settings, refunds, callbacks, and scheduled work remain addressable.
+
+= Does the plugin automatically fall back to MD5? =
+
+No. RSA2 is the default. Legacy Mini-program MD5 can only be enabled as an explicitly acknowledged transition mode and never activates after an RSA2 failure.
+
+= Are merchant keys included in logs or support exports? =
+
+They must not be. Sensitive settings are encrypted where supported and logging is redacted. Treat any unexpected credential disclosure as a security incident.
+
+= Is every optional module production-ready for my merchant account? =
+
+No. Availability depends on the merchant agreement, store configuration, and module-specific acceptance evidence.
 
 == Changelog ==
 
 = 4.0.0 =
-* Rename the plugin and package to Wei Alipay Payment Gateway for WooCommerce.
-* Keep Alipay financial identities stable for existing orders, refunds, settings, and callbacks.
-* Establish FeiCode as the canonical upstream and GitHub as a controlled public downstream mirror.
+* Rename the product and package to Wei Alipay Payment Gateway for WooCommerce.
+* Keep the existing financial gateway, settings, order metadata, callback, and scheduling identities.
+* Harden signature, merchant/order/trade/amount/time binding and replay handling.
+* Default Mini-program flows to RSA2 without automatic MD5 downgrade.
+* Add encrypted credential migration, rotation, rollback generation, and fail-closed reads.
+* Declare HPOS and Checkout Blocks compatibility and add isolated runtime checks.
+* Vendor the checkout QR renderer and record third-party components in an SPDX SBOM.
+* Define FeiCode as the canonical upstream and GitHub as an approved-SHA downstream mirror.
 
 = 3.2.0 =
-* Harden notification signature, merchant/order/trade/amount/time binding and replay handling.
-* Add explicit RSA2-first Mini-program migration policy without automatic MD5 downgrade.
-* Add encrypted secret migration, rotation and fail-closed rollback generation.
-* Declare and test WooCommerce HPOS and Checkout Blocks compatibility.
-* Add multisite lifecycle policy, first-party static analysis, SBOM and reproducible candidate packaging.
+* Add callback, amount, order lookup, refund idempotency, HPOS, Blocks, multisite, and release-candidate hardening.
 
 = 1.1.3 =
-* Strip `%` from data sent to Alipay
-* WC tested up to: 4.0.1
-* WordPress tested up to: 5.4
+* Strip percent characters from data sent to Alipay.
+* Update legacy compatibility metadata.
 
 = 1.1.2 =
-* WC tested up to: 4.0
+* Update legacy WooCommerce compatibility metadata.
 
 = 1.1.1 =
-* Adjust price parameters for high values, and use the `maybe_convert_amount` method throughout
-* WC tested up to: 3.9.2
+* Improve high-value amount handling and shared amount conversion.
 
 = 1.1 =
-* Add translations
-* Make sure parameters send to Alipay stay within string length requirements
-* Fix floating point arithmetic
-* WC tested up to: 3.9.1
+* Add translations and payment parameter validation.
 
 = 1.0 =
-* First version
+* Initial release.
