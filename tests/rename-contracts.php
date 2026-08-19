@@ -27,6 +27,11 @@ $expect( false !== strpos( $gateway, "const GATEWAY_ID = 'alipay';" ), 'provider
 $expect( false !== strpos( $gateway, "api_request_url('WC_Alipay')" ), 'Alipay callback route remains stable' );
 $expect( false !== strpos( $gateway, "get_option('woocommerce_alipay_settings'" ), 'WooCommerce gateway settings identity remains stable' );
 
+$f2f = file_get_contents( $root . '/inc/modules/f2f/inc/class-wc-alipay-facetopay.php' );
+$expect( false !== strpos( $f2f, "js/vendor/qrcode.min.js" ), 'face-to-face QR renderer is bundled locally' );
+$expect( false === strpos( $f2f, 'cdn.jsdelivr.net/npm/qrcodejs' ), 'face-to-face checkout does not load remote QR JavaScript' );
+$expect( file_exists( $root . '/inc/modules/f2f/js/vendor/qrcodejs-LICENSE' ), 'vendored QR renderer includes its MIT license' );
+
 $secrets = file_get_contents( $root . '/inc/class-wei-alipay-secret-store.php' );
 $expect( false !== strpos( $secrets, "const PREFIX          = 'woo-alipay-secret:v1:';" ), 'encrypted secret envelope remains decryptable' );
 $expect( false !== strpos( $secrets, "hash_hmac( 'sha256', 'woo-alipay'" ), 'encrypted secret KDF context remains stable' );

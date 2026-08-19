@@ -220,7 +220,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         
         wp_enqueue_script(
             'qrcodejs',
-            'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
+            WEI_ALIPAY_F2F_PLUGIN_URL . 'js/vendor/qrcode.min.js',
             array(),
             '1.0.0',
             true

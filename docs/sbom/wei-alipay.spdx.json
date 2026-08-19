@@ -42,6 +42,17 @@
       "licenseDeclared": "NOASSERTION",
       "copyrightText": "NOASSERTION",
       "comment": "Vendored provenance and license are not independently verified; release blocker."
+    },
+    {
+      "name": "qrcodejs",
+      "SPDXID": "SPDXRef-Package-QRCodeJS",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "https://registry.npmjs.org/qrcodejs/-/qrcodejs-1.0.0.tgz",
+      "filesAnalyzed": false,
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "Copyright (c) 2012 davidshimjs",
+      "comment": "Vendored from npm integrity sha512-67rj3mMBhSBepaD57qENnltO+r8rSYlqM7HGThks/BiyDAkc86sLvkKqjkqPS5v13f7tvnt6dbEf3qt7zq+BCg==; qrcode.min.js SHA-256 c541ef06327885a8415bca8df6071e14189b4855336def4f36db54bde8484f36."
     }
   ],
   "relationships": [
@@ -59,6 +70,11 @@
       "spdxElementId": "SPDXRef-Package-WeiAlipay",
       "relationshipType": "CONTAINS",
       "relatedSpdxElement": "SPDXRef-Package-AlipayWapLegacy"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-WeiAlipay",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-QRCodeJS"
     }
   ]
 }
