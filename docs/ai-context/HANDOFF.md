@@ -59,3 +59,32 @@
 - Contract tests, PHPStan, PHP 7.4 syntax, HPOS off/on, Store API Checkout Blocks, eight-way synthetic callback concurrency, offline refund replay and secret migration/rotation/rollback passed locally. No real merchant secret or Alipay request/transaction/refund was used.
 - Added minimal credential-free Forgejo CI, deterministic release builder, SPDX SBOM, SDK/file manifests and a Board change template. The exact local commit and ZIP digest are written to an ignored local Board artifact after the clean-HEAD build.
 - FeiCode P0 `write_policy=board_required`: do not push until a Board change approves the exact HEAD and SHA-bound CI. Do not merge, release, deploy, approve CI, contact production Alipay or send a real transaction/refund.
+
+## [CX] 2026-08-19 Wei Alipay 4.0.0 local rename and GitHub downstream candidate
+
+- FeiCode remains the canonical upstream. Current FeiCode base is b67e0334095e928af6ac202abff8c76f2e4a0c10; the GitHub public master was its ancestor and 29 commits behind at intake. FeiCode API reported mirror=false.
+- Isolated worktree/branch: /home/parallels/Projects/wei-alipay-cx-rename, cx/wei-alipay-4.0.0. Rename/QR implementation commit: 4cbbfd1132d40f5ceb65166970205fe4e83fdc38.
+- Candidate identity: Wei Alipay Payment Gateway for WooCommerce, slug/main file/text domain wei-alipay, developer Weixiaoduo.com, version 4.0.0.
+- Renamed first-party package constants/classes/assets, language catalogs, Composer package, SBOM and deterministic release layout. Historical audit documents were not rewritten.
+- Deliberately retained financial/runtime identities: gateway ID alipay, woocommerce_alipay_settings, _alipay_* order metadata, WC_Alipay callback routes and existing woo_alipay_* schedules/hooks. Secret envelopes also retain the original prefix, AES-GCM AAD and KDF context; WEI_ALIPAY_ENCRYPTION_KEY is preferred while the old constant remains a fail-safe for the controlled mall key-name cutover.
+- Replaced the checkout-time jsDelivr QR script with vendored qrcodejs 1.0.0 plus its MIT license. npm archive integrity and local file SHA-256 are recorded in docs/sbom/wei-alipay.spdx.json.
+- Added a manual Forgejo workflow and scripts/sync-github-downstream.sh. It requires a full current FeiCode master SHA plus Board change ID, checks GitHub ancestry, and performs an atomic normal push of only master and an optional matching release tag. It does not force-push, use full-ref mirror mode, delete refs or reverse-sync GitHub.
+- No remote repository rename, push, PR, merge, tag, release, GitHub synchronization, mall change, production access, or Alipay transaction/refund occurred.
+
+### Verification
+
+- ./scripts/tests/run-tests.sh all — exit 0: 67 first-party PHP files, first-party JavaScript and rename/security/amount/replay/state/MD5/key/multisite contracts passed.
+- vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --memory-limit=4G --no-progress — exit 0, 55 first-party files, 0 errors against the existing classified SDK baseline.
+- Targeted WordPress PHPCS security sniffs on 54 changed runtime PHP files — exit 0, 0 errors / 0 warnings. Three CLI-test-only escape findings were separately classified and excluded from runtime counts.
+- Isolated Docker runtime, WordPress 7.0.2 / WooCommerce 10.2.2 / PHP 8.3 — exit 0: plugin activated as version 4.0.0, gateway ID alipay registered, Blocks support class loaded, gateway remained registered with HPOS option on and off, REST index returned successfully.
+- Local bare-repository mirror contract — exit 0: fast-forwarded base b67e033 to candidate c9d8480; malformed SHA was rejected with exit 1. No network GitHub write was made.
+- Release-package Plugin Check with SDK directories excluded — tool exit 0 but result is NOT PASS: 1 policy error (plugin_updater_detected) and 52 warnings. The prior remote-script error was removed. Remaining warnings are 25 class-prefix, 11 hook-prefix, 5 variable-prefix, 2 function-prefix, four slow-meta-query, three debug-log, one discouraged textdomain and one readme-tag finding.
+- Reproducible candidate from implementation commit 4cbbfd1 — byte-identical A/B ZIPs. ZIP SHA-256 e0e9e62c2d70f98b45d57b1a22e78a9183fabd8464abf6470ef6fcddd98679d6; 8,836,221 bytes. Manifest source SHA matched 4cbbfd1132d40f5ceb65166970205fe4e83fdc38; internal HANDOFF/audit/governance files were excluded from the package.
+
+### Remaining gates
+
+- Board approval is required before the exact local HEAD can be pushed to a FeiCode review branch. Repository rename, CI approval, merge, GitHub rename/deploy key, mirror run, tag/release and mall cutover are separate approvals.
+- The minimum declared WordPress 6.6 / WooCommerce 8.3 / PHP 7.4 runtime combination was not rerun in this rename round.
+- Plugin Check policy/debt remains classified rather than hidden. The private updater finding is incompatible with WordPress.org policy but not necessarily with the approved private distribution channel.
+- The 8,829-file Alipay SDK provenance/license/lock and future package split remain release blockers.
+- mall.weixiaoduo.com still requires a controlled clone acceptance and plugin-basename activation cutover. No merchant key, callback configuration or historical order was inspected in this round.
