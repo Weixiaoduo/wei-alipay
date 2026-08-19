@@ -16,7 +16,13 @@ jobs:
     env:
       COMPOSER_ALLOW_SUPERUSER: "1"
     steps:
-      - uses: https://github.com/actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout exact commit without a Node action runtime
+        run: |
+          git init .
+          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          git fetch --depth=1 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Verify immutable PHP runtime
         run: |
           php -r 'exit(strpos(PHP_VERSION, (string) getenv("EXPECTED_PHP")) === 0 ? 0 : 1);'
