@@ -14,9 +14,15 @@ run_static() {
     grep -v '^No syntax errors detected' /tmp/wei-alipay-php-lint.txt >&2 || true
     fail "one or more of $count PHP files failed syntax checks"
   fi
-  while IFS= read -r -d '' file; do node --check "$file" >/dev/null; done < <(find "$ROOT_DIR/js" "$ROOT_DIR/inc/modules" -type f -name '*.js' ! -name '*.min.js' -print0)
+  if [[ "${WEI_ALIPAY_SKIP_JS_SYNTAX:-0}" == "1" ]]; then
+    info 'JavaScript syntax SKIP in the PHP compatibility lane; the modern PHP lane must cover it'
+    js_summary='PHP files checked; JavaScript syntax SKIP'
+  else
+    while IFS= read -r -d '' file; do node --check "$file" >/dev/null; done < <(find "$ROOT_DIR/js" "$ROOT_DIR/inc/modules" -type f -name '*.js' ! -name '*.min.js' -print0)
+    js_summary='PHP files and first-party JavaScript syntax checked'
+  fi
   git -C "$ROOT_DIR" diff --check
-  pass "$count PHP files and first-party JavaScript syntax checked"
+  pass "$count $js_summary"
 }
 
 run_contracts() {

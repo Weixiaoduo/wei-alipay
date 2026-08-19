@@ -10,8 +10,10 @@ jobs:
         include:
           - php: "7.4"
             runner: php-7.4
+            skip_js: "1"
           - php: "8.3"
             runner: php-8.3
+            skip_js: "0"
     runs-on: ${{ matrix.runner }}
     env:
       COMPOSER_ALLOW_SUPERUSER: "1"
@@ -30,6 +32,8 @@ jobs:
           EXPECTED_PHP: ${{ matrix.php }}
       - run: composer install --no-interaction --prefer-dist
       - run: ./scripts/tests/run-tests.sh all
+        env:
+          WEI_ALIPAY_SKIP_JS_SYNTAX: ${{ matrix.skip_js }}
       - if: matrix.php == '8.3'
         run: composer analyse
       - if: matrix.php == '8.3'
