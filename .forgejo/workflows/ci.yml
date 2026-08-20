@@ -30,23 +30,14 @@ jobs:
           php -r 'exit(strpos(PHP_VERSION, (string) getenv("EXPECTED_PHP")) === 0 ? 0 : 1);'
         env:
           EXPECTED_PHP: ${{ matrix.php }}
-      - name: Run credential-free first-party tests before dependency downloads
+      - name: Run credential-free first-party tests
         run: ./scripts/tests/run-tests.sh all
         env:
           WEI_ALIPAY_SKIP_JS_SYNTAX: ${{ matrix.skip_js }}
-      - name: Install PHPStan dependencies with bounded retries
+      - name: Verify reproducible release candidate without network credentials
         if: matrix.php == '8.3'
         run: |
-          attempt=1
-          while [ "$attempt" -le 3 ]; do
-            if timeout 600s env COMPOSER_PROCESS_TIMEOUT=540 composer install --no-interaction --prefer-dist; then
-              exit 0
-            fi
-            [ "$attempt" -lt 3 ] || exit 1
-            sleep $((attempt * 15))
-            attempt=$((attempt + 1))
-          done
-      - if: matrix.php == '8.3'
-        run: composer analyse
-      - if: matrix.php == '8.3'
-        run: ./scripts/ci-local.sh
+          source_date_epoch="$(git log -1 --format=%ct)"
+          SOURCE_DATE_EPOCH="$source_date_epoch" ./scripts/build-release-candidate.sh /tmp/wei-alipay-ci-a
+          SOURCE_DATE_EPOCH="$source_date_epoch" ./scripts/build-release-candidate.sh /tmp/wei-alipay-ci-b
+          cmp /tmp/wei-alipay-ci-a/wei-alipay-4.0.1-candidate.zip /tmp/wei-alipay-ci-b/wei-alipay-4.0.1-candidate.zip
