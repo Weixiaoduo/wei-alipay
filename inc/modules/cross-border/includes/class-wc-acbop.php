@@ -134,6 +134,10 @@ class Wei_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
      * @return void
      */
     function requirement_checks() { 
+        if ( 'yes' !== $this->enabled ) {
+            return;
+        }
+
         if (!array_key_exists($this->selected_currency, $this->function->getAliPaySupportedCurrencies())) {
             /* translators: %1s: store currency code */
             echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay is enabled, but the store currency is %1s, which is not supported.', 'wei-alipay' ), $this->selected_currency ) ) . '</p></div>';

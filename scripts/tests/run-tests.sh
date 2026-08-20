@@ -28,6 +28,7 @@ run_static() {
 run_contracts() {
   php "$ROOT_DIR/tests/rename-contracts.php"
   php "$ROOT_DIR/tests/security-contracts.php"
+  php "$ROOT_DIR/tests/cross-border-availability-contracts.php"
   php "$ROOT_DIR/tests/multisite-lifecycle-contracts.php"
   php "$ROOT_DIR/tests/uninstall-retention-contracts.php"
   php "$ROOT_DIR/tests/uninstall-purge-contracts.php"
