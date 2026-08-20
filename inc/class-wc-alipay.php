@@ -627,8 +627,9 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function requires_exchange_rate()
     {
+        $currency = $this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency;
 
-        return (!in_array($this->current_currency, $this->supported_currencies, true));
+        return !in_array($currency, $this->supported_currencies, true);
     }
 
     /*******************************************************************
@@ -926,7 +927,8 @@ class WC_Alipay extends WC_Payment_Gateway
         $page = 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay#woocommerce_alipay_exchange_rate';
         $url = admin_url($page);
 
-        echo '<div class="error"><p>' . wp_kses_post(sprintf($message, esc_url($url), esc_html($this->current_currency))) . '</p></div>';
+        $currency = $this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency;
+        echo '<div class="error"><p>' . wp_kses_post(sprintf($message, esc_url($url), esc_html($currency))) . '</p></div>';
     }
 
     public function get_icon()

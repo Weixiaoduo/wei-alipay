@@ -35,7 +35,10 @@ class WC_Alipay_Subscriptions_Checkout_Interceptor {
             }
 
             // Redirect to sign start with order context
-            $url = add_query_arg( array( 'order_id' => $order->get_id() ), home_url( '/?wc-api=wc_alipay_subscriptions_sign_start' ) );
+            $url = wp_nonce_url(
+                add_query_arg( array( 'order_id' => $order->get_id() ), home_url( '/?wc-api=wc_alipay_subscriptions_sign_start' ) ),
+                'woo_alipay_subscription_sign_' . get_current_user_id() . '_' . $order->get_id()
+            );
             wp_safe_redirect( $url );
             exit;
         } catch ( Exception $e ) {

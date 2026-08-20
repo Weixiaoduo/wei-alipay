@@ -93,6 +93,28 @@ sha256sum /tmp/wei-alipay-build-{a,b}/*.zip
 
 两份 ZIP 必须逐字节一致。发布包还要运行 `unzip -t`、秘密模式扫描、manifest/SBOM 校验和干净 WordPress 安装。
 
+### 4.0.1 支付边缘路径回归
+
+4.0.1 的变更必须至少覆盖以下合约，不能只重跑主 `alipay` 网关：
+
+- 两套签约入口均要求显式启用、用户绑定 nonce 和本地返回地址；异步签约通知绑定 `app_id`、已配置的 `seller_id` 及签约状态。
+- 订阅首扣使用数据库锁和持久幂等标记，代扣响应绑定原 `out_trade_no`。
+- F2F/花呗退款使用 WooCommerce refund ID 生成稳定 `out_request_no`，并绑定原订单号、交易号及精确退款金额。
+- F2F/花呗 Blocks 资源 URL 必须指向各自模块目录且文件真实存在。
+- 多币种提示使用结账有效币种；密钥不可解密和未配置独立加密键必须向管理员失败关闭。
+- 私有更新包仅允许 HTTPS 的 `updates.wenpai.net` 或 `feicode.com`；远端 Markdown 链接只允许 HTTPS。
+
+定向安全检查示例：
+
+```bash
+PHPCS=/path/to/vendor/bin/phpcs
+"$PHPCS" --standard=WordPress \
+  --sniffs=WordPress.Security.EscapeOutput,WordPress.Security.NonceVerification,WordPress.Security.SafeRedirect,WordPress.Security.ValidatedSanitizedInput,WordPress.DB.PreparedSQL \
+  <changed-first-party-runtime-files>
+```
+
+SDK 目录不得计入第一方零错误结论，也不得因为排除 SDK 就把整包写成 PASS。
+
 ## 7. WordPress/WooCommerce 运行矩阵
 
 至少记录以下每个样本的版本、命令、退出码和断言：

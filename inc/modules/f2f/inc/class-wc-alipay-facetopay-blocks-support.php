@@ -28,14 +28,14 @@ final class WC_Alipay_FaceToPay_Blocks_Support extends AbstractPaymentMethodType
 
     public function get_payment_method_script_handles() {
         $script_path = 'js/frontend/blocks-facetopay.js';
-        $script_asset_path = apply_filters( 'woo_alipay_facetopay_blocks_asset_path', WEI_ALIPAY_PLUGIN_PATH . 'js/frontend/blocks-facetopay.asset.php' );
+        $script_asset_path = apply_filters( 'woo_alipay_facetopay_blocks_asset_path', WEI_ALIPAY_F2F_PLUGIN_PATH . 'js/frontend/blocks-facetopay.asset.php' );
         $script_asset = file_exists( $script_asset_path )
             ? require( $script_asset_path )
             : array(
                 'dependencies' => array( 'wc-blocks-registry', 'wp-element', 'wp-html-entities', 'wp-i18n' ),
                 'version'      => WEI_ALIPAY_VERSION
             );
-        $script_url = apply_filters( 'woo_alipay_facetopay_blocks_script_url', trailingslashit( WEI_ALIPAY_PLUGIN_URL ) . $script_path );
+        $script_url = apply_filters( 'woo_alipay_facetopay_blocks_script_url', trailingslashit( WEI_ALIPAY_F2F_PLUGIN_URL ) . $script_path );
 
         wp_register_script(
             'wc-alipay-facetopay-payments-blocks',

@@ -391,7 +391,7 @@ class Wei_Alipay {
         submit_button( __( '查询', 'wei-alipay' ) );
         if ( $result ) {
             echo '<h2>' . esc_html__( '查询结果', 'wei-alipay' ) . '</h2>';
-            echo '<pre>' . esc_html( print_r( $result, true ) ) . '</pre>';
+            echo '<pre>' . esc_html( wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</pre>';
             echo '<p><label><input type="checkbox" name="sync_order" value="1" /> ' . esc_html__( '若支付成功，尝试同步 Woo 订单为已支付', 'wei-alipay' ) . '</label></p>';
             submit_button( __( '同步订单状态', 'wei-alipay' ) );
         }

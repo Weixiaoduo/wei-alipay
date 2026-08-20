@@ -16,7 +16,7 @@ $main = file_get_contents( $root . '/wei-alipay.php' );
 $expect( false !== $main, 'renamed plugin entry file is readable' );
 $expect( ! file_exists( $root . '/woo-alipay.php' ), 'legacy plugin entry file is absent from candidate' );
 $expect( false !== strpos( $main, 'Plugin Name: Wei Alipay Payment Gateway for WooCommerce' ), 'plugin header uses approved product name' );
-$expect( false !== strpos( $main, 'Version: 4.0.0' ), 'plugin header uses 4.0.0 candidate version' );
+$expect( false !== strpos( $main, 'Version: 4.0.1' ), 'plugin header uses 4.0.1 candidate version' );
 $expect( false !== strpos( $main, 'Text Domain: wei-alipay' ), 'plugin header uses renamed text domain' );
 $expect( false !== strpos( $main, 'Author: Weixiaoduo.com' ), 'plugin header uses approved developer identity' );
 $expect( false !== strpos( $main, "declare_compatibility( 'custom_order_tables'" ), 'HPOS compatibility declaration remains present' );
@@ -50,4 +50,4 @@ foreach ( preg_split( '/\R/', $mirror ) as $line ) {
 }
 
 $sbom = json_decode( file_get_contents( $root . '/docs/sbom/wei-alipay.spdx.json' ), true );
-$expect( is_array( $sbom ) && 'wei-alipay-4.0.0-candidate' === $sbom['name'], 'SBOM uses renamed 4.0.0 candidate identity' );
+$expect( is_array( $sbom ) && 'wei-alipay-4.0.1-candidate' === $sbom['name'], 'SBOM uses renamed 4.0.1 candidate identity' );

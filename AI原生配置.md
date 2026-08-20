@@ -44,7 +44,7 @@ FeiCode 是 P0 且 `write_policy=board_required`。SSH 或读取成功不表示�
 ```yaml
 product_name: Wei Alipay Payment Gateway for WooCommerce
 developer: Weixiaoduo.com
-candidate_version: 4.0.0
+candidate_version: 4.0.1
 package_slug: wei-alipay
 text_domain: wei-alipay
 canonical_upstream: FeiCode Weixiaoduo organization

@@ -29,9 +29,6 @@ class Wei_Alipay_PS_Service {
         if ( $logger ) {
             $logger->log( $level, $msg, array_merge( array( 'source' => 'alipay_profitsharing' ), $context ) );
         }
-        if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            @error_log( '[alipay_profitsharing][' . strtoupper( (string) $level ) . '] ' . $msg );
-        }
     }
 
     public static function get_aop() {

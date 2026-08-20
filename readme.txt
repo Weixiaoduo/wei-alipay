@@ -3,10 +3,10 @@ Contributors: weixiaoduo
 Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 4.0.0
+Stable tag: 4.0.1
 Requires PHP: 7.4
 WC requires at least: 8.3
-WC tested up to: 10.2.2
+WC tested up to: 10.9.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -32,7 +32,7 @@ Optional modules for face-to-face QR, Huabei instalments, barcode/POS, mini-prog
 
 = Compatibility =
 
-Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+. The 4.0.0 candidate was exercised with WordPress 7.0.2, WooCommerce 10.2.2, and PHP 8.3 for activation, gateway registration, HPOS on/off, and Checkout Blocks loading. The declared minimum combination has not yet completed the same runtime matrix.
+Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+. The 4.0.1 candidate was exercised with WordPress 7.0.2, WooCommerce 10.9.4, and PHP 8.3 for activation, gateway registration, HPOS enabled, and F2F/Huabei Blocks asset registration. HPOS disablement was blocked by unsynchronized clone orders, and the declared minimum combination has not completed the same runtime matrix.
 
 = Source and support =
 
@@ -69,6 +69,14 @@ They must not be. Sensitive settings are encrypted where supported and logging i
 No. Availability depends on the merchant agreement, store configuration, and module-specific acceptance evidence.
 
 == Changelog ==
+
+= 4.0.1 =
+* Require feature enablement, user/order ownership, nonces, app binding and persistent idempotency for subscription signing and initial charges.
+* Protect subscription agreement removal against cross-site request forgery.
+* Bind Huabei and face-to-face refunds to request IDs, transaction context, exact amounts and replay locks.
+* Repair Huabei and face-to-face Checkout Blocks asset URLs.
+* Align multi-currency availability and administrative exchange-rate notices.
+* Restrict private updater packages to approved HTTPS hosts and sanitize remote Markdown links.
 
 = 4.0.0 =
 * Rename the product and package to Wei Alipay Payment Gateway for WooCommerce.
