@@ -29,6 +29,7 @@ final class Wei_Alipay_Secret_Store {
 			add_filter( 'option_' . $option, array( __CLASS__, 'decrypt_option' ), 10, 2 );
 			add_filter( 'pre_update_option_' . $option, array( __CLASS__, 'encrypt_option' ), 10, 3 );
 		}
+		add_action( 'woo_alipay_secret_error', array( __CLASS__, 'remember_error' ), 10, 3 );
 		add_action( 'admin_notices', array( __CLASS__, 'render_health_notice' ) );
 	}
 
@@ -253,10 +254,30 @@ final class Wei_Alipay_Secret_Store {
 		return true;
 	}
 
+	/**
+	 * Remember a bounded error marker without retaining secret material.
+	 *
+	 * @param WP_Error $error  Secret operation error.
+	 * @param string   $option Option name.
+	 * @param string   $field  Secret field name.
+	 */
+	public static function remember_error( $error, $option, $field ) {
+		if ( ! is_wp_error( $error ) || ! isset( self::$option_fields[ $option ] ) ) {
+			return;
+		}
+		$marker = sanitize_key( (string) $error->get_error_code() ) . ':' . sanitize_key( (string) $field );
+		self::$errors[ $option ] = array_slice(
+			array_values( array_unique( array_merge( self::$errors[ $option ] ?? array(), array( $marker ) ) ) ),
+			0,
+			10
+		);
+	}
+
 	public static function render_health_notice() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! self::is_settings_screen() ) {
 			return;
 		}
+		self::audit_stored_secrets();
 		if ( ! empty( self::$errors ) ) {
 			echo '<div class="notice notice-error"><p>' . esc_html__( 'Wei Alipay cannot decrypt one or more stored payment secrets. Payment is disabled until the configured encryption key is restored.', 'wei-alipay' ) . '</p></div>';
 			return;
@@ -266,6 +287,30 @@ final class Wei_Alipay_Secret_Store {
 		$settings = get_option( 'woocommerce_alipay_settings', array() );
 		if ( ! $has_dedicated_key && is_array( $settings ) && 'yes' === ( $settings['enabled'] ?? 'no' ) ) {
 			echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site.', 'wei-alipay' ) . '</p></div>';
+		}
+	}
+
+	/**
+	 * Validate raw encrypted options on the settings screen.
+	 *
+	 * get_option() is intentionally not used: the display filter masks secret
+	 * fields before this health check can validate their envelopes.
+	 */
+	private static function audit_stored_secrets() {
+		foreach ( self::$option_fields as $option => $fields ) {
+			$stored = self::raw_option( $option );
+			if ( ! is_array( $stored ) ) {
+				continue;
+			}
+			foreach ( $fields as $field ) {
+				if ( empty( $stored[ $field ] ) || ! self::is_envelope( $stored[ $field ] ) ) {
+					continue;
+				}
+				$value = self::decrypt_value( $stored[ $field ], self::keyring() );
+				if ( is_wp_error( $value ) ) {
+					self::remember_error( $value, $option, $field );
+				}
+			}
 		}
 	}
 

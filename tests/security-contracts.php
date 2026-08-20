@@ -26,6 +26,13 @@ function sanitize_text_field($value) { return trim(strip_tags((string) $value));
 function sanitize_key($value) { return preg_replace('/[^a-z0-9_\-]/', '', strtolower((string) $value)); }
 function is_wp_error($value) { return $value instanceof WP_Error; }
 function apply_filters($hook, $value) { return $value; }
+$GLOBALS['test_actions'] = array();
+function add_filter($hook, $callback, $priority = 10, $accepted_args = 1) {}
+function add_action($hook, $callback, $priority = 10, $accepted_args = 1) { $GLOBALS['test_actions'][$hook][] = $callback; }
+function do_action($hook, ...$args) { foreach ($GLOBALS['test_actions'][$hook] ?? array() as $callback) { call_user_func_array($callback, $args); } }
+function current_user_can($capability) { return true; }
+function esc_html__($message, $domain = '') { return $message; }
+function maybe_unserialize($value) { $decoded = @unserialize($value); return false === $decoded && 'b:0;' !== $value ? $value : $decoded; }
 function is_admin() { return !empty($GLOBALS['test_is_admin']); }
 function wp_generate_uuid4() { static $i = 0; return 'test-token-' . ++$i; }
 function wp_json_encode($value) { return json_encode($value); }
@@ -41,6 +48,7 @@ define('ABSPATH', __DIR__);
 require dirname(__DIR__) . '/inc/class-alipay-sdk-helper.php';
 require dirname(__DIR__) . '/inc/class-wei-alipay-secret-store.php';
 require dirname(__DIR__) . '/inc/modules/mini-program/class-mini-protocol.php';
+Wei_Alipay_Secret_Store::register();
 
 $failures = 0;
 function expect_true($condition, $label) {
@@ -194,6 +202,22 @@ $GLOBALS['test_is_admin'] = true;
 $_GET = array('page' => 'wc-settings', 'section' => 'alipay');
 $masked = Wei_Alipay_Secret_Store::decrypt_option(array('private_key' => 'synthetic-private-key-not-real'), 'woocommerce_alipay_settings');
 expect_true('' === $masked['private_key'], 'settings screen never renders stored or externally supplied private key');
+class Wei_Alipay_Test_WPDB {
+    public $options = 'wp_options';
+    public function prepare($query, $option) { return $option; }
+    public function get_var($option) {
+        return isset($GLOBALS['test_raw_options'][$option]) ? serialize($GLOBALS['test_raw_options'][$option]) : null;
+    }
+}
+$GLOBALS['wpdb'] = new Wei_Alipay_Test_WPDB();
+$GLOBALS['test_raw_options'] = array(
+    'woocommerce_alipay_settings' => array('enabled' => 'yes', 'private_key' => $envelope),
+);
+ob_start();
+Wei_Alipay_Secret_Store::render_health_notice();
+$health_notice = ob_get_clean();
+expect_true(false !== strpos($health_notice, 'cannot decrypt one or more stored payment secrets'), 'settings health check detects an unreadable raw encrypted secret');
+expect_true(false === strpos($health_notice, 'test-private-key-not-real'), 'settings health notice never exposes secret material');
 $GLOBALS['test_is_admin'] = false;
 $_GET = array();
 exit($failures ? 1 : 0);
