@@ -51,7 +51,10 @@ class WC_Alipay_Agreement {
 			'notify_url'            => $notify_url,
 		];
 		if ( ! empty( $context['return_url'] ) ) {
-			$biz['merchant_process_url'] = $context['return_url'];
+			$validated_return_url = wp_validate_redirect( (string) $context['return_url'], '' );
+			if ( '' !== $validated_return_url && wp_parse_url( home_url(), PHP_URL_HOST ) === wp_parse_url( $validated_return_url, PHP_URL_HOST ) ) {
+				$biz['merchant_process_url'] = $validated_return_url;
+			}
 		}
 
 		$request = new AlipayUserAgreementPageSignRequest();
@@ -85,6 +88,21 @@ class WC_Alipay_Agreement {
 			exit;
 		}
 
+		$expected_app_id = (string) $gateway->get_option( 'appid' );
+		$notified_app_id = isset( $params['app_id'] ) && is_scalar( $params['app_id'] ) ? sanitize_text_field( (string) $params['app_id'] ) : '';
+		if ( '' === $expected_app_id || '' === $notified_app_id || ! hash_equals( $expected_app_id, $notified_app_id ) ) {
+			status_header( 400 );
+			echo 'fail';
+			exit;
+		}
+		$expected_seller_id = (string) $gateway->get_option( 'seller_id' );
+		$notified_seller_id = isset( $params['seller_id'] ) && is_scalar( $params['seller_id'] ) ? sanitize_text_field( (string) $params['seller_id'] ) : '';
+		if ( '' !== $expected_seller_id && ( '' === $notified_seller_id || ! hash_equals( $expected_seller_id, $notified_seller_id ) ) ) {
+			status_header( 400 );
+			echo 'fail';
+			exit;
+		}
+
 		$agreement_no = isset( $params['agreement_no'] ) ? sanitize_text_field( $params['agreement_no'] ) : '';
 		$alipay_user_id = isset( $params['alipay_user_id'] ) ? sanitize_text_field( $params['alipay_user_id'] ) : '';
 		$status = isset( $params['status'] ) ? sanitize_text_field( $params['status'] ) : '';
@@ -95,12 +113,14 @@ class WC_Alipay_Agreement {
 		if ( $external_sign_no ) {
 			$user_id = absint( get_transient( 'woo_alipay_pending_user_' . $external_sign_no ) );
 		}
-		if ( ! $user_id && is_user_logged_in() ) {
-			$user_id = get_current_user_id();
-		}
 		if ( $user_id ) {
-			update_user_meta( $user_id, self::META_USER_AGREEMENT_NO, $agreement_no );
-			update_user_meta( $user_id, self::META_USER_AGREEMENT_STATUS, $status );
+			$normalized_status = strtoupper( $status );
+			update_user_meta( $user_id, self::META_USER_AGREEMENT_STATUS, $normalized_status );
+			if ( '' !== $agreement_no && in_array( $normalized_status, [ 'NORMAL', 'SUCCESS' ], true ) ) {
+				update_user_meta( $user_id, self::META_USER_AGREEMENT_NO, $agreement_no );
+			} else {
+				delete_user_meta( $user_id, self::META_USER_AGREEMENT_NO );
+			}
 			delete_transient( 'woo_alipay_pending_user_' . $external_sign_no );
 			delete_user_meta( $user_id, self::META_USER_PENDING_EXTERNAL_SIGN_NO );
 		}
@@ -121,12 +141,18 @@ class WC_Alipay_Agreement {
 		if ( ! is_user_logged_in() ) {
 			wp_die( esc_html__( '请先登录后再进行签约授权。', 'wei-alipay' ) );
 		}
+		$gateway_settings = get_option( 'woocommerce_alipay_settings', [] );
+		if ( 'yes' !== ( $gateway_settings['enable_auto_renew'] ?? 'no' ) ) {
+			wp_die( esc_html__( 'Alipay automatic renewal is not enabled.', 'wei-alipay' ), '', [ 'response' => 403 ] );
+		}
 		$user_id = get_current_user_id();
+		$nonce = isset( $_GET['_wpnonce'] ) && is_scalar( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'woo_alipay_agreement_start_' . $user_id ) ) {
+			wp_die( esc_html__( 'Invalid or expired signing request.', 'wei-alipay' ), '', [ 'response' => 403 ] );
+		}
 		$context = [];
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only signed-flow return target, sanitized below.
-		if ( isset( $_GET['return_url'] ) ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only signed-flow return target.
-			$context['return_url'] = esc_url_raw( wp_unslash( $_GET['return_url'] ) );
+		if ( isset( $_GET['return_url'] ) && is_scalar( $_GET['return_url'] ) ) {
+			$context['return_url'] = esc_url_raw( wp_unslash( (string) $_GET['return_url'] ) );
 		}
 		$result = self::get_sign_url( $user_id, $context );
 		if ( is_array( $result ) && ! empty( $result['payload'] ) ) {

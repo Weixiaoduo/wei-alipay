@@ -2,8 +2,8 @@
   "spdxVersion": "SPDX-2.3",
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
-  "name": "wei-alipay-4.0.0-candidate",
-  "documentNamespace": "https://wenpai.org/sbom/wei-alipay/4.0.0/2026-08-19",
+  "name": "wei-alipay-4.0.1-candidate",
+  "documentNamespace": "https://wenpai.org/sbom/wei-alipay/4.0.1/2026-08-20",
   "creationInfo": {
     "created": "2026-08-19T00:00:00Z",
     "creators": [
@@ -14,7 +14,7 @@
     {
       "name": "wei-alipay",
       "SPDXID": "SPDXRef-Package-WeiAlipay",
-      "versionInfo": "4.0.0",
+      "versionInfo": "4.0.1",
       "downloadLocation": "https://feicode.com/Weixiaoduo/wei-alipay",
       "filesAnalyzed": false,
       "licenseConcluded": "GPL-3.0-only",

@@ -130,6 +130,10 @@ class Wei_Alipay_WenPai_Updater {
         }
 
         $data = $response['plugins'][ $this->plugin_file ];
+        $package = isset( $data['package'] ) && is_string( $data['package'] ) ? esc_url_raw( $data['package'] ) : '';
+        if ( '' === $package || ! $this->is_allowed_distribution_url( $package ) ) {
+            return $update;
+        }
 
         return (object) [
             'id'           => $data['id'] ?? '',
@@ -138,7 +142,7 @@ class Wei_Alipay_WenPai_Updater {
             'version'      => $data['version'] ?? '',
             'new_version'  => $data['version'] ?? '',
             'url'          => $data['url'] ?? '',
-            'package'      => $data['package'] ?? '',
+            'package'      => $package,
             'icons'        => $data['icons'] ?? [],
             'banners'      => $data['banners'] ?? [],
             'requires'     => $data['requires'] ?? '',
@@ -175,7 +179,8 @@ class Wei_Alipay_WenPai_Updater {
             $info->version       = $response['version'] ?? '';
             $info->author        = $response['author'] ?? '';
             $info->homepage      = $response['homepage'] ?? '';
-            $info->download_link = $response['download_link'] ?? '';
+            $download_link = isset( $response['download_link'] ) && is_string( $response['download_link'] ) ? esc_url_raw( $response['download_link'] ) : '';
+            $info->download_link = $this->is_allowed_distribution_url( $download_link ) ? $download_link : '';
             $info->requires      = $response['requires'] ?? '';
             $info->tested        = $response['tested'] ?? '';
             $info->requires_php  = $response['requires_php'] ?? '';
@@ -265,6 +270,23 @@ class Wei_Alipay_WenPai_Updater {
     }
 
     /**
+     * Only accept HTTPS packages from the private distribution hosts.
+     *
+     * @param string $url Candidate package URL.
+     * @return bool
+     */
+    private function is_allowed_distribution_url( string $url ): bool {
+        if ( '' === $url || ! wp_http_validate_url( $url ) ) {
+            return false;
+        }
+
+        $scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
+        $host   = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+
+        return 'https' === $scheme && in_array( $host, [ 'updates.wenpai.net', 'feicode.com' ], true );
+    }
+
+    /**
      * 将 Markdown 文本转换为 HTML。
      *
      * 仅处理 API 返回的 changelog 中常见的 Markdown 子集：
@@ -347,7 +369,14 @@ class Wei_Alipay_WenPai_Updater {
         $text = preg_replace( '/\*\*(.+?)\*\*/', '<strong>$1</strong>', $text );
         $text = preg_replace( '/\*(.+?)\*/', '<em>$1</em>', $text );
         $text = preg_replace( '/`(.+?)`/', '<code>$1</code>', $text );
-        $text = preg_replace( '/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2">$1</a>', $text );
+        $text = preg_replace_callback(
+            '/\[([^\]]+)\]\(([^)]+)\)/',
+            static function( $matches ) {
+                $url = esc_url( html_entity_decode( $matches[2], ENT_QUOTES, 'UTF-8' ), [ 'https' ] );
+                return '' === $url ? $matches[1] : '<a href="' . $url . '">' . $matches[1] . '</a>';
+            },
+            $text
+        );
 
         return $text;
     }

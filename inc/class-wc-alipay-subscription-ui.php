@@ -28,7 +28,10 @@ class WC_Alipay_Subscription_UI {
 		}
 
 		$return_url = wc_get_endpoint_url( 'view-subscription', '', wc_get_page_permalink( 'myaccount' ) );
-		$sign_url = add_query_arg( [ 'return_url' => rawurlencode( $return_url ) ], WC()->api_request_url( 'WC_Alipay_Agreement_Start' ) );
+		$sign_url = wp_nonce_url(
+			add_query_arg( [ 'return_url' => $return_url ], WC()->api_request_url( 'WC_Alipay_Agreement_Start' ) ),
+			'woo_alipay_agreement_start_' . $user_id
+		);
 		echo '<div class="woocommerce-message" style="margin-top:15px">'
 			. esc_html__( '为确保到期自动续费，请授权支付宝周期扣款。', 'wei-alipay' )
 			. ' <a class="button" href="' . esc_url( $sign_url ) . '">' . esc_html__( '授权支付宝自动续费', 'wei-alipay' ) . '</a>'
@@ -41,7 +44,10 @@ class WC_Alipay_Subscription_UI {
 		if ( ! self::can_offer_sign( $user_id ) ) { return; }
 
 		$return_url = wc_get_account_endpoint_url( 'subscriptions' );
-		$sign_url = add_query_arg( [ 'return_url' => rawurlencode( $return_url ) ], WC()->api_request_url( 'WC_Alipay_Agreement_Start' ) );
+		$sign_url = wp_nonce_url(
+			add_query_arg( [ 'return_url' => $return_url ], WC()->api_request_url( 'WC_Alipay_Agreement_Start' ) ),
+			'woo_alipay_agreement_start_' . $user_id
+		);
 
 		echo '<div class="woocommerce-info" style="margin:15px 0">'
 			. '<p>' . esc_html__( '尚未授权支付宝自动续费。授权后，到期将自动从你绑定的支付宝扣款。', 'wei-alipay' ) . '</p>'

@@ -22,6 +22,7 @@ class WC_Alipay_Subscriptions_Signing {
             'appid'       => $main_gateway->get_option('appid'),
             'private_key' => $main_gateway->get_option('private_key'),
             'public_key'  => $main_gateway->get_option('public_key'),
+            'seller_id'   => $main_gateway->get_option('seller_id'),
             'sandbox'     => $main_gateway->get_option('sandbox'),
         );
     }
@@ -35,6 +36,14 @@ class WC_Alipay_Subscriptions_Signing {
             }
         }
         return $missing;
+    }
+
+    private function is_auto_debit_enabled() {
+        return 'yes' === get_option( 'woo_alipay_subscriptions_enable_auto_debit', 'no' );
+    }
+
+    private function sign_nonce_action( $user_id, $order_id = 0 ) {
+        return 'woo_alipay_subscription_sign_' . absint( $user_id ) . '_' . absint( $order_id );
     }
 
     public function __construct() {
@@ -97,6 +106,21 @@ class WC_Alipay_Subscriptions_Signing {
             echo 'fail';
             exit;
         }
+        $notified_app_id = isset( $notify_params['app_id'] ) && is_scalar( $notify_params['app_id'] ) ? wc_clean( (string) $notify_params['app_id'] ) : '';
+        if ( empty( $core['appid'] ) || '' === $notified_app_id || ! hash_equals( (string) $core['appid'], $notified_app_id ) ) {
+            $this->log( 'error', 'Agreement notify app_id mismatch' );
+            status_header( 400 );
+            echo 'fail';
+            exit;
+        }
+
+        $notified_seller_id = isset( $notify_params['seller_id'] ) && is_scalar( $notify_params['seller_id'] ) ? wc_clean( (string) $notify_params['seller_id'] ) : '';
+        if ( ! empty( $core['seller_id'] ) && ( '' === $notified_seller_id || ! hash_equals( (string) $core['seller_id'], $notified_seller_id ) ) ) {
+            $this->log( 'error', 'Agreement notify seller_id mismatch' );
+            status_header( 400 );
+            echo 'fail';
+            exit;
+        }
 
         // Parse payload
         $agreement_no = isset( $notify_params['agreement_no'] ) ? wc_clean( $notify_params['agreement_no'] ) : '';
@@ -113,10 +137,26 @@ class WC_Alipay_Subscriptions_Signing {
 
         // Extract ids from external agreement no: pattern WOOALISN-{user}-{ts}[-{order}]
         $user_id = 0; $order_id = 0;
-        if ( $external && preg_match( '/^WOOALISN-(\d+)-(\d+)(?:-(\d+))?/i', $external, $m ) ) {
+        if ( $external && preg_match( '/^WOOALISN-(\d+)-(\d+)(?:-(\d+))?$/i', $external, $m ) ) {
             $user_id = absint( $m[1] );
-            // m[2] is timestamp, optional m[3] is order_id
+            // m[2] is timestamp, optional m[3] is order_id.
             if ( isset( $m[3] ) ) { $order_id = absint( $m[3] ); }
+        }
+        if ( $user_id <= 0 ) {
+            $this->log( 'error', 'Agreement notify external identity mismatch' );
+            status_header( 400 );
+            echo 'fail';
+            exit;
+        }
+
+        if ( $order_id ) {
+            $bound_order = wc_get_order( $order_id );
+            if ( ! $bound_order || (int) $bound_order->get_user_id() !== $user_id || 'alipay' !== $bound_order->get_payment_method() ) {
+                $this->log( 'error', 'Agreement notify order binding mismatch', array( 'order_id' => $order_id ) );
+                status_header( 400 );
+                echo 'fail';
+                exit;
+            }
         }
 
         if ( $user_id > 0 && ( 'NORMAL' === strtoupper( $status ) || 'SUCCESS' === strtoupper( $status ) ) ) {
@@ -149,21 +189,34 @@ class WC_Alipay_Subscriptions_Signing {
             }
             $token_obj->save();
 
-            // If this signing was initiated from a specific order and it's unpaid, do immediate charge
-            if ( $order_id ) {
-                $order = wc_get_order( $order_id );
-                if ( $order && ! $order->is_paid() ) {
-                    $amount = (float) $order->get_total();
-                    $product_code = get_option( 'woo_alipay_subscriptions_product_code', 'GENERAL_WITHHOLDING' );
-                    $charge = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $order, $amount, $agreement_no, $product_code );
-                    if ( ! is_wp_error( $charge ) ) {
-                        $order->payment_complete( $charge['trade_no'] );
-                        /* translators: %s: Alipay transaction number */
-                        $order->add_order_note( sprintf( __( '首单签约并扣款成功 - 交易号: %s', 'wei-alipay' ), $charge['trade_no'] ) );
-                    } else {
-                        /* translators: %s: error message */
-                        $order->add_order_note( sprintf( __( '首单签约完成，但扣款失败：%s', 'wei-alipay' ), $charge->get_error_message() ) );
+            // If this signing was initiated from a specific order, serialize and persist the initial charge.
+            if ( $order_id && $this->is_auto_debit_enabled() ) {
+                $lock = Alipay_SDK_Helper::acquire_lock( 'agreement_charge', (string) $order_id, 60 );
+                if ( false === $lock ) {
+                    status_header( 409 );
+                    echo 'fail';
+                    exit;
+                }
+                try {
+                    $order = wc_get_order( $order_id );
+                    $already_charged = $order && ( $order->is_paid() || $order->get_meta( '_alipay_agreement_initial_charge_done', true ) );
+                    if ( $order && ! $already_charged ) {
+                        $amount = (float) $order->get_total();
+                        $product_code = get_option( 'woo_alipay_subscriptions_product_code', 'GENERAL_WITHHOLDING' );
+                        $charge = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $order, $amount, $agreement_no, $product_code );
+                        if ( ! is_wp_error( $charge ) ) {
+                            $order->update_meta_data( '_alipay_agreement_initial_charge_done', (string) $charge['trade_no'] );
+                            $order->save();
+                            $order->payment_complete( $charge['trade_no'] );
+                            /* translators: %s: Alipay transaction number */
+                            $order->add_order_note( sprintf( __( '首单签约并扣款成功 - 交易号: %s', 'wei-alipay' ), $charge['trade_no'] ) );
+                        } else {
+                            /* translators: %s: error message */
+                            $order->add_order_note( sprintf( __( '首单签约完成，但扣款失败：%s', 'wei-alipay' ), $charge->get_error_message() ) );
+                        }
                     }
+                } finally {
+                    Alipay_SDK_Helper::release_lock( 'agreement_charge', (string) $order_id, $lock );
                 }
             }
         }
@@ -192,6 +245,12 @@ class WC_Alipay_Subscriptions_Signing {
             exit;
         }
 
+        if ( ! $this->is_auto_debit_enabled() ) {
+            wc_add_notice( __( '支付宝自动代扣尚未启用。', 'wei-alipay' ), 'error' );
+            wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
+            exit;
+        }
+
         $missing_core = $this->get_missing_core_fields();
         if ( ! empty( $missing_core ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
@@ -201,7 +260,17 @@ class WC_Alipay_Subscriptions_Signing {
             exit;
         }
         $user_id = get_current_user_id();
-        $order_id = isset( $_GET['order_id'] ) ? absint( $_GET['order_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only signing context; ownership is validated by WooCommerce flow.
+        $order_id = isset( $_GET['order_id'] ) ? absint( $_GET['order_id'] ) : 0;
+        $nonce = isset( $_GET['_wpnonce'] ) && is_scalar( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ) : '';
+        if ( ! wp_verify_nonce( $nonce, $this->sign_nonce_action( $user_id, $order_id ) ) ) {
+            wp_die( esc_html__( 'Invalid or expired signing request.', 'wei-alipay' ), '', array( 'response' => 403 ) );
+        }
+        if ( $order_id ) {
+            $order = wc_get_order( $order_id );
+            if ( ! $order || (int) $order->get_user_id() !== $user_id || 'alipay' !== $order->get_payment_method() || $order->is_paid() ) {
+                wp_die( esc_html__( 'Invalid order.', 'wei-alipay' ), '', array( 'response' => 403 ) );
+            }
+        }
 
         // Load main gateway config
         $main_gateway = new WC_Alipay(false);
@@ -262,7 +331,10 @@ class WC_Alipay_Subscriptions_Signing {
         if ( 'yes' !== $enable_auto ) {
             return;
         }
-        $unsign_url = home_url( '/?wc-api=wc_alipay_subscriptions_agreement_unsign' );
+        $unsign_url = wp_nonce_url(
+            home_url( '/?wc-api=wc_alipay_subscriptions_agreement_unsign' ),
+            'woo_alipay_subscription_unsign_' . get_current_user_id()
+        );
         echo '<div class="woocommerce-info" style="margin-bottom:15px">'
            . esc_html__( '您已开启自动代扣功能。若尚未完成支付宝签约，请在下次结账时完成授权。', 'wei-alipay' )
            . ' <a href="' . esc_url( $unsign_url ) . '" class="button" style="margin-left:8px">' . esc_html__( '解绑代扣协议', 'wei-alipay' ) . '</a>'
@@ -276,6 +348,11 @@ class WC_Alipay_Subscriptions_Signing {
         if ( ! is_user_logged_in() ) {
             wp_safe_redirect( wc_get_page_permalink( 'myaccount' ) );
             exit;
+        }
+
+        $nonce = isset( $_GET['_wpnonce'] ) && is_scalar( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( (string) $_GET['_wpnonce'] ) ) : '';
+        if ( ! wp_verify_nonce( $nonce, 'woo_alipay_subscription_unsign_' . get_current_user_id() ) ) {
+            wp_die( esc_html__( 'Invalid or expired unsign request.', 'wei-alipay' ), '', array( 'response' => 403 ) );
         }
 
         $missing_core = $this->get_missing_core_fields();

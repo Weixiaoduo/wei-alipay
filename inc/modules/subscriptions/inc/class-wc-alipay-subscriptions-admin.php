@@ -56,7 +56,10 @@ class WC_Alipay_Subscriptions_Admin {
         echo '<tr>';
         echo '<th scope="row">' . esc_html__( '签约快捷入口', 'wei-alipay' ) . '</th>';
         echo '<td>'; 
-        $sign_url = add_query_arg( array(), wc_get_endpoint_url( '', '', home_url( '/?wc-api=wc_alipay_subscriptions_sign_start' ) ) );
+        $sign_url = wp_nonce_url(
+            wc_get_endpoint_url( '', '', home_url( '/?wc-api=wc_alipay_subscriptions_sign_start' ) ),
+            'woo_alipay_subscription_sign_' . get_current_user_id() . '_0'
+        );
         echo '<a class="button" href="' . esc_url( $sign_url ) . '" target="_blank">' . esc_html__( '立即发起签约', 'wei-alipay' ) . '</a>';
         echo '<p class="description">' . esc_html__( '用于测试签约流程。生产中建议在结账含订阅时引导用户签约。', 'wei-alipay' ) . '</p>';
         echo '</td>';

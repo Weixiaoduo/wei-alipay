@@ -146,9 +146,10 @@ class Wei_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
             return;
         }
 
-        if ( !in_array( $this->current_currency, array( 'RMB', 'CNY') ) && !$this->exchange_rate ) {
-            /* translators: %1$s: link to the exchange rate settings page. %2$s: store currency code. */
-            echo '<div class="error"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'wei-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $this->current_currency ) ) ) . '</p></div>';
+        $currency = $this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency;
+        if ( !in_array( $currency, array( 'RMB', 'CNY'), true ) && !$this->exchange_rate ) {
+            /* translators: %1$s: link to the exchange rate settings page. %2$s: effective checkout currency code. */
+            echo '<div class="error"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'wei-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $currency ) ) ) . '</p></div>';
         }
 
         $protocol = $this->selected_protocol();

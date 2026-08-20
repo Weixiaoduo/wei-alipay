@@ -97,12 +97,14 @@ class WC_Alipay_Subscriptions_Charge {
             $result = isset( $response->$node ) ? $response->$node : null;
 
             if ( is_object( $result ) && isset( $result->code ) && '10000' === (string) $result->code ) {
-                $trade_no = isset( $result->trade_no ) ? $result->trade_no : '';
-                if ( $trade_no ) {
-                    self::log( 'info', 'Subscription charge success', array( 'order_id' => $order->get_id(), 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no ) );
-                    return array( 'success' => true, 'trade_no' => $trade_no );
+                $trade_no = isset( $result->trade_no ) ? (string) $result->trade_no : '';
+                $response_out_trade_no = isset( $result->out_trade_no ) ? (string) $result->out_trade_no : '';
+                if ( '' === $trade_no || '' === $response_out_trade_no || ! hash_equals( (string) $out_trade_no, $response_out_trade_no ) ) {
+                    self::log( 'error', 'Subscription charge response context mismatch', array( 'order_id' => $order->get_id(), 'out_trade_no' => $out_trade_no ) );
+                    return new WP_Error( 'charge_context_mismatch', __( '支付宝代扣响应与订单请求不匹配。', 'wei-alipay' ) );
                 }
-                return new WP_Error( 'no_trade_no', __( '支付宝返回成功但缺少交易号。', 'wei-alipay' ) );
+                self::log( 'info', 'Subscription charge success', array( 'order_id' => $order->get_id(), 'out_trade_no' => $out_trade_no, 'trade_no' => $trade_no ) );
+                return array( 'success' => true, 'trade_no' => $trade_no );
             }
 
             $msg = isset( $result->sub_msg ) ? $result->sub_msg : ( isset( $result->msg ) ? $result->msg : 'Unknown error' );
