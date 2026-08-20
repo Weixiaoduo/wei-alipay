@@ -30,20 +30,22 @@ jobs:
           php -r 'exit(strpos(PHP_VERSION, (string) getenv("EXPECTED_PHP")) === 0 ? 0 : 1);'
         env:
           EXPECTED_PHP: ${{ matrix.php }}
-      - name: Install Composer dependencies with bounded retries
+      - name: Run credential-free first-party tests before dependency downloads
+        run: ./scripts/tests/run-tests.sh all
+        env:
+          WEI_ALIPAY_SKIP_JS_SYNTAX: ${{ matrix.skip_js }}
+      - name: Install PHPStan dependencies with bounded retries
+        if: matrix.php == '8.3'
         run: |
           attempt=1
           while [ "$attempt" -le 3 ]; do
-            if COMPOSER_PROCESS_TIMEOUT=900 composer install --no-interaction --prefer-dist; then
+            if timeout 600s env COMPOSER_PROCESS_TIMEOUT=540 composer install --no-interaction --prefer-dist; then
               exit 0
             fi
             [ "$attempt" -lt 3 ] || exit 1
             sleep $((attempt * 15))
             attempt=$((attempt + 1))
           done
-      - run: ./scripts/tests/run-tests.sh all
-        env:
-          WEI_ALIPAY_SKIP_JS_SYNTAX: ${{ matrix.skip_js }}
       - if: matrix.php == '8.3'
         run: composer analyse
       - if: matrix.php == '8.3'
