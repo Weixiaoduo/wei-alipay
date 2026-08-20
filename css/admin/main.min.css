@@ -1,108 +1,20 @@
-.wei-alipay-settings .spinner,
-.wei-alipay-settings .test-status {
-	display: inline-block;
-    float: none;
-    vertical-align: middle;
-}
-
+/* WooCommerce owns the settings form. These rules only fill interaction gaps. */
 .wei-alipay-settings .spinner {
-    background-size: 20px 20px;
-    opacity: .7;
-    filter: alpha(opacity=70);
-}
-
-.wei-alipay-settings .test-status .success {
-	color: #46b450;
-}
-
-.wei-alipay-settings .test-status .failure,
-.wei-alipay-settings .test-status .error {
-	color: #dc3232;
-}
-
-.wei-alipay-settings .test-status .dashicons {
-	margin: 4px 10px 8px;
-	display: none;
-}
-
-.wei-alipay-settings .test-status .dashicons.is-active {
-	display: inline-block;
-}
-
-.wei-alipay-settings .test-status-message.success,
-.wei-alipay-settings .test-status-message.failure,
-.wei-alipay-settings .test-status-message.error,
-.wei-alipay-settings .description.help {
-	display: none;
-}
-
-.wei-alipay-settings .test-status-message.is-active,
-.wei-alipay-settings .description.help.is-active {
-	display: block;
-}
-
-.wei-alipay-settings .form-table th[scope="row"] {
-    padding-left: 0;
-}
-
-.wei-alipay-settings .form-table .titledesc {
-    font-weight: 600;
-}
-
-.wei-alipay-settings .form-table tr[data-field-type="title"] th {
-    background: #f9f9f9;
-    border-left: 4px solid #0073aa;
-    padding: 15px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #23282d;
-}
-
-.wei-alipay-settings .form-table tr[data-field-type="title"] td {
-    background: #f9f9f9;
-    padding: 15px 20px;
-    border-left: 4px solid #0073aa;
-}
-
-.wei-alipay-settings .form-table tr[data-field-type="title"] + tr {
-    border-top: none;
-}
-
-.wei-alipay-settings .form-table tr[data-field-type="title"] th,
-.wei-alipay-settings .form-table tr[data-field-type="title"] td {
-    border-bottom: 1px solid #ddd;
-}
-
-.wei-alipay-settings textarea {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    font-size: 12px;
-    line-height: 1.4;
-}
-
-.wei-alipay-settings .description {
-    font-style: normal;
-    color: #666;
-}
-
-.wei-alipay-settings .description strong {
-    color: #d63638;
+	float: none;
+	vertical-align: middle;
 }
 
 #wei-alipay-test-result {
-    padding: 10px;
-    border-radius: 4px;
-    margin-top: 10px;
-    display: none;
+	margin: 10px 0 0;
 }
 
-#wei-alipay-test-result.success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
+.woocommerce_page_wc-settings .card code {
+	display: inline-block;
+	max-width: calc(100% - 80px);
+	overflow-wrap: anywhere;
+	vertical-align: middle;
 }
 
-#wei-alipay-test-result.error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
+.woocommerce_page_wc-settings .card .ul-disc {
+	margin-left: 18px;
 }

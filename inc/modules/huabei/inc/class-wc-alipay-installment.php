@@ -481,13 +481,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
 
             self::log(
                 'Huabei installment payment request created',
-                'info',
-                array(
-                    'order_id'           => $order_id,
-                    'out_trade_no'       => $out_trade_no,
-                    'amount'             => Alipay_SDK_Helper::format_amount($total),
-                    'installment_period' => $installment_period,
-                )
+                'info'
             );
 
             echo Alipay_SDK_Helper::sanitize_payment_form( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist.

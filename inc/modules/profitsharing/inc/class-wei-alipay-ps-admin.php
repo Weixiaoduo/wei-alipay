@@ -39,6 +39,15 @@ class Wei_Alipay_PS_Admin {
         wp_enqueue_script( 'wei-alipay' );
     }
 
+    /**
+     * Render a nonce field without a repeated DOM id on multi-form views.
+     *
+     * @param string $action Nonce action.
+     */
+    private function nonce_field( $action ) {
+        echo '<input type="hidden" name="_wpnonce" value="' . esc_attr( wp_create_nonce( $action ) ) . '" />';
+    }
+
     private function notice_panel() {
         $notice = get_transient( 'woo_alipay_ps_notice' );
         if ( $notice ) {
@@ -53,8 +62,9 @@ class Wei_Alipay_PS_Admin {
 
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) { return; }
-        echo '<div class="wrap">';
+        echo '<div class="wrap wei-alipay-admin wei-alipay-admin--profitsharing">';
         echo '<h1>' . esc_html__( 'Alipay Profit Sharing', 'wei-alipay' ) . '</h1>';
+        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Configure settlement behavior, receivers and allocation rules without mixing unrelated tasks on one screen.', 'wei-alipay' ) . '</p>';
 
         $this->notice_panel();
 
@@ -63,9 +73,27 @@ class Wei_Alipay_PS_Admin {
         $rules     = get_option( 'woo_alipay_ps_rules', array( 'default' => array() ) );
         $default   = isset( $rules['default'] ) ? $rules['default'] : array();
 
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view selection.
+        $view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'settings';
+        $view = in_array( $view, array( 'settings', 'query', 'receivers', 'rules' ), true ) ? $view : 'settings';
+        $tabs = array(
+            'settings'  => __( 'Settings', 'wei-alipay' ),
+            'query'     => __( 'Settlement Query', 'wei-alipay' ),
+            'receivers' => __( 'Receivers', 'wei-alipay' ),
+            'rules'     => __( 'Allocation Rules', 'wei-alipay' ),
+        );
+        echo '<nav class="nav-tab-wrapper wp-clearfix" aria-label="' . esc_attr__( 'Profit sharing sections', 'wei-alipay' ) . '">';
+        foreach ( $tabs as $tab => $label ) {
+            $class = $view === $tab ? 'nav-tab nav-tab-active' : 'nav-tab';
+            echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( add_query_arg( array( 'page' => 'wei-alipay-profitsharing', 'view' => $tab ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $label ) . '</a>';
+        }
+        echo '</nav>';
+
+        if ( 'settings' === $view ) {
+        echo '<section class="card wei-alipay-card-wide">';
         echo '<h2>' . esc_html__( 'Settings', 'wei-alipay' ) . '</h2>';
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:880px;">';
-        wp_nonce_field( 'woo_alipay_ps_save_settings' );
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" data-wei-dirty>';
+        $this->nonce_field( 'woo_alipay_ps_save_settings' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_save_settings" />';
         echo '<table class="form-table"><tbody>';
         echo '<tr><th>' . esc_html__( 'Execution policy', 'wei-alipay' ) . '</th><td>';
@@ -98,8 +126,12 @@ class Wei_Alipay_PS_Admin {
         echo '<tr><th>' . esc_html__( 'Max confirmation checks', 'wei-alipay' ) . '</th><td><input type="number" min="1" step="1" name="confirm_max_checks" value="' . esc_attr( (string) ( $settings['confirm_max_checks'] ?? '10' ) ) . '" /></td></tr>';
         echo '</tbody></table>';
         submit_button( esc_html__( 'Save settings', 'wei-alipay' ) );
+        echo '<span data-wei-dirty-message aria-live="polite"></span>';
         echo '</form>';
+        echo '</section>';
+        }
 
+        if ( 'query' === $view ) {
         // Query result panel
         $qres = get_transient( 'woo_alipay_ps_query_result' );
         if ( $qres ) {
@@ -134,8 +166,8 @@ class Wei_Alipay_PS_Admin {
         if ( function_exists( 'as_enqueue_async_action' ) ) {
             echo '<p class="description">' . esc_html__( 'Note: Jobs are processed via Action Scheduler. See WooCommerce > Status > Scheduled Actions (group: woo_alipay_ps).', 'wei-alipay' ) . '</p>';
         }
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:880px; margin-bottom: 24px;">';
-        wp_nonce_field( 'woo_alipay_ps_query' );
+        echo '<form class="card wei-alipay-card-wide" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        $this->nonce_field( 'woo_alipay_ps_query' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_query" />';
         echo '<table class="form-table"><tbody>';
         echo '<tr><th><label for="out_request_no">' . esc_html__( 'Out request no', 'wei-alipay' ) . '</label></th><td><input type="text" name="out_request_no" id="out_request_no" class="regular-text" /></td></tr>';
@@ -143,38 +175,40 @@ class Wei_Alipay_PS_Admin {
         echo '</tbody></table>';
         submit_button( esc_html__( 'Query', 'wei-alipay' ) );
         echo '</form>';
+        }
 
-        echo '<hr/>';
+        if ( 'receivers' === $view ) {
         echo '<h2>' . esc_html__( 'Receivers', 'wei-alipay' ) . '</h2>';
 
         // List receivers
         if ( ! empty( $receivers ) ) {
-            echo '<table class="widefat" style="max-width:880px"><thead><tr><th>' . esc_html__( 'Label', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Identity Type', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Identity', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Enabled', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Actions', 'wei-alipay' ) . '</th></tr></thead><tbody>';
+            echo '<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped"><thead><tr><th>' . esc_html__( 'Label', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Identity Type', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Identity', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Enabled', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Actions', 'wei-alipay' ) . '</th></tr></thead><tbody>';
             foreach ( $receivers as $rcv ) {
                 echo '<tr>';
                 echo '<td>' . esc_html( $rcv['label'] ?? '' ) . '</td>';
                 echo '<td>' . esc_html( $rcv['identity_type'] ?? '' ) . '</td>';
                 echo '<td>' . esc_html( $rcv['identity'] ?? '' ) . '</td>';
-                echo '<td>' . ( ! empty( $rcv['enabled'] ) ? '✔' : '✖' ) . '</td>';
+                $enabled_label = ! empty( $rcv['enabled'] ) ? __( 'Enabled', 'wei-alipay' ) : __( 'Inactive', 'wei-alipay' );
+                echo '<td><span class="wei-alipay-status' . ( ! empty( $rcv['enabled'] ) ? ' is-success' : '' ) . '">' . esc_html( $enabled_label ) . '</span></td>';
                 echo '<td>';
-                echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline">';
-                wp_nonce_field( 'woo_alipay_ps_receivers_delete' );
+                echo '<form class="wei-alipay-inline-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+                $this->nonce_field( 'woo_alipay_ps_receivers_delete' );
                 echo '<input type="hidden" name="action" value="woo_alipay_ps_receivers_delete" />';
                 echo '<input type="hidden" name="id" value="' . esc_attr( (string) ( $rcv['id'] ?? '' ) ) . '" />';
-                submit_button( esc_html__( 'Delete', 'wei-alipay' ), 'delete small', '', false );
+                echo '<button type="submit" class="button-link-delete" data-wei-confirm="' . esc_attr__( 'Delete this receiver? Existing order history is retained.', 'wei-alipay' ) . '">' . esc_html__( 'Delete', 'wei-alipay' ) . '</button>';
                 echo '</form>';
                 echo '</td>';
                 echo '</tr>';
             }
-            echo '</tbody></table>';
+            echo '</tbody></table></div>';
         } else {
-            echo '<p>' . esc_html__( 'No receivers yet.', 'wei-alipay' ) . '</p>';
+            echo '<div class="wei-alipay-empty"><p>' . esc_html__( 'No receivers yet.', 'wei-alipay' ) . '</p></div>';
         }
 
         // Add receiver form
         echo '<h3>' . esc_html__( 'Add receiver', 'wei-alipay' ) . '</h3>';
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:880px">';
-        wp_nonce_field( 'woo_alipay_ps_receivers_upsert' );
+        echo '<form class="card wei-alipay-card-wide" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        $this->nonce_field( 'woo_alipay_ps_receivers_upsert' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_receivers_upsert" />';
         echo '<table class="form-table"><tbody>';
         echo '<tr><th><label for="label">' . esc_html__( 'Label', 'wei-alipay' ) . '</label></th><td><input type="text" name="label" id="label" class="regular-text" required /></td></tr>';
@@ -184,12 +218,14 @@ class Wei_Alipay_PS_Admin {
         echo '</tbody></table>';
         submit_button( esc_html__( 'Add', 'wei-alipay' ) );
         echo '</form>';
+        }
 
-        echo '<hr/>';
+        if ( 'rules' === $view ) {
+        echo '<section class="card wei-alipay-card-wide">';
         echo '<h2>' . esc_html__( 'Default rule', 'wei-alipay' ) . '</h2>';
         echo '<p>' . esc_html__( 'Define percentage shares for each receiver. Sum should be ≤ 100%.', 'wei-alipay' ) . '</p>';
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:880px">';
-        wp_nonce_field( 'woo_alipay_ps_rules_save' );
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        $this->nonce_field( 'woo_alipay_ps_rules_save' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_rules_save" />';
         if ( ! empty( $receivers ) ) {
             echo '<table class="form-table"><tbody>';
@@ -202,32 +238,33 @@ class Wei_Alipay_PS_Admin {
                 echo '<tr><th>' . esc_html( $rcv['label'] ?? $rid ) . '</th><td><input type="number" step="0.01" min="0" max="100" name="default_percent[' . esc_attr( $rid ) . ']" value="' . esc_attr( $pct ) . '" /> %</td></tr>';
             }
             echo '</tbody></table>';
-            submit_button( esc_html__( 'Save rule', 'wei-alipay' ) );
+            submit_button( esc_html__( 'Save rule', 'wei-alipay' ), 'primary', 'wei_alipay_save_default_rule' );
         } else {
             echo '<p>' . esc_html__( 'Add receivers first.', 'wei-alipay' ) . '</p>';
         }
         echo '</form>';
+        echo '</section>';
 
-        echo '<hr/>';
+        echo '<section class="card wei-alipay-card-wide">';
         echo '<h2>' . esc_html__( 'Category rules', 'wei-alipay' ) . '</h2>';
         $cat_rules = isset( $rules['category'] ) && is_array( $rules['category'] ) ? $rules['category'] : array();
         if ( ! empty( $cat_rules ) ) {
-            echo '<table class="widefat" style="max-width:880px"><thead><tr><th>' . esc_html__( 'Category ID', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Rules', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Actions', 'wei-alipay' ) . '</th></tr></thead><tbody>';
+            echo '<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped"><thead><tr><th>' . esc_html__( 'Category ID', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Rules', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Actions', 'wei-alipay' ) . '</th></tr></thead><tbody>';
             foreach ( $cat_rules as $cid => $rs ) {
                 echo '<tr><td>' . esc_html( (string) $cid ) . '</td><td>';
                 if ( ! empty( $rs ) ) {
-                    echo '<ul style="margin:0">';
+                    echo '<ul class="ul-disc">';
                     foreach ( $rs as $r ) {
                         $rid = (string) ( $r['receiver_id'] ?? '' );
                         $label = isset( $receivers[ $rid ]['label'] ) ? $receivers[ $rid ]['label'] : $rid;
                         $pct = (float) ( $r['percent'] ?? 0 );
                         echo '<li>' . esc_html( $label ) . ': ' . esc_html( $pct ) . '% ';
-                        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline">';
-                        wp_nonce_field( 'woo_alipay_ps_category_rule_delete' );
+                        echo '<form class="wei-alipay-inline-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+                        $this->nonce_field( 'woo_alipay_ps_category_rule_delete' );
                         echo '<input type="hidden" name="action" value="woo_alipay_ps_category_rule_delete" />';
                         echo '<input type="hidden" name="category_id" value="' . esc_attr( (string) $cid ) . '" />';
                         echo '<input type="hidden" name="receiver_id" value="' . esc_attr( $rid ) . '" />';
-                        submit_button( esc_html__( 'Delete', 'wei-alipay' ), 'delete small', '', false );
+                        echo '<button type="submit" class="button-link-delete" data-wei-confirm="' . esc_attr__( 'Delete this category allocation rule?', 'wei-alipay' ) . '">' . esc_html__( 'Delete', 'wei-alipay' ) . '</button>';
                         echo '</form>';
                         echo '</li>';
                     }
@@ -235,14 +272,14 @@ class Wei_Alipay_PS_Admin {
                 }
                 echo '</td><td></td></tr>';
             }
-            echo '</tbody></table>';
+            echo '</tbody></table></div>';
         } else {
-            echo '<p>' . esc_html__( 'No category rules yet.', 'wei-alipay' ) . '</p>';
+            echo '<div class="wei-alipay-empty"><p>' . esc_html__( 'No category rules yet.', 'wei-alipay' ) . '</p></div>';
         }
 
         echo '<h3>' . esc_html__( 'Add category rule', 'wei-alipay' ) . '</h3>';
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:880px">';
-        wp_nonce_field( 'woo_alipay_ps_category_rule_add' );
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        $this->nonce_field( 'woo_alipay_ps_category_rule_add' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_category_rule_add" />';
         echo '<table class="form-table"><tbody>';
         // Category selector
@@ -269,30 +306,31 @@ class Wei_Alipay_PS_Admin {
         }
         echo '<tr><th><label for="percent">' . esc_html__( 'Percent', 'wei-alipay' ) . '</label></th><td><input type="number" step="0.01" min="0" max="100" name="percent" id="percent" required /> %</td></tr>';
         echo '</tbody></table>';
-        submit_button( esc_html__( 'Add rule', 'wei-alipay' ) );
+        submit_button( esc_html__( 'Add rule', 'wei-alipay' ), 'primary', 'wei_alipay_add_category_rule' );
         echo '</form>';
+        echo '</section>';
 
         // Product-level rules section
-        echo '<hr/>';
+        echo '<section class="card wei-alipay-card-wide">';
         echo '<h2>' . esc_html__( 'Product rules', 'wei-alipay' ) . '</h2>';
         $prd_rules = isset( $rules['product'] ) && is_array( $rules['product'] ) ? $rules['product'] : array();
         if ( ! empty( $prd_rules ) ) {
-            echo '<table class="widefat" style="max-width:880px"><thead><tr><th>' . esc_html__( 'Product ID', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Rules', 'wei-alipay' ) . '</th></tr></thead><tbody>';
+            echo '<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped"><thead><tr><th>' . esc_html__( 'Product ID', 'wei-alipay' ) . '</th><th>' . esc_html__( 'Rules', 'wei-alipay' ) . '</th></tr></thead><tbody>';
             foreach ( $prd_rules as $pid => $rs ) {
                 echo '<tr><td>' . esc_html( (string) $pid ) . '</td><td>';
                 if ( ! empty( $rs ) ) {
-                    echo '<ul style="margin:0">';
+                    echo '<ul class="ul-disc">';
                     foreach ( $rs as $r ) {
                         $rid2 = (string) ( $r['receiver_id'] ?? '' );
                         $label2 = isset( $receivers[ $rid2 ]['label'] ) ? $receivers[ $rid2 ]['label'] : $rid2;
                         $pct2 = (float) ( $r['percent'] ?? 0 );
                         echo '<li>' . esc_html( $label2 ) . ': ' . esc_html( $pct2 ) . '% ';
-                        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline">';
-                        wp_nonce_field( 'woo_alipay_ps_product_rule_delete' );
+                        echo '<form class="wei-alipay-inline-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+                        $this->nonce_field( 'woo_alipay_ps_product_rule_delete' );
                         echo '<input type="hidden" name="action" value="woo_alipay_ps_product_rule_delete" />';
                         echo '<input type="hidden" name="product_id" value="' . esc_attr( (string) $pid ) . '" />';
                         echo '<input type="hidden" name="receiver_id" value="' . esc_attr( $rid2 ) . '" />';
-                        submit_button( esc_html__( 'Delete', 'wei-alipay' ), 'delete small', '', false );
+                        echo '<button type="submit" class="button-link-delete" data-wei-confirm="' . esc_attr__( 'Delete this product allocation rule?', 'wei-alipay' ) . '">' . esc_html__( 'Delete', 'wei-alipay' ) . '</button>';
                         echo '</form>';
                         echo '</li>';
                     }
@@ -300,24 +338,24 @@ class Wei_Alipay_PS_Admin {
                 }
                 echo '</td></tr>';
             }
-            echo '</tbody></table>';
+            echo '</tbody></table></div>';
         } else {
-            echo '<p>' . esc_html__( 'No product rules yet.', 'wei-alipay' ) . '</p>';
+            echo '<div class="wei-alipay-empty"><p>' . esc_html__( 'No product rules yet.', 'wei-alipay' ) . '</p></div>';
         }
 
         echo '<h3>' . esc_html__( 'Add product rule', 'wei-alipay' ) . '</h3>';
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:880px">';
-        wp_nonce_field( 'woo_alipay_ps_product_rule_add' );
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        $this->nonce_field( 'woo_alipay_ps_product_rule_add' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_product_rule_add" />';
         echo '<table class="form-table"><tbody>';
 // Product selector (autocomplete-like)
         $prods = get_posts( array( 'post_type' => 'product', 'posts_per_page' => 200, 'post_status' => 'publish' ) );
-        echo '<tr><th><label for=\"product_id\">' . esc_html__( 'Product', 'wei-alipay' ) . '</label></th><td>';
-        echo '<input type=\"text\" name=\"product_id\" id=\"product_id\" list=\"woo_alipay_ps_product_list\" class=\"regular-text\" placeholder=\"ID or Name (#ID)\" required />';
-        echo '<datalist id=\"woo_alipay_ps_product_list\">';
+        echo '<tr><th><label for="product_id">' . esc_html__( 'Product', 'wei-alipay' ) . '</label></th><td>';
+        echo '<input type="text" name="product_id" id="product_id" list="woo_alipay_ps_product_list" class="regular-text" placeholder="ID or Name (#ID)" required />';
+        echo '<datalist id="woo_alipay_ps_product_list">';
         if ( ! empty( $prods ) ) {
             foreach ( $prods as $p ) {
-                echo '<option value=\"' . esc_attr( $p->post_title . ' (#' . $p->ID . ')' ) . '\"></option>';
+                echo '<option value="' . esc_attr( $p->post_title . ' (#' . $p->ID . ')' ) . '"></option>';
             }
         }
         echo '</datalist>';
@@ -333,8 +371,10 @@ class Wei_Alipay_PS_Admin {
         }
         echo '<tr><th><label for="prd_percent">' . esc_html__( 'Percent', 'wei-alipay' ) . '</label></th><td><input type="number" step="0.01" min="0" max="100" name="percent" id="prd_percent" required /> %</td></tr>';
         echo '</tbody></table>';
-        submit_button( esc_html__( 'Add product rule', 'wei-alipay' ) );
+        submit_button( esc_html__( 'Add product rule', 'wei-alipay' ), 'primary', 'wei_alipay_add_product_rule' );
         echo '</form>';
+        echo '</section>';
+        }
 
         echo '</div>';
     }

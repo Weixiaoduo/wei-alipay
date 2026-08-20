@@ -14,6 +14,7 @@ $loader = file_get_contents( $root . '/wei-alipay.php' );
 $features = file_get_contents( $root . '/inc/class-wei-alipay-features.php' );
 $admin = file_get_contents( $root . '/inc/class-wei-alipay.php' );
 $css = file_get_contents( $root . '/css/admin/features.css' );
+$shared_css = file_get_contents( $root . '/css/admin/design-system.css' );
 $js = file_get_contents( $root . '/js/admin/features.js' );
 
 $gates = array(
@@ -38,8 +39,8 @@ $expect( false !== strpos( $admin, "Wei_Alipay_Features::render()" ), 'independe
 $expect( false !== strpos( $admin, "Wei_Alipay_Features::is_enabled( 'reconcile' )" ), 'fallback reconciliation menu is conditional' );
 $expect( false !== strpos( $admin, 'Wei_Alipay_Features::maybe_migrate()' ), 'multisite activation migrates the feature allow-list per site' );
 
-foreach ( array( '--wei-alipay-space-2', '--wei-alipay-color-accent', 'prefers-reduced-motion', '@media (max-width: 800px)' ) as $contract ) {
-	$expect( false !== strpos( $css, $contract ), "admin CSS includes {$contract}" );
+foreach ( array( '--wei-space-2', '--wei-color-accent', 'prefers-reduced-motion', '@media (max-width: 782px)' ) as $contract ) {
+	$expect( false !== strpos( $shared_css, $contract ), "shared admin CSS includes {$contract}" );
 }
 $expect( false !== strpos( $js, "beforeunload" ), 'unsaved feature changes have a navigation guard' );
 $expect( false !== strpos( $js, "submit.disabled = false" ), 'save action is enabled only after a change' );

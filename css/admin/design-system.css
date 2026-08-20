@@ -1,0 +1,130 @@
+:root {
+	/* Aliases only: WordPress owns the visual language and remains the fallback. */
+	--wei-color-text: #1d2327;
+	--wei-color-muted: #646970;
+	--wei-color-border: #c3c4c7;
+	--wei-color-surface: #fff;
+	--wei-color-subtle: #f6f7f7;
+	--wei-color-accent: var(--wp-admin-theme-color, #2271b1);
+	--wei-space-1: 4px;
+	--wei-space-2: 8px;
+	--wei-space-3: 12px;
+	--wei-space-4: 16px;
+	--wei-space-5: 20px;
+	--wei-space-6: 24px;
+	--wei-content-wide: 1180px;
+}
+
+/* Do not restyle WordPress buttons, notices, tabs, forms or list tables here. */
+.wei-alipay-admin {
+	max-width: var(--wei-content-wide);
+}
+
+.wei-alipay-admin__description {
+	max-width: 760px;
+	margin: 4px 0 20px;
+	color: var(--wei-color-muted);
+	font-size: 14px;
+	line-height: 1.6;
+}
+
+.wei-alipay-admin .nav-tab-wrapper {
+	margin-bottom: 20px;
+}
+
+.wei-alipay-admin .card.wei-alipay-card-wide {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: none;
+	margin: 0 0 20px;
+}
+
+.wei-alipay-admin .card > h2:first-child,
+.wei-alipay-admin .card > h3:first-child {
+	margin-top: 0;
+}
+
+.wei-alipay-table-wrap {
+	width: 100%;
+	overflow-x: auto;
+}
+
+.wei-alipay-table-wrap .wp-list-table {
+	min-width: 760px;
+}
+
+.wei-alipay-inline-form {
+	display: inline-block;
+	margin: 0;
+}
+
+.wei-alipay-actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 12px 0 16px;
+}
+
+.wei-alipay-actions form,
+.wei-alipay-actions .submit {
+	margin: 0;
+	padding: 0;
+}
+
+.wei-alipay-status {
+	display: inline-block;
+	padding: 2px 7px;
+	border: 1px solid var(--wei-color-border);
+	border-radius: 2px;
+	background: var(--wei-color-subtle);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.wei-alipay-status.is-success { border-color: #68de7c; background: #edfaef; }
+.wei-alipay-status.is-warning { border-color: #dba617; background: #fcf9e8; }
+.wei-alipay-status.is-error { border-color: #d63638; background: #fcf0f1; }
+
+.wei-alipay-empty {
+	padding: 32px 16px;
+	text-align: center;
+	color: var(--wei-color-muted);
+}
+
+.wei-alipay-admin pre.wei-alipay-code {
+	max-width: 100%;
+	padding: 12px;
+	overflow: auto;
+	border: 1px solid var(--wei-color-border);
+	background: var(--wei-color-subtle);
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.wei-alipay-admin [data-wei-dirty-message] {
+	margin-left: 8px;
+	color: var(--wei-color-muted);
+}
+
+@media (max-width: 782px) {
+	.wei-alipay-admin .nav-tab-wrapper {
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+
+	.wei-alipay-actions {
+		align-items: stretch;
+		flex-direction: column;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wei-alipay-admin *,
+	.wei-alipay-admin *::before,
+	.wei-alipay-admin *::after {
+		scroll-behavior: auto !important;
+		transition-duration: 0s !important;
+		animation-duration: 0s !important;
+	}
+}

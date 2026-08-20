@@ -415,15 +415,18 @@ class WC_Alipay_Webhook_Retry {
 		$total_pages = ceil( $total_items / $per_page );
 
 		?>
-		<div class="wrap">
+		<div class="wrap wei-alipay-admin">
 			<h1><?php esc_html_e( 'Alipay Webhook Logs', 'wei-alipay' ); ?></h1>
+			<p class="wei-alipay-admin__description"><?php esc_html_e( 'Inspect callback processing and retry failed records. Stored request data is limited to an allow-list and never includes signatures or private keys.', 'wei-alipay' ); ?></p>
 			
 			<ul class="subsubsub">
-				<li><a href="?page=wei-alipay-webhooks&status=all" <?php echo 'all' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: total webhook log count */ printf( esc_html__( 'All (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $total ) ) ); ?></a> |</li>
-				<li><a href="?page=wei-alipay-webhooks&status=pending" <?php echo 'pending' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: pending webhook log count */ printf( esc_html__( 'Pending (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $pending ) ) ); ?></a> |</li>
-				<li><a href="?page=wei-alipay-webhooks&status=success" <?php echo 'success' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: successful webhook log count */ printf( esc_html__( 'Success (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $success ) ) ); ?></a> |</li>
-				<li><a href="?page=wei-alipay-webhooks&status=failed" <?php echo 'failed' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: failed webhook log count */ printf( esc_html__( 'Failed (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $failed ) ) ); ?></a></li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=wei-alipay-webhooks&status=all' ) ); ?>" <?php echo 'all' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: total webhook log count */ printf( esc_html__( 'All (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $total ) ) ); ?></a> |</li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=wei-alipay-webhooks&status=pending' ) ); ?>" <?php echo 'pending' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: pending webhook log count */ printf( esc_html__( 'Pending (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $pending ) ) ); ?></a> |</li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=wei-alipay-webhooks&status=success' ) ); ?>" <?php echo 'success' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: successful webhook log count */ printf( esc_html__( 'Success (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $success ) ) ); ?></a> |</li>
+				<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=wei-alipay-webhooks&status=failed' ) ); ?>" <?php echo 'failed' === $current_status ? 'class="current"' : ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed literal attribute. ?>><?php /* translators: %d: failed webhook log count */ printf( esc_html__( 'Failed (%d)', 'wei-alipay' ), esc_html( number_format_i18n( $failed ) ) ); ?></a></li>
 			</ul>
+			<br class="clear" />
+			<div class="notice notice-info inline"><p><?php esc_html_e( 'Retrying may query Alipay for current transaction status. Select only records that require another verification attempt.', 'wei-alipay' ); ?></p></div>
 
 			<form method="post">
 				<?php wp_nonce_field( 'bulk-webhooks' ); ?>
@@ -431,14 +434,14 @@ class WC_Alipay_Webhook_Retry {
 				
 				<div class="tablenav top">
 					<div class="alignleft actions">
-						<input type="submit" class="button action" value="<?php esc_html_e( 'Retry Selected', 'wei-alipay' ); ?>" />
+						<input type="submit" class="button action" data-wei-confirm="<?php echo esc_attr__( 'Retry the selected webhook records now?', 'wei-alipay' ); ?>" value="<?php esc_html_e( 'Retry Selected', 'wei-alipay' ); ?>" />
 					</div>
 				</div>
 
-				<table class="wp-list-table widefat fixed striped">
+				<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped">
 					<thead>
 						<tr>
-							<td class="check-column"><input type="checkbox" /></td>
+							<td class="check-column"><input type="checkbox" id="wei-alipay-select-all" aria-label="<?php echo esc_attr__( 'Select all webhook records', 'wei-alipay' ); ?>" /></td>
 							<th><?php esc_html_e( 'Order', 'wei-alipay' ); ?></th>
 							<th><?php esc_html_e( 'Trade No', 'wei-alipay' ); ?></th>
 							<th><?php esc_html_e( 'Status', 'wei-alipay' ); ?></th>
@@ -450,7 +453,7 @@ class WC_Alipay_Webhook_Retry {
 					</thead>
 					<tbody>
 						<?php if ( empty( $webhooks ) ) : ?>
-							<tr><td colspan="8"><?php esc_html_e( 'No webhook logs found.', 'wei-alipay' ); ?></td></tr>
+							<tr class="no-items"><td class="colspanchange" colspan="8"><?php esc_html_e( 'No webhook logs match the current filter.', 'wei-alipay' ); ?></td></tr>
 						<?php else : ?>
 							<?php foreach ( $webhooks as $webhook ) : ?>
 								<tr>
@@ -464,7 +467,8 @@ class WC_Alipay_Webhook_Retry {
 									</td>
 									<td><?php echo esc_html( $webhook->trade_no ? $webhook->trade_no : '-' ); ?></td>
 									<td>
-										<span class="status-<?php echo esc_attr( $webhook->status ); ?>">
+										<?php $status_class = 'success' === $webhook->status ? 'is-success' : ( 'failed' === $webhook->status ? 'is-error' : 'is-warning' ); ?>
+										<span class="wei-alipay-status <?php echo esc_attr( $status_class ); ?>">
 											<?php echo esc_html( ucfirst( $webhook->status ) ); ?>
 										</span>
 									</td>
@@ -482,7 +486,7 @@ class WC_Alipay_Webhook_Retry {
 							<?php endforeach; ?>
 						<?php endif; ?>
 					</tbody>
-				</table>
+				</table></div>
 
 				<?php if ( $total_pages > 1 ) : ?>
 					<div class="tablenav bottom">
@@ -503,6 +507,9 @@ class WC_Alipay_Webhook_Retry {
 
 		<script>
 		jQuery(document).ready(function($) {
+			$('#wei-alipay-select-all').on('change', function() {
+				$('input[name="webhook_ids[]"]').prop('checked', this.checked);
+			});
 			$('.wei-alipay-retry-webhook').on('click', function() {
 				var $btn = $(this);
 				var webhookId = $btn.data('webhook-id');
@@ -524,17 +531,16 @@ class WC_Alipay_Webhook_Retry {
 							alert(response.data.message);
 							$btn.prop('disabled', false).text('<?php esc_html_e( 'Retry', 'wei-alipay' ); ?>');
 						}
+					},
+					error: function() {
+						alert(<?php echo wp_json_encode( __( 'The retry request could not be completed. Check the connection and try again.', 'wei-alipay' ) ); ?>);
+						$btn.prop('disabled', false).text(<?php echo wp_json_encode( __( 'Retry', 'wei-alipay' ) ); ?>);
 					}
 				});
 			});
 		});
 		</script>
 
-		<style>
-		.status-pending { color: #f0ad4e; }
-		.status-success { color: #5cb85c; }
-		.status-failed { color: #d9534f; }
-		</style>
 		<?php
 	}
 

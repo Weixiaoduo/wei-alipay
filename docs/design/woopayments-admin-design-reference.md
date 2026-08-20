@@ -8,10 +8,10 @@ The inspected package is the locally installed WooPayments 11.0.0 at `wp-content
 
 | Artifact | Bytes | SHA-256 |
 | --- | ---: | --- |
-| `dist/settings.css` | 77,785 | `45869ae6f001d81d8534f33eed182d870739d28bd23a6498ab5b6de836c9493f` |
-| `dist/index.css` | 20,924 | `27f4796142e0ab4e010d30d725a2c43a8a6d09249e9128470b7542f754d01c61` |
-| `dist/wcpay-overview.css` | 24,822 | `538443bb5805cb0bab501bc0248fc1f85ccd342417634437603862380d9ebf06` |
-| `dist/plugins-page.css` | 1,090 | `2214169c9c512f4c597a0d7b2764fe2f2ab528dc6b1979b0a6538666155121de` |
+| `dist/settings.css` | 77,785 | `45869ae6f001b375818d6a759f829f2bc3f8b73c47ee92269cdb23111715fc1d` |
+| `dist/index.css` | 20,924 | `27f4796142e0cc758a06c8a77aa10e8fb591e8b75c1313ff44c8c36495461aed` |
+| `dist/wcpay-overview.css` | 24,822 | `538443bb5805b69859ee1b1b595e6ced00feb7b1e2417910f4a77ad0fc19a675` |
+| `dist/plugins-page.css` | 1,090 | `2214169c9c519abbde10f3a04c3d00111b7ee0933b36201b6907952b4db7fd16` |
 
 `docs/design/woopayments-admin-tokens.json` is the full sorted inventory of colors, typography, spacing atoms, radii, shadows, breakpoints and motion values found in those four files. Rebuild it with:
 
@@ -29,41 +29,35 @@ The package source maps also expose the original component paths used to verify 
 
 The draggable payment-method list shown by WooCommerce is primarily a WooCommerce core Payments screen. It must not be described as a WooPayments-only component. Wei Alipay controls whether its optional gateways are registered into that screen; WooCommerce owns the list shell and ordering interaction.
 
-## Adopted tokens
+## Native-first adoption boundary
 
-Wei Alipay adopts the recurring administration values rather than every one-off raw value:
+The inventory is evidence, not a mandate to recreate WooPayments. `DESIGN.md` is the implementation contract. Wei Alipay first uses public WordPress admin classes and inherited styles. Its tokens are aliases for the small number of gaps that WordPress core does not cover.
 
 | Role | Value |
 | --- | --- |
-| Content width | `1032px` |
-| Main spacing | `4, 8, 12, 16, 24, 32px` |
-| Primary / secondary text | `#1e1e1e` / `#646970` |
+| Content width | `1180px` maximum for operational tables |
+| Supplemental spacing | `4, 8, 12, 16, 20, 24px` |
+| Primary / secondary text | `#1d2327` / `#646970` |
 | Surface / subtle surface | `#fff` / `#f6f7f7` |
-| Border | `#e0e0e0` |
-| Accent | WordPress component accent, then admin theme color, then `#007cba` |
-| Success | `#edfaef` / `#005c12` |
-| Warning | `#fcf9e8` / `#614200` |
-| Danger | `#fcf0f1` / `#8a2424` |
-| Chip | `13px`, `4px 8px`, `3px` radius |
-| Row | `24px` padding; `600 14px/20px` title; `400 13px/20px` description |
-| Card | `4px` radius; `0 2px 6px rgba(0,0,0,.05)` shadow |
-| Responsive | two-column above `800px`, compact treatment below `600px` |
-| Motion | `150ms`; removed for `prefers-reduced-motion` |
+| Border | WordPress-aligned `#c3c4c7` fallback |
+| Accent | `--wp-admin-theme-color`, then `#2271b1` |
+| Responsive | WordPress admin breakpoint at `782px` |
+| Motion | inherited; removed for `prefers-reduced-motion` |
 
-All implementations live under the `wei-alipay-*` namespace in `css/admin/features.css`. This avoids coupling to private WooPayments selectors.
+Native components used are `wrap`, `nav-tab-wrapper`, `nav-tab`, `notice`, `card`, `form-table`, `wp-list-table`, `widefat`, `striped`, `tablenav`, `button`, `button-primary` and `button-link-delete`. `css/admin/design-system.css` adds only a wide-card escape, horizontal table overflow, compact status text, empty-state spacing, inline form layout, dirty-state copy and reduced-motion handling. The feature selector remains a deliberate custom screen in `css/admin/features.css` because WordPress has no native module-toggle list.
 
 ## Adopted interaction model
 
 1. **Progressive disclosure.** The main Alipay gateway is always present. Optional payment methods and operational tools are off unless an explicit existing setting is migrated or an operator enables them.
 2. **Two-step payment activation.** A feature toggle controls code registration. The corresponding WooCommerce gateway setting controls checkout availability. The page explains both states rather than silently enabling a payment method.
-3. **Settings section layout.** Each group has a short explanatory column and a card of controls. It stacks at narrow widths.
-4. **Semantic state chips.** `Active/Enabled`, `Inactive`, `Action needed` and `Dependency missing` use semantic color pairs and text; color is not the only signal.
+3. **Settings section layout.** Operational pages use native WordPress headings, cards, form tables, notices and list tables. Only the feature selector uses the studied two-column module layout.
+4. **Semantic state text.** `Active/Enabled`, `Inactive`, `Action needed` and `Dependency missing` always remain visible as text; color is not the only signal.
 5. **Immediate local feedback, explicit persistence.** Toggling updates the status preview, marks the form dirty and enables the Save button. A navigation guard protects unsaved changes. The server remains authoritative after POST.
 6. **Dependency gating.** A missing WooCommerce Subscriptions dependency disables the relevant toggle and explains how to resolve it. Existing stored preference is preserved rather than silently erased.
 7. **Accessible native form behavior.** Checkboxes remain actual form controls with screen-reader labels, keyboard focus rings and no JavaScript requirement for saving.
-8. **Scoped loading.** Feature-centre assets load only on `toplevel_page_wei-alipay`. Disabled modules do not register payment gateways, admin pages or their normal runtime hooks.
+8. **Scoped loading.** Shared enhancement assets load only on Wei Alipay pages; feature-centre specialization loads only on `toplevel_page_wei-alipay`. Disabled modules do not register payment gateways, admin pages or their normal runtime hooks.
 9. **Safe disablement.** Disabling a feature preserves settings, financial history and order metadata. Only module-owned pending schedules are unscheduled.
-10. **Confirmation boundary.** High-impact future actions such as deleting retained configuration or rotating credentials should use an explicit confirmation modal with consequences, cancel as the safe default and right-aligned actions. The current feature toggles do not delete data, so no modal is needed.
+10. **Confirmation boundary.** High-impact actions name their consequences and use a confirmation prompt; cancel remains the safe default. Feature toggles preserve data and need no prompt.
 
 ## Deliberately not copied
 

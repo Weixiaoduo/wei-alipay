@@ -195,25 +195,35 @@ class Wei_Alipay_Features {
 	}
 
 	/**
-	 * Load namespaced assets only on the feature centre.
+	 * Load the shared design system on Wei Alipay admin surfaces.
 	 *
 	 * @param string $hook Admin page hook.
 	 */
 	public static function enqueue_assets( $hook ) {
-		if ( 'toplevel_page_wei-alipay' !== $hook ) {
+		$is_feature_page = 'toplevel_page_wei-alipay' === $hook;
+		$is_tool_page = 0 === strpos( (string) $hook, 'wei-alipay_page_wei-alipay-' );
+		if ( ! $is_feature_page && ! $is_tool_page ) {
 			return;
 		}
-		$css = WEI_ALIPAY_PLUGIN_PATH . 'css/admin/features.css';
-		$js = WEI_ALIPAY_PLUGIN_PATH . 'js/admin/features.js';
-		wp_enqueue_style( 'wei-alipay-features', WEI_ALIPAY_PLUGIN_URL . 'css/admin/features.css', array(), filemtime( $css ) );
-		wp_enqueue_script( 'wei-alipay-features', WEI_ALIPAY_PLUGIN_URL . 'js/admin/features.js', array(), filemtime( $js ), true );
+		$design_css = WEI_ALIPAY_PLUGIN_PATH . 'css/admin/design-system.css';
+		$design_js = WEI_ALIPAY_PLUGIN_PATH . 'js/admin/design-system.js';
+		wp_enqueue_style( 'wei-alipay-design-system', WEI_ALIPAY_PLUGIN_URL . 'css/admin/design-system.css', array(), filemtime( $design_css ) );
+		wp_enqueue_script( 'wei-alipay-design-system', WEI_ALIPAY_PLUGIN_URL . 'js/admin/design-system.js', array(), filemtime( $design_js ), true );
 		wp_localize_script(
-			'wei-alipay-features',
-			'WeiAlipayFeatures',
+			'wei-alipay-design-system',
+			'WeiAlipayDesign',
 			array(
 				'unsavedChanges' => __( 'Unsaved changes', 'wei-alipay' ),
 			)
 		);
+		if ( ! $is_feature_page ) {
+			return;
+		}
+		$css = WEI_ALIPAY_PLUGIN_PATH . 'css/admin/features.css';
+		$js = WEI_ALIPAY_PLUGIN_PATH . 'js/admin/features.js';
+		wp_enqueue_style( 'wei-alipay-features', WEI_ALIPAY_PLUGIN_URL . 'css/admin/features.css', array( 'wei-alipay-design-system' ), filemtime( $css ) );
+		wp_enqueue_script( 'wei-alipay-features', WEI_ALIPAY_PLUGIN_URL . 'js/admin/features.js', array( 'wei-alipay-design-system' ), filemtime( $js ), true );
+		wp_localize_script( 'wei-alipay-features', 'WeiAlipayFeatures', array( 'unsavedChanges' => __( 'Unsaved changes', 'wei-alipay' ) ) );
 	}
 
 	/**
@@ -228,7 +238,7 @@ class Wei_Alipay_Features {
 		$main = get_option( 'woocommerce_alipay_settings', array() );
 		$main_active = is_array( $main ) && isset( $main['enabled'] ) && 'yes' === $main['enabled'];
 
-		echo '<div class="wrap wei-alipay-features">';
+		echo '<div class="wrap wei-alipay-admin wei-alipay-features">';
 		echo '<div class="wei-alipay-features__header"><div><h1>' . esc_html__( 'Wei Alipay', 'wei-alipay' ) . '</h1><p>' . esc_html__( 'Choose which payment methods and operational tools this store loads.', 'wei-alipay' ) . '</p></div>';
 		echo '<a class="button" href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ) ) . '">' . esc_html__( 'Main gateway settings', 'wei-alipay' ) . '</a></div>';
 		if ( isset( $_GET['features-updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- success notice only.

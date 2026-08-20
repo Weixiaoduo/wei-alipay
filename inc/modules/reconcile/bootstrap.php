@@ -30,7 +30,7 @@ add_action( 'admin_post_woo_alipay_reconcile_run', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) ) {
         wp_die( esc_html__( 'You are not allowed to do this.', 'wei-alipay' ) );
     }
-    check_admin_referer( 'woo_alipay_reconcile_run' );
+    check_admin_referer( 'woo_alipay_reconcile_run', 'woo_alipay_reconcile_run_nonce' );
 
     $date = isset( $_POST['bill_date'] ) ? sanitize_text_field( wp_unslash( $_POST['bill_date'] ) ) : '';
     $type = isset( $_POST['bill_type'] ) ? sanitize_key( wp_unslash( $_POST['bill_type'] ) ) : 'trade';

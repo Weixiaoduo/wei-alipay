@@ -32,14 +32,15 @@ class Wei_Alipay_PS_Comp_Admin {
 
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) { return; }
-        echo '<div class="wrap">';
-        echo '<h1>' . esc_html__( 'Alipay Profit Sharing - Manual Compensation', 'wei-alipay' ) . '</h1>';
+        echo '<div class="wrap wei-alipay-admin">';
+        echo '<h1>' . esc_html__( 'Alipay Profit Sharing Compensation', 'wei-alipay' ) . '</h1>';
+        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Create a one-time additional settlement for a specific paid order and receiver.', 'wei-alipay' ) . '</p>';
         $this->notice_panel();
         $receivers = get_option( 'woo_alipay_ps_receivers', array() );
 
-        echo '<p class="description">' . esc_html__( 'Use this form to manually create an additional settlement (compensation) for a specific order and receiver. It will call order settle with a single royalty item.', 'wei-alipay' ) . '</p>';
+        echo '<div class="notice notice-warning inline"><p><strong>' . esc_html__( 'This action sends a settlement request to Alipay.', 'wei-alipay' ) . '</strong> ' . esc_html__( 'Verify the order, receiver and amount before continuing. The generated request number prevents accidental reuse.', 'wei-alipay' ) . '</p></div>';
 
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="max-width:800px">';
+        echo '<form class="card wei-alipay-card-wide" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
         wp_nonce_field( 'woo_alipay_ps_compensate' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_compensate" />';
         echo '<table class="form-table"><tbody>';
@@ -59,7 +60,7 @@ class Wei_Alipay_PS_Comp_Admin {
         echo '<tr><th><label for="amount">' . esc_html__( 'Amount (CNY)', 'wei-alipay' ) . '</label></th><td><input type="number" step="0.01" min="0.01" name="amount" id="amount" required /></td></tr>';
         echo '<tr><th><label for="desc">' . esc_html__( 'Description', 'wei-alipay' ) . '</label></th><td><input type="text" name="desc" id="desc" class="regular-text" value="Manual Compensation" /></td></tr>';
         echo '</tbody></table>';
-        submit_button( esc_html__( 'Create Compensation', 'wei-alipay' ) );
+        echo '<p class="submit"><button type="submit" class="button button-primary" data-wei-confirm="' . esc_attr__( 'Send this compensation settlement request to Alipay?', 'wei-alipay' ) . '">' . esc_html__( 'Create Compensation', 'wei-alipay' ) . '</button></p>';
         echo '</form>';
 
         echo '</div>';
@@ -79,7 +80,7 @@ class Wei_Alipay_PS_Comp_Admin {
 
         $order = $order_id ? wc_get_order( $order_id ) : false;
         if ( ! $order || $amount <= 0 ) {
-            set_transient( 'woo_alipay_ps_comp_notice', array( 'error' => __( '订单或金额不合法。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
+            set_transient( 'woo_alipay_ps_comp_notice', array( 'error' => __( 'The order or amount is invalid.', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
             wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-ps-compensation' ) );
             exit;
         }
@@ -136,7 +137,7 @@ class Wei_Alipay_PS_Comp_Admin {
         $order->update_meta_data( '_alipay_ps_comp', $log );
         $order->save();
 
-        set_transient( 'woo_alipay_ps_comp_notice', array( 'success' => __( '已创建补偿结算并安排确认。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
+        set_transient( 'woo_alipay_ps_comp_notice', array( 'success' => __( 'The compensation settlement was created and confirmation was scheduled.', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
         wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-ps-compensation' ) );
         exit;
     }

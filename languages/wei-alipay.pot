@@ -1,117 +1,940 @@
-#, fuzzy
+# Copyright (C) 2026 Weixiaoduo.com
+# This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Payment gateway for WooCommerce - Wei Alipay\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-10 16:51+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Project-Id-Version: Wei Alipay Payment Gateway for WooCommerce 4.0.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/repo\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.3.1; wp-5.3.2"
+"POT-Creation-Date: 2026-08-20T11:16:17+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wei-alipay\n"
 
-#. %1$s is the URL of the link and %2$s is the currency name
-#: inc/class-wc-alipay.php:232
-#, php-format
-msgid ""
-" Please <a href=\"%1$s\">set the %2$s against the Chinese Yuan exchange "
-"rate</a>."
+#. Plugin Name of the plugin
+#: wei-alipay.php
+msgid "Wei Alipay Payment Gateway for WooCommerce"
 msgstr ""
 
-#: inc/templates/admin/config-help.php:193
-msgid "(option 1)"
+#. Plugin URI of the plugin
+#: wei-alipay.php
+msgid "https://wenpai.org/plugins/wei-alipay"
 msgstr ""
 
-#: inc/templates/admin/config-help.php:247
-msgid "(option 2)"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:307
-msgid "(requires completing option 1 or option 2 above)"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:163
-msgid "1 - Generating keys:"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:353
-msgid ""
-"2 - Using the application private key and finding the Alipay public key:"
-msgstr ""
-
-#: inc/class-wc-email-alipay-orphan-transaction.php:39
-msgid ""
-"[{site_title}]: Order #{order_number} was not found but an Alipay "
-"transaction was registered"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:58
-msgid ""
-"Activate payment features and configure the app with the gateway information "
-"(see \"Register features, website URL and callback\" below)."
+#. Description of the plugin
+#: wei-alipay.php
+msgid "Integrate Woocommerce with Alipay (Mainland China). Supports WooCommerce Blocks and HPOS."
 msgstr ""
 
 #. Author of the plugin
-msgid "Alexandre Froger"
+#: wei-alipay.php
+msgid "Weixiaoduo.com"
 msgstr ""
 
-#: inc/class-wc-alipay.php:230
-msgid "Aliay is enabled, but the store currency is not set to Chinese Yuan."
+#. Author URI of the plugin
+#: wei-alipay.php
+msgid "https://weixiaoduo.com/"
 msgstr ""
 
-#: inc/class-wc-alipay.php:578
-msgid "Alipay"
+#: enable-gateways.php:20
+msgid "无效的安全令牌。"
 msgstr ""
 
-#: inc/class-wc-alipay.php:586
-msgid "Alipay App ID"
+#: inc/class-alipay-sdk-helper.php:234
+msgid "Merchant order number is invalid."
 msgstr ""
 
-#: inc/class-wc-alipay.php:31
+#: inc/class-alipay-sdk-helper.php:278
+msgid "Merchant order number matches multiple orders."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:280
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:389
+msgid "Order not found."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:340
+#: inc/class-alipay-sdk-helper.php:412
+#: inc/modules/cross-border/includes/class-wc-acbop.php:410
+#: inc/modules/mini-program/class-wc-alipay-wap.php:597
+#: inc/modules/mini-program/class-wc-alipay-wap.php:657
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:271
+msgid "Invalid order."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:346
+msgid "Alipay notification contains invalid text encoding."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:352
+msgid "Alipay notification must use RSA2."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:359
+msgid "Alipay notification time is invalid."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:362
+msgid "Alipay notification time is in the future."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:365
+msgid "Alipay notification is too old."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:370
+msgid "Alipay application ID does not match."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:375
+#: inc/modules/mini-program/class-mini-protocol.php:67
+msgid "Alipay seller ID does not match."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:380
+msgid "Merchant order number does not match."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:384
+msgid "Alipay notification amount is invalid."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:388
+msgid "Alipay notification amount does not match the order."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:392
+msgid "Order payment method does not match."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:399
+msgid "Alipay transaction ID is missing."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:402
+msgid "Alipay transaction ID does not match."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:422
+msgid "The WooCommerce order is already terminal."
+msgstr ""
+
+#: inc/class-alipay-sdk-helper.php:433
+msgid "Unsupported Alipay trade status."
+msgstr ""
+
+#: inc/class-wc-alipay-agreement.php:142
+msgid "请先登录后再进行签约授权。"
+msgstr ""
+
+#: inc/class-wc-alipay-agreement.php:146
+msgid "Alipay automatic renewal is not enabled."
+msgstr ""
+
+#: inc/class-wc-alipay-agreement.php:151
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:266
+msgid "Invalid or expired signing request."
+msgstr ""
+
+#: inc/class-wc-alipay-agreement.php:163
+msgid "无法生成签约请求，请稍后重试。"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:117
+msgid "Alipay gateway not found"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:148
+msgid "Invalid response from Alipay"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:167
+msgid "Alipay query response does not match the order"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:175
+msgid "Alipay query transaction ID does not match the order"
+msgstr ""
+
+#. translators: %s: Alipay trade status
+#: inc/class-wc-alipay-order-query.php:184
+#, php-format
+msgid "Payment status confirmed via query. Trade Status: %s"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:197
+msgid "Alipay trade closed"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:204
+msgid "Payment status: Still waiting for buyer to pay"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:234
+msgid "Invalid order ID"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:240
+msgid "Order not found"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:246
+msgid "You are not allowed to query this order."
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:253
+msgid "Order is already paid"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:271
+msgid "Payment confirmed"
+msgstr ""
+
+#: inc/class-wc-alipay-order-query.php:278
+msgid "Payment is still pending"
+msgstr ""
+
+#: inc/class-wc-alipay-order-timeout.php:119
+msgid "Order cancelled due to payment timeout (not sent to Alipay)"
+msgstr ""
+
+#. translators: %d: timeout duration in minutes
+#: inc/class-wc-alipay-order-timeout.php:157
+#, php-format
+msgid "Order cancelled due to payment timeout (%d minutes)"
+msgstr ""
+
+#: inc/class-wc-alipay-subscription-ui.php:36
+msgid "为确保到期自动续费，请授权支付宝周期扣款。"
+msgstr ""
+
+#: inc/class-wc-alipay-subscription-ui.php:37
+msgid "授权支付宝自动续费"
+msgstr ""
+
+#: inc/class-wc-alipay-subscription-ui.php:53
+msgid "尚未授权支付宝自动续费。授权后，到期将自动从你绑定的支付宝扣款。"
+msgstr ""
+
+#: inc/class-wc-alipay-subscription-ui.php:54
+msgid "立即授权"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:351
+msgid "Wei Alipay Webhook Logs"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:352
+msgid "Webhook Logs"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:364
+msgid "You do not have permission to view webhook logs."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:388
+msgid "Selected webhooks have been retried."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:419
+msgid "Alipay Webhook Logs"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:420
+msgid "Inspect callback processing and retry failed records. Stored request data is limited to an allow-list and never includes signatures or private keys."
+msgstr ""
+
+#. translators: %d: total webhook log count
+#: inc/class-wc-alipay-webhook-retry.php:423
+#, php-format
+msgid "All (%d)"
+msgstr ""
+
+#. translators: %d: pending webhook log count
+#: inc/class-wc-alipay-webhook-retry.php:424
+#, php-format
+msgid "Pending (%d)"
+msgstr ""
+
+#. translators: %d: successful webhook log count
+#: inc/class-wc-alipay-webhook-retry.php:425
+#, php-format
+msgid "Success (%d)"
+msgstr ""
+
+#. translators: %d: failed webhook log count
+#: inc/class-wc-alipay-webhook-retry.php:426
+#, php-format
+msgid "Failed (%d)"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:429
+msgid "Retrying may query Alipay for current transaction status. Select only records that require another verification attempt."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:437
+msgid "Retry the selected webhook records now?"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:437
+msgid "Retry Selected"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:444
+msgid "Select all webhook records"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:445
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:115
+msgid "Order"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:446
+msgid "Trade No"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:447
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:60
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:117
+msgid "Status"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:448
+msgid "Retry Count"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:449
+msgid "Error"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:450
+msgid "Created"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:451
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:185
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:252
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:124
+msgid "Actions"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:456
+msgid "No webhook logs match the current filter."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:481
+#: inc/class-wc-alipay-webhook-retry.php:532
+#: inc/class-wc-alipay-webhook-retry.php:537
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:146
+msgid "Retry"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:517
+msgid "Retrying..."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:536
+msgid "The retry request could not be completed. Check the connection and try again."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:554
+msgid "Permission denied"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:560
+msgid "Invalid webhook ID"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:573
+msgid "Webhook not found"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:579
+msgid "Webhook retried successfully"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:581
+msgid "Webhook retry failed"
+msgstr ""
+
+#: inc/class-wc-alipay.php:35
 msgid "Alipay by Wei Alipay"
 msgstr ""
 
-#. In Chinese, can simply be translated as 支付宝. Mentionning "China" in English and other languages to make it clear to international customers this is NOT a crossborder payment method.
-#: inc/class-wc-alipay.php:30
-msgid "Alipay China"
-msgstr ""
-
-#: inc/class-wc-alipay.php:137
-msgid ""
-"Alipay closed the transaction ; the refund needs to be handled by other "
-"means."
-msgstr ""
-
-#: inc/class-wc-alipay.php:404
-msgid ""
-"Alipay closed the transaction and the order is no longer valid for payment."
-msgstr ""
-
-#: inc/class-wc-alipay.php:35 inc/class-wc-alipay.php:320
+#: inc/class-wc-alipay.php:36
+#: inc/class-wc-alipay.php:1054
 msgid "Alipay is a simple, secure and fast online payment method."
 msgstr ""
 
-#: inc/class-wc-alipay.php:596
-msgid "Alipay Merchant application private key"
+#: inc/class-wc-alipay.php:69
+msgid "Alipay China"
 msgstr ""
 
-#: inc/class-wc-alipay.php:413
-msgid "Alipay notified it is waiting for payment."
+#: inc/class-wc-alipay.php:73
+msgid "Pay with Alipay"
 msgstr ""
 
-#: inc/class-wc-alipay.php:389
-msgid ""
-"Alipay notified the payment was successful but the order was already paid "
-"for. Please double check that the payment was recorded properly."
+#: inc/class-wc-alipay.php:120
+msgid "Auto-renewal not enabled, skip deduction."
 msgstr ""
 
-#: inc/templates/admin/config-help.php:24
-msgid "Alipay Open Platform"
+#: inc/class-wc-alipay.php:121
+msgid "Auto-renewal not enabled"
+msgstr ""
+
+#: inc/class-wc-alipay.php:127
+msgid "User not found or agreement management is unavailable."
+msgstr ""
+
+#: inc/class-wc-alipay.php:133
+msgid "No Alipay deduction agreement found. Please complete the signing first."
+msgstr ""
+
+#: inc/class-wc-alipay.php:150
+msgid "Failed to create Alipay service (Auto-renewal)."
+msgstr ""
+
+#: inc/class-wc-alipay.php:160
+#: inc/class-wc-alipay.php:357
+msgid "Subscription renewal"
+msgstr ""
+
+#: inc/class-wc-alipay.php:185
+msgid "Alipay deduction order placement failed."
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/class-wc-alipay.php:198
+#, php-format
+msgid "Auto-renewal successful, transaction ID: %s"
+msgstr ""
+
+#: inc/class-wc-alipay.php:201
+msgid "Alipay deduction initiated, waiting for asynchronous notification confirmation."
+msgstr ""
+
+#: inc/class-wc-alipay.php:213
+msgid "Basic settings"
+msgstr ""
+
+#: inc/class-wc-alipay.php:215
+msgid "Configure how the gateway appears at checkout."
+msgstr ""
+
+#: inc/class-wc-alipay.php:218
+msgid "Enable/disable"
+msgstr ""
+
+#: inc/class-wc-alipay.php:220
+msgid "Enable Alipay"
+msgstr ""
+
+#: inc/class-wc-alipay.php:222
+msgid "Show Alipay as a payment option at checkout."
+msgstr ""
+
+#: inc/class-wc-alipay.php:226
+msgid "Checkout title"
+msgstr ""
+
+#: inc/class-wc-alipay.php:228
+#: inc/class-wei-alipay-features.php:264
+#: inc/modules/cross-border/includes/class-wc-acbop.php:373
+#: inc/modules/cross-border/includes/form-settings-alipay.php:21
+#: inc/modules/mini-program/class-wc-alipay-wap.php:64
+#: inc/modules/mini-program/class-wc-alipay-wap.php:257
+#: inc/modules/mini-program/class-wc-alipay-wap.php:288
+msgid "Alipay"
+msgstr ""
+
+#: inc/class-wc-alipay.php:229
+msgid "Payment method name shown at checkout."
+msgstr ""
+
+#: inc/class-wc-alipay.php:232
+msgid "Checkout description"
+msgstr ""
+
+#: inc/class-wc-alipay.php:234
+msgid "Pay securely with Alipay."
+msgstr ""
+
+#: inc/class-wc-alipay.php:235
+msgid "Description shown below the payment method at checkout."
+msgstr ""
+
+#: inc/class-wc-alipay.php:239
+msgid "Alipay application settings"
+msgstr ""
+
+#: inc/class-wc-alipay.php:241
+msgid "Configure the application registered in Alipay Open Platform."
+msgstr ""
+
+#: inc/class-wc-alipay.php:244
+msgid "App ID"
+msgstr ""
+
+#. translators: %s: link to the Alipay Open Platform
+#: inc/class-wc-alipay.php:248
+#, php-format
+msgid "App ID from Alipay Open Platform. %s"
+msgstr ""
+
+#: inc/class-wc-alipay.php:249
+msgid "Open Alipay Open Platform"
+msgstr ""
+
+#: inc/class-wc-alipay.php:255
+msgid "Seller ID"
+msgstr ""
+
+#: inc/class-wc-alipay.php:257
+msgid "Binds notifications to this merchant. Enter the 16-digit seller_id/PID for the Alipay account. If empty, notifications must still include seller_id, but exact configuration-level binding is unavailable."
+msgstr ""
+
+#: inc/class-wc-alipay.php:262
+msgid "Alipay public key"
+msgstr ""
+
+#. translators: %s: link to the configuration tutorial
+#: inc/class-wc-alipay.php:266
+#, php-format
+msgid "Alipay public key from the application details in Alipay Open Platform. %s"
+msgstr ""
+
+#: inc/class-wc-alipay.php:267
+msgid "View configuration guide"
+msgstr ""
+
+#: inc/class-wc-alipay.php:274
+msgid "Merchant app private key"
+msgstr ""
+
+#. translators: %s: link to the key generation tutorial
+#: inc/class-wc-alipay.php:278
+#, php-format
+msgid "Application private key generated with the Alipay key tool or OpenSSL.<br/><strong>This key is confidential. Do not disclose it.</strong> %s"
+msgstr ""
+
+#: inc/class-wc-alipay.php:279
+msgid "View key generation guide"
+msgstr ""
+
+#: inc/class-wc-alipay.php:287
+msgid "Environment and logging"
+msgstr ""
+
+#: inc/class-wc-alipay.php:289
+msgid "Choose the provider environment and diagnostic logging."
+msgstr ""
+
+#: inc/class-wc-alipay.php:292
+msgid "Sandbox mode"
+msgstr ""
+
+#: inc/class-wc-alipay.php:294
+msgid "Enable sandbox mode"
+msgstr ""
+
+#. translators: %s: link to the Alipay sandbox environment
+#: inc/class-wc-alipay.php:298
+#, php-format
+msgid "Enable sandbox mode for testing, using the configuration in %s."
+msgstr ""
+
+#: inc/class-wc-alipay.php:299
+msgid "Alipay sandbox environment"
+msgstr ""
+
+#: inc/class-wc-alipay.php:304
+msgid "Debug logging"
+msgstr ""
+
+#: inc/class-wc-alipay.php:306
+#: inc/modules/cross-border/includes/form-settings-alipay.php:74
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:87
+#: inc/modules/mini-program/class-wc-alipay-wap.php:375
+msgid "Enable logging"
+msgstr ""
+
+#. translators: %s: log file path
+#: inc/class-wc-alipay.php:310
+#, php-format
+msgid "Record Alipay events in %s<br/><strong>Note: This may record personal information. We recommend using it only for debugging purposes and deleting the logs after completion.</strong>"
+msgstr ""
+
+#: inc/class-wc-alipay.php:326
+msgid "Advanced settings"
+msgstr ""
+
+#: inc/class-wc-alipay.php:328
+msgid "Configure currency conversion and test the provider connection."
+msgstr ""
+
+#: inc/class-wc-alipay.php:337
+msgid "Subscriptions and automatic renewal (experimental)"
+msgstr ""
+
+#: inc/class-wc-alipay.php:339
+msgid "Supports automatic renewal for WooCommerce Subscriptions after an Alipay agreement debit product is active."
+msgstr ""
+
+#: inc/class-wc-alipay.php:342
+msgid "Enable automatic renewal"
+msgstr ""
+
+#: inc/class-wc-alipay.php:344
+msgid "Renew subscriptions using Alipay agreement debit"
+msgstr ""
+
+#: inc/class-wc-alipay.php:348
+msgid "Agreement debit product code"
+msgstr ""
+
+#: inc/class-wc-alipay.php:351
+msgid "Product code used for signing and agreement debit. Enabled products vary by merchant and may be overridden with a filter."
+msgstr ""
+
+#: inc/class-wc-alipay.php:355
+msgid "Renewal order title prefix"
+msgstr ""
+
+#: inc/class-wc-alipay.php:368
+msgid "WooCommerce Subscriptions must be installed and enabled to set up auto-renewal."
+msgstr ""
+
+#. translators: %1$s: store currency code (also used for %2$s). %3$s: current exchange rate against Chinese Yuan.
+#: inc/class-wc-alipay.php:376
+#, php-format
+msgid "Set the exchange rate to CNY (1 %2$s = %3$s CNY) for store currency %1$s."
+msgstr ""
+
+#: inc/class-wc-alipay.php:383
+msgid "Exchange rate"
+msgstr ""
+
+#: inc/class-wc-alipay.php:396
+#: inc/class-wc-alipay.php:593
+msgid "Test connection"
+msgstr ""
+
+#: inc/class-wc-alipay.php:398
+msgid "Send a test query to the configured Alipay environment."
+msgstr ""
+
+#: inc/class-wc-alipay.php:410
+msgid "Payment reliability"
+msgstr ""
+
+#: inc/class-wc-alipay.php:412
+msgid "Configure status queries, unpaid-order timeouts, payment polling and webhook retries."
+msgstr ""
+
+#: inc/class-wc-alipay.php:417
+msgid "Automatic order-status queries"
+msgstr ""
+
+#: inc/class-wc-alipay.php:419
+msgid "Enable automatic queries"
+msgstr ""
+
+#: inc/class-wc-alipay.php:421
+msgid "Query pending orders so a completed payment is not left unsynchronized."
+msgstr ""
+
+#: inc/class-wc-alipay.php:426
+msgid "Query interval"
+msgstr ""
+
+#: inc/class-wc-alipay.php:430
+#: inc/class-wc-alipay.php:545
+msgid "5 minutes"
+msgstr ""
+
+#: inc/class-wc-alipay.php:431
+#: inc/class-wc-alipay.php:546
+msgid "10 minutes"
+msgstr ""
+
+#: inc/class-wc-alipay.php:432
+#: inc/class-wc-alipay.php:547
+msgid "15 minutes"
+msgstr ""
+
+#: inc/class-wc-alipay.php:433
+#: inc/class-wc-alipay.php:548
+msgid "30 minutes"
+msgstr ""
+
+#: inc/class-wc-alipay.php:435
+msgid "Interval between scheduled status queries for pending orders."
+msgstr ""
+
+#: inc/class-wc-alipay.php:440
+msgid "Query time window"
+msgstr ""
+
+#: inc/class-wc-alipay.php:444
+msgid "Within 6 hours"
+msgstr ""
+
+#: inc/class-wc-alipay.php:445
+msgid "Within 12 hours"
+msgstr ""
+
+#: inc/class-wc-alipay.php:446
+msgid "Within 24 hours"
+msgstr ""
+
+#: inc/class-wc-alipay.php:447
+msgid "Within 48 hours"
+msgstr ""
+
+#: inc/class-wc-alipay.php:448
+msgid "Within 72 hours"
+msgstr ""
+
+#: inc/class-wc-alipay.php:450
+msgid "Query only orders created within this time window."
+msgstr ""
+
+#: inc/class-wc-alipay.php:456
+msgid "Unpaid-order timeout"
+msgstr ""
+
+#: inc/class-wc-alipay.php:458
+msgid "Cancel unpaid orders after timeout"
+msgstr ""
+
+#: inc/class-wc-alipay.php:460
+msgid "Cancel unpaid orders after the configured timeout and release their inventory."
+msgstr ""
+
+#: inc/class-wc-alipay.php:465
+msgid "Order timeout (minutes)"
+msgstr ""
+
+#: inc/class-wc-alipay.php:468
+msgid "Unpaid orders are cancelled after this many minutes."
+msgstr ""
+
+#: inc/class-wc-alipay.php:480
+msgid "Payment status polling"
+msgstr ""
+
+#: inc/class-wc-alipay.php:482
+msgid "Enable payment polling"
+msgstr ""
+
+#: inc/class-wc-alipay.php:484
+msgid "Poll for payment completion without requiring the customer to refresh the page."
+msgstr ""
+
+#: inc/class-wc-alipay.php:489
+msgid "Polling interval (seconds)"
+msgstr ""
+
+#: inc/class-wc-alipay.php:492
+msgid "Seconds between payment-status queries."
+msgstr ""
+
+#: inc/class-wc-alipay.php:503
+msgid "Maximum polling attempts"
+msgstr ""
+
+#: inc/class-wc-alipay.php:506
+msgid "Stop polling after this many attempts."
+msgstr ""
+
+#: inc/class-wc-alipay.php:518
+msgid "Webhook retries"
+msgstr ""
+
+#: inc/class-wc-alipay.php:520
+msgid "Enable webhook retries"
+msgstr ""
+
+#: inc/class-wc-alipay.php:522
+msgid "Record failed Alipay notifications and retry them automatically."
+msgstr ""
+
+#: inc/class-wc-alipay.php:527
+msgid "Maximum retry attempts"
+msgstr ""
+
+#: inc/class-wc-alipay.php:530
+msgid "Maximum attempts after a webhook failure."
+msgstr ""
+
+#: inc/class-wc-alipay.php:541
+msgid "Retry interval"
+msgstr ""
+
+#: inc/class-wc-alipay.php:549
+msgid "1 hour"
+msgstr ""
+
+#: inc/class-wc-alipay.php:551
+msgid "Minimum interval between retry attempts."
+msgstr ""
+
+#: inc/class-wc-alipay.php:556
+msgid "Log retention"
+msgstr ""
+
+#: inc/class-wc-alipay.php:560
+msgid "7 days"
+msgstr ""
+
+#: inc/class-wc-alipay.php:561
+msgid "15 days"
+msgstr ""
+
+#: inc/class-wc-alipay.php:562
+msgid "30 days"
+msgstr ""
+
+#: inc/class-wc-alipay.php:563
+msgid "60 days"
+msgstr ""
+
+#: inc/class-wc-alipay.php:564
+msgid "90 days"
+msgstr ""
+
+#: inc/class-wc-alipay.php:565
+msgid "Keep forever"
+msgstr ""
+
+#: inc/class-wc-alipay.php:567
+msgid "Delete webhook logs after the selected retention period."
+msgstr ""
+
+#: inc/class-wc-alipay.php:702
+msgid "Refund failed"
+msgstr ""
+
+#: inc/class-wc-alipay.php:714
+msgid "Refund failed - incorrect refund amount (must be more than 0 and less than the total amount of the order)."
+msgstr ""
+
+#: inc/class-wc-alipay.php:723
+msgid "Refund failed - original Alipay merchant order number is missing."
+msgstr ""
+
+#: inc/class-wc-alipay.php:749
+msgid "A refund with this request ID is already being processed."
+msgstr ""
+
+#. translators: %1$s: Refund amount, %2$s: Payment method title, %3$s: Refund ID
+#: inc/class-wc-alipay.php:767
+#, php-format
+msgid "Refunded %1$s via %2$s - Refund ID: %3$s"
+msgstr ""
+
+#: inc/class-wc-alipay.php:790
+msgid "Invalid order"
+msgstr ""
+
+#: inc/class-wc-alipay.php:799
+msgid "Alipay closed the transaction ; the refund needs to be handled by other means."
+msgstr ""
+
+#: inc/class-wc-alipay.php:803
+msgid "transaction not found."
+msgstr ""
+
+#: inc/class-wc-alipay.php:853
+msgid "Unknown Alipay refund error."
+msgstr ""
+
+#: inc/class-wc-alipay.php:860
+msgid "Alipay refund response does not match the refund request."
+msgstr ""
+
+#: inc/class-wc-alipay.php:924
+msgid "Aliay is enabled, but the store currency is not set to Chinese Yuan."
+msgstr ""
+
+#. translators: %1$s is the URL of the link and %2$s is the currency name
+#: inc/class-wc-alipay.php:926
+#, php-format
+msgid " Please <a href=\"%1$s\">set the %2$s against the Chinese Yuan exchange rate</a>."
+msgstr ""
+
+#: inc/class-wc-alipay.php:1053
+msgid "Alipay payment gateway by Wei Alipay"
+msgstr ""
+
+#. translators: %1$s: link to the official documentation
+#: inc/class-wc-alipay.php:1061
+#, php-format
+msgid "Need help configuring the gateway? See the %1$s."
+msgstr ""
+
+#: inc/class-wc-alipay.php:1062
+msgid "official documentation"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1072
+msgid "Tools and endpoints"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1073
+msgid "Payment notification URL (configure as the payment result notification URL in Alipay Open Platform)"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1075
+#: inc/class-wc-alipay.php:1086
+#: inc/class-wc-alipay.php:1087
+#: inc/class-wc-alipay.php:1088
+msgid "Copy"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1084
+msgid "Agreement endpoints for Alipay authorization and callbacks"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1086
+msgid "Signing start"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1087
+msgid "Signing notification"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1088
+msgid "Signing return"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1235
+msgid "Alipay payment completed"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1242
+msgid "Alipay closed the transaction and the order is no longer valid for payment."
+msgstr ""
+
+#: inc/class-wc-alipay.php:1267
+#: inc/class-wc-alipay.php:1397
+msgid "Update status event failed."
+msgstr ""
+
+#: inc/class-wc-alipay.php:1287
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:318
+msgid "订单不存在"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1291
+msgid "不支持的货币类型"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1294
+msgid "等待支付宝支付"
 msgstr ""
 
 #: inc/class-wc-email-alipay-orphan-transaction.php:12
@@ -119,126 +942,19 @@ msgid "Alipay Orphan Transaction"
 msgstr ""
 
 #: inc/class-wc-email-alipay-orphan-transaction.php:13
-msgid ""
-"Alipay Orphan Transaction emails are sent when an Alipay transaction has no "
-"counterpart in WooCommerce and could not be refunded automatically."
+msgid "Alipay Orphan Transaction emails are sent when an Alipay transaction has no counterpart in WooCommerce and could not be refunded automatically."
 msgstr ""
 
-#: inc/class-wc-alipay.php:386
-msgid "Alipay payment completed"
+#: inc/class-wc-email-alipay-orphan-transaction.php:39
+msgid "[{site_title}]: Order #{order_number} was not found but an Alipay transaction was registered"
 msgstr ""
 
-#: inc/class-wc-alipay.php:319
-msgid "Alipay payment gateway by Wei Alipay"
+#: inc/class-wc-email-alipay-orphan-transaction.php:44
+msgid "Orphan order: #{order_number} - Alipay transaction: #{transaction_id}"
 msgstr ""
 
-#: inc/class-wc-alipay.php:591 inc/templates/admin/config-help.php:180
-msgid "Alipay public key"
-msgstr ""
-
-#. %1$s: Website name
-#: inc/templates/emails/alipay-orphan-transaction.php:29
-#: inc/templates/emails/plain/alipay-orphan-transaction.php:28
-#, php-format
-msgid ""
-"Alipay returned a notification of successful payment but the order does not "
-"appear to exist on %1$s."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:207
-msgid "Alipay tools documentation page"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:176
-msgid "application private key"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:172
-msgid "application public key"
-msgstr ""
-
-#: inc/class-wc-alipay.php:581
-msgid "Checkout page description"
-msgstr ""
-
-#: inc/class-wc-alipay.php:576
-msgid "Checkout page title"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:394
-msgid "Click the \"Save changes\" button."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:348
-msgid ""
-"Click the \"保存设置\" button to register the application public key and "
-"generate the Alipay public key."
-msgstr ""
-
-#. %1$s is <a target="_blank" href="[url]">Computer website payment "电脑网站支付"</a>, %2$s is <a target="_blank" href="[url]">Mobile website payment "手机网站支付"</a>
-#: inc/templates/admin/config-help.php:94
-#, php-format
-msgid ""
-"Click the add feature button \"添加功能\" and add the computer website payment "
-"\"电脑网站支付\" and the mobile website payment \"手机网站支付\" features - these "
-"features need to have been activated beforehand (process not describe in "
-"this guide - see the Payment products \"支付产品\" %1$s and %2$s)."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:330
-#: inc/templates/admin/config-help.php:373
-msgid "Click the link \"接口加签方式\" > \"设置/查看\" to open the configuration modal."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:125
-msgid ""
-"Click the setup link \"设置\" (or modify link \"修改\") of the application "
-"gateway \"应用网关\" field."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:140
-msgid ""
-"Click the setup link \"设置\" (or modify link \"修改\") of the authorization "
-"callback address \"授权回调地址\" field."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:98
-msgid "Computer website payment \"电脑网站支付\""
-msgstr ""
-
-#: inc/templates/admin/config-help.php:13
-msgid "Configuration process overview:"
-msgstr ""
-
-#: inc/templates/admin/gateway-test.php:26
-msgid ""
-"Connexion failed: please make sure to double check the configuration. If "
-"necessary, try \"Enable logging\" and check the log file for more "
-"information."
-msgstr ""
-
-#: inc/templates/admin/gateway-test.php:23
-msgid "Connexion successful"
-msgstr ""
-
-#: inc/templates/redirected-pay.php:17
-msgid "Contacting Alipay..."
-msgstr ""
-
-#. %1$s is <code>alipay_app_private_key.txt</code>, %2$s is <strong>DO NOT SHARE THIS VALUE WITH ANYONE</strong>
-#: inc/templates/admin/config-help.php:228
-#, php-format
-msgid ""
-"Copy the application private key displayed in the \"应用私钥\" text area in a "
-"text file on your computer (referred to as %1$s below) - %2$s."
-msgstr ""
-
-#. %1$s is <code>alipay_app_public_key.txt</code>
-#: inc/templates/admin/config-help.php:219
-#, php-format
-msgid ""
-"Copy the application public key displayed in the \"应用公钥\" text area in a "
-"text file on your computer (referred to as %1$s below)."
+#: inc/class-wc-email-alipay-orphan-transaction.php:104
+msgid "You may need to double check the Alipay transactions in the merchant platform and take care of refunds by other means if necessary."
 msgstr ""
 
 #: inc/class-wc-email-alipay-orphan-transaction.php:121
@@ -246,500 +962,12 @@ msgstr ""
 msgid "Default value: "
 msgstr ""
 
-#: inc/templates/admin/config-help.php:232
-#: inc/templates/admin/config-help.php:271
-msgid "DO NOT SHARE THIS VALUE WITH ANYONE"
-msgstr ""
-
-#: inc/class-wc-alipay.php:572
-msgid "Enable Alipay"
-msgstr ""
-
-#: inc/class-wc-alipay.php:604
-msgid "Enable sandbox mode"
-msgstr ""
-
-#: inc/class-wc-alipay.php:570
-msgid "Enable/Disable"
-msgstr ""
-
-#: inc/class-wc-alipay.php:627
-msgid "Exchange Rate"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:64
-msgid "Fill in the configuration fields below."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:9
-msgid "Gateway configuration help"
-msgstr ""
-
-#. %1$s is <code>openssl</code>, %2$s is <strong>(option 2)</strong>
-#: inc/templates/admin/config-help.php:243
-#, php-format
-msgid ""
-"Generate the application keys with %1$s command line in a terminal %2$s:"
-msgstr ""
-
-#. %1$s is <strong>(option 1)</strong>
-#: inc/templates/admin/config-help.php:190
-#, php-format
-msgid ""
-"Generate the application keys with the Alipay Open Platform Development "
-"Assistant application %1$s:"
-msgstr ""
-
-#. %1$s is <a target="_blank" href="[url]">Alipay tools documentation page</a>
-#: inc/templates/admin/config-help.php:203
-#, php-format
-msgid ""
-"Go to the %1$s and download the Alipay Open Platform Development Assistant "
-"application for the operating system of your choice (Windows or MacOS)."
-msgstr ""
-
-#. %1$s is <a target="_blank" href="[url]">the Alipay Open Platform</a>
-#: inc/templates/admin/config-help.php:20
-#, php-format
-msgid "Go to the %1$s and log in."
-msgstr ""
-
-#. %1$s is <code>url with placeholder</code>, %2$s is <code>placeholder</code>
-#: inc/templates/admin/config-help.php:112
-#: inc/templates/admin/config-help.php:317
-#: inc/templates/admin/config-help.php:360
-#, php-format
-msgid ""
-"Go to the app information page - accessible via %1$s (replace %2$s with the "
-"App ID to be used by Wei Alipay)."
-msgstr ""
-
-#. %1$s is <code>url with placeholder</code>, %2$s is <code>placeholder</code>
-#: inc/templates/admin/config-help.php:78
-#, php-format
-msgid ""
-"Go to the app overview page - accessible via %1$s (replace %2$s with the App "
-"ID to be used by Wei Alipay)."
-msgstr ""
-
-#. Author URI of the plugin
-msgid "https://froger.me"
-msgstr ""
-
-#. URI of the plugin
-msgid "https://github.com/froger-me/wei-alipay"
-msgstr ""
-
-#. %1$s is <code>url</code>
-#: inc/templates/admin/config-help.php:33
-#, php-format
-msgid ""
-"If necessary, create a new app by following the options under the create "
-"application \"创建应用\" menu: website & mobile application \"网页&移动应用\" > "
-"payment access \"支付接入\". The application type \"应用类型\" should be web page "
-"application \"网页应用\" and the website URL \"网址url\" should be %1$s. Creating "
-"an app will require one or two working day(s) audit of your website content "
-"by Alipay."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:61
-msgid ""
-"If necessary, generate the application public and private keys, register the "
-"application public key in the Alipay Open Platform, and generate the Alipay "
-"public key (see \"Key management\" below)."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:376
-msgid ""
-"If necessary, use the associated Alipay account's phone number or password "
-"to authenticate."
-msgstr ""
-
-#. %1$s is <code>url</code>
-#: inc/templates/admin/config-help.php:131
-#, php-format
-msgid ""
-"In the application gateway \"应用网关\" modal, enter %1$s and click the confirm "
-"\"确定\" button."
-msgstr ""
-
-#. %1$s is <code>scheme</code>, %2$s is <code>url</code>
-#: inc/templates/admin/config-help.php:146
-#, php-format
-msgid ""
-"In the authorization callback address \"授权回调地址\" modal, enter %1$s in the "
-"callback address type \"回调地址类型\" field, %2$s in the callback address "
-"\"回调地址\" field, and leave the verify domain only \"只验证域名\" checkbox "
-"unchecked for added security, then click the confirm \"确定\" button."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:379
-msgid ""
-"In the signature completed configuration form (加签管理 | 2 - 加签配置完成), copy the "
-"Alipay public key displayed under \"支付宝公钥\"."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:336
-msgid ""
-"In the signature key configuration form (加签管理 | 1 - 加签内容配置), select the "
-"public key option \"公钥\"."
-msgstr ""
-
-#. Description of the plugin
-msgid "Integrate Woocommerce with Alipay (Mainland China)."
-msgstr ""
-
-#: inc/class-wc-alipay.php:416
-msgid "Invalid Alipay response: "
-msgstr ""
-
-#: inc/class-wc-alipay.php:128
-msgid "Invalid order"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:160
-msgid "Key management"
-msgstr ""
-
-#. %s: URL
-#: inc/class-wc-alipay.php:615
-#, php-format
-msgid ""
-"Log Alipay events inside %s Note: this may log personal information. We "
-"recommend using this for debugging purposes only and deleting the logs when "
-"finished."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:103
-msgid "Mobile website payment \"手机网站支付\""
-msgstr ""
-
-#. %1$s is <code>url with placeholder</code>, %2$s is <code>placeholder</code>
-#: inc/templates/admin/config-help.php:45
-#, php-format
-msgid ""
-"Once the app is created, go to the app information page - accessible "
-"directly via %1$s (replace %2$s with the App ID to be used by Wei Alipay)."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:296
-msgid ""
-"Open both files with a text editor, remove all the header, footer, space and "
-"carriage return characters to have each key as a single-line long string, "
-"and save the files."
-msgstr ""
-
-#: inc/class-wc-email-alipay-orphan-transaction.php:44
-msgid "Orphan order: #{order_number} - Alipay transaction: #{transaction_id}"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:382
-msgid "Paste the Alipay public key in the \"Alipay public key\" field below."
-msgstr ""
-
-#. %1$s is <code>alipay_app_private_key.txt</code>
-#: inc/templates/admin/config-help.php:388
-#, php-format
-msgid ""
-"Paste the content of the previously saved file %1$s in the \"Alipay merchant "
-"application private key\" field below."
-msgstr ""
-
-#. %1$s is <code>alipay_app_public_key.txt</code>
-#: inc/templates/admin/config-help.php:342
-#, php-format
-msgid ""
-"Paste the content of the previously saved file %1$s in the \"填写公钥字符\" text "
-"area."
-msgstr ""
-
-#: inc/class-wc-alipay.php:583
-msgid ""
-"Pay via Alipay (Mainland China, incl. Hong Kong and Macau). If you are "
-"unable to pay with an Mainland China Alipay account, please select a "
-"different payment method."
-msgstr ""
-
-#: inc/class-wc-alipay.php:40
-msgid "Pay with Alipay"
-msgstr ""
-
-#. Name of the plugin
-msgid "Payment gateway for WooCommerce - Wei Alipay"
-msgstr ""
-
-#: inc/class-wc-alipay.php:174
-msgid ""
-"Refund failed - incorrect refund amount (must be more than 0 and less than "
-"the total amount of the order)."
-msgstr ""
-
-#. %1$s: Refund amount, %2$s: Payment method title, %3$s: Refund ID
-#: inc/class-wc-alipay.php:187
-#, php-format
-msgid "Refunded %1$s via %2$s - Refund ID: %3$s"
-msgstr ""
-
-#: inc/templates/admin/config-help.php:68
-msgid "Register features, website URL and callback"
-msgstr ""
-
-#. %1$s is <strong>(requires completing option 1 or option 2 above)</strong>
-#: inc/templates/admin/config-help.php:304
-#, php-format
-msgid ""
-"Register the application public key in Alipay Open Platform and generate the "
-"Alipay public key %1$s:"
-msgstr ""
-
-#. %s: URL
-#: inc/class-wc-alipay.php:607
-#, php-format
-msgid "Run Alipay in sandbox mode, with the settings found in %1$s."
-msgstr ""
-
-#: inc/class-wc-alipay.php:602
-msgid "Sandbox"
-msgstr ""
-
-#: inc/templates/emails/alipay-orphan-transaction.php:49
-msgid "See the following basic information:"
-msgstr ""
-
-#: inc/templates/admin/gateway-test.php:20
-msgid "Send a message to Alipay to check if the gateway is properly set up."
-msgstr ""
-
-#. %1$s is the currency
-#: inc/class-wc-alipay.php:622
-#, php-format
-msgid ""
-"Set the %1$s against Chinese Yuan exchange rate <br/>(1 %1$s = [field value] "
-"Chinese Yuan)"
-msgstr ""
-
-#: inc/class-wei-alipay.php:146
-msgid "Settings"
-msgstr ""
-
-#: inc/templates/admin/gateway-test.php:8
-msgid "Test Connection"
-msgstr ""
-
-#: inc/templates/admin/gateway-test.php:12
-msgid "Test Now"
-msgstr ""
-
-#: inc/class-wc-alipay.php:593
-msgid ""
-"The Alipay public key generated in the Alipay Open Platform (\"支付宝公钥\")."
-msgstr ""
-
-#: inc/class-wc-alipay.php:588
-msgid "The App ID found in Alipay Open Platform"
-msgstr ""
-
-#. %1$s: Log path
-#: inc/templates/emails/alipay-orphan-transaction.php:69
-#: inc/templates/emails/plain/alipay-orphan-transaction.php:55
-#, php-format
-msgid ""
-"The complete error data can be found in the log files on the server at the "
-"following location: %1$s"
-msgstr ""
-
-#: inc/class-wc-alipay.php:598
-msgid ""
-"The private key generated with the provided Alipay tool application or the "
-"<code>openssl</code> command line.<br/>\n"
-"This key is secret and is not recorded in Alipay Open Platform - <strong>DO "
-"NOT SHARE THIS VALUE WITH ANYONE</strong>."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:71
-msgid ""
-"To communicate with the payment gateway, Alipay needs some features "
-"activated, to know your website URL, and to be aware of the WooCommerce "
-"gateway callback endpoint."
-msgstr ""
-
-#. %1$s is <strong>application public key</strong>, %2$s is <strong>application private key</strong>, %3$s is <strong>Alipay public key</strong>
-#: inc/templates/admin/config-help.php:169
-#, php-format
-msgid ""
-"To complete the payment gateway configuration, you need to generate an %1$s, "
-"an %2$s and an %3$s."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:7
-msgid "Toggle panel: Gateway configuration help"
-msgstr ""
-
-#: inc/class-wc-alipay.php:141
-msgid "transaction not found."
-msgstr ""
-
-#: inc/class-wei-alipay.php:158
-msgid "Transaction:"
-msgstr ""
-
-#. %1$s is <code>genrsa -out alipay_app_private_key.txt 2048</code>, %2$s is <code>alipay_app_private_key.txt</code>, %3$s is <strong>DO NOT SHARE THIS VALUE WITH ANYONE</strong>
-#: inc/templates/admin/config-help.php:266
-#, php-format
-msgid ""
-"Type %1$s to generate the application private key file (referred to as %2$s "
-"below) - %3$s."
-msgstr ""
-
-#. %1$s is <code>rsa -in alipay_app_private_key.txt -pubout -out alipay_app_public_key.txt</code>, %2$s is <code>alipay_app_public_key.txt</code>
-#: inc/templates/admin/config-help.php:280
-#, php-format
-msgid ""
-"Type %1$s to generate the application public key file (referred to as %2$s "
-"below)."
-msgstr ""
-
-#. %1$s is <code>openssl</code>
-#: inc/templates/admin/config-help.php:257
-#, php-format
-msgid "Type %1$s to open the OpenSSL command line tool."
-msgstr ""
-
-#. %1$s is <code>openssl</code>
-#: inc/templates/admin/config-help.php:290
-#, php-format
-msgid "Type %1$s to quit the command line tool."
-msgstr ""
-
-#: inc/templates/admin/gateway-test.php:29
-msgid "Unexpected error - please reload the page and try again."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:333
-msgid "Use the associated phone number or password to authenticate."
-msgstr ""
-
-#: inc/templates/admin/config-help.php:213
-msgid ""
-"Within the Alipay Open Platform Development Assistant application, in the "
-"\"生成密钥\" section (default screen when opening the Assistant), select \"UTF-"
-"8\" and \"PKCS1非Java使用\" options and click the \"生成密钥\" button to populate "
-"the text areas."
-msgstr ""
-
-#: inc/templates/emails/alipay-orphan-transaction.php:38
-#: inc/templates/emails/plain/alipay-orphan-transaction.php:34
-msgid ""
-"Wei Alipay attempted to automatically refund the order but encountered an "
-"error."
-msgstr ""
-
-#: inc/templates/emails/alipay-orphan-transaction.php:41
-#: inc/templates/emails/plain/alipay-orphan-transaction.php:36
-msgid ""
-"Wei Alipay could not automatically refund the order because Alipay closed "
-"the transaction."
-msgstr ""
-
-#: inc/class-wc-alipay.php:441
-msgid "Wei Alipay error: WooCommerce Order not found."
-msgstr ""
-
-#: inc/templates/emails/plain/alipay-orphan-transaction.php:40
-msgid ""
-"You may need to double check the Alipay transactions in the merchant "
-"platform - see the following basic information:"
-msgstr ""
-
-#: inc/class-wc-email-alipay-orphan-transaction.php:104
-msgid ""
-"You may need to double check the Alipay transactions in the merchant "
-"platform and take care of refunds by other means if necessary."
-msgstr ""
-
-msgid "Wei Alipay"
-msgstr ""
-
-msgid "Wei Alipay Overview"
-msgstr ""
-
-msgid "Overview"
-msgstr ""
-
-msgid "Alipay Reconciliation"
-msgstr ""
-
-msgid "Reconciliation"
-msgstr ""
-
-msgid "You do not have permission to manage Wei Alipay."
-msgstr ""
-
-msgid "Payment Settings"
-msgstr ""
-
-msgid "Configure the Alipay gateways shown at checkout."
-msgstr ""
-
-msgid "Profit Sharing"
-msgstr ""
-
-msgid "Manage receivers, settlement rules and profit-sharing operations."
-msgstr ""
-
-msgid "Review Alipay transactions and reconciliation results."
-msgstr ""
-
-msgid "Webhook Logs"
-msgstr ""
-
-msgid "Inspect asynchronous notification delivery and retry status."
-msgstr ""
-
-msgid "Subscriptions"
-msgstr ""
-
-msgid "Configure Alipay agreement payments and recurring charges."
-msgstr ""
-
-msgid "Payment configuration and operational tools are separated below. Each tool has its own route and permissions."
-msgstr ""
-
-msgid "Wei Alipay Webhook Logs"
-msgstr ""
-
-msgid "Wei Alipay Profit Sharing"
-msgstr ""
-
-msgid "Wei Alipay Profit Sharing Jobs"
-msgstr ""
-
-msgid "Profit Sharing Jobs"
-msgstr ""
-
-msgid "Wei Alipay Profit Sharing Compensation"
-msgstr ""
-
-msgid "Profit Sharing Compensation"
-msgstr ""
-
-msgid "Wei Alipay Reconciliation"
-msgstr ""
-
-msgid "Wei Alipay Subscription Settings"
-msgstr ""
-
-msgid "Wei Alipay subscriptions require the WooCommerce Subscriptions extension."
-msgstr ""
-
-
 #: inc/class-wei-alipay-features.php:38
 msgid "Alipay Face-to-Face Pay"
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:39
-msgid ""
-"Accept merchant-presented QR code payments for counters and physical stores."
+msgid "Accept merchant-presented QR code payments for counters and physical stores."
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:46
@@ -751,6 +979,7 @@ msgid "Offer eligible customers 3, 6 or 12-installment Huabei payments."
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:54
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:25
 msgid "Alipay Barcode Pay"
 msgstr ""
 
@@ -759,6 +988,10 @@ msgid "Accept customer-presented Alipay barcode or QR code payments."
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:62
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth-blocks-support.php:53
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:14
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:16
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:48
 msgid "Alipay Fund Authorization"
 msgstr ""
 
@@ -771,9 +1004,7 @@ msgid "Alipay Mini Program"
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:71
-msgid ""
-"Accept payments initiated in an Alipay Mini Program. RSA2 is the default "
-"protocol."
+msgid "Accept payments initiated in an Alipay Mini Program. RSA2 is the default protocol."
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:78
@@ -784,8 +1015,23 @@ msgstr ""
 msgid "Accept supported non-CNY cross-border Alipay payments."
 msgstr ""
 
+#: inc/class-wei-alipay-features.php:86
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:14
+msgid "Profit Sharing"
+msgstr ""
+
 #: inc/class-wei-alipay-features.php:87
 msgid "Manage receivers, settlement rules and profit-sharing jobs."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:94
+#: inc/class-wei-alipay.php:271
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:16
+msgid "Reconciliation"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:95
+msgid "Review Alipay transactions and reconciliation results."
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:102
@@ -796,113 +1042,2456 @@ msgstr ""
 msgid "Inspect asynchronous notification delivery and retry failed processing."
 msgstr ""
 
+#: inc/class-wei-alipay-features.php:111
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:14
+msgid "Subscriptions"
+msgstr ""
+
 #: inc/class-wei-alipay-features.php:112
 msgid "Use Alipay agreements for recurring WooCommerce Subscriptions charges."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:208
+#: inc/class-wei-alipay-features.php:167
+#: inc/class-wei-alipay-features.php:234
+#: inc/class-wei-alipay.php:367
+msgid "You do not have permission to manage Wei Alipay."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:216
+#: inc/class-wei-alipay-features.php:226
 msgid "Unsaved changes"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:226
+#: inc/class-wei-alipay-features.php:242
+#: inc/class-wei-alipay.php:248
+#: inc/class-wei-alipay.php:249
+msgid "Wei Alipay"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:242
 msgid "Choose which payment methods and operational tools this store loads."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:227
+#: inc/class-wei-alipay-features.php:243
 msgid "Main gateway settings"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:229
+#: inc/class-wei-alipay-features.php:245
 msgid "Wei Alipay features saved."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:231
+#: inc/class-wei-alipay-features.php:247
 msgid "Two-step activation"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:231
-msgid ""
-"Turn a feature on here to load it. Payment methods must then be configured "
-"and enabled in WooCommerce."
+#: inc/class-wei-alipay-features.php:247
+msgid "Turn a feature on here to load it. Payment methods must then be configured and enabled in WooCommerce."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:237
+#: inc/class-wei-alipay-features.php:253
 msgid "Optional payment methods"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:237
-msgid ""
-"Only enabled methods are registered with WooCommerce and shown in its "
-"Payments list."
+#: inc/class-wei-alipay-features.php:253
+msgid "Only enabled methods are registered with WooCommerce and shown in its Payments list."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:238
+#: inc/class-wei-alipay-features.php:254
 msgid "Operational tools"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:238
+#: inc/class-wei-alipay-features.php:254
 msgid "Disabled tools do not register admin pages or background processing."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:240
+#: inc/class-wei-alipay-features.php:256
 msgid "Save feature settings"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:245
+#: inc/class-wei-alipay-features.php:261
 msgid "Active"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:245
+#: inc/class-wei-alipay-features.php:261
+#: inc/class-wei-alipay-features.php:279
 msgid "Action needed"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:247
+#: inc/class-wei-alipay-features.php:263
 msgid "Main payment gateway"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:247
+#: inc/class-wei-alipay-features.php:263
 msgid "The core Alipay gateway is always available and cannot be removed here."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:248
+#: inc/class-wei-alipay-features.php:264
 msgid "Standard Alipay checkout for CNY stores."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:248
+#: inc/class-wei-alipay-features.php:264
 msgid "Required"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:259 inc/class-wei-alipay-features.php:266
+#: inc/class-wei-alipay-features.php:276
+#: inc/class-wei-alipay-features.php:287
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:185
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:191
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:217
 msgid "Enabled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:259 inc/class-wei-alipay-features.php:266
+#: inc/class-wei-alipay-features.php:276
+#: inc/class-wei-alipay-features.php:287
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:191
 msgid "Inactive"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:262
+#: inc/class-wei-alipay-features.php:283
 msgid "Dependency missing"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:268
-msgid ""
-"Install and activate WooCommerce Subscriptions before enabling this feature."
+#: inc/class-wei-alipay-features.php:289
+msgid "Install and activate WooCommerce Subscriptions before enabling this feature."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:294
+msgid "Configure"
 msgstr ""
 
 #. translators: %s is the optional Wei Alipay feature name.
-#: inc/class-wei-alipay-features.php:271
+#: inc/class-wei-alipay-features.php:298
 #, php-format
 msgid "Enable %s"
 msgstr ""
 
-#: inc/class-wei-alipay.php:252
+#: inc/class-wei-alipay-secret-store.php:41
+msgid "OpenSSL is required to protect Alipay secrets."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:49
+msgid "Alipay secret encryption failed."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:68
+msgid "Stored Alipay secret is malformed."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:86
+msgid "Stored Alipay secret cannot be decrypted with the configured key ring."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:222
+msgid "No valid Alipay secret rollback generation is available."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:228
+#: inc/class-wei-alipay-secret-store.php:234
+msgid "The Alipay secret rollback generation is invalid."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:282
+msgid "Wei Alipay cannot decrypt one or more stored payment secrets. Payment is disabled until the configured encryption key is restored."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:289
+msgid "Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site."
+msgstr ""
+
+#: inc/class-wei-alipay-secret-store.php:332
+msgid "WordPress security keys are required to protect Alipay secrets."
+msgstr ""
+
+#: inc/class-wei-alipay.php:187
+msgid "检查中..."
+msgstr ""
+
+#: inc/class-wei-alipay.php:188
+msgid "检查支付状态"
+msgstr ""
+
+#: inc/class-wei-alipay.php:189
+msgid "支付状态查询超时，请手动刷新页面。"
+msgstr ""
+
+#: inc/class-wei-alipay.php:190
+msgid "查询失败，请稍后再试。"
+msgstr ""
+
+#: inc/class-wei-alipay.php:229
+msgid "Connection test succeeded. The Alipay gateway configuration is valid."
+msgstr ""
+
+#: inc/class-wei-alipay.php:230
+msgid "Connection test failed"
+msgstr ""
+
+#: inc/class-wei-alipay.php:231
+msgid "Connection test failed because the request could not be completed."
+msgstr ""
+
+#: inc/class-wei-alipay.php:232
+msgid "Copied"
+msgstr ""
+
+#: inc/class-wei-alipay.php:233
+msgid "Could not copy automatically. Select and copy the URL manually."
+msgstr ""
+
+#: inc/class-wei-alipay.php:259
 msgid "Wei Alipay Feature Center"
 msgstr ""
 
-#: inc/class-wei-alipay.php:253
+#: inc/class-wei-alipay.php:260
 msgid "Features"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:279
-msgid "Configure"
+#: inc/class-wei-alipay.php:270
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:103
+msgid "Alipay Reconciliation"
+msgstr ""
+
+#: inc/class-wei-alipay.php:403
+msgid "The query result did not match the order payment method, amount or transaction number. Synchronization was refused."
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/class-wei-alipay.php:407
+#, php-format
+msgid "Reconciliation sync: marked paid with transaction number %s."
+msgstr ""
+
+#: inc/class-wei-alipay.php:413
+msgid "Single-order Reconciliation"
+msgstr ""
+
+#: inc/class-wei-alipay.php:414
+msgid "Query one transaction from the configured Alipay environment and optionally synchronize a matching WooCommerce order."
+msgstr ""
+
+#: inc/class-wei-alipay.php:415
+msgid "Querying contacts Alipay. Synchronization is offered only after the payment method, amount and transaction number match the order."
+msgstr ""
+
+#: inc/class-wei-alipay.php:419
+msgid "Merchant order number (out_trade_no)"
+msgstr ""
+
+#: inc/class-wei-alipay.php:420
+msgid "Alipay transaction number (trade_no)"
+msgstr ""
+
+#: inc/class-wei-alipay.php:422
+msgid "Query this transaction in the configured Alipay environment?"
+msgstr ""
+
+#: inc/class-wei-alipay.php:422
+msgid "Query transaction"
+msgstr ""
+
+#: inc/class-wei-alipay.php:424
+msgid "Query result"
+msgstr ""
+
+#: inc/class-wei-alipay.php:426
+msgid "If the payment succeeded, synchronize the matching WooCommerce order as paid"
+msgstr ""
+
+#: inc/class-wei-alipay.php:427
+msgid "Re-query Alipay and synchronize the matching order if every binding check passes?"
+msgstr ""
+
+#: inc/class-wei-alipay.php:427
+msgid "Synchronize order status"
+msgstr ""
+
+#: inc/class-wei-alipay.php:447
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:80
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:94
+msgid "Settings"
+msgstr ""
+
+#: inc/class-wei-alipay.php:459
+msgid "Transaction:"
+msgstr ""
+
+#. translators: %s: number of installment periods
+#: inc/class-wei-alipay.php:472
+#, php-format
+msgid "分期：%s期"
+msgstr ""
+
+#: inc/class-wei-alipay.php:481
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:327
+msgid "免息"
+msgstr ""
+
+#: inc/class-wei-alipay.php:485
+msgid "分期："
+msgstr ""
+
+#: inc/class-wei-alipay.php:539
+msgid "Every 5 Minutes"
+msgstr ""
+
+#: inc/class-wei-alipay.php:547
+msgid "Every 10 Minutes"
+msgstr ""
+
+#: inc/class-wei-alipay.php:555
+msgid "Every 15 Minutes"
+msgstr ""
+
+#: inc/class-wei-alipay.php:563
+msgid "Every 30 Minutes"
+msgstr ""
+
+#: inc/modules/barcode/bootstrap.php:99
+msgid "Learn more"
+msgstr ""
+
+#: inc/modules/barcode/bootstrap.php:105
+msgid "View pricing and fees"
+msgstr ""
+
+#: inc/modules/barcode/bootstrap.php:111
+msgid "View terms of service"
+msgstr ""
+
+#: inc/modules/barcode/bootstrap.php:117
+msgid "Support"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode-blocks-support.php:54
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:35
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:68
+msgid "支付宝条码支付"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode-blocks-support.php:55
+msgid "请输入或出示支付宝付款码完成支付"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:26
+msgid "使用支付宝条码/二维码完成当面收款（商户扫码枪或顾客出示付款码）。此网关复用 Wei Alipay 核心插件中的凭据。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:36
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:75
+msgid "请向收银员出示支付宝付款码，或在下方输入条码数字。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:55
+msgid "基本设置"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:57
+msgid "此网关使用 Wei Alipay 核心插件的凭据（应用ID/密钥/公钥等），无需在此重复配置。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:60
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:99
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:101
+msgid "启用/禁用"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:62
+msgid "启用条码支付"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:66
+msgid "结账页面标题"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:70
+msgid "在结账页面显示的支付方式名称"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:73
+msgid "结账页面说明"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:78
+msgid "前台输入付款码"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:80
+msgid "允许买家在结账页输入付款码"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:82
+msgid "适用于自提/到店核销场景；线上邮寄通常不需要买家输入。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:85
+msgid "后台 POS"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:87
+msgid "在订单编辑页显示“条码收款”模块"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:91
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:176
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:228
+msgid "调试日志"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:93
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:178
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:230
+msgid "启用日志记录"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:123
+msgid "付款码"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:131
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:157
+msgid "请输入支付宝付款码。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:141
+msgid "订单不存在。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:190
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:630
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:439
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:659
+msgid "创建支付宝服务失败"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:223
+msgid "支付宝响应异常。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:232
+msgid "支付宝即时响应与订单不匹配。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:235
+msgid "条码支付成功（即时返回）。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:242
+msgid "用户正在支付中，等待确认。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:243
+msgid "条码支付返回 USER_PAYING，等待异步通知或后续查询。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:247
+msgid "支付失败"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:266
+msgid "当前订单币种需要先配置人民币汇率，已阻止发送错误金额。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:289
+msgid "支付宝条码收款"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:303
+msgid "条码收款"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:311
+msgid "权限不足"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:321
+msgid "请输入付款码"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:327
+msgid "已发起收款，请关注订单状态。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:389
+msgid "支付宝条码支付成功（异步通知）。"
+msgstr ""
+
+#: inc/modules/barcode/inc/class-wc-alipay-barcode.php:392
+msgid "支付宝关闭交易。"
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:73
+#: inc/modules/mini-program/class-wc-alipay-wap.php:65
+msgid "Proceed to Alipay"
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:74
+msgid "Alipay Cross Border"
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:75
+msgid "With the growing number of Chinese consumers purchasing merchandise on the oversea merchants’ site direct, the merchant could integrate with Alipay Standard Payment solution to offer the users the familiar user experience that they comfortable with, along the convenience provided for both the merchants and the consumers on the payment, FX exchange and settlement."
+msgstr ""
+
+#. translators: %1s: store currency code
+#: inc/modules/cross-border/includes/class-wc-acbop.php:143
+#, php-format
+msgid "Alipay is enabled, but the store currency is %1s, which is not supported."
+msgstr ""
+
+#. translators: %s: comma-separated list of missing configuration field names
+#: inc/modules/cross-border/includes/class-wc-acbop.php:149
+#: inc/modules/cross-border/includes/class-wc-acbop.php:421
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:395
+#: inc/modules/mini-program/class-wc-alipay-wap.php:159
+#: inc/modules/mini-program/class-wc-alipay-wap.php:685
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-charge.php:37
+#, php-format
+msgid "Alipay core configuration is incomplete. Missing fields: %s"
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:292
+#: inc/modules/mini-program/class-wc-alipay-wap.php:881
+msgid "Alipay closed the transaction."
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:330
+msgid "ERROR: This is not redirected back from Alipay"
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:337
+msgid "ERROR: Invalid order ID!"
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:350
+#: inc/modules/mini-program/class-wc-alipay-wap.php:583
+msgid "Your Alipay Trade No.: "
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:374
+#: inc/modules/mini-program/class-wc-alipay-wap.php:258
+msgid "Alipay is a simple, secure and fast online payment method, customer can pay via debit card, credit card or alipay balance."
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:439
+#: inc/modules/mini-program/class-wc-alipay-wap.php:700
+msgid "Alipay service initialization failed."
+msgstr ""
+
+#: inc/modules/cross-border/includes/class-wc-acbop.php:452
+msgid "Unsupported Alipay account type configuration."
+msgstr ""
+
+#. translators: %s: order number
+#: inc/modules/cross-border/includes/class-wc-acbop.php:496
+#, php-format
+msgid "Order #%s"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:12
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:40
+#: inc/modules/mini-program/class-wc-alipay-wap.php:279
+msgid "Enable/Disable"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:14
+#: inc/modules/mini-program/class-wc-alipay-wap.php:281
+msgid "Enable Alipay Payment"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:18
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:46
+#: inc/modules/mini-program/class-wc-alipay-wap.php:285
+msgid "Title"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:20
+#: inc/modules/mini-program/class-wc-alipay-wap.php:287
+msgid "This controls the title which the user sees during checkout."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:24
+msgid "Customer Message"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:26
+#: inc/modules/mini-program/class-wc-alipay-wap.php:294
+msgid "This controls the description which the user sees during checkout."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:27
+msgid "Pay in Chinese Renminbi/Yuan using your mainland China debit/credit card or Alipay account."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:30
+msgid "Alipay Partner ID (PID)"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:32
+msgid "Please enter the 16 characters partner ID (PID) assigned by Alipay when you signup your Alipay account.<br />If you don't have one, you can signup an Alipay account with Cross Border Online Payment at <a href=\"https://global.alipay.com/products/online\" target=\"_blank\">https://global.alipay.com/products/online</a>."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:36
+msgid "Alipay Security Code/Key"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:38
+msgid "Please enter the 32 characters Security Code(Or Security Key) assigned by Alipay when you opened your Alipay account. <br />This security code is also known as \"Security Key for the MD5 signature mechanism\""
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:43
+msgid "Alipay Account Type"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:46
+msgid "Choose the type of Alipay Cross Border Account that you've applied."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:50
+msgid "Cross-Border (PC)"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:51
+msgid "New Cross-Border (PC)"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:52
+msgid "New Cross-Border (WAP)"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:53
+msgid "New Cross-Border (AUTO)"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:54
+msgid "HK Wallet (PC2Mobile)"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:59
+#: inc/modules/mini-program/class-wc-alipay-wap.php:346
+msgid "Order No. Prefix"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:61
+msgid "eg.WC-. If you <strong>use your Alipay account for multiple stores</strong>, please enter this prefix and make sure it is unique as Alipay will not allow orders with the same merchant order number."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:65
+msgid "Alipay Sandbox"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:67
+msgid "Enable Alipay sandbox"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:69
+msgid "By setting Alipay in sandbox mode allows you to make FREE test transaction to check if this plugin and your Alipay account are both setup correctly. Please refer Alipay <a href=\"https://global.alipay.com/service/sandbox/1\" target=\"_blank\">Sandbox Document</a> for more detail."
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:72
+#: inc/modules/mini-program/class-wc-alipay-wap.php:373
+msgid "Debug Log"
+msgstr ""
+
+#: inc/modules/cross-border/includes/form-settings-alipay.php:76
+msgid "Log Alipay events, such as payment requests, in WooCommerce logs."
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:29
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:71
+msgid "支付宝当面付"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:30
+msgid "支持当面付扫码支付，商家展示二维码供用户扫描。适用于收银台、实体店等场景。需要在支付宝商户后台开通当面付功能。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:44
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:108
+msgid "支付宝扫码支付"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:72
+msgid "用于线下扫码场景的当面付支付方式。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:101
+msgid "启用支付宝当面付"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:105
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:107
+msgid "标题"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:107
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:109
+msgid "用户在结账时看到的支付方式名称"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:112
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:114
+msgid "描述"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:114
+msgid "支付方式描述"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:115
+msgid "使用支付宝扫描二维码完成支付"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:120
+msgid "二维码设置"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:124
+msgid "二维码尺寸"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:126
+msgid "二维码显示尺寸（像素）"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:136
+msgid "二维码有效期"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:138
+msgid "二维码的有效时间"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:141
+msgid "1分钟"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:142
+msgid "2分钟"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:143
+msgid "3分钟"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:144
+msgid "5分钟"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:145
+msgid "10分钟"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:151
+msgid "轮询设置"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:155
+msgid "轮询间隔"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:157
+msgid "查询支付状态的间隔时间（秒）"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:168
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:220
+msgid "订单号前缀"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:170
+msgid "当面付订单号的前缀"
+msgstr ""
+
+#. translators: %s: log file path
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:182
+#, php-format
+msgid "记录当面付相关日志到 %s"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:190
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:243
+msgid "汇率"
+msgstr ""
+
+#. translators: %s: store currency code
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:194
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:247
+#, php-format
+msgid "设置 %s 与人民币的汇率"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:250
+msgid "等待扫码支付"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:279
+msgid "支付初始化失败"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:324
+msgid "生成支付二维码失败"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:329
+msgid "支付请求失败"
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:463
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:556
+#, php-format
+msgid "当面付支付完成 - 交易号: %s"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:560
+msgid "支付宝已关闭当面付交易。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:584
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:613
+msgid "退款失败：订单或支付方式不匹配。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:592
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:621
+msgid "退款金额必须大于零且不能超过订单总额。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:595
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:624
+msgid "订单退款"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:599
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:628
+msgid "退款失败：缺少原始支付宝订单号或交易号。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:615
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:644
+msgid "相同退款请求正在处理中。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:644
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:673
+msgid "退款失败"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:644
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:673
+msgid "退款失败：支付宝返回为空。"
+msgstr ""
+
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:651
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:680
+msgid "支付宝退款响应与原退款请求不匹配。"
+msgstr ""
+
+#. translators: %s: refunded amount
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:657
+#, php-format
+msgid "支付宝当面付退款成功，金额：¥%s"
+msgstr ""
+
+#. translators: %s: order ID
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:700
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:745
+#, php-format
+msgid "订单 #%s"
+msgstr ""
+
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:22
+msgid "扫码支付"
+msgstr ""
+
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:29
+msgid "请使用支付宝扫码支付"
+msgstr ""
+
+#. translators: %s: order ID
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:33
+#, php-format
+msgid "订单号: #%s"
+msgstr ""
+
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:50
+msgid "请打开支付宝APP扫描上方二维码"
+msgstr ""
+
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:51
+msgid "二维码有效期内完成支付，支付完成后会自动跳转"
+msgstr ""
+
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:53
+msgid "在支付宝中打开"
+msgstr ""
+
+#: inc/modules/f2f/inc/templates/payment-qrcode.php:58
+msgid "等待支付中..."
+msgstr ""
+
+#: inc/modules/fund-auth/bootstrap.php:60
+#: inc/modules/fund-auth/bootstrap.php:81
+#: inc/modules/profitsharing/bootstrap.php:80
+#: inc/modules/profitsharing/bootstrap.php:105
+#: inc/modules/profitsharing/bootstrap.php:143
+#: inc/modules/profitsharing/bootstrap.php:158
+#: inc/modules/profitsharing/bootstrap.php:188
+#: inc/modules/profitsharing/bootstrap.php:229
+#: inc/modules/profitsharing/bootstrap.php:272
+#: inc/modules/profitsharing/bootstrap.php:296
+#: inc/modules/profitsharing/bootstrap.php:319
+#: inc/modules/profitsharing/bootstrap.php:464
+#: inc/modules/profitsharing/bootstrap.php:530
+#: inc/modules/profitsharing/bootstrap.php:549
+#: inc/modules/profitsharing/bootstrap.php:571
+#: inc/modules/profitsharing/bootstrap.php:616
+#: inc/modules/profitsharing/bootstrap.php:666
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:71
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:23
+#: inc/modules/reconcile/bootstrap.php:31
+msgid "You are not allowed to do this."
+msgstr ""
+
+#: inc/modules/fund-auth/bootstrap.php:72
+msgid "Capture failed: "
+msgstr ""
+
+#: inc/modules/fund-auth/bootstrap.php:92
+msgid "Unfreeze failed: "
+msgstr ""
+
+#: inc/modules/fund-auth/bootstrap.php:124
+msgid "Auto-capture failed: "
+msgstr ""
+
+#: inc/modules/fund-auth/bootstrap.php:137
+msgid "Auto-unfreeze failed: "
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth-blocks-support.php:54
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:17
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:53
+msgid "Your payment will be authorized (frozen) now and captured upon fulfillment."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:15
+msgid "Freeze customer funds first, then capture or unfreeze later."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:42
+msgid "Enable Alipay Fund Authorization"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:51
+#: inc/modules/mini-program/class-wc-alipay-wap.php:292
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:61
+msgid "Description"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:56
+msgid "Auto-capture on order complete"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:58
+msgid "When order is marked completed, automatically capture authorized funds"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:62
+msgid "Auto-unfreeze on cancel"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:64
+msgid "When order is cancelled, automatically unfreeze funds"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:68
+msgid "Allow partial capture"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:70
+msgid "Allow capturing less than the authorized amount"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:74
+msgid "Auto-capture amount mode"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:76
+msgid "When auto-capture is enabled, choose how much to capture."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:79
+msgid "Authorized amount"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:80
+msgid "Order total"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:81
+msgid "Remaining authorized amount"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:85
+msgid "Debug log"
+msgstr ""
+
+#. translators: %s: comma-separated list of missing configuration field names
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:107
+#, php-format
+msgid "Alipay fund auth requires core credentials. Missing fields: %s"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:185
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:237
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:276
+msgid "Failed to init Alipay service."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:209
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:258
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:298
+msgid "Empty response from Alipay."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:213
+msgid "Freeze failed"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:242
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:282
+msgid "Missing auth_no."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:262
+msgid "Capture failed"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:302
+msgid "Unfreeze failed"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:349
+msgid "Invalid capture amount (exceeds remaining authorized)."
+msgstr ""
+
+#. translators: %1$s: payment ID. %2$.2f: captured amount.
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:357
+#, php-format
+msgid "Capture success: payment_id %1$s amount %2$.2f"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:365
+msgid "Partially captured."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:377
+msgid "Nothing to unfreeze."
+msgstr ""
+
+#. translators: %.2f: unfrozen amount
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:382
+#, php-format
+msgid "Unfreeze success: amount %.2f"
+msgstr ""
+
+#. translators: %1$s: authorization number. %2$.2f: frozen amount.
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:411
+#, php-format
+msgid "Simulated fund authorization: AUTH %1$s Frozen %2$.2f"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:412
+msgid "Funds authorized (simulated)."
+msgstr ""
+
+#. translators: %1$s: authorization number. %2$.2f: frozen amount.
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:430
+#, php-format
+msgid "Fund authorized: AUTH %1$s Frozen %2$.2f"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:433
+msgid "Funds authorized."
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:445
+msgid "Alipay Authorization"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:458
+msgid "Auth No:"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:459
+msgid "Authorized Amount:"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:467
+msgid "Capture Amount"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:468
+msgid "Capture"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:476
+msgid "Unfreeze"
+msgstr ""
+
+#: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:479
+msgid "Capture and Unfreeze actions will be available after authorization."
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:28
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:44
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:70
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:110
+msgid "支付宝花呗分期"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:29
+msgid "支持花呗分期付款，用户可选择3期、6期、12期分期。需要在支付宝商户后台开通花呗分期功能。"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:71
+msgid "为支付宝花呗分期提供优化的结账体验。"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:103
+msgid "启用支付宝花呗分期"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:116
+msgid "支付方式描述，显示在结账页面"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:117
+msgid "使用支付宝花呗分期付款，支持3期、6期、12期免息或低息分期。"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:122
+msgid "支付宝配置"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:124
+msgid "使用主支付宝网关的配置（App ID、公钥、私钥等）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:128
+msgid "分期设置"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:132
+msgid "显示“免息”标识"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:134
+msgid "在分期选项后显示“免息”标识（当商家承担手续费时）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:139
+msgid "分期手续费承担方"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:141
+msgid "选择分期手续费由谁承担。用户承担将会在支付宝端向用户收取手续费；商家承担则由商家承担。"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:144
+msgid "用户承担"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:145
+msgid "商家承担"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:150
+msgid "6期最小金额"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:152
+msgid "达到此金额才显示6期选项（留空或0表示不限制）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:161
+msgid "12期最小金额"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:163
+msgid "达到此金额才显示12期选项（留空或0表示不限制）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:172
+msgid "最小分期金额"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:174
+msgid "订单金额低于此值时不显示分期选项（人民币）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:183
+msgid "可用分期期数"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:185
+msgid "选择允许的分期期数"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:188
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:201
+msgid "3期"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:189
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:202
+msgid "6期"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:190
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:203
+msgid "12期"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:196
+msgid "默认分期期数"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:198
+msgid "用户未选择时的默认分期期数"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:208
+msgid "结账区块金额不足行为"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:210
+msgid "当订单金额低于最小分期金额时，在结账区块中隐藏支付方式或显示提示。"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:213
+msgid "隐藏（推荐）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:214
+msgid "显示提示"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:222
+msgid "花呗分期订单号的前缀，便于区分"
+msgstr ""
+
+#. translators: %s: log file path
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:234
+#, php-format
+msgid "记录花呗分期相关日志到 %s"
+msgstr ""
+
+#. translators: %s: minimum order amount required
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:282
+#, php-format
+msgid "订单金额需满 ¥%s 才能使用花呗分期"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:303
+msgid "选择分期期数："
+msgstr ""
+
+#. translators: %s: number of installment periods
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:315
+#, php-format
+msgid "%s期"
+msgstr ""
+
+#. translators: %s: monthly installment amount
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:322
+#, php-format
+msgid "每期 ¥%s"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:338
+msgid "免息分期（手续费由商家承担）"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:339
+msgid "可能产生分期手续费，以支付宝支付页面为准"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:401
+msgid "等待花呗分期支付"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:440
+msgid "支付初始化失败，请稍后重试"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:492
+msgid "支付请求失败，请稍后重试"
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:582
+#, php-format
+msgid "花呗分期支付完成 - 交易号: %s"
+msgstr ""
+
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:586
+msgid "支付宝已关闭花呗分期交易。"
+msgstr ""
+
+#. translators: %s: refunded amount
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:686
+#, php-format
+msgid "支付宝花呗分期退款成功，金额：¥%s"
+msgstr ""
+
+#: inc/modules/mini-program/bootstrap.php:45
+#: inc/modules/mini-program/class-wc-alipay-wap.php:1114
+msgid "Alipay Trade No.:"
+msgstr ""
+
+#: inc/modules/mini-program/class-mini-protocol.php:18
+msgid "Unsupported Alipay Mini-program protocol."
+msgstr ""
+
+#: inc/modules/mini-program/class-mini-protocol.php:21
+msgid "Legacy MD5 requires both an explicit site acknowledgement and an operator policy."
+msgstr ""
+
+#: inc/modules/mini-program/class-mini-protocol.php:33
+msgid "Automatic Alipay protocol fallback is forbidden."
+msgstr ""
+
+#: inc/modules/mini-program/class-mini-protocol.php:64
+msgid "Alipay partner ID does not match."
+msgstr ""
+
+#. translators: %1$s: link to the exchange rate settings page. %2$s: effective checkout currency code.
+#: inc/modules/mini-program/class-wc-alipay-wap.php:152
+#, php-format
+msgid "Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href=\"%1$s\">set the %2$s against the Chinese Yuan exchange rate</a>."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:295
+msgid "Pay via Alipay, if you don't have an Alipay account, you can also pay with your debit card or credit card"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:310
+msgid "Signing protocol"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:314
+msgid "RSA2 (recommended)"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:315
+msgid "Legacy MD5 (migration only)"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:317
+msgid "RSA2 never falls back to MD5. Legacy MD5 also requires an operator policy in wp-config.php."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:320
+msgid "Acknowledge legacy risk"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:322
+msgid "Temporarily allow this site to use the legacy MD5 protocol."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:324
+msgid "Also define WEI_ALIPAY_ALLOW_LEGACY_MD5 as true. Remove both controls after migrating to RSA2."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:327
+msgid "Partner ID"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:329
+msgid "Please enter the partner ID<br />If you don't have one, <a href=\"https://b.alipay.com/newIndex.htm\" target=\"_blank\">click here</a> to get."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:333
+msgid "Security Key"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:335
+msgid "Please enter the security key<br />If you don't have one, <a href=\"https://b.alipay.com/newIndex.htm\" target=\"_blank\">click here</a> to get."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:339
+msgid "Alipay Account"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:341
+msgid "Please enter your Alipay account ( Email or Phone Number ); this is needed in order to take payment."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:348
+msgid "eg.WC-. If you <strong>use your Alipay account for multiple stores</strong>, Please enter this prefix and make sure it is unique as Alipay will not allow orders with the same merchant order number."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:352
+msgid "Submission method"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:354
+msgid "Use form submission method."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:355
+msgid "Enable this to post order data to Alipay via a form instead of using a redirect/querystring."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:360
+msgid "Preferred format for order title"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:362
+msgid "Select your preferred order title format"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:363
+msgid "Select the format of order title when making payment at Alipay"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:365
+msgid "Customer Full Name|#Order ID"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:366
+msgid "Name of the first Product|#Order ID"
+msgstr ""
+
+#. translators: %s: site name
+#: inc/modules/mini-program/class-wc-alipay-wap.php:368
+#, php-format
+msgid "[Customer Full Name]'s Order From %s|#Order ID"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:377
+msgid "Log Alipay events, such as trade status, inside <code>woocommerce/logs/alipay.txt</code>"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:384
+msgid "Exchange Rate"
+msgstr ""
+
+#. translators: %s: store currency code
+#: inc/modules/mini-program/class-wc-alipay-wap.php:387
+#, php-format
+msgid "Please set the %s against Chinese Yuan exchange rate, eg if your currency is US Dollar, then you should enter 6.19"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:600
+msgid "Legacy payment form is disabled; start a new RSA2 payment from checkout."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:617
+msgid "Thank you for your order. We are now redirecting you to Alipay to make payment."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:641
+msgid "Pay via Alipay"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:641
+msgid "Cancel order &amp; restore cart"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:742
+msgid "Thank you for your order, please click the button below to pay with Alipay."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:917
+msgid "Trade No. is not provided."
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:919
+msgid "cURL is not installed on this server"
+msgstr ""
+
+#: inc/modules/mini-program/class-wc-alipay-wap.php:1056
+msgid " etc."
+msgstr ""
+
+#. translators: %1$s: customer name. %2$s: site name.
+#: inc/modules/mini-program/class-wc-alipay-wap.php:1068
+#, php-format
+msgid "Order of %1$s from %2$s"
+msgstr ""
+
+#. translators: %s: site name
+#: inc/modules/mini-program/class-wc-alipay-wap.php:1071
+#, php-format
+msgid "Your order from %s"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:98
+msgid "设置已保存。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:116
+msgid "请填写标签与账号。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:136
+msgid "收款方已保存。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:151
+msgid "收款方已删除。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:176
+msgid "规则总比例超过 100%，请调整。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:179
+msgid "规则已保存。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:197
+msgid "请填写类目、收款方与比例。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:213
+msgid "该类目下的分账比例累计超过 100%，请调整。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:221
+msgid "类目规则已添加。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:243
+msgid "请填写商品、收款方与比例。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:256
+msgid "该商品下的分账比例累计超过 100%，请调整。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:264
+msgid "商品规则已添加。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:288
+msgid "商品规则已删除。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:312
+msgid "类目规则已删除。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:339
+#: inc/modules/profitsharing/bootstrap.php:639
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:452
+msgid "没有可结算的分账项。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:348
+msgid "已发起结算并安排确认。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:354
+#: inc/modules/profitsharing/bootstrap.php:653
+msgid "未能加入队列（可能因币种/支付方式不匹配）。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:356
+msgid "已加入后台队列处理。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:367
+msgid "Every Minute"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:647
+msgid "已发起新一轮结算并安排确认。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:655
+msgid "已开始新一轮结算并加入队列。"
+msgstr ""
+
+#: inc/modules/profitsharing/bootstrap.php:678
+msgid "请提供 out_request_no 或 trade_no。"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:13
+msgid "Wei Alipay Profit Sharing"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:66
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:12
+msgid "Alipay Profit Sharing"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:67
+msgid "Configure settlement behavior, receivers and allocation rules without mixing unrelated tasks on one screen."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:81
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:164
+msgid "Settlement Query"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:82
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:181
+msgid "Receivers"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:83
+msgid "Allocation Rules"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:85
+msgid "Profit sharing sections"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:99
+msgid "Execution policy"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:100
+msgid "Delayed (on order completed)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:101
+msgid "Immediate (on pay success)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:103
+msgid "Processing mode"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:104
+msgid "Queue (recommended)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:105
+msgid "Sync (execute immediately)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:107
+msgid "Base amount"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:108
+msgid "Order total minus shipping"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:110
+msgid "Rounding digits"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:111
+msgid "Minimum amount"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:112
+msgid "Out request prefix"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:113
+msgid "Description template"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:113
+msgid "Placeholders: {order_id}, {order_number}"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:114
+msgid "Tail allocation strategy"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:122
+msgid "Tail receiver (when Specific)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:125
+msgid "Confirm interval (seconds)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:126
+msgid "Max confirmation checks"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:128
+msgid "Save settings"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:142
+msgid "Settlement query result:"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:149
+msgid "Royalty details"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:158
+msgid "Hint:"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:158
+msgid "Help"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:167
+msgid "Note: Jobs are processed via Action Scheduler. See WooCommerce > Status > Scheduled Actions (group: woo_alipay_ps)."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:173
+msgid "Out request no"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:174
+msgid "Trade no"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:176
+msgid "Query"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:185
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:214
+msgid "Label"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:185
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:215
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:59
+msgid "Identity Type"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:185
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:216
+msgid "Identity"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:198
+msgid "Delete this receiver? Existing order history is retained."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:198
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:267
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:333
+msgid "Delete"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:205
+msgid "No receivers yet."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:209
+msgid "Add receiver"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:219
+msgid "Add"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:225
+msgid "Default rule"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:226
+msgid "Define percentage shares for each receiver. Sum should be ≤ 100%."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:241
+msgid "Save rule"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:243
+msgid "Add receivers first."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:249
+msgid "Category rules"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:252
+msgid "Category ID"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:252
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:318
+msgid "Rules"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:267
+msgid "Delete this category allocation rule?"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:277
+msgid "No category rules yet."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:280
+msgid "Add category rule"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:287
+msgid "Category"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:299
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:364
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:49
+msgid "Receiver"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:307
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:372
+msgid "Percent"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:309
+msgid "Add rule"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:315
+msgid "Product rules"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:318
+msgid "Product ID"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:333
+msgid "Delete this product allocation rule?"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:343
+msgid "No product rules yet."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:346
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:374
+msgid "Add product rule"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:353
+msgid "Product"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:13
+msgid "Wei Alipay Profit Sharing Compensation"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:14
+msgid "Profit Sharing Compensation"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:36
+msgid "Alipay Profit Sharing Compensation"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:37
+msgid "Create a one-time additional settlement for a specific paid order and receiver."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:41
+msgid "This action sends a settlement request to Alipay."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:41
+msgid "Verify the order, receiver and amount before continuing. The generated request number prevents accidental reuse."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:47
+msgid "Order ID"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:57
+msgid "Receiver ID"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:60
+msgid "Amount (CNY)"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:63
+msgid "Send this compensation settlement request to Alipay?"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:63
+msgid "Create Compensation"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:83
+msgid "The order or amount is invalid."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:140
+msgid "The compensation settlement was created and confirmation was scheduled."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:13
+msgid "Wei Alipay Profit Sharing Jobs"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:14
+msgid "Profit Sharing Jobs"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:48
+msgid "Alipay Profit Sharing Jobs"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:49
+msgid "Queued settlement jobs processed in background. Use Retry to requeue failed jobs."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:60
+msgid "All"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:65
+msgid "Only with error"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:66
+msgid "Filter"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:78
+msgid "Export CSV"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:81
+msgid "Cleanup permanently removes queue records. Order data and settlement history stored on orders are retained."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:86
+msgid "Permanently clear all succeeded job records?"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:86
+msgid "Clear succeeded jobs"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:92
+msgid "Age in days"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:92
+msgid "days"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:93
+msgid "Permanently clear failed job records older than this age?"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:93
+msgid "Clear old failed jobs"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:110
+msgid "No jobs match the current filter."
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:114
+msgid "Job ID"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:116
+msgid "Phase"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:118
+msgid "Attempts"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:119
+msgid "Confirm checks"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:120
+msgid "Next run"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:121
+msgid "Updated"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:122
+msgid "Reason"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:123
+msgid "Last error"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:27
+msgid "Settled:"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:29
+msgid "Recent activity"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:48
+msgid "Compensations"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:59
+msgid "Refund compensation suggestions"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:69
+msgid "Send"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:80
+msgid "Preview"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:93
+msgid "Settle Now"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:101
+msgid "Start New Round"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:430
+msgid "未找到该订单的支付宝交易号（trade_no）。"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:435
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:521
+msgid "无法创建支付宝客户端，请检查凭据。"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:482
+msgid "分账结算失败"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:517
+msgid "需要提供 out_request_no 或 trade_no。"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-service.php:553
+msgid "查询失败"
+msgstr ""
+
+#: inc/modules/reconcile/bootstrap.php:39
+msgid "请选择日期。"
+msgstr ""
+
+#: inc/modules/reconcile/bootstrap.php:45
+msgid "对账引擎未加载。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:15
+msgid "Wei Alipay Reconciliation"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:44
+msgid "Reconciliation settings"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:46
+msgid "Configure the reconciliation schedule and retention policy. Credentials are inherited from the main Wei Alipay gateway."
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:53
+msgid "Enable schedule"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:60
+msgid "Daily run time"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:67
+msgid "Timezone"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:74
+msgid "Log retention (days)"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:81
+msgid "Notification email"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:104
+msgid "Schedule statement reconciliation and review a manually requested statement without mixing the two actions."
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:112
+msgid "Manual reconciliation"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:113
+msgid "Manual reconciliation downloads a statement from Alipay. It does not send a payment or refund, but it does contact the configured provider environment."
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:122
+msgid "Reconciliation completed."
+msgstr ""
+
+#. translators: %1$s: bill date. %2$s: bill type. %3$d: total row count. %4$d: matched count. %5$d: mismatched count. %6$d: unmatched count.
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:125
+#, php-format
+msgid "Statement date: %1$s; type: %2$s. Rows: %3$d; matched: %4$d; amount mismatches: %5$d; unmatched: %6$d."
+msgstr ""
+
+#. translators: %s: link to the downloaded source file
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:136
+#, php-format
+msgid "Source file: %s"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:139
+msgid "Details"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:153
+msgid "Statement date"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:156
+msgid "Statement type"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:158
+msgid "Trade statement (trade)"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:159
+msgid "Funds statement (signcustomer)"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:163
+msgid "Download and reconcile this Alipay statement now?"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:163
+msgid "Start reconciliation"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:171
+msgid "Run automatic reconciliation every day"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:180
+msgid "Uses the site timezone by default. Example: Asia/Shanghai"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:34
+msgid "创建支付宝服务失败，请检查配置。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:49
+msgid "获取对账单下载链接失败。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:84
+msgid "支付宝对账单下载地址未通过安全校验。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:132
+msgid "压缩包中未找到 CSV 文件。"
+msgstr ""
+
+#. translators: %s: path to the downloaded ZIP file
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:136
+#, php-format
+msgid "已下载 ZIP 文件：%s，请手动解压后上传解析。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:150
+msgid "CSV 文件不存在。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:155
+msgid "CSV 文件为空。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-runner.php:183
+msgid "未识别到对账单表头。"
+msgstr ""
+
+#: inc/modules/subscriptions/bootstrap.php:27
+msgid "Wei Alipay subscriptions require the WooCommerce Subscriptions extension."
+msgstr ""
+
+#: inc/modules/subscriptions/bootstrap.php:36
+msgid "Install and activate the main Wei Alipay plugin first."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:13
+msgid "Wei Alipay Subscription Settings"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:23
+msgid "You do not have permission to manage Alipay subscriptions."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:38
+msgid "The retry schedule must contain up to 12 comma-separated day numbers from 0 to 365."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:51
+msgid "Select Alipay from the payment link in this email to complete the renewal. If automatic debit is active, the renewal will be processed automatically."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:57
+msgid "Alipay Subscriptions"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:58
+msgid "Configure agreement payments and renewal behavior. Credentials and provider environment are inherited from the main Wei Alipay gateway."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:60
+msgid "Settings saved."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:71
+msgid "Sandbox signing"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:77
+msgid "Start sandbox signing"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:78
+msgid "Available only while the main gateway is in sandbox mode. Production customers sign during subscription checkout."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:82
+msgid "Signing flow"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:82
+msgid "The administrator signing shortcut is hidden in production mode. Customers start signing during subscription checkout."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:87
+msgid "Enable automatic debit"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:88
+msgid "Enable automatic renewals only after Alipay has activated an agreement debit product for the merchant."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:93
+msgid "Retry schedule (days)"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:95
+msgid "Comma-separated days, for example 0,1,3,7 for the same day and days 1, 3 and 7."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:100
+msgid "Agreement product code"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:112
+msgid "Use the product code enabled for the merchant by Alipay."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:118
+msgid "Signing strategy"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:123
+msgid "Sign only (commonly used for trials or a zero first payment)"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:124
+msgid "Sign and debit the first payment"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:135
+msgid "Agreement callback URL"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:142
+msgid "Enter this as the signing and cancellation notification URL in Alipay Open Platform."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:148
+msgid "Renewal email guidance"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:150
+msgid "Inserted near the top of renewal invoice emails to explain how to pay with Alipay."
+msgstr ""
+
+#. translators: %s: order ID
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-charge.php:75
+#, php-format
+msgid "订阅续费订单 #%s"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-charge.php:104
+msgid "支付宝代扣响应与订单请求不匹配。"
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:212
+#, php-format
+msgid "首单签约并扣款成功 - 交易号: %s"
+msgstr ""
+
+#. translators: %s: error message
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:215
+#, php-format
+msgid "首单签约完成，但扣款失败：%s"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:233
+msgid "支付宝代扣签约回跳：签约结果稍后将通过服务器通知同步。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:243
+msgid "请先登录后再发起签约。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:249
+msgid "支付宝自动代扣尚未启用。"
+msgstr ""
+
+#. translators: %s: comma-separated list of missing configuration field names
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:257
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:361
+#, php-format
+msgid "Alipay 核心配置不完整，缺少：%s。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:339
+msgid "您已开启自动代扣功能。若尚未完成支付宝签约，请在下次结账时完成授权。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:340
+msgid "解绑代扣协议"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:355
+msgid "Invalid or expired unsign request."
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:369
+msgid "未找到代扣协议。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:400
+msgid "协议已解绑。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-signing.php:402
+msgid "协议解绑失败，请稍后再试。"
+msgstr ""
+
+#. translators: %s: comma-separated list of missing configuration field names
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:59
+#, php-format
+msgid "自动代扣不可用：Alipay 核心配置缺失（%s）。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:60
+msgid "核心配置不完整，自动代扣失败。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:69
+msgid "未启用自动代扣或未完成签约：将使用手动续费。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:70
+msgid "自动代扣未启用或未签约，标记为失败以触发手动续费。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:80
+msgid "未找到支付宝代扣协议，无法自动续费。"
+msgstr ""
+
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:81
+msgid "未找到支付宝代扣协议，标记为失败以触发手动续费。"
+msgstr ""
+
+#. translators: %s: error message
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:94
+#, php-format
+msgid "自动代扣失败：%s"
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:105
+#, php-format
+msgid "自动代扣成功 - 交易号: %s"
+msgstr ""
+
+#. translators: %s: error message
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:167
+#, php-format
+msgid "自动代扣重试失败：%s"
+msgstr ""
+
+#. translators: %s: Alipay transaction number
+#: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions.php:174
+#, php-format
+msgid "自动代扣成功（重试） - 交易号: %s"
+msgstr ""
+
+#. translators: %s: last 6 characters of the agreement number
+#: inc/modules/subscriptions/inc/class-wc-payment-token-alipay-agreement.php:11
+#, php-format
+msgid "支付宝代扣协议 %s"
+msgstr ""
+
+#. translators: %1$s: Website name
+#: inc/templates/emails/alipay-orphan-transaction.php:29
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:28
+#, php-format
+msgid "Alipay returned a notification of successful payment but the order does not appear to exist on %1$s."
+msgstr ""
+
+#: inc/templates/emails/alipay-orphan-transaction.php:38
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:34
+msgid "Wei Alipay attempted to automatically refund the order but encountered an error."
+msgstr ""
+
+#: inc/templates/emails/alipay-orphan-transaction.php:41
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:36
+msgid "Wei Alipay could not automatically refund the order because Alipay closed the transaction."
+msgstr ""
+
+#: inc/templates/emails/alipay-orphan-transaction.php:49
+msgid "See the following basic information:"
+msgstr ""
+
+#. translators: %1$s: the order ID
+#: inc/templates/emails/alipay-orphan-transaction.php:55
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:47
+#, php-format
+msgid "Order ID: %1$s"
+msgstr ""
+
+#. translators: %1$s: the Alipay transaction ID
+#: inc/templates/emails/alipay-orphan-transaction.php:61
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:51
+#, php-format
+msgid "Alipay transaction ID: %1$s"
+msgstr ""
+
+#. translators: %1$s: Log path
+#: inc/templates/emails/alipay-orphan-transaction.php:69
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:55
+#, php-format
+msgid "The complete error data can be found in the log files on the server at the following location: %1$s"
+msgstr ""
+
+#: inc/templates/emails/plain/alipay-orphan-transaction.php:40
+msgid "You may need to double check the Alipay transactions in the merchant platform - see the following basic information:"
+msgstr ""
+
+#: inc/templates/redirected-pay.php:17
+msgid "Contacting Alipay..."
 msgstr ""

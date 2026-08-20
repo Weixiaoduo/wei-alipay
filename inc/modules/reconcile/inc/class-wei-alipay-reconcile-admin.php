@@ -41,44 +41,44 @@ class Wei_Alipay_Reconcile_Admin {
 
         add_settings_section(
             'woo_alipay_reconcile_main',
-            __( '对账设置', 'wei-alipay' ),
+            __( 'Reconciliation settings', 'wei-alipay' ),
             function(){
-                echo '<p>' . esc_html__( '配置对账计划任务与保留策略。凭据沿用 Wei Alipay 核心插件。', 'wei-alipay' ) . '</p>';
+                echo '<p>' . esc_html__( 'Configure the reconciliation schedule and retention policy. Credentials are inherited from the main Wei Alipay gateway.', 'wei-alipay' ) . '</p>';
             },
             'woo_alipay_reconcile'
         );
 
         add_settings_field(
             'enable_schedule',
-            __( '启用计划任务', 'wei-alipay' ),
+            __( 'Enable schedule', 'wei-alipay' ),
             array( $this, 'field_enable_schedule' ),
             'woo_alipay_reconcile',
             'woo_alipay_reconcile_main'
         );
         add_settings_field(
             'schedule_time',
-            __( '每日执行时间', 'wei-alipay' ),
+            __( 'Daily run time', 'wei-alipay' ),
             array( $this, 'field_schedule_time' ),
             'woo_alipay_reconcile',
             'woo_alipay_reconcile_main'
         );
         add_settings_field(
             'timezone',
-            __( '时区', 'wei-alipay' ),
+            __( 'Timezone', 'wei-alipay' ),
             array( $this, 'field_timezone' ),
             'woo_alipay_reconcile',
             'woo_alipay_reconcile_main'
         );
         add_settings_field(
             'retention_days',
-            __( '日志保留天数', 'wei-alipay' ),
+            __( 'Log retention (days)', 'wei-alipay' ),
             array( $this, 'field_retention' ),
             'woo_alipay_reconcile',
             'woo_alipay_reconcile_main'
         );
         add_settings_field(
             'notify_email',
-            __( '通知邮箱', 'wei-alipay' ),
+            __( 'Notification email', 'wei-alipay' ),
             array( $this, 'field_notify_email' ),
             'woo_alipay_reconcile',
             'woo_alipay_reconcile_main'
@@ -99,16 +99,18 @@ class Wei_Alipay_Reconcile_Admin {
 
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) { return; }
-        echo '<div class="wrap">';
-        echo '<h1>' . esc_html__( 'Alipay 对账', 'wei-alipay' ) . '</h1>';
-        echo '<form action="options.php" method="post">';
+        echo '<div class="wrap wei-alipay-admin">';
+        echo '<h1>' . esc_html__( 'Alipay Reconciliation', 'wei-alipay' ) . '</h1>';
+        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Schedule statement reconciliation and review a manually requested statement without mixing the two actions.', 'wei-alipay' ) . '</p>';
+        echo '<form class="card wei-alipay-card-wide" action="options.php" method="post" data-wei-dirty>';
         settings_fields( 'woo_alipay_reconcile_group' );
         do_settings_sections( 'woo_alipay_reconcile' );
         submit_button();
+        echo '<span data-wei-dirty-message aria-live="polite"></span>';
         echo '</form>';
 
-        echo '<hr/>';
-        echo '<h2>' . esc_html__( '手动对账', 'wei-alipay' ) . '</h2>';
+        echo '<h2>' . esc_html__( 'Manual reconciliation', 'wei-alipay' ) . '</h2>';
+        echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Manual reconciliation downloads a statement from Alipay. It does not send a payment or refund, but it does contact the configured provider environment.', 'wei-alipay' ) . '</p></div>';
 
         // Result panel
         $last = get_transient( 'woo_alipay_reconcile_last_result' );
@@ -117,10 +119,10 @@ class Wei_Alipay_Reconcile_Admin {
             if ( ! empty( $last['error'] ) ) {
                 echo '<div class="notice notice-error"><p>' . esc_html( $last['error'] ) . '</p></div>';
             } else {
-                echo '<div class="notice notice-success"><p>' . esc_html__( '对账执行完成。', 'wei-alipay' ) . '</p></div>';
+                echo '<div class="notice notice-success"><p>' . esc_html__( 'Reconciliation completed.', 'wei-alipay' ) . '</p></div>';
                 echo '<p>';
                 /* translators: %1$s: bill date. %2$s: bill type. %3$d: total row count. %4$d: matched count. %5$d: mismatched count. %6$d: unmatched count. */
-                printf( esc_html__( '账单日期：%1$s，类型：%2$s。总行数：%3$d，匹配：%4$d，金额不一致：%5$d，未匹配：%6$d。', 'wei-alipay' ),
+                printf( esc_html__( 'Statement date: %1$s; type: %2$s. Rows: %3$d; matched: %4$d; amount mismatches: %5$d; unmatched: %6$d.', 'wei-alipay' ),
                     esc_html( $last['date'] ?? '' ),
                     esc_html( $last['bill_type'] ?? '' ),
                     intval( $last['total_rows'] ?? 0 ),
@@ -131,10 +133,10 @@ class Wei_Alipay_Reconcile_Admin {
                 echo '</p>';
                 if ( ! empty( $last['file_url'] ) ) {
                     /* translators: %s: link to the downloaded source file */
-                    echo '<p>' . sprintf( esc_html__( '下载源文件：%s', 'wei-alipay' ), '<a href="' . esc_url( $last['file_url'] ) . '" target="_blank">' . esc_html( basename( $last['file'] ) ) . '</a>' ) . '</p>';
+                    echo '<p>' . sprintf( esc_html__( 'Source file: %s', 'wei-alipay' ), '<a href="' . esc_url( $last['file_url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( basename( $last['file'] ) ) . '</a>' ) . '</p>';
                 }
                 if ( ! empty( $last['notes'] ) && is_array( $last['notes'] ) ) {
-                    echo '<details style="margin:8px 0;"><summary>' . esc_html__( '详细备注', 'wei-alipay' ) . '</summary><ul style="margin:8px 16px;">';
+                    echo '<details><summary>' . esc_html__( 'Details', 'wei-alipay' ) . '</summary><ul class="ul-disc">';
                     foreach ( $last['notes'] as $note ) {
                         echo '<li>' . esc_html( $note ) . '</li>';
                     }
@@ -144,21 +146,21 @@ class Wei_Alipay_Reconcile_Admin {
         }
 
         // Manual form
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:12px;">';
-        wp_nonce_field( 'woo_alipay_reconcile_run' );
+        echo '<form class="card wei-alipay-card-wide" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        wp_nonce_field( 'woo_alipay_reconcile_run', 'woo_alipay_reconcile_run_nonce' );
         echo '<input type="hidden" name="action" value="woo_alipay_reconcile_run" />';
         echo '<table class="form-table"><tbody>';
-        echo '<tr><th><label for="woo-ali-bill-date">' . esc_html__( '账单日期', 'wei-alipay' ) . '</label></th><td>';
+        echo '<tr><th><label for="woo-ali-bill-date">' . esc_html__( 'Statement date', 'wei-alipay' ) . '</label></th><td>';
         echo '<input type="date" id="woo-ali-bill-date" name="bill_date" required />';
         echo '</td></tr>';
-        echo '<tr><th><label for="woo-ali-bill-type">' . esc_html__( '账单类型', 'wei-alipay' ) . '</label></th><td>';
+        echo '<tr><th><label for="woo-ali-bill-type">' . esc_html__( 'Statement type', 'wei-alipay' ) . '</label></th><td>';
         echo '<select id="woo-ali-bill-type" name="bill_type">';
-        echo '<option value="trade">' . esc_html__( '交易账单（trade）', 'wei-alipay' ) . '</option>';
-        echo '<option value="signcustomer">' . esc_html__( '资金账单（signcustomer）', 'wei-alipay' ) . '</option>';
+        echo '<option value="trade">' . esc_html__( 'Trade statement (trade)', 'wei-alipay' ) . '</option>';
+        echo '<option value="signcustomer">' . esc_html__( 'Funds statement (signcustomer)', 'wei-alipay' ) . '</option>';
         echo '</select>';
         echo '</td></tr>';
         echo '</tbody></table>';
-        submit_button( esc_html__( '开始对账', 'wei-alipay' ) );
+        echo '<p class="submit"><button type="submit" class="button button-primary" data-wei-confirm="' . esc_attr__( 'Download and reconcile this Alipay statement now?', 'wei-alipay' ) . '">' . esc_html__( 'Start reconciliation', 'wei-alipay' ) . '</button></p>';
         echo '</form>';
 
         echo '</div>';
@@ -166,7 +168,7 @@ class Wei_Alipay_Reconcile_Admin {
 
     public function field_enable_schedule() {
         $opt = $this->get_settings();
-        echo '<label><input type="checkbox" name="' . esc_attr( self::OPTION_KEY ) . '[enable_schedule]" value="yes" ' . checked( 'yes', $opt['enable_schedule'], false ) . ' /> ' . esc_html__( '启用每日自动对账', 'wei-alipay' ) . '</label>';
+        echo '<label><input type="checkbox" name="' . esc_attr( self::OPTION_KEY ) . '[enable_schedule]" value="yes" ' . checked( 'yes', $opt['enable_schedule'], false ) . ' /> ' . esc_html__( 'Run automatic reconciliation every day', 'wei-alipay' ) . '</label>';
     }
     public function field_schedule_time() {
         $opt = $this->get_settings();
@@ -175,7 +177,7 @@ class Wei_Alipay_Reconcile_Admin {
     public function field_timezone() {
         $opt = $this->get_settings();
         echo '<input type="text" name="' . esc_attr( self::OPTION_KEY ) . '[timezone]" value="' . esc_attr( $opt['timezone'] ) . '" class="regular-text" />';
-        echo '<p class="description">' . esc_html__( '默认使用站点时区，可手动覆盖。示例：Asia/Shanghai', 'wei-alipay' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Uses the site timezone by default. Example: Asia/Shanghai', 'wei-alipay' ) . '</p>';
     }
     public function field_retention() {
         $opt = $this->get_settings();
