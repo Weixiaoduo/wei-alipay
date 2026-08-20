@@ -529,7 +529,7 @@ add_action( 'admin_post_woo_alipay_ps_jobs_clear', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
         wp_die( esc_html__( 'You are not allowed to do this.', 'wei-alipay' ) );
     }
-    check_admin_referer( 'woo_alipay_ps_jobs_clear' );
+    check_admin_referer( 'woo_alipay_ps_jobs_clear', 'wei_alipay_clear_nonce' );
     $jobs = get_option( 'woo_alipay_ps_jobs', array() );
     if ( ! empty( $jobs ) && is_array( $jobs ) ) {
         foreach ( $jobs as $id => $j ) {
@@ -548,7 +548,7 @@ add_action( 'admin_post_woo_alipay_ps_jobs_clear_old_failed', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
         wp_die( esc_html__( 'You are not allowed to do this.', 'wei-alipay' ) );
     }
-    check_admin_referer( 'woo_alipay_ps_jobs_clear_old_failed' );
+    check_admin_referer( 'woo_alipay_ps_jobs_clear_old_failed', 'wei_alipay_clear_old_nonce' );
     $days = isset( $_POST['days'] ) ? max( 1, (int) $_POST['days'] ) : 7;
     $cut  = time() - $days * DAY_IN_SECONDS;
     $jobs = get_option( 'woo_alipay_ps_jobs', array() );

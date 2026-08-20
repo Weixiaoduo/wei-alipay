@@ -25,6 +25,7 @@ $contract = design_source( $root, 'DESIGN.md' );
 $css      = design_source( $root, 'css/admin/design-system.css' );
 $script   = design_source( $root, 'js/admin/design-system.js' );
 $loader   = design_source( $root, 'inc/class-wei-alipay-features.php' );
+$ui       = design_source( $root, 'inc/class-wei-alipay-admin-ui.php' );
 
 design_expect( false !== strpos( $contract, 'WordPress native first' ), 'DESIGN.md makes native WordPress components the default' );
 foreach ( array( 'nav-tab-wrapper', 'notice', 'card', 'form-table', 'wp-list-table', 'tablenav', 'button-link-delete' ) as $native_class ) {
@@ -53,14 +54,20 @@ foreach ( $pages as $relative ) {
 }
 
 $profit = design_source( $root, 'inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php' );
-design_expect( false !== strpos( $profit, 'nav-tab-wrapper wei-alipay-tabs' ) && false !== strpos( $profit, 'nav-tab-active' ), 'profit sharing uses native URL-addressable tabs with the WooCommerce settings composition' );
-design_expect( false !== strpos( $profit, "esc_attr__( 'Profit sharing sections'" ), 'profit sharing tab navigation has an accessible label' );
+design_expect( false !== strpos( $ui, 'nav-tab-wrapper wei-alipay-tabs' ) && false !== strpos( $ui, 'nav-tab-active' ), 'shared UI uses native URL-addressable tabs with the WooCommerce settings composition' );
+design_expect( false !== strpos( $ui, "__( 'Profit sharing sections'" ), 'profit sharing tab navigation has an accessible label' );
+foreach ( array( 'settings', 'query', 'receivers', 'rules', 'jobs', 'compensation' ) as $profit_tab ) {
+	design_expect( false !== strpos( $ui, "'" . $profit_tab . "'" ), 'profit sharing navigation includes ' . $profit_tab );
+}
+design_expect( false !== strpos( $profit, "profit_sharing_tabs( \$view )" ), 'profit sharing page uses the shared section navigation' );
 design_expect( false === strpos( $profit, 'wei-alipay-panel' ), 'profit sharing no longer uses custom panels' );
 design_expect( false !== strpos( $profit, 'private function nonce_field' ), 'profit sharing avoids duplicate nonce DOM IDs on multi-form pages' );
 
 $jobs = design_source( $root, 'inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php' );
 design_expect( false !== strpos( $jobs, 'name="page" value="wei-alipay-ps-jobs"' ), 'job filters retain the correct page route' );
 design_expect( false !== strpos( $jobs, "'pending', 'processing', 'succeeded', 'failed'" ), 'job filters include failed and use a fixed allow-list' );
+design_expect( false !== strpos( $jobs, "profit_sharing_tabs( 'jobs' )" ), 'job page retains profit sharing context' );
+design_expect( false !== strpos( $jobs, 'wei_alipay_clear_nonce' ) && false !== strpos( $jobs, 'wei_alipay_clear_old_nonce' ), 'job cleanup forms use unique nonce fields' );
 
 $webhooks = design_source( $root, 'inc/class-wc-alipay-webhook-retry.php' );
 design_expect( false !== strpos( $webhooks, 'id="wei-alipay-select-all"' ), 'webhook table select-all control is wired' );
@@ -77,6 +84,7 @@ design_expect( false !== strpos( $subscriptions_bootstrap, 'feature centre rende
 
 $reconcile = design_source( $root, 'inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php' );
 design_expect( false !== strpos( $reconcile, "'woo_alipay_reconcile_run_nonce'" ), 'manual reconciliation uses a unique nonce field name' );
+design_expect( false !== strpos( $reconcile, "array( 'schedule', 'manual' )" ), 'reconciliation separates schedule and manual tasks into URL-addressable views' );
 
 $gateway = design_source( $root, 'inc/class-wc-alipay.php' );
 $gateway_js = design_source( $root, 'js/admin/main.js' );
@@ -89,6 +97,7 @@ design_expect( false === strpos( $gateway, 'onclick=' ) && false === strpos( $ga
 design_expect( false !== strpos( $gateway_js, '.text( message )' ) && false === strpos( $gateway_js, '.html(' ), 'gateway connection result renders server text without HTML injection' );
 design_expect( false !== strpos( $gateway_js, "'[data-wei-copy]'" ) && false !== strpos( $gateway_js, 'navigator.clipboard' ), 'gateway endpoint copy uses one delegated clipboard interaction' );
 design_expect( false === strpos( $gateway_css, 'form-table tr[data-field-type="title"]' ), 'gateway CSS does not restyle native WooCommerce section rows' );
+design_expect( false !== strpos( $gateway, 'wei-alipay-settings-tabs' ) && false !== strpos( $gateway, 'woocommerce_alipay_advanced_settings_title' ), 'gateway settings use WooCommerce native section anchors' );
 $settings_start = strpos( $gateway, 'protected function setup_form_fields' );
 $settings_end   = strpos( $gateway, 'public function is_account_connected' );
 $settings_ui    = substr( $gateway, $settings_start, $settings_end - $settings_start );

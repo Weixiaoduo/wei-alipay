@@ -2746,13 +2746,13 @@ msgstr "Wei Alipay 分账"
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:66
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-order-admin.php:12
 msgid "Alipay Profit Sharing"
-msgstr "支付宝分润"
+msgstr "Wei Alipay 分账"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:67
 msgid ""
 "Configure settlement behavior, receivers and allocation rules without mixing"
 " unrelated tasks on one screen."
-msgstr "配置结算行为、收款人和分润规则，避免在一个屏幕上混合不相关的任务。"
+msgstr "配置结算行为、收款人和分账规则，避免在一个屏幕上混合不相关的任务。"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:81
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:164
@@ -2766,11 +2766,11 @@ msgstr "收款人"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:83
 msgid "Allocation Rules"
-msgstr "分润规则"
+msgstr "分账规则"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:85
 msgid "Profit sharing sections"
-msgstr "分润部分"
+msgstr "分账分区"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:99
 msgid "Execution policy"
@@ -2947,7 +2947,7 @@ msgstr "规则"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:267
 msgid "Delete this category allocation rule?"
-msgstr "删除此分类分润规则？"
+msgstr "删除此分类分账规则？"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:277
 msgid "No category rules yet."
@@ -2986,7 +2986,7 @@ msgstr "产品ID"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:333
 msgid "Delete this product allocation rule?"
-msgstr "删除此产品分润规则？"
+msgstr "删除此产品分账规则？"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:343
 msgid "No product rules yet."
@@ -3011,7 +3011,7 @@ msgstr "分账补偿"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:36
 msgid "Alipay Profit Sharing Compensation"
-msgstr "支付宝分润补偿"
+msgstr "Wei Alipay 分账补偿"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-comp-admin.php:37
 msgid ""
@@ -3068,7 +3068,7 @@ msgstr "分账任务"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:48
 msgid "Alipay Profit Sharing Jobs"
-msgstr "支付宝分润任务"
+msgstr "Wei Alipay 分账任务"
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:49
 msgid ""
@@ -3665,3 +3665,87 @@ msgstr "你需要在支付宝商家平台仔细检查支付宝交易 - 请看下
 #: inc/templates/redirected-pay.php:17
 msgid "Contacting Alipay..."
 msgstr "连接支付宝..."
+
+msgid "Wei Alipay Payment Gateway"
+msgstr "Wei Alipay 支付网关"
+
+msgid "Gateway settings sections"
+msgstr "支付网关设置分区"
+
+msgid "Endpoints"
+msgstr "端点"
+
+msgid "Basic"
+msgstr "基本"
+
+msgid "Credentials"
+msgstr "凭据"
+
+msgid "Environment"
+msgstr "环境"
+
+msgid "Reliability"
+msgstr "可靠性"
+
+msgid "Inspect queued settlement work, retry failed jobs and manage queue retention."
+msgstr "检查排队中的分账任务、重试失败任务并管理队列保留策略。"
+
+msgid "Jobs"
+msgstr "任务"
+
+msgid "Compensation"
+msgstr "补偿"
+
+msgid "Queue cleanup"
+msgstr "队列清理"
+
+msgid "No matching jobs"
+msgstr "没有匹配的任务"
+
+msgid "Compensation details"
+msgstr "补偿详情"
+
+msgid "Schedule statement reconciliation or request one statement manually."
+msgstr "配置账单对账计划，或手动请求单个账单。"
+
+msgid "Schedule and retention"
+msgstr "计划与保留"
+
+msgid "Reconciliation sections"
+msgstr "对账分区"
+
+msgid "Webhook status filters"
+msgstr "Webhook 状态筛选"
+
+msgid "Advanced"
+msgstr "高级"
+
+msgid "Largest share"
+msgstr "最大份额"
+
+msgid "First receiver"
+msgstr "第一个收款人"
+
+msgid "Specific receiver"
+msgstr "指定收款人"
+
+msgid "No tail allocation"
+msgstr "不分配尾差"
+
+msgid "ID or name (#ID)"
+msgstr "ID 或名称（#ID）"
+
+msgid "Pending"
+msgstr "待处理"
+
+msgid "Processing"
+msgstr "处理中"
+
+msgid "Succeeded"
+msgstr "已成功"
+
+msgid "Failed"
+msgstr "失败"
+
+msgid "Manual compensation"
+msgstr "手动补偿"

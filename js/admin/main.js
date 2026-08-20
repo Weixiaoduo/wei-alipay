@@ -2,6 +2,35 @@
 jQuery( function ( $ ) {
 	'use strict';
 
+	function updateSettingsSectionState() {
+		var hash = window.location.hash || '#wei-alipay-section-tools';
+		$( '.wei-alipay-settings-tabs .nav-tab' ).each( function () {
+			var isCurrent = $( this ).attr( 'href' ) === hash;
+			if ( isCurrent ) {
+				$( this ).attr( 'aria-current', 'location' );
+			} else {
+				$( this ).removeAttr( 'aria-current' );
+			}
+		} );
+	}
+	$( '.wei-alipay-settings-tabs .nav-tab' ).each( function () {
+		var target = document.querySelector( $( this ).attr( 'href' ) );
+		if ( target && ! target.hasAttribute( 'tabindex' ) ) {
+			target.setAttribute( 'tabindex', '-1' );
+		}
+	} );
+
+	$( '.wei-alipay-settings-tabs' ).on( 'click', '.nav-tab', function () {
+		var target = document.querySelector( $( this ).attr( 'href' ) );
+		if ( target ) {
+			window.setTimeout( function () {
+				target.focus( { preventScroll: true } );
+			}, 0 );
+		}
+	} );
+	$( window ).on( 'hashchange', updateSettingsSectionState );
+	updateSettingsSectionState();
+
 	function showResult( type, message ) {
 		$( '#wei-alipay-test-result' )
 			.removeAttr( 'hidden' )

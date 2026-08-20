@@ -33,14 +33,18 @@ class Wei_Alipay_PS_Comp_Admin {
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) { return; }
         echo '<div class="wrap wei-alipay-admin">';
-        echo '<h1>' . esc_html__( 'Alipay Profit Sharing Compensation', 'wei-alipay' ) . '</h1>';
-        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Create a one-time additional settlement for a specific paid order and receiver.', 'wei-alipay' ) . '</p>';
+        Wei_Alipay_Admin_UI::page_header(
+            __( 'Wei Alipay Profit Sharing', 'wei-alipay' ),
+            __( 'Create a one-time additional settlement for a specific paid order and receiver.', 'wei-alipay' )
+        );
+        Wei_Alipay_Admin_UI::profit_sharing_tabs( 'compensation' );
         $this->notice_panel();
         $receivers = get_option( 'woo_alipay_ps_receivers', array() );
 
         echo '<div class="notice notice-warning inline"><p><strong>' . esc_html__( 'This action sends a settlement request to Alipay.', 'wei-alipay' ) . '</strong> ' . esc_html__( 'Verify the order, receiver and amount before continuing. The generated request number prevents accidental reuse.', 'wei-alipay' ) . '</p></div>';
 
         echo '<form class="card wei-alipay-card-wide" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        echo '<h2>' . esc_html__( 'Compensation details', 'wei-alipay' ) . '</h2>';
         wp_nonce_field( 'woo_alipay_ps_compensate' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_compensate" />';
         echo '<table class="form-table"><tbody>';
@@ -58,7 +62,7 @@ class Wei_Alipay_PS_Comp_Admin {
         }
         echo '<tr><th><label for="identity_type">' . esc_html__( 'Identity Type', 'wei-alipay' ) . '</label></th><td><select name="identity_type" id="identity_type"><option value="ALIPAY_LOGON_ID">ALIPAY_LOGON_ID</option><option value="ALIPAY_USER_ID">ALIPAY_USER_ID</option></select></td></tr>';
         echo '<tr><th><label for="amount">' . esc_html__( 'Amount (CNY)', 'wei-alipay' ) . '</label></th><td><input type="number" step="0.01" min="0.01" name="amount" id="amount" required /></td></tr>';
-        echo '<tr><th><label for="desc">' . esc_html__( 'Description', 'wei-alipay' ) . '</label></th><td><input type="text" name="desc" id="desc" class="regular-text" value="Manual Compensation" /></td></tr>';
+        echo '<tr><th><label for="desc">' . esc_html__( 'Description', 'wei-alipay' ) . '</label></th><td><input type="text" name="desc" id="desc" class="regular-text" value="' . esc_attr__( 'Manual compensation', 'wei-alipay' ) . '" /></td></tr>';
         echo '</tbody></table>';
         echo '<p class="submit"><button type="submit" class="button button-primary" data-wei-confirm="' . esc_attr__( 'Send this compensation settlement request to Alipay?', 'wei-alipay' ) . '">' . esc_html__( 'Create Compensation', 'wei-alipay' ) . '</button></p>';
         echo '</form>';

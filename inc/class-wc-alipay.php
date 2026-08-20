@@ -1050,7 +1050,7 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function admin_options()
     {
-        echo '<h3>' . esc_html(__('Alipay payment gateway by Wei Alipay', 'wei-alipay')) . '</h3>';
+        echo '<h3>' . esc_html(__('Wei Alipay Payment Gateway', 'wei-alipay')) . '</h3>';
         echo '<p>' . esc_html(__('Alipay is a simple, secure and fast online payment method.', 'wei-alipay')) . '</p>';
         
         echo '<div class="notice notice-info inline">';
@@ -1065,11 +1065,25 @@ class WC_Alipay extends WC_Payment_Gateway
         echo '</p>';
         echo '</div>';
 
+		echo '<nav class="nav-tab-wrapper wei-alipay-settings-tabs" aria-label="' . esc_attr__( 'Gateway settings sections', 'wei-alipay' ) . '">';
+		foreach ( array(
+			'wei-alipay-section-tools'                     => __( 'Endpoints', 'wei-alipay' ),
+			'woocommerce_alipay_basic_settings_title'      => __( 'Basic', 'wei-alipay' ),
+			'woocommerce_alipay_alipay_config_title'       => __( 'Credentials', 'wei-alipay' ),
+			'woocommerce_alipay_environment_title'         => __( 'Environment', 'wei-alipay' ),
+			'woocommerce_alipay_payment_enhancement_title' => __( 'Reliability', 'wei-alipay' ),
+			'woocommerce_alipay_advanced_settings_title'   => __( 'Advanced', 'wei-alipay' ),
+			'woocommerce_alipay_subscriptions_title'       => __( 'Subscriptions', 'wei-alipay' ),
+		) as $section_id => $section_label ) {
+			echo '<a class="nav-tab" href="#' . esc_attr( $section_id ) . '">' . esc_html( $section_label ) . '</a>';
+		}
+		echo '</nav>';
+
 
         // 实用端点与工具
         $notify_url = apply_filters( 'woo_alipay_gateway_notify_url', $this->notify_url, 0 );
         echo '<div class="card">';
-        echo '<h2>' . esc_html__( 'Tools and endpoints', 'wei-alipay' ) . '</h2>';
+        echo '<h2 id="wei-alipay-section-tools" tabindex="-1">' . esc_html__( 'Tools and endpoints', 'wei-alipay' ) . '</h2>';
         echo '<p>' . esc_html__( 'Payment notification URL (configure as the payment result notification URL in Alipay Open Platform)', 'wei-alipay' ) . '</p>';
         echo '<p><code id="wei-alipay-notify-url">' . esc_html( $notify_url ) . '</code> ';
         echo '<button type="button" class="button" data-wei-copy="#wei-alipay-notify-url">' . esc_html__( 'Copy', 'wei-alipay' ) . '</button></p>';
@@ -1094,6 +1108,7 @@ class WC_Alipay extends WC_Payment_Gateway
         $this->generate_settings_html();
         echo '</table>';
     }
+
 
     // Provider state methods for WooCommerce Payments list badges
     public function is_account_connected() {

@@ -63,8 +63,10 @@ class Wei_Alipay_PS_Admin {
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) { return; }
         echo '<div class="wrap wei-alipay-admin wei-alipay-admin--profitsharing">';
-        echo '<h1>' . esc_html__( 'Alipay Profit Sharing', 'wei-alipay' ) . '</h1>';
-        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Configure settlement behavior, receivers and allocation rules without mixing unrelated tasks on one screen.', 'wei-alipay' ) . '</p>';
+        Wei_Alipay_Admin_UI::page_header(
+            __( 'Wei Alipay Profit Sharing', 'wei-alipay' ),
+            __( 'Configure settlement behavior, receivers and allocation rules without mixing unrelated tasks on one screen.', 'wei-alipay' )
+        );
 
         $this->notice_panel();
 
@@ -76,18 +78,7 @@ class Wei_Alipay_PS_Admin {
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view selection.
         $view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'settings';
         $view = in_array( $view, array( 'settings', 'query', 'receivers', 'rules' ), true ) ? $view : 'settings';
-        $tabs = array(
-            'settings'  => __( 'Settings', 'wei-alipay' ),
-            'query'     => __( 'Settlement Query', 'wei-alipay' ),
-            'receivers' => __( 'Receivers', 'wei-alipay' ),
-            'rules'     => __( 'Allocation Rules', 'wei-alipay' ),
-        );
-        echo '<nav class="nav-tab-wrapper wei-alipay-tabs" aria-label="' . esc_attr__( 'Profit sharing sections', 'wei-alipay' ) . '">';
-        foreach ( $tabs as $tab => $label ) {
-            $class = $view === $tab ? 'nav-tab nav-tab-active' : 'nav-tab';
-            echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( add_query_arg( array( 'page' => 'wei-alipay-profitsharing', 'view' => $tab ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $label ) . '</a>';
-        }
-        echo '</nav>';
+        Wei_Alipay_Admin_UI::profit_sharing_tabs( $view );
 
         if ( 'settings' === $view ) {
         echo '<section class="card wei-alipay-card-wide">';
@@ -114,13 +105,13 @@ class Wei_Alipay_PS_Admin {
         echo '<tr><th>' . esc_html__( 'Tail allocation strategy', 'wei-alipay' ) . '</th><td>';
         $ts = (string) ( $settings['tail_strategy'] ?? 'largest' );
         echo '<select name="tail_strategy">';
-        foreach ( array( 'largest' => 'Largest', 'first' => 'First', 'receiver' => 'Specific receiver', 'none' => 'None' ) as $val => $label ) {
+        foreach ( array( 'largest' => __( 'Largest share', 'wei-alipay' ), 'first' => __( 'First receiver', 'wei-alipay' ), 'receiver' => __( 'Specific receiver', 'wei-alipay' ), 'none' => __( 'No tail allocation', 'wei-alipay' ) ) as $val => $label ) {
             echo '<option value="' . esc_attr( $val ) . '"' . selected( $ts, $val, false ) . '>' . esc_html( $label ) . '</option>';
         }
         echo '</select>';
         echo '</td></tr>';
         echo '<tr><th>' . esc_html__( 'Tail receiver (when Specific)', 'wei-alipay' ) . '</th><td>';
-        echo '<input type="text" name="tail_receiver_id" value="' . esc_attr( (string) ( $settings['tail_receiver_id'] ?? '' ) ) . '" class="regular-text" placeholder="receiver id" />';
+        echo '<input type="text" name="tail_receiver_id" value="' . esc_attr( (string) ( $settings['tail_receiver_id'] ?? '' ) ) . '" class="regular-text" placeholder="' . esc_attr__( 'Receiver ID', 'wei-alipay' ) . '" />';
         echo '</td></tr>';
         echo '<tr><th>' . esc_html__( 'Confirm interval (seconds)', 'wei-alipay' ) . '</th><td><input type="number" min="30" step="1" name="confirm_interval" value="' . esc_attr( (string) ( $settings['confirm_interval'] ?? '60' ) ) . '" /></td></tr>';
         echo '<tr><th>' . esc_html__( 'Max confirmation checks', 'wei-alipay' ) . '</th><td><input type="number" min="1" step="1" name="confirm_max_checks" value="' . esc_attr( (string) ( $settings['confirm_max_checks'] ?? '10' ) ) . '" /></td></tr>';
@@ -161,7 +152,7 @@ class Wei_Alipay_PS_Admin {
             }
         }
 
-        echo '<h2>' . esc_html__( 'Settlement Query', 'wei-alipay' ) . '</h2>';
+        echo '<h2 class="wei-alipay-section-title">' . esc_html__( 'Settlement Query', 'wei-alipay' ) . '</h2>';
         // If using Action Scheduler, show a hint
         if ( function_exists( 'as_enqueue_async_action' ) ) {
             echo '<p class="description">' . esc_html__( 'Note: Jobs are processed via Action Scheduler. See WooCommerce > Status > Scheduled Actions (group: woo_alipay_ps).', 'wei-alipay' ) . '</p>';
@@ -178,7 +169,7 @@ class Wei_Alipay_PS_Admin {
         }
 
         if ( 'receivers' === $view ) {
-        echo '<h2>' . esc_html__( 'Receivers', 'wei-alipay' ) . '</h2>';
+        echo '<h2 class="wei-alipay-section-title">' . esc_html__( 'Receivers', 'wei-alipay' ) . '</h2>';
 
         // List receivers
         if ( ! empty( $receivers ) ) {
@@ -206,7 +197,7 @@ class Wei_Alipay_PS_Admin {
         }
 
         // Add receiver form
-        echo '<h3>' . esc_html__( 'Add receiver', 'wei-alipay' ) . '</h3>';
+        echo '<h3 class="wei-alipay-section-title">' . esc_html__( 'Add receiver', 'wei-alipay' ) . '</h3>';
         echo '<form class="card wei-alipay-card-wide" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
         $this->nonce_field( 'woo_alipay_ps_receivers_upsert' );
         echo '<input type="hidden" name="action" value="woo_alipay_ps_receivers_upsert" />';
@@ -351,7 +342,7 @@ class Wei_Alipay_PS_Admin {
 // Product selector (autocomplete-like)
         $prods = get_posts( array( 'post_type' => 'product', 'posts_per_page' => 200, 'post_status' => 'publish' ) );
         echo '<tr><th><label for="product_id">' . esc_html__( 'Product', 'wei-alipay' ) . '</label></th><td>';
-        echo '<input type="text" name="product_id" id="product_id" list="woo_alipay_ps_product_list" class="regular-text" placeholder="ID or Name (#ID)" required />';
+        echo '<input type="text" name="product_id" id="product_id" list="woo_alipay_ps_product_list" class="regular-text" placeholder="' . esc_attr__( 'ID or name (#ID)', 'wei-alipay' ) . '" required />';
         echo '<datalist id="woo_alipay_ps_product_list">';
         if ( ! empty( $prods ) ) {
             foreach ( $prods as $p ) {

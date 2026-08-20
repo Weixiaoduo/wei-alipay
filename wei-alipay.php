@@ -41,6 +41,7 @@ if ( ! defined( 'WEI_ALIPAY_VERSION' ) ) {
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay.php';
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-secret-store.php';
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-features.php';
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-admin-ui.php';
 Wei_Alipay_Secret_Store::register();
 Wei_Alipay_Features::register();
 

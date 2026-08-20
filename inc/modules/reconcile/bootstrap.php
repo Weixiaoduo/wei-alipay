@@ -37,19 +37,19 @@ add_action( 'admin_post_woo_alipay_reconcile_run', function() {
 
     if ( empty( $date ) ) {
         set_transient( 'woo_alipay_reconcile_last_result', array( 'error' => __( '请选择日期。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-reconcile-pro' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-reconcile-pro&view=manual' ) );
         exit;
     }
 
     if ( ! class_exists( 'Wei_Alipay_Reconcile_Runner' ) ) {
         set_transient( 'woo_alipay_reconcile_last_result', array( 'error' => __( '对账引擎未加载。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-reconcile-pro' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-reconcile-pro&view=manual' ) );
         exit;
     }
 
     $result = Wei_Alipay_Reconcile_Runner::run( $date, $type );
     set_transient( 'woo_alipay_reconcile_last_result', $result, 10 * MINUTE_IN_SECONDS );
 
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-reconcile-pro' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-reconcile-pro&view=manual' ) );
     exit;
 } );

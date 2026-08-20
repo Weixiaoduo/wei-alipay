@@ -267,7 +267,7 @@ class Wei_Alipay {
         if ( Wei_Alipay_Features::is_enabled( 'reconcile' ) && ! class_exists( 'Wei_Alipay_Reconcile_Admin' ) ) {
             add_submenu_page(
                 'wei-alipay',
-                __( 'Alipay Reconciliation', 'wei-alipay' ),
+                __( 'Wei Alipay Reconciliation', 'wei-alipay' ),
                 __( 'Reconciliation', 'wei-alipay' ),
                 'manage_woocommerce',
                 'wei-alipay-reconcile',

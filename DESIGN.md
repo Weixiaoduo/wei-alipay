@@ -207,6 +207,16 @@ Only callback URLs and non-secret identifiers may be copied. Success/failure is 
 | `page=wei-alipay-webhooks` | inspect/retry callbacks | filters/search, bounded log table, retry feedback |
 | `page=wei-alipay-subscriptions` | configure agreement payments | dependency state, settings, sandbox-only signing shortcut |
 
+### Detail rules for related screens
+
+- All standalone tool screens use one product heading, one task sentence and then navigation or content. Do not repeat a second product heading inside the first card.
+- Profit-sharing settings, query, receivers, rules, jobs and compensation form one six-tab family. The active tab uses `aria-current="page"`; each tab has its own URL and browser history entry.
+- Reconciliation uses separate Schedule and Manual URLs. Merely viewing or saving the schedule cannot expose or trigger the provider-contacting manual action.
+- Gateway section links reuse WooCommerce-generated heading IDs. They update the URL fragment, move keyboard focus to the native section heading and never replace the WooCommerce settings form.
+- List filters remain native `.subsubsub` or GET controls rather than being disguised as feature tabs. Bulk actions stay visible at 782px and below.
+- Destructive queue cleanup sits in a labelled danger zone separated from non-destructive filter/export controls. The warning names what is deleted and what is retained.
+- Empty queue/log states retain the table or card context, use one concise title and sentence, and never show a success state when the sample count is zero.
+
 ## 7. Accessibility, localization and responsiveness
 
 - WCAG 2.2 AA contrast; visible `:focus-visible`; never remove a focus outline without the documented replacement.
