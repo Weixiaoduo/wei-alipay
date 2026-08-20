@@ -59,9 +59,16 @@ stable_financial_identities:
   order_meta: _alipay_*
   callback: wc-api/WC_Alipay/
   schedules_hooks: woo_alipay_*
+feature_center:
+  route: admin.php?page=wei-alipay
+  allowlist_option: wei_alipay_features
+  default: explicit_existing_enablement_only
+  disable_policy: preserve_settings_orders_and_history
 ```
 
 产品名和包名可以整理；稳定财务身份不能在没有迁移、克隆站验收和回滚时更改。
+
+主 `alipay` 网关始终注册。可选支付方式和运营工具只有进入功能白名单后才允许加载；不得绕过功能中心批量启用。功能开关只决定模块注册，支付方式仍需在 WooCommerce 完成配置和第二步启用。后台设计依据及可复现 token 清单见 `docs/design/woopayments-admin-design-reference.md` 和 `docs/design/woopayments-admin-tokens.json`。
 
 ## 代码所有权边界
 

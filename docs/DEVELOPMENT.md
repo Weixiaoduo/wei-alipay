@@ -31,7 +31,9 @@ composer validate --strict
 | `inc/class-alipay-sdk-helper.php` | SDK 客户端、查询与关单边界 |
 | `inc/class-wc-alipay-order-query.php` | 传统订单存储与 HPOS 精确查询 |
 | `inc/class-wei-alipay-secret-store.php` | 密钥迁移、加密、轮换、回滚与失败关闭 |
+| `inc/class-wei-alipay-features.php` | 可选功能白名单、兼容迁移、后台功能中心与停用调度清理 |
 | `inc/modules/` | 可选支付与清结算模块 |
+| `css/admin/features.css` / `js/admin/features.js` | 独立功能中心的命名空间样式和渐进增强交互 |
 | `lib/alipay/` | 第三方支付宝 v2 SDK 与历史辅助文件，不属于第一方 PHPCS 范围 |
 | `tests/` | 合约、静态分析引导和安全测试 |
 | `scripts/` | 本地 CI、可复现构建和下游镜像脚本 |
@@ -114,6 +116,14 @@ PHPCS=/path/to/vendor/bin/phpcs
 ```
 
 SDK 目录不得计入第一方零错误结论，也不得因为排除 SDK 就把整包写成 PASS。
+
+### 后台功能中心
+
+- 主 `alipay` 网关始终注册；其他支付方式和运营工具必须经过 `wei_alipay_features` 白名单。
+- 第一次迁移只继承已有明确启用的网关或已有运营配置，不能因模块文件存在就默认开启。
+- 关闭功能不得删除设置、订单元数据或历史记录，只能停止该模块注册并清理模块自有的待执行计划任务。
+- 功能开关和 WooCommerce 网关启用是两个不同状态；后台必须明确解释两步启用，不能替商户静默启用支付能力。
+- 设计 token、组件边界、证据 SHA 和可复现提取命令见 `docs/design/woopayments-admin-design-reference.md`。WooCommerce 支付列表的拖拽壳属于 WooCommerce core，不得错误归因或复制 WooPayments 私有组件。
 
 ## 7. WordPress/WooCommerce 运行矩阵
 

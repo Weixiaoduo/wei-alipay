@@ -746,3 +746,178 @@ msgstr "Wei Alipay 订阅设置"
 
 msgid "Wei Alipay subscriptions require the WooCommerce Subscriptions extension."
 msgstr "Wei Alipay 订阅功能需要 WooCommerce Subscriptions 扩展。"
+
+
+#: inc/class-wei-alipay-features.php:38
+msgid "Alipay Face-to-Face Pay"
+msgstr "支付宝当面付"
+
+#: inc/class-wei-alipay-features.php:39
+msgid ""
+"Accept merchant-presented QR code payments for counters and physical stores."
+msgstr "支持收银台和实体门店使用商家二维码收款。"
+
+#: inc/class-wei-alipay-features.php:46
+msgid "Alipay Huabei Installments"
+msgstr "支付宝花呗分期"
+
+#: inc/class-wei-alipay-features.php:47
+msgid "Offer eligible customers 3, 6 or 12-installment Huabei payments."
+msgstr "为符合条件的用户提供 3 期、6 期或 12 期花呗分期付款。"
+
+#: inc/class-wei-alipay-features.php:54
+msgid "Alipay Barcode Pay"
+msgstr "支付宝条码支付"
+
+#: inc/class-wei-alipay-features.php:55
+msgid "Accept customer-presented Alipay barcode or QR code payments."
+msgstr "支持扫描顾客出示的支付宝条码或二维码收款。"
+
+#: inc/class-wei-alipay-features.php:62
+msgid "Alipay Fund Authorization"
+msgstr "支付宝资金授权"
+
+#: inc/class-wei-alipay-features.php:63
+msgid "Freeze customer funds and capture or release them later."
+msgstr "预授权冻结顾客资金，之后完成扣款或解冻。"
+
+#: inc/class-wei-alipay-features.php:70
+msgid "Alipay Mini Program"
+msgstr "支付宝小程序支付"
+
+#: inc/class-wei-alipay-features.php:71
+msgid ""
+"Accept payments initiated in an Alipay Mini Program. RSA2 is the default "
+"protocol."
+msgstr "接收支付宝小程序内发起的付款，默认使用 RSA2 协议。"
+
+#: inc/class-wei-alipay-features.php:78
+msgid "Alipay Cross-Border"
+msgstr "支付宝跨境支付"
+
+#: inc/class-wei-alipay-features.php:79
+msgid "Accept supported non-CNY cross-border Alipay payments."
+msgstr "接收受支持的非人民币支付宝跨境付款。"
+
+#: inc/class-wei-alipay-features.php:87
+msgid "Manage receivers, settlement rules and profit-sharing jobs."
+msgstr "管理分账接收方、结算规则和分账任务。"
+
+#: inc/class-wei-alipay-features.php:102
+msgid "Webhook Logs and Retry"
+msgstr "异步通知日志与重试"
+
+#: inc/class-wei-alipay-features.php:103
+msgid "Inspect asynchronous notification delivery and retry failed processing."
+msgstr "查看异步通知处理记录并重试失败任务。"
+
+#: inc/class-wei-alipay-features.php:112
+msgid "Use Alipay agreements for recurring WooCommerce Subscriptions charges."
+msgstr "使用支付宝代扣协议处理 WooCommerce Subscriptions 周期扣款。"
+
+#: inc/class-wei-alipay-features.php:208
+msgid "Unsaved changes"
+msgstr "有未保存的更改"
+
+#: inc/class-wei-alipay-features.php:226
+msgid "Choose which payment methods and operational tools this store loads."
+msgstr "选择本站要加载的支付方式和运营工具。"
+
+#: inc/class-wei-alipay-features.php:227
+msgid "Main gateway settings"
+msgstr "主网关设置"
+
+#: inc/class-wei-alipay-features.php:229
+msgid "Wei Alipay features saved."
+msgstr "Wei Alipay 功能设置已保存。"
+
+#: inc/class-wei-alipay-features.php:231
+msgid "Two-step activation"
+msgstr "两步启用"
+
+#: inc/class-wei-alipay-features.php:231
+msgid ""
+"Turn a feature on here to load it. Payment methods must then be configured "
+"and enabled in WooCommerce."
+msgstr "先在此开启功能以加载模块，再到 WooCommerce 中配置并启用对应支付方式。"
+
+#: inc/class-wei-alipay-features.php:237
+msgid "Optional payment methods"
+msgstr "可选支付方式"
+
+#: inc/class-wei-alipay-features.php:237
+msgid ""
+"Only enabled methods are registered with WooCommerce and shown in its "
+"Payments list."
+msgstr "只有在此开启的支付方式才会注册到 WooCommerce 并显示在支付方式列表中。"
+
+#: inc/class-wei-alipay-features.php:238
+msgid "Operational tools"
+msgstr "运营工具"
+
+#: inc/class-wei-alipay-features.php:238
+msgid "Disabled tools do not register admin pages or background processing."
+msgstr "关闭的工具不会注册后台页面或后台任务。"
+
+#: inc/class-wei-alipay-features.php:240
+msgid "Save feature settings"
+msgstr "保存功能设置"
+
+#: inc/class-wei-alipay-features.php:245
+msgid "Active"
+msgstr "已启用"
+
+#: inc/class-wei-alipay-features.php:245
+msgid "Action needed"
+msgstr "需要配置"
+
+#: inc/class-wei-alipay-features.php:247
+msgid "Main payment gateway"
+msgstr "主支付网关"
+
+#: inc/class-wei-alipay-features.php:247
+msgid "The core Alipay gateway is always available and cannot be removed here."
+msgstr "支付宝核心网关始终可用，不能在此关闭。"
+
+#: inc/class-wei-alipay-features.php:248
+msgid "Standard Alipay checkout for CNY stores."
+msgstr "适用于人民币商店的标准支付宝结账。"
+
+#: inc/class-wei-alipay-features.php:248
+msgid "Required"
+msgstr "必需"
+
+#: inc/class-wei-alipay-features.php:259 inc/class-wei-alipay-features.php:266
+msgid "Enabled"
+msgstr "已开启"
+
+#: inc/class-wei-alipay-features.php:259 inc/class-wei-alipay-features.php:266
+msgid "Inactive"
+msgstr "未开启"
+
+#: inc/class-wei-alipay-features.php:262
+msgid "Dependency missing"
+msgstr "缺少依赖"
+
+#: inc/class-wei-alipay-features.php:268
+msgid ""
+"Install and activate WooCommerce Subscriptions before enabling this feature."
+msgstr "请先安装并启用 WooCommerce Subscriptions，再开启此功能。"
+
+#. translators: %s is the optional Wei Alipay feature name.
+#: inc/class-wei-alipay-features.php:271
+#, php-format
+msgid "Enable %s"
+msgstr "开启%s"
+
+#: inc/class-wei-alipay.php:252
+msgid "Wei Alipay Feature Center"
+msgstr "Wei Alipay 功能中心"
+
+#: inc/class-wei-alipay.php:253
+msgid "Features"
+msgstr "功能"
+
+#: inc/class-wei-alipay-features.php:279
+msgid "Configure"
+msgstr "配置"

@@ -29,7 +29,7 @@ Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixi
 
 ### 可选模块
 
-仓库还包含当面付、花呗分期、条码支付、小程序、跨境支付、订阅签约、资金授权、分账和账单对账。模块存在不表示商户已获得对应能力，也不表示每个模块都完成生产验收。只启用已经签约、在支付宝沙箱或离线桩中验证并纳入运维监控的模块。
+仓库还包含当面付、花呗分期、条码支付、小程序、跨境支付、订阅签约、资金授权、分账、异步通知重试和账单对账。这些模块由 **Wei Alipay → 功能** 显式开启；关闭时不注册相应支付方式、后台页面或常规后台任务，但会保留原设置和交易数据。模块存在不表示商户已获得对应能力，也不表示每个模块都完成生产验收。只启用已经签约、在支付宝沙箱或离线桩中验证并纳入运维监控的模块。
 
 小程序协议默认使用 RSA2。旧 MD5 只允许在同时完成站点确认和运维常量授权的过渡模式下启用，系统不会从 RSA2 自动降级。
 
@@ -37,8 +37,8 @@ Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixi
 
 1. 将发布 ZIP 安装到 WordPress；不要从开发工作树直接覆盖生产插件。
 2. 启用 WooCommerce，再启用本插件。
-3. 打开 **WooCommerce → 设置 → 付款 → Alipay**。
-4. 配置支付宝应用 ID、支付宝公钥和应用私钥。
+3. 打开 **Wei Alipay → 功能**，只开启已经签约并准备配置的可选功能。
+4. 打开 **WooCommerce → 设置 → 付款 → Alipay**，配置主网关的支付宝应用 ID、支付宝公钥和应用私钥；可选支付方式还需在 WooCommerce 支付列表中完成第二步配置与启用。
 5. 首次联调必须启用支付宝沙箱，确认订单创建、跳转、异步通知、重复通知和退款桩流程。
 6. 在支付宝开放平台将异步通知地址设置为：
 
@@ -80,6 +80,7 @@ Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixi
 - [开发指南](docs/DEVELOPMENT.md)
 - `AI原生配置.md`（仅开发源，不进入发布 ZIP）
 - [SDK 维护与更新评估](docs/SDK-MAINTENANCE.md)
+- [WooPayments 后台设计 token 与交互参考](docs/design/woopayments-admin-design-reference.md)
 - [FeiCode → GitHub 下游镜像规则](docs/governance/github-downstream-mirror.md)
 - [SBOM](docs/sbom/wei-alipay.spdx.json)
 

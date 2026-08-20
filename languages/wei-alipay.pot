@@ -731,3 +731,178 @@ msgstr ""
 
 msgid "Wei Alipay subscriptions require the WooCommerce Subscriptions extension."
 msgstr ""
+
+
+#: inc/class-wei-alipay-features.php:38
+msgid "Alipay Face-to-Face Pay"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:39
+msgid ""
+"Accept merchant-presented QR code payments for counters and physical stores."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:46
+msgid "Alipay Huabei Installments"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:47
+msgid "Offer eligible customers 3, 6 or 12-installment Huabei payments."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:54
+msgid "Alipay Barcode Pay"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:55
+msgid "Accept customer-presented Alipay barcode or QR code payments."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:62
+msgid "Alipay Fund Authorization"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:63
+msgid "Freeze customer funds and capture or release them later."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:70
+msgid "Alipay Mini Program"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:71
+msgid ""
+"Accept payments initiated in an Alipay Mini Program. RSA2 is the default "
+"protocol."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:78
+msgid "Alipay Cross-Border"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:79
+msgid "Accept supported non-CNY cross-border Alipay payments."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:87
+msgid "Manage receivers, settlement rules and profit-sharing jobs."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:102
+msgid "Webhook Logs and Retry"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:103
+msgid "Inspect asynchronous notification delivery and retry failed processing."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:112
+msgid "Use Alipay agreements for recurring WooCommerce Subscriptions charges."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:208
+msgid "Unsaved changes"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:226
+msgid "Choose which payment methods and operational tools this store loads."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:227
+msgid "Main gateway settings"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:229
+msgid "Wei Alipay features saved."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:231
+msgid "Two-step activation"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:231
+msgid ""
+"Turn a feature on here to load it. Payment methods must then be configured "
+"and enabled in WooCommerce."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:237
+msgid "Optional payment methods"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:237
+msgid ""
+"Only enabled methods are registered with WooCommerce and shown in its "
+"Payments list."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:238
+msgid "Operational tools"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:238
+msgid "Disabled tools do not register admin pages or background processing."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:240
+msgid "Save feature settings"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:245
+msgid "Active"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:245
+msgid "Action needed"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:247
+msgid "Main payment gateway"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:247
+msgid "The core Alipay gateway is always available and cannot be removed here."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:248
+msgid "Standard Alipay checkout for CNY stores."
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:248
+msgid "Required"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:259 inc/class-wei-alipay-features.php:266
+msgid "Enabled"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:259 inc/class-wei-alipay-features.php:266
+msgid "Inactive"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:262
+msgid "Dependency missing"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:268
+msgid ""
+"Install and activate WooCommerce Subscriptions before enabling this feature."
+msgstr ""
+
+#. translators: %s is the optional Wei Alipay feature name.
+#: inc/class-wei-alipay-features.php:271
+#, php-format
+msgid "Enable %s"
+msgstr ""
+
+#: inc/class-wei-alipay.php:252
+msgid "Wei Alipay Feature Center"
+msgstr ""
+
+#: inc/class-wei-alipay.php:253
+msgid "Features"
+msgstr ""
+
+#: inc/class-wei-alipay-features.php:279
+msgid "Configure"
+msgstr ""
