@@ -30,7 +30,7 @@
 .wei-alipay-features__section-copy p,
 .wei-alipay-features__row-copy p {
 	margin: 0;
-	color: var(--wei-color-muted);
+	color: var(--wei-color-text-secondary);
 }
 
 .wei-alipay-features__notice {
@@ -95,7 +95,7 @@
 	height: 40px;
 	place-items: center;
 	border-radius: 5px;
-	background: var(--wei-color-subtle);
+	background: var(--wei-color-surface-subtle);
 	color: var(--wei-color-accent);
 	font-size: 22px;
 }
@@ -151,7 +151,7 @@
 }
 
 .wei-alipay-chip.is-light {
-	background: var(--wei-color-subtle);
+	background: var(--wei-color-surface-subtle);
 	color: #2c3338;
 }
 
@@ -220,7 +220,7 @@
 }
 
 .wei-alipay-features__dirty {
-	color: var(--wei-color-muted);
+	color: var(--wei-color-text-secondary);
 	font-size: 13px;
 }
 

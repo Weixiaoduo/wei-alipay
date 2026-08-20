@@ -46,5 +46,6 @@ $expect( false !== strpos( $js, "beforeunload" ), 'unsaved feature changes have 
 $expect( false !== strpos( $js, "submit.disabled = false" ), 'save action is enabled only after a change' );
 
 $tokens = json_decode( file_get_contents( $root . '/docs/design/woopayments-admin-tokens.json' ), true );
-$expect( is_array( $tokens ) && 4 === count( $tokens['source']['artifacts'] ), 'design inventory records all four scoped WooPayments admin artifacts' );
-$expect( isset( $tokens['raw_inventory']['colors'][0]['occurrences'] ), 'design inventory includes deterministic raw token counts' );
+$expect( is_array( $tokens ) && 30 === count( $tokens['scope']['artifacts']['woopayments_css'] ), 'design inventory records the scoped WooPayments admin CSS artifacts' );
+$expect( 27 === count( $tokens['scope']['artifacts']['woocommerce_css'] ), 'design inventory records the scoped WooCommerce admin CSS artifacts' );
+$expect( isset( $tokens['inventories']['woopayments_css']['colors'][0]['occurrences'] ), 'design inventory includes deterministic raw token counts' );

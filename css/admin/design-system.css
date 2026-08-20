@@ -1,18 +1,70 @@
 :root {
-	/* Aliases only: WordPress owns the visual language and remains the fallback. */
-	--wei-color-text: #1d2327;
-	--wei-color-muted: #646970;
-	--wei-color-border: #c3c4c7;
+	/* Reviewed aliases from WooPayments 11.0.0 and WooCommerce 11.0.1. */
+	--wei-color-text: #1e1e1e;
+	--wei-color-text-secondary: #757575;
+	--wei-color-text-wp: #646970;
 	--wei-color-surface: #fff;
-	--wei-color-subtle: #f6f7f7;
+	--wei-color-surface-subtle: #f6f7f7;
+	--wei-color-surface-hover: #f0f0f0;
+	--wei-color-border: #e0e0e0;
+	--wei-color-border-strong: #c3c4c7;
 	--wei-color-accent: var(--wp-admin-theme-color, #2271b1);
+	--wei-color-accent-subtle: #f0f6fc;
+	--wei-color-success-text: #005c12;
+	--wei-color-success-surface: #edfaef;
+	--wei-color-warning-text: #614200;
+	--wei-color-warning-surface: #fcf9e8;
+	--wei-color-error-text: #8a2424;
+	--wei-color-error-surface: #fcf0f1;
+	--wei-color-info-text: #0a4b78;
+	--wei-color-info-surface: #f0f6fc;
+	--wei-font-size-meta: 11px;
+	--wei-font-size-label: 12px;
+	--wei-font-size-body: 13px;
+	--wei-font-size-body-emphasis: 14px;
+	--wei-font-size-section: 16px;
+	--wei-font-size-page: 20px;
+	--wei-font-size-display: 24px;
+	--wei-line-height-meta: 16px;
+	--wei-line-height-body: 20px;
+	--wei-line-height-section: 24px;
+	--wei-line-height-page: 28px;
+	--wei-line-height-display: 32px;
+	--wei-font-weight-regular: 400;
+	--wei-font-weight-medium: 500;
+	--wei-font-weight-semibold: 600;
 	--wei-space-1: 4px;
 	--wei-space-2: 8px;
 	--wei-space-3: 12px;
 	--wei-space-4: 16px;
-	--wei-space-5: 20px;
-	--wei-space-6: 24px;
-	--wei-content-wide: 1180px;
+	--wei-space-5: 24px;
+	--wei-space-6: 32px;
+	--wei-space-7: 40px;
+	--wei-space-8: 48px;
+	--wei-radius-small: 2px;
+	--wei-radius-control: 4px;
+	--wei-radius-card: 8px;
+	--wei-radius-pill: 9999px;
+	--wei-shadow-quiet: 0 2px 6px rgba(0, 0, 0, 0.05);
+	--wei-shadow-card: 0 2px 3px rgba(0, 0, 0, 0.05), 0 4px 5px rgba(0, 0, 0, 0.04), 0 16px 16px rgba(0, 0, 0, 0.02);
+	--wei-focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--wei-color-accent);
+	--wei-motion-fast: 100ms;
+	--wei-motion-standard: 150ms;
+	--wei-motion-disclosure: 200ms;
+	--wei-motion-long: 300ms;
+	--wei-control-height: 36px;
+	--wei-row-height-compact: 48px;
+	--wei-row-height: 64px;
+	--wei-card-padding: 24px;
+	--wei-card-padding-mobile: 16px;
+	--wei-content-reading: 680px;
+	--wei-content-standard: 1120px;
+	--wei-content-wide: 1280px;
+	--wei-breakpoint-wide: 1280px;
+	--wei-breakpoint-admin: 960px;
+	--wei-breakpoint-mobile: 782px;
+	--wei-breakpoint-narrow: 600px;
+	--wei-breakpoint-compact: 400px;
 }
 
 /* Do not restyle WordPress buttons, notices, tabs, forms or list tables here. */
@@ -23,7 +75,7 @@
 .wei-alipay-admin__description {
 	max-width: 760px;
 	margin: 4px 0 20px;
-	color: var(--wei-color-muted);
+	color: var(--wei-color-text-secondary);
 	font-size: 14px;
 	line-height: 1.6;
 }
@@ -76,20 +128,22 @@
 	display: inline-block;
 	padding: 2px 7px;
 	border: 1px solid var(--wei-color-border);
-	border-radius: 2px;
-	background: var(--wei-color-subtle);
+	border-radius: var(--wei-radius-pill);
+	background: var(--wei-color-surface-subtle);
+	color: var(--wei-color-text-secondary);
 	font-size: 12px;
 	line-height: 1.5;
 }
 
-.wei-alipay-status.is-success { border-color: #68de7c; background: #edfaef; }
-.wei-alipay-status.is-warning { border-color: #dba617; background: #fcf9e8; }
-.wei-alipay-status.is-error { border-color: #d63638; background: #fcf0f1; }
+.wei-alipay-status.is-success { background: var(--wei-color-success-surface); color: var(--wei-color-success-text); }
+.wei-alipay-status.is-warning { background: var(--wei-color-warning-surface); color: var(--wei-color-warning-text); }
+.wei-alipay-status.is-error { background: var(--wei-color-error-surface); color: var(--wei-color-error-text); }
+.wei-alipay-status.is-info { background: var(--wei-color-info-surface); color: var(--wei-color-info-text); }
 
 .wei-alipay-empty {
 	padding: 32px 16px;
 	text-align: center;
-	color: var(--wei-color-muted);
+	color: var(--wei-color-text-secondary);
 }
 
 .wei-alipay-admin pre.wei-alipay-code {
@@ -97,17 +151,20 @@
 	padding: 12px;
 	overflow: auto;
 	border: 1px solid var(--wei-color-border);
-	background: var(--wei-color-subtle);
+	background: var(--wei-color-surface-subtle);
 	white-space: pre-wrap;
 	word-break: break-word;
 }
 
 .wei-alipay-admin [data-wei-dirty-message] {
 	margin-left: 8px;
-	color: var(--wei-color-muted);
+	color: var(--wei-color-text-secondary);
 }
 
 @media (max-width: 782px) {
+	:root {
+		--wei-card-padding: var(--wei-card-padding-mobile);
+	}
 	.wei-alipay-admin .nav-tab-wrapper {
 		overflow-x: auto;
 		white-space: nowrap;

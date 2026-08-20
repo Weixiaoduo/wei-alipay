@@ -1,173 +1,230 @@
-# Wei Alipay Admin Design Guidelines
+# Wei Alipay administration design system
 
-This document is the implementation contract for the Wei Alipay WordPress administration experience. It covers the feature centre, payment configuration entry points, profit sharing, jobs, compensation, reconciliation, webhook logs and subscriptions. It does not redefine the WooCommerce checkout UI or the WooCommerce core Payments list.
+This is the implementation contract for the feature centre, gateway settings, profit sharing, jobs, compensation, reconciliation, webhook logs and subscription administration. Checkout rendering remains governed by WooCommerce and each gateway integration.
 
-## 1. Product principles
+## 1. Design direction
 
-1. **Progressive disclosure.** The main Alipay gateway is always available. Optional payment products and operational tools are loaded only after explicit feature enablement.
-2. **One task per view.** A page may contain related panels, but a long configuration domain must use tabs or separate routes instead of a single uninterrupted form wall.
-3. **Safe by default.** Reads and previews are visually separate from writes. Retry, compensation, clearing and other consequential actions require clear wording and confirmation.
-4. **State before action.** Every operational page first explains whether the feature is active, configured, waiting, successful, failed or unavailable.
-5. **WordPress native first.** Use WordPress admin markup and classes before writing CSS: `wrap`, `nav-tab-wrapper`, `nav-tab`, `notice`, `card`, `form-table`, `wp-list-table`, `widefat`, `striped`, `tablenav`, `button`, `button-primary` and `button-link-delete`. Custom styling is allowed only where core has no stable equivalent.
-6. **Financial identity stability.** Visual or product naming changes do not rename gateway IDs, settings keys, order metadata, callback routes or schedules.
-7. **No secret exposure.** Private keys, full signed payloads, buyer identifiers and unbounded provider errors never appear in status cards, tables, exports or screenshots.
+**WordPress native first, WooPayments visual language second.** Native WordPress/WooCommerce controls, page routing, settings APIs, focus behavior and accessibility are the foundation. WooPayments 11.0.0 supplies the reference for density, hierarchy, surfaces, status treatments, progressive disclosure and asynchronous feedback. Wei Alipay implements these ideas with its own `--wei-*` tokens and scoped markup; it does not ship copied WooPayments CSS, JavaScript, React components, private selectors, fonts or icons.
 
-## 2. Source and attribution boundary
+Product rules:
 
-The initial token study uses local WooPayments 11.0.0 administration artifacts. Hashes, raw values, source-map component paths and the extraction command are recorded in `docs/design/woopayments-admin-design-reference.md` and `docs/design/woopayments-admin-tokens.json`.
+1. One clear task and one page title per view.
+2. State precedes action: inactive, configuration required, ready, working, succeeded, failed or unavailable.
+3. Optional payment products are disclosed and loaded only after explicit enablement.
+4. Reads/previews are distinct from writes; consequential payment operations name their effect and require confirmation.
+5. A visual rename never changes gateway IDs, settings keys, order metadata, callback routes or schedules.
+6. Private keys, complete signed payloads, buyer identifiers and unbounded provider errors never enter DOM feedback, exports or screenshots.
 
-Wei Alipay adopts recurring WordPress-aligned values and interaction ideas, not WooPayments source code, compiled JavaScript, private React components, selectors, icons, trademarks or onboarding assumptions. The draggable payment provider list is owned by WooCommerce core.
+## 2. Evidence
 
-## 3. Token architecture
+The source packages, extraction command, artifact SHA-256 values, raw inventories and interaction-marker counts are recorded in:
 
-Tokens live in `css/admin/design-system.css` and use the `--wei-*` prefix. They are aliases and fallbacks for values missing from WordPress admin CSS, not a replacement component system. Prefer `--wp-admin-theme-color` for accents and inherited WordPress typography/control dimensions.
+- `docs/design/woopayments-admin-design-reference.md`
+- `docs/design/woopayments-admin-tokens.json`
+- `scripts/extract-woopayments-admin-design.py`
+
+The inventory covers 30 WooPayments CSS, 45 WooPayments JavaScript, 27 WooCommerce CSS and 152 WooCommerce JavaScript administration artifacts. Raw occurrence counts are evidence, not semantic tokens. The tables below are the reviewed semantic layer.
+
+## 3. Token contract
+
+All tokens live under `.wei-alipay-admin` or the scoped WooCommerce gateway settings section. Never define global `body`, `.button`, `.notice`, `.form-table` or `.wp-list-table` replacements.
 
 ### 3.1 Color
 
-| Token | Value | Purpose |
+| Token | Value | Use |
 | --- | --- | --- |
-| `--wei-color-text` | `#1e1e1e` | Primary text |
-| `--wei-color-muted` | `#646970` | Descriptions and metadata |
-| `--wei-color-surface` | `#fff` | Cards, panels and tables |
-| `--wei-color-subtle` | `#f6f7f7` | Code blocks and quiet states |
-| `--wei-color-border` | `#c3c4c7` | WordPress-aligned structural border |
-| `--wei-color-accent` | admin theme → `#2271b1` | Accent fallback only |
+| `--wei-color-text` | `#1e1e1e` | headings and primary copy |
+| `--wei-color-text-secondary` | `#757575` | descriptions and row metadata |
+| `--wei-color-text-wp` | `#646970` | WordPress-compatible secondary copy |
+| `--wei-color-surface` | `#fff` | primary cards and tables |
+| `--wei-color-surface-subtle` | `#f6f7f7` | grouped content and code blocks |
+| `--wei-color-surface-hover` | `#f0f0f0` | hover/selected-row background |
+| `--wei-color-border` | `#e0e0e0` | internal dividers and quiet cards |
+| `--wei-color-border-strong` | `#c3c4c7` | controls and legacy WP boundaries |
+| `--wei-color-accent` | `var(--wp-admin-theme-color, #2271b1)` | focus, link and selected state |
+| `--wei-color-accent-subtle` | `#f0f6fc` | selected/linked quiet surface |
+| `--wei-color-success-text` | `#005c12` | success text |
+| `--wei-color-success-surface` | `#edfaef` | success pill/callout surface |
+| `--wei-color-warning-text` | `#614200` | warning text |
+| `--wei-color-warning-surface` | `#fcf9e8` | warning pill/callout surface |
+| `--wei-color-error-text` | `#8a2424` | error/danger text |
+| `--wei-color-error-surface` | `#fcf0f1` | error pill/callout surface |
+| `--wei-color-info-text` | `#0a4b78` | informational text |
+| `--wei-color-info-surface` | `#f0f6fc` | informational surface |
 
-Semantic color must always be accompanied by text. Do not use red for an ordinary disabled state or green for an action button.
+Color never carries state alone. Every semantic color has text or a meaningful icon. Ordinary primary actions use the admin theme color, not semantic green.
 
-### 3.2 Spacing
+### 3.2 Typography
 
-The supplemental spacing scale is `4, 8, 12, 16, 20, 24px`, exposed as `--wei-space-1` through `--wei-space-6`. Native component padding is not overridden.
+Use the inherited WordPress system stack. Product/UI copy must not load a remote font. `code` and machine identifiers may use the WordPress monospace stack.
 
-### 3.3 Typography
-
-- Page and section headings inherit WordPress admin styles.
-- Body, labels and descriptions inherit WordPress administration typography.
-- Machine identifiers use native `code`, never a custom decorative monospace font.
-- Do not use all caps for translated interface labels.
-
-### 3.4 Layout
-
-The only shared content-width token is `--wei-content-wide: 1180px`. WordPress owns radii, shadows, focus rings, button dimensions and table styling. The admin mobile breakpoint follows WordPress at `782px`. Motion is removed under `prefers-reduced-motion: reduce`.
-
-## 4. Component contract
-
-### Native component map
-
-| Need | WordPress/WooCommerce component | Wei supplement allowed |
+| Token | Size / line height | Use |
 | --- | --- | --- |
-| Page shell | `wrap`, native headings | maximum width and description measure |
-| Sections | `card`, settings sections | wide-card width only |
-| Navigation | `nav-tab-wrapper`, `nav-tab` | horizontal overflow on small screens |
-| Feedback | `notice-*`, `inline`, `is-dismissible` | none |
-| Settings | WooCommerce settings API, `form-table` | dirty-state text only |
-| Lists | `wp-list-table`, `widefat`, `striped`, `tablenav`, `subsubsub` | horizontal overflow and compact status text |
-| Actions | `button`, `button-primary`, `button-link-delete`, `spinner` | confirmation attribute and clipboard behavior |
-| Empty results | `no-items`, `colspanchange` | centered spacing when no table exists |
+| `--wei-font-size-meta` | `11px / 16px` | timestamps and tertiary metadata |
+| `--wei-font-size-label` | `12px / 16px` | compact status and helper labels |
+| `--wei-font-size-body` | `13px / 20px` | default administration copy |
+| `--wei-font-size-body-emphasis` | `14px / 20px` | emphasized row text |
+| `--wei-font-size-section` | `16px / 24px` | card/section heading |
+| `--wei-font-size-page` | `20px / 28px` | page heading when not provided by core |
+| `--wei-font-size-display` | `24px / 32px` | empty-state or onboarding heading only |
 
-The custom feature-selector rows and switches are the sole page-level exception because WordPress has no native feature-module selector. They must still use real checkboxes, native buttons, Dashicons and WordPress focus colors.
+Weights are 400 regular, 500 medium and 600 semibold. Avoid all-caps translated labels and decorative bold paragraphs.
 
-### Page shell
+### 3.3 Spacing and density
 
-Use `<div class="wrap wei-alipay-admin">`, one native `h1`, and an optional `.wei-alipay-admin__description`. A page must not begin with an unexplained form.
+| Token | Value | Use |
+| --- | ---: | --- |
+| `--wei-space-1` … `--wei-space-8` | `4, 8, 12, 16, 24, 32, 40, 48px` | four-point spacing scale |
+| `--wei-control-height` | `36px` | custom compact control only |
+| `--wei-row-height-compact` | `48px` | compact operational row minimum |
+| `--wei-row-height` | `64px` | standard settings/feature row minimum |
+| `--wei-card-padding` | `24px` | desktop card inset |
+| `--wei-card-padding-mobile` | `16px` | card inset below 782px |
 
-### Panel
+Do not override native button/input dimensions merely to reach these values. The tokens control Wei composition and custom exceptions.
 
-Use WordPress `.card` plus the narrow `.wei-alipay-card-wide` width escape when a task needs containment. Do not reproduce card borders, shadows or padding. Avoid nested cards.
+### 3.4 Shape and elevation
 
-### Tabs
-
-Use `<nav class="nav-tab-wrapper wp-clearfix">` and WordPress `.nav-tab` / `.nav-tab-active`. The tab remains a normal link so the URL is shareable and reload-safe.
-
-### Callout
-
-Use WordPress `.notice`, `.notice-info`, `.notice-warning`, `.notice-error`, `.notice-success` and `.inline`. Do not create a parallel callout component.
-
-### Status chip
-
-Plain status text is preferred. The small `.wei-alipay-status` supplement is permitted only where row scanning materially benefits and WordPress has no public stable badge class. It must accompany text such as `Pending`, `Succeeded` or `Failed`.
-
-### Metrics
-
-Use native `subsubsub` status filters with counts. Do not add dashboard metric cards when the same information is already available in those filters.
-
-### Forms
-
-- Every mutating form requires a capability check and nonce.
-- Inputs have programmatic labels and descriptions explain format, side effects and provider prerequisites.
-- Settings forms may use `data-wei-dirty` and a `[data-wei-dirty-message]` live region.
-- One panel has one primary submit button. Destructive buttons use WordPress delete styling and `data-wei-confirm`.
-- Do not silently enable a WooCommerce gateway when enabling its feature module.
-
-### Tables and empty states
-
-Use `wp-list-table widefat fixed striped` and place only the overflow wrapper `.wei-alipay-table-wrap` around wide tables. Empty results use a native-style `no-items` row or the small `.wei-alipay-empty` supplement.
-
-### Dangerous actions
-
-Render consequential guidance as `notice notice-warning inline` or `notice notice-error inline`; use `button-link-delete` and `data-wei-confirm` for destructive actions. A warning does not replace server authorization, validation, idempotency or audit records.
-
-## 5. Page information architecture
-
-| Route | Primary task | Required pattern |
+| Token | Value | Use |
 | --- | --- | --- |
-| `page=wei-alipay` | Select loaded features | Grouped feature cards, two-step activation explanation |
-| WooCommerce `section=alipay` | Configure main gateway | Native WooCommerce settings with Wei status/help styling only |
-| `page=wei-alipay-profitsharing` | Configure profit sharing | Tabs: Settings, Query, Receivers, Rules |
-| `page=wei-alipay-ps-jobs` | Inspect/retry queue | Filters, export, status chips, scroll table, separate danger zone |
-| `page=wei-alipay-ps-compensation` | Create manual compensation | Danger callout, narrow form, explicit confirmation |
-| `page=wei-alipay-reconcile-pro` | Schedule and manually run reconciliation | Separate configuration and manual-run panels; result summary |
-| `page=wei-alipay-webhooks` | Inspect/retry callback processing | Native status filters with counts, bounded error text, retry controls |
-| `page=wei-alipay-subscriptions` | Configure agreement payments | Dependency/provider callout, settings panel; admin sign shortcut only in sandbox |
+| `--wei-radius-small` | `2px` | compact indicator |
+| `--wei-radius-control` | `4px` | custom control or quiet card |
+| `--wei-radius-card` | `8px` | elevated feature/summary card |
+| `--wei-radius-pill` | `9999px` | text status only |
+| `--wei-shadow-quiet` | `0 2px 6px rgba(0,0,0,.05)` | floating summary card |
+| `--wei-shadow-card` | layered 2/4/16px, 2–5% alpha | feature/onboarding card only |
+| `--wei-focus-ring` | white 2px + admin-theme 4px | custom interactive control |
 
-The fallback single-order reconciliation page follows the same shell and panel pattern but is not shown when the full reconciliation module is active.
+A card uses either a quiet border or an elevation token. Tables and routine settings rows remain flat.
 
-## 6. Interaction rules
+### 3.5 Layout and breakpoints
 
-- **Initial load:** server-render a complete usable page; JavaScript enhances confirmation and dirty-state behavior.
-- **Save:** disable the unchanged feature-centre Save button; other forms may keep native WordPress behavior. After POST, redirect where practical to prevent resubmission.
-- **Retry:** disable the triggering control while the request runs, retain a textual progress label and show server feedback. Retry never changes identifiers.
-- **Filtering:** use GET, sanitize to a fixed allow-list and keep the correct page slug.
-- **Pagination:** preserve the active filter in page links.
-- **External links:** HTTPS only, `target="_blank"` requires `rel="noopener noreferrer"`.
-- **Copy:** copying callback URLs is a local action; never expose or copy secret material.
-- **Failure:** errors identify the failed operation without printing private keys, full provider payloads or customer personal data.
+| Token | Value | Use |
+| --- | ---: | --- |
+| `--wei-content-reading` | `680px` | explanatory content |
+| `--wei-content-standard` | `1120px` | ordinary page shell |
+| `--wei-content-wide` | `1280px` | operational tables |
+| `--wei-breakpoint-wide` | `1280px` | wide-grid reduction |
+| `--wei-breakpoint-admin` | `960px` | admin navigation composition |
+| `--wei-breakpoint-mobile` | `782px` | WordPress mobile behavior |
+| `--wei-breakpoint-narrow` | `600px` | one-column composition |
+| `--wei-breakpoint-compact` | `400px` | compact fallback |
 
-## 7. Accessibility and localization
+CSS custom properties cannot be used directly in media conditions; implementation uses the numeric values while keeping these names in documentation and extraction metadata.
 
-- Meet WCAG 2.2 AA contrast for text, focus and state indicators.
-- Preserve native keyboard behavior; every custom switch remains a checkbox.
-- Use `:focus-visible` and never remove WordPress focus outlines without a replacement.
-- Use headings in order, one page `h1`, and table header cells for tabular data.
-- Use live regions only for concise state changes such as unsaved changes.
-- English source strings are translation keys; `zh_CN` supplies complete user-facing Chinese. Product names and protocol identifiers are not translated inconsistently.
-- Avoid concatenated sentence fragments that produce unnatural translations. Translator comments are mandatory for placeholders.
+### 3.6 Motion
 
-## 8. Responsive behavior
+- `--wei-motion-fast: 100ms` for focus/pressed/color feedback.
+- `--wei-motion-standard: 150ms` for simple fades.
+- `--wei-motion-disclosure: 200ms` for reveal/collapse.
+- `--wei-motion-long: 300ms` is the maximum ordinary transition.
+- Use `ease-out` when revealing, `ease-in` when removing and `linear` only for progress rotation.
+- Under `prefers-reduced-motion: reduce`, set animations and transitions to effectively zero and retain textual loading state.
 
-- At the WordPress `782px` breakpoint, native form-table rows stack and navigation tabs may scroll horizontally.
-- Tables scroll within their own container; the whole WordPress administration page must not gain horizontal overflow.
+## 4. Component hierarchy
 
-## 9. Implementation boundaries
+### 4.1 Native foundation
 
-- Shared styles: `css/admin/design-system.css`.
+| Need | Native foundation | Wei composition allowed |
+| --- | --- | --- |
+| Page | `wrap`, native `h1` | max width, header description/actions |
+| Settings | WooCommerce settings API, `form-table` | grouped section surface and dirty-state footer |
+| Navigation | `nav-tab-wrapper`, links/GET state | compact underline treatment, mobile overflow |
+| Feedback | `notice-*`, ARIA live region | compact inline status/callout composition |
+| Lists | `wp-list-table`, `widefat`, `striped`, `tablenav`, `subsubsub` | toolbar, overflow, status pill, empty state |
+| Actions | `button`, `button-primary`, `button-link-delete`, `spinner` | icons, async label and confirmation behavior |
+| Inputs | WordPress/WooCommerce controls | prefix/suffix, validation message and description |
+| Modal | WordPress Components Modal when available | financial consequence copy and action ordering |
+
+“Native first” does not mean leaving every screen visually uncomposed. It means keeping the stable control semantics while the Wei layout adopts WooPayments hierarchy and density.
+
+### 4.2 Page header
+
+One `h1`, optional 680px description and an optional right-aligned action group. Do not duplicate the title inside the first card. Header actions collapse below the title under 600px.
+
+### 4.3 Section card
+
+Use a flat bordered section for routine forms and an elevated 8px card only for feature selection, onboarding or a high-level summary. Card header contains title, description and optional status/action; body contains one conceptual task. Avoid nested cards.
+
+### 4.4 Tabs and filters
+
+Tabs are URL-addressable and preserve browser back/reload. Use `aria-current="page"` or the native active class. Operational status filters use `subsubsub` or a compact segmented row; search/filter is GET and mutations are POST.
+
+### 4.5 Status pill
+
+Pills contain text and optionally a 12–16px icon. Variants: neutral, info, success, warning and error. “Inactive” is neutral; “Action needed” is warning; provider/network failures are error. Do not use a pill as a button.
+
+### 4.6 Settings row
+
+A row has label, concise description, control and validation/metadata. Advanced or dangerous fields are progressively disclosed rather than mixed into the first screen. Secret values are masked and never restored into visible HTML after save.
+
+### 4.7 Data table
+
+Use native table semantics, sticky behavior only when useful, 48px minimum row height, sortable headers with announced direction, status text, bounded errors and an action menu/explicit action column. Wide tables scroll inside `.wei-alipay-table-wrap`; the admin body never overflows.
+
+### 4.8 Empty, loading and error states
+
+- Empty: 24px title at most, explanation, one primary recovery action and optional documentation link.
+- Loading: preserve geometry, apply `aria-busy="true"`, disable only the initiating control and show text plus spinner/skeleton.
+- Error: retain user input where safe, focus/announce the summary and associate field errors using `aria-describedby` / `aria-invalid`.
+
+## 5. Interaction state machines
+
+### Save
+
+`pristine → dirty → submitting → success | error`. Dirty starts only after a real value change. Submit disables the submit control, sets busy state and prevents duplicate POST. Success clears dirty state after server confirmation; error restores controls and keeps safe input.
+
+### Remote test/query/retry
+
+`idle → confirming (when consequential) → requesting → succeeded | failed`. The operation has a stable idempotency/request identifier where supported. The initiating button cannot be re-entered while requesting. Feedback is textual and bounded; no raw provider payload is rendered.
+
+### Toggle vs disclosure
+
+A toggle immediately represents a boolean setting but does not silently enable a WooCommerce gateway. A disclosure reveals dependent controls without changing persisted state. Dependencies are explained before a disabled toggle.
+
+### Search/filter/pagination
+
+Filter and pagination are URL state. Remote free-text search is debounced; stale responses cannot replace newer results. Pagination retains filters and exposes current/total pages to assistive technology.
+
+### Confirmation
+
+Confirmation copy names the object, remote effect and reversibility. Default focus is on Cancel for refunds, compensation, clearing and remote close. A warning banner never substitutes for server capability, nonce, validation, idempotency and audit controls.
+
+### Copy
+
+Only callback URLs and non-secret identifiers may be copied. Success/failure is announced through a concise live region. Clipboard failure leaves the source selectable.
+
+## 6. Page information architecture
+
+| Route | Primary task | Composition |
+| --- | --- | --- |
+| `page=wei-alipay` | choose optional products/tools | grouped elevated feature rows, dependency/status summary, explicit Save |
+| WooCommerce `section=alipay` | configure the core gateway | WooCommerce settings foundation, progressive Basic/Credentials/Reliability/Advanced sections |
+| `page=wei-alipay-profitsharing` | configure and operate sharing | URL tabs: Settings, Query, Receivers, Rules |
+| `page=wei-alipay-ps-jobs` | inspect/retry queue | toolbar, filters, table, pagination, separate danger zone |
+| `page=wei-alipay-ps-compensation` | submit compensation | warning, narrow form, review/confirmation, result |
+| `page=wei-alipay-reconcile-pro` | schedule/run reconciliation | summary, scheduled settings, separate manual action panel |
+| `page=wei-alipay-webhooks` | inspect/retry callbacks | filters/search, bounded log table, retry feedback |
+| `page=wei-alipay-subscriptions` | configure agreement payments | dependency state, settings, sandbox-only signing shortcut |
+
+## 7. Accessibility, localization and responsiveness
+
+- WCAG 2.2 AA contrast; visible `:focus-visible`; never remove a focus outline without the documented replacement.
+- Real checkbox/button/link semantics. Switch visuals wrap a checkbox; cards are not clickable containers unless the whole card has correct keyboard semantics.
+- Use `aria-busy`, `aria-live`, `aria-expanded`, `aria-controls`, `aria-selected`, `aria-invalid` and `aria-describedby` only for their actual semantics.
+- English source msgids and complete `zh_CN` translations for changed surfaces. Product/protocol identifiers remain consistent; placeholder strings include translator comments.
+- At 782px form rows stack and card padding becomes 16px. At 600px headers/toolbars become one column. At 400px secondary actions wrap without clipping.
+- RTL uses logical properties (`margin-inline`, `padding-inline`, `inset-inline`) for new styles.
+
+## 8. Implementation boundaries
+
+- Shared tokens/components: `css/admin/design-system.css`.
 - Shared progressive enhancement: `js/admin/design-system.js`.
-- Feature-centre specialization: `css/admin/features.css` and `js/admin/features.js`.
-- Design evidence: `docs/design/woopayments-admin-design-reference.md` and `docs/design/woopayments-admin-tokens.json`.
-- Shared asset loading is restricted to the Wei Alipay top-level screen and its child pages.
-- Do not add a frontend dependency, React runtime or remote asset for administration styling.
+- Feature-centre specialization: `css/admin/features.css`, `js/admin/features.js`.
+- Assets load only on Wei Alipay screens or the exact WooCommerce Alipay settings section.
+- No frontend dependency, remote asset, copied WooPayments bundle or private React selector.
+- Feature selection remains the only custom module selector. It uses a real checkbox, native button semantics, documented Wei tokens and admin-theme focus.
 
-## 10. Review checklist
+## 9. Review gate
 
-For every new or changed page verify:
-
-1. Correct route, capability, nonce and redirect behavior.
-2. One clear task per panel and no duplicate page title.
-3. State label, empty state, loading state and error state.
-4. Keyboard focus, label association, heading order and color-independent status.
-5. WordPress `782px` responsive behavior and wide-table containment.
-6. English source/Chinese translation completeness.
-7. No secret, full callback payload or customer identifier in the DOM, log or screenshot.
-8. No real Alipay request during automated or visual tests.
-9. PHPCS security sniffs, PHPStan, contract tests and release-package Plugin Check classification.
-10. Visual verification in the supported WordPress/WooCommerce matrix with sample counts; zero samples are not PASS.
+For every changed page verify exact route/capability/nonce; task hierarchy; empty/loading/success/error states; keyboard and screen-reader semantics; 1280/960/782/600/400 behavior; English/Chinese strings; secret redaction; no real Alipay traffic; PHPCS security categories; PHPStan; contract tests; release-package Plugin Check; and WordPress Studio visual samples. Token extraction, a static check or zero runtime samples cannot be reported as a visual PASS.

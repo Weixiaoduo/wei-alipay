@@ -30,7 +30,7 @@ design_expect( false !== strpos( $contract, 'WordPress native first' ), 'DESIGN.
 foreach ( array( 'nav-tab-wrapper', 'notice', 'card', 'form-table', 'wp-list-table', 'tablenav', 'button-link-delete' ) as $native_class ) {
 	design_expect( false !== strpos( $contract, $native_class ), 'DESIGN.md documents native ' . $native_class );
 }
-foreach ( array( '--wei-color-accent', '--wei-space-6', '--wei-content-wide', '@media (max-width: 782px)', 'prefers-reduced-motion' ) as $token ) {
+foreach ( array( '--wei-color-accent', '--wei-color-success-surface', '--wei-font-size-body', '--wei-space-8', '--wei-radius-card', '--wei-shadow-card', '--wei-motion-disclosure', '--wei-content-wide', '@media (max-width: 782px)', 'prefers-reduced-motion' ) as $token ) {
 	design_expect( false !== strpos( $css, $token ), 'shared design CSS contains ' . $token );
 }
 design_expect( false === strpos( $css, '.wei-alipay-panel' ), 'shared CSS does not create a parallel panel component' );
@@ -97,5 +97,15 @@ foreach ( array( 'Basic settings', 'Alipay Profit Sharing', 'Alipay Webhook Logs
 	$pattern = '/msgid "' . preg_quote( $msgid, '/' ) . '"\Rmsgstr "[^"\r\n]+"/';
 	design_expect( 1 === preg_match( $pattern, $zh_cn ), 'zh_CN translates admin string: ' . $msgid );
 }
+
+$evidence = json_decode( design_source( $root, 'docs/design/woopayments-admin-tokens.json' ), true );
+design_expect( is_array( $evidence ) && 'https://weixiaoduo.com/schemas/woo-admin-design-evidence-v2.json' === $evidence['schema'], 'design evidence uses the two-product v2 schema' );
+design_expect( '11.0.0' === $evidence['sources']['woopayments']['version'], 'design evidence identifies WooPayments 11.0.0' );
+design_expect( '11.0.1' === $evidence['sources']['woocommerce']['version'], 'design evidence identifies WooCommerce 11.0.1' );
+foreach ( array( 'woopayments_css', 'woopayments_js', 'woocommerce_css', 'woocommerce_js' ) as $evidence_group ) {
+	design_expect( ! empty( $evidence['scope']['artifacts'][ $evidence_group ] ), 'design evidence inventories ' . $evidence_group );
+}
+design_expect( 30 === $evidence['scope']['artifact_counts']['woopayments_css'], 'design evidence covers 30 WooPayments admin CSS artifacts' );
+design_expect( 27 === $evidence['scope']['artifact_counts']['woocommerce_css'], 'design evidence covers 27 WooCommerce admin CSS artifacts' );
 
 exit( $failures ? 1 : 0 );
