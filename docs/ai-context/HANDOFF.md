@@ -164,3 +164,10 @@
 - `scripts/extract-woopayments-admin-design.py` regenerates the v2 evidence without copying WooPayments CSS, JavaScript, React components or private selectors. Raw frequency is treated as evidence rather than an automatic design decision; frontend checkout/cart/express and RTL/minified duplicates are outside the extraction scope.
 - Implementation/evidence commit before this HANDOFF entry: `ed2d0972dd5f741316eb6047d73b01ea100f9335`. `./scripts/tests/run-tests.sh all`, PHPStan debug/non-parallel over 56 first-party files, Python byte-compilation, evidence regeneration comparison and `git diff --check` exited 0. This round analyzed and extracted the design system; it did not claim a new page-level visual PASS.
 - No FeiCode/GitHub push, PR update, merge, release, deployment, mall change, Alipay endpoint, real payment or refund occurred.
+
+## 2026-08-20 - [CX] WooCommerce settings header-tab alignment
+
+- Compared the live WordPress Studio WooCommerce 11.0.1 settings header at `admin.php?page=wc-settings` with the Wei Alipay profit-sharing screen. Replaced boxed WordPress tabs with the scoped WooCommerce settings composition: transparent 13px medium links, 24px gap, quiet divider and 2px admin-theme active underline; at 500px labels become 16px and remain horizontally scrollable.
+- Native links, URL-addressable state and the navigation label remain intact. Unlike WooCommerce core CSS, Wei Alipay retains a visible `:focus-visible` ring.
+- Implementation commit before this HANDOFF entry: `9a9074051fd05eeb5a7e54d98bf2db0192a462de`. Contract tests, 56-file PHPStan debug run and `git diff --check` exited 0. WordPress Studio samples at 1280x720 and 480x900 showed the new underline tabs without clipping; browser console contained zero errors and zero warnings.
+- No FeiCode/GitHub push, merge, release, deployment, mall change or Alipay request occurred.
