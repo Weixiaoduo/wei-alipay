@@ -272,10 +272,11 @@ class Wei_Alipay_Features {
 			}
 			$is_enabled = isset( $enabled[ $key ] ) && 'yes' === $enabled[ $key ];
 			$available = self::dependency_available( $feature );
+			$effective_enabled = $is_enabled && $available;
 			$configured = self::is_configured( $feature );
-			$status = $is_enabled ? __( 'Enabled', 'wei-alipay' ) : __( 'Inactive', 'wei-alipay' );
-			$status_class = $is_enabled ? 'success' : 'light';
-			if ( $is_enabled && ! $configured ) {
+			$status = $effective_enabled ? __( 'Enabled', 'wei-alipay' ) : __( 'Inactive', 'wei-alipay' );
+			$status_class = $effective_enabled ? 'success' : 'light';
+			if ( $effective_enabled && ! $configured ) {
 				$status = __( 'Action needed', 'wei-alipay' );
 				$status_class = 'warning';
 			}
@@ -283,12 +284,13 @@ class Wei_Alipay_Features {
 				$status = __( 'Dependency missing', 'wei-alipay' );
 				$status_class = 'warning';
 			}
-			echo '<div class="wei-alipay-features__row">';
+			$dependency_id = 'wei-alipay-feature-' . sanitize_html_class( $key ) . '-dependency';
+			echo '<div class="wei-alipay-features__row' . ( $available ? '' : ' is-unavailable' ) . '"' . ( $available ? '' : ' aria-disabled="true"' ) . '>';
 			echo '<span class="dashicons ' . esc_attr( $feature['icon'] ) . '" aria-hidden="true"></span><div class="wei-alipay-features__row-copy"><div class="wei-alipay-features__title">' . esc_html( $feature['name'] ) . ' <span class="wei-alipay-chip is-' . esc_attr( $status_class ) . '" data-feature-status data-on="' . esc_attr__( 'Enabled', 'wei-alipay' ) . '" data-off="' . esc_attr__( 'Inactive', 'wei-alipay' ) . '">' . esc_html( $status ) . '</span></div><p>' . esc_html( $feature['description'] ) . '</p>';
 			if ( ! $available ) {
-				echo '<p class="wei-alipay-features__dependency">' . esc_html__( 'Install and activate WooCommerce Subscriptions before enabling this feature.', 'wei-alipay' ) . '</p>';
+				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $dependency_id ) . '"><span class="dashicons dashicons-warning" aria-hidden="true"></span>' . esc_html__( 'Install and activate WooCommerce Subscriptions before enabling this feature.', 'wei-alipay' ) . '</p>';
 			}
-			if ( $is_enabled ) {
+			if ( $effective_enabled ) {
 				$url = self::configuration_url( $feature );
 				if ( $url ) {
 					echo '<p class="wei-alipay-features__configure"><a href="' . esc_url( $url ) . '">' . esc_html__( 'Configure', 'wei-alipay' ) . '</a></p>';
@@ -296,7 +298,7 @@ class Wei_Alipay_Features {
 			}
 			/* translators: %s is the optional Wei Alipay feature name. */
 			$toggle_label = sprintf( __( 'Enable %s', 'wei-alipay' ), $feature['name'] );
-			echo '</div><label class="wei-alipay-switch"><span class="screen-reader-text">' . esc_html( $toggle_label ) . '</span><input type="checkbox" name="features[]" value="' . esc_attr( $key ) . '" ' . checked( $is_enabled, true, false ) . ' ' . disabled( $available, false, false ) . '><span aria-hidden="true"></span></label></div>';
+			echo '</div><label class="wei-alipay-switch"><span class="screen-reader-text">' . esc_html( $toggle_label ) . '</span><input type="checkbox" name="features[]" value="' . esc_attr( $key ) . '" ' . checked( $effective_enabled, true, false ) . ' ' . disabled( $available, false, false ) . ( $available ? '' : ' aria-describedby="' . esc_attr( $dependency_id ) . '"' ) . '><span aria-hidden="true"></span></label></div>';
 		}
 		echo '</div></section>';
 	}

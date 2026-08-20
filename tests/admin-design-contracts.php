@@ -72,7 +72,8 @@ $subscriptions_bootstrap = design_source( $root, 'inc/modules/subscriptions/boot
 design_expect( false !== strpos( $subscriptions, '$is_sandbox' ) && false !== strpos( $subscriptions, 'Start sandbox signing' ), 'administrator signing shortcut is sandbox-gated' );
 design_expect( false !== strpos( $subscriptions, "array( 'sign_only', 'sign_and_pay' )" ), 'subscription signing mode uses an allow-list' );
 design_expect( false !== strpos( $subscriptions, 'max( $retry_days ) > 365' ), 'subscription retry schedule is bounded' );
-design_expect( false !== strpos( $subscriptions_bootstrap, 'get_current_screen' ) && false !== strpos( $subscriptions_bootstrap, 'wei-alipay' ), 'missing subscriptions dependency notice is scoped to relevant administration screens' );
+design_expect( false === strpos( $subscriptions_bootstrap, 'Wei Alipay subscriptions require the WooCommerce Subscriptions extension.' ), 'missing subscriptions dependency does not create a duplicate global admin notice' );
+design_expect( false !== strpos( $subscriptions_bootstrap, 'feature centre renders the dependency' ), 'missing subscriptions dependency is delegated to the inline feature state' );
 
 $reconcile = design_source( $root, 'inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php' );
 design_expect( false !== strpos( $reconcile, "'woo_alipay_reconcile_run_nonce'" ), 'manual reconciliation uses a unique nonce field name' );

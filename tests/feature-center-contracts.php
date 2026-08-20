@@ -44,6 +44,11 @@ foreach ( array( '--wei-space-2', '--wei-color-accent', 'prefers-reduced-motion'
 }
 $expect( false !== strpos( $js, "beforeunload" ), 'unsaved feature changes have a navigation guard' );
 $expect( false !== strpos( $js, "submit.disabled = false" ), 'save action is enabled only after a change' );
+$expect( false !== strpos( $features, '$effective_enabled = $is_enabled && $available' ), 'missing dependencies produce an unavailable effective state' );
+$expect( false !== strpos( $features, 'checked( $effective_enabled, true, false )' ), 'an unavailable feature never renders a misleading checked switch' );
+$expect( false !== strpos( $features, 'aria-describedby=' ), 'disabled feature switches reference their dependency explanation' );
+$expect( false !== strpos( $css, 'opacity: 0 !important' ) && false !== strpos( $css, 'clip-path: inset(50%)' ), 'native checkbox remains accessible but cannot leak beside the visual switch' );
+$expect( false !== strpos( $css, 'input:disabled:checked + span::after' ), 'disabled switch thumb is forced to the off position' );
 
 $tokens = json_decode( file_get_contents( $root . '/docs/design/woopayments-admin-tokens.json' ), true );
 $expect( is_array( $tokens ) && 30 === count( $tokens['scope']['artifacts']['woopayments_css'] ), 'design inventory records the scoped WooPayments admin CSS artifacts' );

@@ -17,16 +17,8 @@ add_action( 'init', function() {
     }
 
     if ( ! function_exists( 'wcs_is_subscription' ) && ! class_exists( 'WC_Subscriptions' ) && ! class_exists( 'WC_Subscription' ) ) {
-        if ( is_admin() ) {
-            add_action( 'admin_notices', function() {
-                $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-                $screen_id = $screen ? (string) $screen->id : '';
-                if ( 'toplevel_page_wei-alipay' !== $screen_id && 0 !== strpos( $screen_id, 'wei-alipay_page_' ) && 'woocommerce_page_wc-settings' !== $screen_id ) {
-                    return;
-                }
-                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay subscriptions require the WooCommerce Subscriptions extension.', 'wei-alipay' ) . '</p></div>';
-            } );
-        }
+        // The feature centre renders the dependency beside the disabled control.
+        // A global admin notice duplicates that state and obscures unrelated pages.
         return;
     }
 
