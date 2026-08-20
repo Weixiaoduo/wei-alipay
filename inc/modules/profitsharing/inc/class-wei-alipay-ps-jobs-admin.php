@@ -9,11 +9,11 @@ class Wei_Alipay_PS_Jobs_Admin {
 
     public function add_menu() {
         add_submenu_page(
-            'woocommerce',
-            __( 'Alipay PS Jobs', 'wei-alipay' ),
-            __( 'Alipay PS Jobs', 'wei-alipay' ),
-            'manage_woocommerce',
             'wei-alipay',
+            __( 'Wei Alipay Profit Sharing Jobs', 'wei-alipay' ),
+            __( 'Profit Sharing Jobs', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay-ps-jobs',
             array( $this, 'render_page' )
         );
     }

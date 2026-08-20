@@ -643,7 +643,7 @@ msgstr ""
 
 #. Name of the plugin
 msgid "Wei Alipay"
-msgstr "支付宝付款"
+msgstr "Wei Alipay"
 
 #: inc/templates/emails/alipay-orphan-transaction.php:38 
 #: inc/templates/emails/plain/alipay-orphan-transaction.php:34
@@ -674,3 +674,75 @@ msgid ""
 "You may need to double check the Alipay transactions in the merchant "
 "platform and take care of refunds by other means if necessary."
 msgstr "你需要在支付宝商家账号仔细检查支付宝交易，如有必要，请通过其他方式退款。"
+
+msgid "Wei Alipay Overview"
+msgstr "Wei Alipay 概览"
+
+msgid "Overview"
+msgstr "概览"
+
+msgid "Alipay Reconciliation"
+msgstr "支付宝对账"
+
+msgid "Reconciliation"
+msgstr "对账"
+
+msgid "You do not have permission to manage Wei Alipay."
+msgstr "您没有管理 Wei Alipay 的权限。"
+
+msgid "Payment Settings"
+msgstr "支付设置"
+
+msgid "Configure the Alipay gateways shown at checkout."
+msgstr "配置结账时显示的支付宝支付方式。"
+
+msgid "Profit Sharing"
+msgstr "分账"
+
+msgid "Manage receivers, settlement rules and profit-sharing operations."
+msgstr "管理分账接收方、结算规则和分账操作。"
+
+msgid "Review Alipay transactions and reconciliation results."
+msgstr "查看支付宝交易和对账结果。"
+
+msgid "Webhook Logs"
+msgstr "Webhook 日志"
+
+msgid "Inspect asynchronous notification delivery and retry status."
+msgstr "查看异步通知的投递和重试状态。"
+
+msgid "Subscriptions"
+msgstr "订阅"
+
+msgid "Configure Alipay agreement payments and recurring charges."
+msgstr "配置支付宝协议支付和周期扣款。"
+
+msgid "Payment configuration and operational tools are separated below. Each tool has its own route and permissions."
+msgstr "支付配置与运营工具已分开。每项工具均有独立页面和权限。"
+
+msgid "Wei Alipay Webhook Logs"
+msgstr "Wei Alipay Webhook 日志"
+
+msgid "Wei Alipay Profit Sharing"
+msgstr "Wei Alipay 分账"
+
+msgid "Wei Alipay Profit Sharing Jobs"
+msgstr "Wei Alipay 分账任务"
+
+msgid "Profit Sharing Jobs"
+msgstr "分账任务"
+
+msgid "Wei Alipay Profit Sharing Compensation"
+msgstr "Wei Alipay 分账补偿"
+
+msgid "Profit Sharing Compensation"
+msgstr "分账补偿"
+
+msgid "Wei Alipay Reconciliation"
+msgstr "Wei Alipay 对账"
+
+msgid "Wei Alipay Subscription Settings"
+msgstr "Wei Alipay 订阅设置"
+
+msgid "Wei Alipay subscriptions require the WooCommerce Subscriptions extension."
+msgstr "Wei Alipay 订阅功能需要 WooCommerce Subscriptions 扩展。"

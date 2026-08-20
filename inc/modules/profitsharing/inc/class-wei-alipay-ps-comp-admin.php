@@ -9,11 +9,11 @@ class Wei_Alipay_PS_Comp_Admin {
 
     public function add_menu() {
         add_submenu_page(
-            'woocommerce',
-            __( 'Alipay PS Compensation', 'wei-alipay' ),
-            __( 'PS Compensation', 'wei-alipay' ),
-            'manage_woocommerce',
             'wei-alipay',
+            __( 'Wei Alipay Profit Sharing Compensation', 'wei-alipay' ),
+            __( 'Profit Sharing Compensation', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay-ps-compensation',
             array( $this, 'render_page' )
         );
     }

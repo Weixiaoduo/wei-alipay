@@ -347,11 +347,11 @@ class WC_Alipay_Webhook_Retry {
 		}
 		
 		add_submenu_page(
-			'woocommerce',
-			__( 'Alipay Webhook Logs', 'wei-alipay' ),
-			__( 'Alipay Webhooks', 'wei-alipay' ),
-			'manage_woocommerce',
 			'wei-alipay',
+			__( 'Wei Alipay Webhook Logs', 'wei-alipay' ),
+			__( 'Webhook Logs', 'wei-alipay' ),
+			'manage_woocommerce',
+			'wei-alipay-webhooks',
 			array( $this, 'render_admin_page' )
 		);
 	}

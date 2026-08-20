@@ -138,3 +138,11 @@
 - Bundled Alipay v2 SDK remains 4.20.807.ALL and unchanged. Official 4.20.1258.ALL provides no demonstrated fix in the plugin-used core/request surface, while a wholesale update changes 2,323 paths; redistribution license remains `NOASSERTION`, so public distribution stays BLOCKED pending the independent SDK allowlist/license/sandbox change.
 - No real Alipay endpoint, payment, refund or production callback was invoked. mall.weixiaoduo.com remains on 4.0.0. FeiCode push, exact-SHA CI and FeiCode Release require the final Board-bound HEAD; GitHub synchronization, production deployment and public release are separate actions.
 - FeiCode PR #4 received exact HEAD `2322e87b281c69ecb9b1ee368e19d14b2cdb5a66`; Actions run #15 checked out that SHA, but both lanes failed before tests because Composer dependency download returned nonzero after 20m5s on PHP 7.4 and 5m49s on PHP 8.3. Test samples were zero, so run #15 is FAIL. The workflow now uses three bounded Composer retries; the replacement exact SHA still requires a fresh Board binding and both remote lanes.
+
+## 2026-08-20 - [CX] Wei Alipay 后台菜单路由与信息架构修复候选
+
+- 根因是 7 个后台页面把 `add_submenu_page()` 的 parent 和 page slug 分别错误地统一为 `woocommerce` / `wei-alipay`，造成 WooCommerce 菜单污染、重复标题和回调路由碰撞；截图中的多个入口实际都指向 `admin.php?page=wei-alipay`。
+- 本地隔离分支 `cx/wei-alipay-admin-menu-401` 将插件改为独立顶级 `Wei Alipay` 菜单，只保留一个概览入口；分账、分账任务、分账补偿、对账、Webhook、订阅分别使用唯一 slug，并且仅在对应页面真实注册时显示概览卡片。WooCommerce 子菜单不再注册 Wei Alipay 工具项。
+- 菜单源文案统一为英文 msgid，并补齐本轮新增菜单/概览文案的 zh_CN PO/MO；产品名 `Wei Alipay` 不再被旧翻译错误显示成“支付宝付款”。缺少 WooCommerce Subscriptions 时的提示也改为英文源文案和完整中文翻译。
+- 新增 `tests/admin-menu-contracts.php`，覆盖独立顶级菜单、唯一工具路由和不污染 WooCommerce 子菜单；`./scripts/ci-local.sh` 退出 0，70 个第一方 PHP/JS 文件语法检查通过，PHPStan 55 个第一方文件 0 错误，A/B 候选包字节一致。
+- Mac WordPress Studio（WordPress 7.0.4、WooCommerce 11.0.1、PHP 8.4）安装候选后运行时菜单样本：WooCommerce 下 Wei Alipay 条目 0 个；独立菜单按当前可用模块显示“概览、分账、分账任务、分账补偿、对账、Webhook 日志”，各自 slug 唯一。未连接支付宝、未发送支付/退款，未修改生产、未推送 FeiCode、未合并、未发布。

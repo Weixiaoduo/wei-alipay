@@ -656,3 +656,78 @@ msgid ""
 "You may need to double check the Alipay transactions in the merchant "
 "platform and take care of refunds by other means if necessary."
 msgstr ""
+
+msgid "Wei Alipay"
+msgstr ""
+
+msgid "Wei Alipay Overview"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "Alipay Reconciliation"
+msgstr ""
+
+msgid "Reconciliation"
+msgstr ""
+
+msgid "You do not have permission to manage Wei Alipay."
+msgstr ""
+
+msgid "Payment Settings"
+msgstr ""
+
+msgid "Configure the Alipay gateways shown at checkout."
+msgstr ""
+
+msgid "Profit Sharing"
+msgstr ""
+
+msgid "Manage receivers, settlement rules and profit-sharing operations."
+msgstr ""
+
+msgid "Review Alipay transactions and reconciliation results."
+msgstr ""
+
+msgid "Webhook Logs"
+msgstr ""
+
+msgid "Inspect asynchronous notification delivery and retry status."
+msgstr ""
+
+msgid "Subscriptions"
+msgstr ""
+
+msgid "Configure Alipay agreement payments and recurring charges."
+msgstr ""
+
+msgid "Payment configuration and operational tools are separated below. Each tool has its own route and permissions."
+msgstr ""
+
+msgid "Wei Alipay Webhook Logs"
+msgstr ""
+
+msgid "Wei Alipay Profit Sharing"
+msgstr ""
+
+msgid "Wei Alipay Profit Sharing Jobs"
+msgstr ""
+
+msgid "Profit Sharing Jobs"
+msgstr ""
+
+msgid "Wei Alipay Profit Sharing Compensation"
+msgstr ""
+
+msgid "Profit Sharing Compensation"
+msgstr ""
+
+msgid "Wei Alipay Reconciliation"
+msgstr ""
+
+msgid "Wei Alipay Subscription Settings"
+msgstr ""
+
+msgid "Wei Alipay subscriptions require the WooCommerce Subscriptions extension."
+msgstr ""

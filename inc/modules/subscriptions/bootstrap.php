@@ -19,7 +19,7 @@ add_action( 'init', function() {
     if ( ! function_exists( 'wcs_is_subscription' ) && ! class_exists( 'WC_Subscriptions' ) && ! class_exists( 'WC_Subscription' ) ) {
         if ( is_admin() ) {
             add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay Subscriptions 需要 WooCommerce Subscriptions 插件支持。', 'wei-alipay' ) . '</p></div>';
+                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay subscriptions require the WooCommerce Subscriptions extension.', 'wei-alipay' ) . '</p></div>';
             } );
         }
         return;

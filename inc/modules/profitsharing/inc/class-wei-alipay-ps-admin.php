@@ -9,20 +9,20 @@ class Wei_Alipay_PS_Admin {
 
     public function add_menu() {
         add_submenu_page(
-            'woocommerce',
-            __( 'Alipay Profit Sharing', 'wei-alipay' ),
-            __( 'Alipay Profit Sharing', 'wei-alipay' ),
-            'manage_woocommerce',
             'wei-alipay',
+            __( 'Wei Alipay Profit Sharing', 'wei-alipay' ),
+            __( 'Profit Sharing', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay-profitsharing',
             array( $this, 'render_page' )
         );
     }
 
     public function enqueue_assets( $hook ) {
         // Only load on our settings page
-        if ( 'woocommerce_page_wei-alipay-profitsharing' !== $hook ) {
+        if ( 'wei-alipay_page_wei-alipay-profitsharing' !== $hook ) {
             $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-            if ( ! $screen || false === strpos( (string) $screen->id, 'woocommerce_page_wei-alipay-profitsharing' ) ) {
+            if ( ! $screen || false === strpos( (string) $screen->id, 'wei-alipay_page_wei-alipay-profitsharing' ) ) {
                 return;
             }
         }

@@ -9,11 +9,11 @@ class WC_Alipay_Subscriptions_Admin {
 
     public function add_menu() {
         add_submenu_page(
-            'woocommerce',
-            __( 'Wei Alipay 订阅设置', 'wei-alipay' ),
-            __( 'Alipay 订阅', 'wei-alipay' ),
-            'manage_woocommerce',
             'wei-alipay',
+            __( 'Wei Alipay Subscription Settings', 'wei-alipay' ),
+            __( 'Subscriptions', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay-subscriptions',
             array( $this, 'render_settings_page' )
         );
     }

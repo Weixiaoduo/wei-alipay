@@ -20,7 +20,7 @@ class Wei_Alipay {
             // Add admin scripts
             add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 99, 1 );
             // Admin tools
-            add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
+            add_action( 'admin_menu', array( $this, 'add_admin_pages' ), 5 );
 			// Add custom cron intervals
 			add_filter( 'cron_schedules', array( $this, 'add_cron_intervals' ), 10, 1 );
 
@@ -237,18 +237,87 @@ class Wei_Alipay {
     }
 
     public function add_admin_pages() {
-        // If the dedicated Reconcile Pro extension is active, avoid adding a duplicate menu.
-        if ( class_exists( 'Wei_Alipay_Reconcile_Admin' ) ) {
-            return;
-        }
-        add_submenu_page(
-            'woocommerce',
-            __( '支付宝对账工具', 'wei-alipay' ),
-            __( '支付宝对账', 'wei-alipay' ),
+        add_menu_page(
+            __( 'Wei Alipay', 'wei-alipay' ),
+            __( 'Wei Alipay', 'wei-alipay' ),
             'manage_woocommerce',
             'wei-alipay',
-            array( $this, 'render_admin_reconcile_page' )
+            array( $this, 'render_admin_overview_page' ),
+            'dashicons-money-alt',
+            56
         );
+
+        add_submenu_page(
+            'wei-alipay',
+            __( 'Wei Alipay Overview', 'wei-alipay' ),
+            __( 'Overview', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay',
+            array( $this, 'render_admin_overview_page' )
+        );
+
+        // Keep the basic reconciliation tool available when the bundled Pro module is absent.
+        if ( ! class_exists( 'Wei_Alipay_Reconcile_Admin' ) ) {
+            add_submenu_page(
+                'wei-alipay',
+                __( 'Alipay Reconciliation', 'wei-alipay' ),
+                __( 'Reconciliation', 'wei-alipay' ),
+                'manage_woocommerce',
+                'wei-alipay-reconcile',
+                array( $this, 'render_admin_reconcile_page' )
+            );
+        }
+    }
+
+    public function render_admin_overview_page() {
+        if ( ! current_user_can( 'manage_woocommerce' ) ) {
+            wp_die( esc_html__( 'You do not have permission to manage Wei Alipay.', 'wei-alipay' ) );
+        }
+
+        $pages = array(
+            array(
+                'title'       => __( 'Payment Settings', 'wei-alipay' ),
+                'description' => __( 'Configure the Alipay gateways shown at checkout.', 'wei-alipay' ),
+                'url'         => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ),
+            ),
+        );
+
+        $tool_pages = array(
+            'wei-alipay-profitsharing' => array(
+                'title'       => __( 'Profit Sharing', 'wei-alipay' ),
+                'description' => __( 'Manage receivers, settlement rules and profit-sharing operations.', 'wei-alipay' ),
+            ),
+            'wei-alipay-reconcile-pro' => array(
+                'title'       => __( 'Reconciliation', 'wei-alipay' ),
+                'description' => __( 'Review Alipay transactions and reconciliation results.', 'wei-alipay' ),
+            ),
+            'wei-alipay-webhooks' => array(
+                'title'       => __( 'Webhook Logs', 'wei-alipay' ),
+                'description' => __( 'Inspect asynchronous notification delivery and retry status.', 'wei-alipay' ),
+            ),
+            'wei-alipay-subscriptions' => array(
+                'title'       => __( 'Subscriptions', 'wei-alipay' ),
+                'description' => __( 'Configure Alipay agreement payments and recurring charges.', 'wei-alipay' ),
+            ),
+        );
+
+        foreach ( $tool_pages as $slug => $page ) {
+            $hook = get_plugin_page_hookname( $slug, 'wei-alipay' );
+            if ( ! has_action( $hook ) ) {
+                continue;
+            }
+            $page['url'] = admin_url( 'admin.php?page=' . $slug );
+            $pages[]     = $page;
+        }
+
+        echo '<div class="wrap"><h1>' . esc_html__( 'Wei Alipay', 'wei-alipay' ) . '</h1>';
+        echo '<p>' . esc_html__( 'Payment configuration and operational tools are separated below. Each tool has its own route and permissions.', 'wei-alipay' ) . '</p>';
+        echo '<div class="card" style="max-width:960px">';
+        foreach ( $pages as $page ) {
+            echo '<h2><a href="' . esc_url( $page['url'] ) . '">' . esc_html( $page['title'] ) . '</a></h2>';
+            echo '<p>' . esc_html( $page['description'] ) . '</p>';
+        }
+        echo '</div></div>';
     }
 
     /**

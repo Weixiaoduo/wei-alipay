@@ -11,11 +11,11 @@ class Wei_Alipay_Reconcile_Admin {
 
     public function add_menu() {
         add_submenu_page(
-            'woocommerce',
-            __( 'Alipay Reconcile Pro', 'wei-alipay' ),
-            __( 'Alipay 对账', 'wei-alipay' ),
-            'manage_woocommerce',
             'wei-alipay',
+            __( 'Wei Alipay Reconciliation', 'wei-alipay' ),
+            __( 'Reconciliation', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay-reconcile-pro',
             array( $this, 'render_page' )
         );
     }
