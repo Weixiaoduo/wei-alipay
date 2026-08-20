@@ -43,6 +43,8 @@ WooPayments uses WordPress component class families heavily: Button, Card, Modal
 2. A thin Wei visual composition layer for page headers, section cards, status pills, compact rows and empty states.
 3. No copied WooPayments React runtime, private selectors or compiled JavaScript.
 
+The header-tab composition is anchored to WooCommerce 11.0.1 `wc-settings`: a flex row with a quiet bottom divider, 24px inter-tab gap, medium 13px labels, transparent backgrounds and a 2px admin-theme underline for the active tab. Under 500px the row scrolls horizontally and labels become 16px. Wei Alipay keeps native link semantics and adds a visible `:focus-visible` ring instead of copying WooCommerce's focus suppression.
+
 ### Interaction findings
 
 Compiled administration JavaScript contains evidence for the following repeatable contracts:

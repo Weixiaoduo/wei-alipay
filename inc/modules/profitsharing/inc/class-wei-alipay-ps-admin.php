@@ -82,7 +82,7 @@ class Wei_Alipay_PS_Admin {
             'receivers' => __( 'Receivers', 'wei-alipay' ),
             'rules'     => __( 'Allocation Rules', 'wei-alipay' ),
         );
-        echo '<nav class="nav-tab-wrapper wp-clearfix" aria-label="' . esc_attr__( 'Profit sharing sections', 'wei-alipay' ) . '">';
+        echo '<nav class="nav-tab-wrapper wei-alipay-tabs" aria-label="' . esc_attr__( 'Profit sharing sections', 'wei-alipay' ) . '">';
         foreach ( $tabs as $tab => $label ) {
             $class = $view === $tab ? 'nav-tab nav-tab-active' : 'nav-tab';
             echo '<a class="' . esc_attr( $class ) . '" href="' . esc_url( add_query_arg( array( 'page' => 'wei-alipay-profitsharing', 'view' => $tab ), admin_url( 'admin.php' ) ) ) . '">' . esc_html( $label ) . '</a>';

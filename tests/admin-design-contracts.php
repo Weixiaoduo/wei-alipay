@@ -53,7 +53,8 @@ foreach ( $pages as $relative ) {
 }
 
 $profit = design_source( $root, 'inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php' );
-design_expect( false !== strpos( $profit, 'nav-tab-wrapper wp-clearfix' ) && false !== strpos( $profit, 'nav-tab-active' ), 'profit sharing uses native tabs' );
+design_expect( false !== strpos( $profit, 'nav-tab-wrapper wei-alipay-tabs' ) && false !== strpos( $profit, 'nav-tab-active' ), 'profit sharing uses native URL-addressable tabs with the WooCommerce settings composition' );
+design_expect( false !== strpos( $profit, "esc_attr__( 'Profit sharing sections'" ), 'profit sharing tab navigation has an accessible label' );
 design_expect( false === strpos( $profit, 'wei-alipay-panel' ), 'profit sharing no longer uses custom panels' );
 design_expect( false !== strpos( $profit, 'private function nonce_field' ), 'profit sharing avoids duplicate nonce DOM IDs on multi-form pages' );
 

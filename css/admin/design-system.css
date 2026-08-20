@@ -80,8 +80,57 @@
 	line-height: 1.6;
 }
 
-.wei-alipay-admin .nav-tab-wrapper {
-	margin-bottom: 20px;
+.wei-alipay-admin .wei-alipay-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--wei-space-5);
+	margin: var(--wei-space-5) 0;
+	padding: 0 var(--wei-space-2);
+	overflow: visible;
+	border-bottom: 1px solid #dcdcde;
+	list-style: none;
+}
+
+.wei-alipay-admin .wei-alipay-tabs::after {
+	display: none;
+}
+
+.wei-alipay-admin .wei-alipay-tabs .nav-tab {
+	float: none;
+	margin: 0;
+	padding: 0 0 10px;
+	border: 0;
+	background: transparent;
+	color: #505050;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: var(--wei-font-size-body);
+	font-weight: var(--wei-font-weight-medium);
+	line-height: var(--wei-line-height-body);
+	text-decoration: none;
+}
+
+.wei-alipay-admin .wei-alipay-tabs .nav-tab:hover,
+.wei-alipay-admin .wei-alipay-tabs .nav-tab:focus {
+	border: 0;
+	background: transparent;
+	color: var(--wei-color-accent);
+}
+
+.wei-alipay-admin .wei-alipay-tabs .nav-tab:focus {
+	box-shadow: none;
+}
+
+.wei-alipay-admin .wei-alipay-tabs .nav-tab:focus-visible {
+	border-radius: var(--wei-radius-small);
+	box-shadow: var(--wei-focus-ring);
+}
+
+.wei-alipay-admin .wei-alipay-tabs .nav-tab-active,
+.wei-alipay-admin .wei-alipay-tabs .nav-tab-active:hover,
+.wei-alipay-admin .wei-alipay-tabs .nav-tab-active:focus {
+	margin-bottom: -1px;
+	border-bottom: 2px solid var(--wei-color-accent);
+	color: #070707;
 }
 
 .wei-alipay-admin .card.wei-alipay-card-wide {
@@ -165,14 +214,21 @@
 	:root {
 		--wei-card-padding: var(--wei-card-padding-mobile);
 	}
-	.wei-alipay-admin .nav-tab-wrapper {
+	.wei-alipay-admin .wei-alipay-tabs {
 		overflow-x: auto;
+		flex-wrap: nowrap;
 		white-space: nowrap;
 	}
 
 	.wei-alipay-actions {
 		align-items: stretch;
 		flex-direction: column;
+	}
+}
+
+@media (max-width: 500px) {
+	.wei-alipay-admin .wei-alipay-tabs .nav-tab {
+		font-size: var(--wei-font-size-section);
 	}
 }
 
