@@ -171,3 +171,11 @@
 - Native links, URL-addressable state and the navigation label remain intact. Unlike WooCommerce core CSS, Wei Alipay retains a visible `:focus-visible` ring.
 - Implementation commit before this HANDOFF entry: `9a9074051fd05eeb5a7e54d98bf2db0192a462de`. Contract tests, 56-file PHPStan debug run and `git diff --check` exited 0. WordPress Studio samples at 1280x720 and 480x900 showed the new underline tabs without clipping; browser console contained zero errors and zero warnings.
 - No FeiCode/GitHub push, merge, release, deployment, mall change or Alipay request occurred.
+
+## 2026-08-20 - [CX] Feature-centre unavailable-state detail repair
+
+- Reproduced the screenshot defect with WooCommerce Subscriptions absent and the retained subscriptions preference previously enabled. The hidden native checkbox was made visible by WordPress disabled-control CSS, the custom switch still appeared on, the icon/toggle were vertically centred against multi-line copy, a Configure link was shown for an unavailable page, and a duplicate global dependency notice occupied the page header.
+- The feature centre now separates stored preference from effective availability: unavailable features render one disabled off-state switch, no Configure link, an inline warning linked with `aria-describedby`, top-aligned icon/control, and a muted unavailable row. The checkbox is visually clipped with an opacity override while remaining in the accessibility tree. The subscriptions bootstrap no longer emits the duplicate global notice.
+- Implementation commit before this HANDOFF entry: `3d9365af6e2ea2628ac43341bbbd45b04aeec43f`. Contract tests, 56-file PHPStan debug run, targeted WordPress security PHPCS on both changed runtime PHP files and `git diff --check` exited 0.
+- WordPress Studio runtime samples at 1280x900 and 480x900: 11 feature rows including the required gateway, one unavailable row, one disabled switch, zero disabled-checked switches, zero unavailable Configure links, no horizontal overflow, one page H1, and zero browser console errors/warnings. The only duplicate DOM ID was WordPress core footer `footer-thankyou`, not plugin markup.
+- No FeiCode/GitHub push, merge, release, deployment, mall change or Alipay request occurred.
