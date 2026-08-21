@@ -273,6 +273,36 @@ final class Wei_Alipay_Secret_Store {
 		);
 	}
 
+	/**
+	 * Return a presentation-safe health summary for the main private key.
+	 *
+	 * The method reports presence, decryptability and storage mode only. It never
+	 * returns, logs or persists secret material.
+	 *
+	 * @return array{status:string,protection:string}
+	 */
+	public static function main_secret_health() {
+		$external = apply_filters( 'woo_alipay_secret_value', null, 'woocommerce_alipay_settings', 'private_key' );
+		if ( is_string( $external ) && '' !== $external ) {
+			return array( 'status' => 'ready', 'protection' => 'external' );
+		}
+		$settings = self::raw_option( 'woocommerce_alipay_settings' );
+		if ( ! is_array( $settings ) || empty( $settings['private_key'] ) ) {
+			return array( 'status' => 'missing', 'protection' => 'none' );
+		}
+		$stored = (string) $settings['private_key'];
+		if ( ! self::is_envelope( $stored ) ) {
+			return array( 'status' => 'ready', 'protection' => 'plaintext' );
+		}
+		$plaintext = self::decrypt_value( $stored, self::keyring() );
+		if ( is_wp_error( $plaintext ) || '' === (string) $plaintext ) {
+			return array( 'status' => 'unreadable', 'protection' => 'encrypted' );
+		}
+		$dedicated = ( defined( 'WEI_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WEI_ALIPAY_ENCRYPTION_KEY )
+			|| ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY );
+		return array( 'status' => 'ready', 'protection' => $dedicated ? 'dedicated' : 'salts' );
+	}
+
 	public static function render_health_notice() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! self::is_settings_screen() ) {
 			return;

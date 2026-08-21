@@ -188,3 +188,86 @@
 - `./scripts/tests/run-tests.sh all` passed 74 first-party PHP/JavaScript syntax samples plus the administration, notification, amount, state, replay, MD5, secret, refund, Blocks and multisite contracts. Targeted WordPress security PHPCS over 12 changed runtime PHP files exited 0. PHPStan debug mode analyzed 57 first-party files with zero errors. The aggregate `./scripts/ci-local.sh` itself exited 1 because its parallel PHPStan worker reported an incomplete-worker infrastructure error after the tests passed; the deterministic debug rerun is the completed static-analysis result.
 - Reproducible release builds A/B were byte-identical: `wei-alipay-4.0.1-candidate.zip` SHA-256 `f91492d620fa18e90c418eab6f5a28833b4e24f2b7abd1206f2cc2fbfbdd56bb`, 8,946,460 bytes. Plugin Check was not rerun in this detail round because the Studio WP-CLI installation has no `plugin check` subcommand; the earlier classified package result is not promoted to a fresh PASS.
 - No FeiCode/GitHub push, PR update, merge, tag, release, deployment, mall production change, Alipay endpoint, real payment or refund occurred.
+
+## 2026-08-20 - [CX] Alipay product admission and fail-closed feature policy
+
+- [CX] Researched current public Alipay admission boundaries for recurring debit, face-to-face/barcode, Huabei installments, fund authorization, Mini Program, cross-border and profit sharing. The public evidence does not support a universal RMB 10 million capital rule for automatic subscriptions; current merchant-withholding upgrade material describes a different, product-specific threshold, so no capital number is hard-coded.
+- [CX] Added `docs/audits/alipay-feature-admission-and-entitlement-2026-08-20.md`. It separates Alipay product approval from future Wei Alipay entitlement and records the WordPress.org trialware review boundary.
+- [CX] Feature policy schema advanced to version 2. `f2f`, `huabei`, `barcode`, `fund_auth`, `mini_program`, `cross_border`, `profitsharing` and `subscriptions` are fail-closed in migration, save handling, UI and runtime until a reviewed entitlement path exists. `reconcile` and `webhook_retry` remain free optional operational tools; the main gateway remains available.
+- [CX] Restricted feature cards expose Alipay requirement links and a Weixiaoduo.com application link, but no authorization Key service was implemented and no merchant private key is sent off-site.
+- [CX] Verification: `php -l inc/class-wei-alipay-features.php` exit 0; `php tests/feature-center-contracts.php` exit 0 (44 assertions); `./scripts/ci-local.sh` exit 0, including 74 first-party PHP/JS syntax samples, security/compatibility contracts, PHPStan 57/57 and two reproducible candidate builds. Browser/WordPress visual sample count for this policy change: 0, not PASS.
+- [CX] No real Alipay request, production payment/refund, deployment, release, merge or push was performed. Changes remain uncommitted on `cx/wei-alipay-admin-menu-401` for review.
+
+## 2026-08-20 - [CX] Weixiaoduo account linking, entitlement and usage-visibility design
+
+- [CX] Reviewed the current Weixiaoduo.com registration/license/update surfaces, `wei-account` read-model/API contract and the existing Kestrel API Manager activation model. `wei-account` already models product-level licenses, activation domains, versions and seats; the mall engine remains the authorization source and `wei-account` must not become a second writer.
+- [CX] Added `docs/plans/wei-alipay-account-linking-entitlements-2026-08-20.md`: free plugin + free account binding + paid recurring/profit-sharing service scopes, explicit service-data disclosure, minimal site/version/feature telemetry, no order/customer/payment-key collection, PKCE connection flow, site-scoped installation tokens, signed offline entitlements, continuity rules and phased rollout.
+- [CX] Updated `DESIGN.md` so the feature centre is split into native URL-addressable Overview/Payment methods/Operations/Account & authorization views. It defines fixed Chinese-ready authorization states, one contextual action per row, required-data disclosure and a separate opt-in for optional diagnostics.
+- [CX] The existing account-level Master API Key is not accepted as the target Wei Alipay credential because it spans multiple products and the legacy client sends it in a query parameter. The target plugin must never receive or transmit Alipay private keys.
+- [CX] This round changes documentation only. No entitlement endpoint, telemetry request, account connection, production write, Alipay request, push, merge, release or deployment was performed. The shared `wei-account` checkout had unrelated uncommitted WIP and was read only.
+
+## [CX] 2026-08-21 账户页渐进式披露与后台一致性收口
+
+- 工作区：`/home/parallels/Projects/wei-alipay-cx-401`，分支 `cx/wei-alipay-admin-menu-401`；进入本轮时 HEAD 为 `dc7950e7aea7845b6a6d85199e55fc011167f877`，已有未提交 WIP 已保留并在原隔离 worktree 上适配。FeiCode 为 P0/board_required，本轮未 commit、push、merge、release、deploy。
+- 根页从单个长表单拆为 URL 可寻址的 `overview`、`payments`、`operations`、`account` 四个原生页签；各页浏览器标题与当前任务一致。支付方式与运营工具分别保存，保存一个分组不会清空另一个分组。
+- 账户页采用“连接结论 → 免费/商业权益摘要 → 必需数据披露 → 连接详情 → 已连接时才出现的危险操作”顺序。数据说明和诊断使用原生 `details/summary` 且默认关闭；未实现经过评审的 Wei Account connector 前，连接按钮明确禁用，不构造不安全的伪外联。
+- 功能 registry 已增加 `tier`、`required_scope`、`provider_requirement`；受限功能仍由 runtime/save/migration 三处 fail-closed。功能行使用“连接后免费 / 需要商业授权 / 需要支付宝审核 / 依赖缺失”等固定状态，完整要求进入 disclosure，取消每行堆叠长说明。
+- 产品边界更新：FeiCode 自有分发、不计划提交 WordPress.org；外联、必要使用遥测和站点授权属于既定产品能力，但支付/订单/客户/私钥/证书/通知原文明确排除，实际 PKCE/token/entitlement 后端仍属后续受审实现。
+- 中文目录重新从当前 first-party 源生成并清理：`languages/wei-alipay-zh_CN.po` untranslated=0、fuzzy=0；MO 经 `msgfmt --check --check-format` 编译。新增 `tests/translation-contracts.php`，并加入 contracts 自动门。
+- 定向安全 PHPCS：使用 `/home/parallels/Projects/wpcomments-codex-audit/vendor/bin/phpcs --standard=WordPress --sniffs=WordPress.Security.EscapeOutput inc/class-wei-alipay-features.php`，1 个文件，exit 0。全 WordPress 标准仍有既有格式/文档债，不用自动格式化掩盖。
+- VM 验证：
+  - `./scripts/tests/run-tests.sh static`：75 个 first-party PHP 文件及 first-party JS，exit 0。
+  - `./scripts/tests/run-tests.sh contracts`：全部契约样本通过（含 10 个 runtime gate、4 个 URL view、账户 disclosure、翻译、通知绑定/重放/金额/MD5/密钥/退款/Blocks/multisite/uninstall），exit 0。
+
+  - `vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --memory-limit=4G --no-progress`：0 errors，exit 0。
+  - `msgfmt --check --check-format`、`git diff --check`：exit 0。
+- Mac WP Studio 验证（非生产）：WordPress 7.1、WooCommerce 11.0.1、PHP 8.4.7、Wei Alipay 4.0.1。
+  - CLI render smoke：overview/payments/operations/account 各 1 样本，均 exit 0；账户页 2 个 disclosure、0 个功能表单；支付/运营页各 1 个独立表单。
+  - 浏览器运行：overview、payments、operations、account、reconcile、webhooks、WooCommerce Alipay settings 共 7 路由均完成加载；插件页 PHP/JS fatal 样本 0，插件 notice-error 样本 0。WooCommerce 设置页看到 1 个 WordPress heartbeat “Connection lost” 通知，归类为测试浏览器连接提示，不是插件 PHP 错误。
+  - 视觉样本：1440px 账户/概览/支付方式 3 张，600px 账户/支付方式 2 张；页签无挤压、账户详情默认折叠、禁用连接原因可见、移动布局未横向溢出。
+  - 为浏览器验收创建的临时本地管理员已删除；生产和 mall.weixiaoduo.com 未触碰。
+- 尚未完成：Wei Account PKCE 连接、installation token 加密、签名 entitlement、本地验签/离线宽限、遥测调度、解绑/导出/删除 API 均未实现；这些需要 wei-account 与 mall entitlement 真源契约和单独 Board change，当前 UI 不把它们伪装成可用。
+
+## [CX] 2026-08-21 Cravatar 账户身份与概览运行信息
+
+- 工作区仍为 WenPai VM `/home/parallels/Projects/wei-alipay-cx-401`、分支 `cx/wei-alipay-admin-menu-401`、HEAD `dc7950e7aea7845b6a6d85199e55fc011167f877`，在既有未提交 WIP 上继续适配；本轮未 commit、push、merge、release、deploy，未访问商城生产或支付宝。
+- `wei_alipay_account_state` 展示契约新增 `avatar_url`/`avatar_alt`。仅账户状态为 connected 且 URL 为 HTTPS、主机位于 Cravatar 明确 allow-list 时渲染 40×40 头像；使用 `referrerpolicy=no-referrer`。支付插件不接收邮箱来计算头像 hash，不发起账户查询；不合法 URL 回退 WordPress 用户 Dashicon。
+- 概览页增加两组事实模块：收款就绪度读取主网关启用、三项商户配置 presence、币种和 HTTPS；运行状态读取 HPOS 模式、Blocks 集成类、待处理订单检查和支付超时计划。`Needs attention` 只从这些本地事实生成动作；本地全绿文案明确不等同支付宝沙箱验收。页面渲染不查询订单/Webhook 表，也不请求支付宝或账户服务。
+- 翻译目录从当前 first-party 源重新生成：POT 907 个 msgid，zh_CN untranslated=0、fuzzy=0；MO 通过 `msgfmt --check --check-format`。
+- WenPai VM 验证：`./scripts/tests/run-tests.sh all` exit 0（75 个 first-party PHP 文件及 first-party JS，加全部现有合同）；定向 `WordPress.Security.EscapeOutput` PHPCS 1 个文件 exit 0；PHPStan first-party 全量 exit 0、0 errors；`git diff --check` exit 0。
+- Mac Studio 仅同步当前改动用于验证：WordPress 7.1、WooCommerce 11.0.1、PHP 8.4.7、CNY、插件 4.0.1 active。概览和账户页各 1 个 1440×1100 中文浏览器样本，控制台 errors=0；connected Cravatar 样本 natural size 80×80、`referrerPolicy=no-referrer`，非 allow-list 头像样本回退图标；600px 两页各 1 个样本，`scrollWidth=viewport=600`。临时 account-state fixture 验证后已删除，未形成伪连接状态。
+
+## [CX] 2026-08-21 Weixiaoduo.com 账户动作命名
+
+- 已将 connected 账户主动作从内部名称 `Manage in Wei Account` 改为面向用户的 `Manage on Weixiaoduo.com`，zh_CN 显示“在 Weixiaoduo.com 中管理”；目标 URL 仍由受审 account-state adapter 提供，没有新增硬编码授权请求。
+- `DESIGN.md`、POT、zh_CN PO/MO 和翻译合同同步更新。`./scripts/tests/run-tests.sh all`、定向 EscapeOutput PHPCS、`msgfmt --check --check-format`、`git diff --check` 均 exit 0；Mac Studio connected 账户页 1 个浏览器样本找到该文案，控制台 errors=0，临时 fixture 已删除。
+- 仍处于未提交的 WenPai 隔离 WIP；未 push、merge、release、deploy，未触碰商城生产或支付宝。
+
+## [CX] 2026-08-21 概览健康、授权与本地活动模块
+
+- 在既有 Overview 中补齐五组渐进式信息：收款就绪度、账户授权、支付可靠性、最近 7 天、兼容与维护；`Needs attention` 最多显示 3 项。更新状态只读取 WordPress 本地更新缓存，页面不扫描订单/Webhook 表，也不为了渲染而请求 Weixiaoduo.com 或支付宝。
+- 新增 `Wei_Alipay_Health` 本地有界快照：观察已处理回调、待处理订单检查、超时检查、Webhook 重试、支付完成、失败订单和退款创建。仅保留 8 天的时间戳、计数、清理后的错误码与 HMAC 事件哈希；活动去重键最多 500 个，失败回调哈希最多 100 个，不存订单号、交易号、金额、客户、通知原文或密钥。
+- 私钥就绪度通过 `Wei_Alipay_Secret_Store::main_secret_health()` 返回 ready/missing/unreadable 与 protection 类别；不返回密钥值。账户展示契约增加授权 scope、到期、离线宽限和最近同步字段，真实连接/entitlement 后端仍未伪造为可用。
+- 文案目录已从 955 个当前 first-party msgid 生成，zh_CN untranslated=0、fuzzy=0；`Payment reliability` 的旧误译已改为“支付可靠性”。`DESIGN.md` 已记录本地快照的隐私、保留与零样本边界。
+- WenPai VM：`./scripts/tests/run-tests.sh all` exit 0，77 个 first-party PHP 文件和 first-party JavaScript 语法通过，功能/健康/设计/翻译/支付安全/多站点合同全部通过；PHPStan first-party 全量 0 errors、exit 0；定向 WordPress Security PHPCS 5 个改动运行文件 exit 0；`git diff --check` exit 0。
+- Mac Studio：WordPress 7.1、WooCommerce 11.0.1、PHP CLI 8.4.7（Web PHP 8.4.23）、Wei Alipay 4.0.1 active。运行时健康事件样本为支付成功 1、支付失败 1、退款 1、重复支付事件 1 次去重、失败回调 1、后台任务标记 3，摘要成功率 50%，原始测试 merchant id 留存 0；测试订单、退款与快照均在验收后删除/恢复，未发送支付、退款或支付宝请求。
+- 浏览器：概览 1440px 与 600px 各 1 个样本，600px `scrollWidth=viewport=600`，控制台 errors=0；connected 账户页 1440px 1 个样本确认 Cravatar、`在 Weixiaoduo.com 中管理`、3 个原生 disclosure 与无横向溢出，临时 local-only account/login fixture 已删除。
+- 工作区仍为 `/home/parallels/Projects/wei-alipay-cx-401`、分支 `cx/wei-alipay-admin-menu-401`、HEAD `dc7950e7aea7845b6a6d85199e55fc011167f877`，所有内容仍是未提交隔离 WIP；未 commit、push、merge、release、deploy，未触碰 `mall.weixiaoduo.com`。
+
+## [CX] 2026-08-21 连接感知标签与增值服务目录
+
+- 已先固化跨插件设计要求：Mac 协调文档 `docs/plans/weixiaoduo-connected-plugin-admin-standard-2026-08-21.md` 记录账户连接型插件的信息架构、标签状态机、功能元数据、授权判定、原生组件、WooPayments token 使用、交互、头像、外联/遥测/隐私、支付连续性、多站点和验收矩阵；Wei Alipay 自身的 `DESIGN.md` 与账户授权方案同步记录产品映射。
+- 未连接时只显示概览、支付方式、运营工具、账户与授权四个标签；connected account-state 才在运营工具后增加`增值服务`。直接请求 `view=services` 且未连接时在服务端规范化到账户视图，不依赖 CSS 隐藏。
+- `commercial` 与 `specialist` 功能从普通支付/运营表单移入增值服务目录：资金授权、跨境支付、分账、订阅共 4 项。免费单商户支付扩展仍在支付方式，本地对账/Webhook 仍在运营工具。
+- 连接只控制目录可见性，不作为 entitlement 或支付宝准入证明。当前增值服务每项只显示状态、原生 requirements disclosure 和一个 Weixiaoduo.com 申请动作，启用开关为 0；运行时/save/migration 的 restricted fail-closed 边界未放松。服务行不使用会连带禁用内部链接的 `aria-disabled`。
+- 翻译目录更新为 962 个 current first-party msgid，zh_CN untranslated=0、fuzzy=0；浏览器标题、标签、审批说明和申请动作均有完整中文。
+- WenPai VM 最终验证：`./scripts/tests/run-tests.sh all` exit 0（77 个 first-party PHP 文件及 first-party JavaScript，加全部合同）；PHPStan first-party 全量 0 errors；定向 WordPress Security PHPCS 1 个改动运行文件 exit 0；`msgfmt --check --check-format` 与 `git diff --check` exit 0。
+- Mac Studio：WordPress 7.1、WooCommerce 11.0.1、PHP 8.4、插件 4.0.1。未连接样本 1 个：增值服务标签 0、直接服务 URL 归一到账户页、商业/专项功能泄漏 0；connected 样本 1 个：5 个标签、4 个服务、0 个开关、4 个申请动作。浏览器 1440/600/400px 共 3 个服务页样本，横向溢出 0、当前标签 1、console errors=0；临时 local-only fixture 已删除。
+- 本轮仍停留在未提交隔离 WIP，HEAD 未变为 `dc7950e7aea7845b6a6d85199e55fc011167f877`；未 push、merge、release、deploy，未连接支付宝，未修改 mall 生产。
+
+## [CX] 2026-08-21 Wei Alipay 标题身份与折叠细节收口
+
+- 独立后台页标题现在使用本地 `assets/images/wei-alipay-placeholder.svg` 作为 32×32 临时插件标识；该 SVG 无远程图片引用并进入候选包。连接后的 Cravatar 账户头像保留为独立的 28×28 圆形身份，显示在连接状态之后，不再与插件 Logo 混用。
+- Overview 的四个原生 `details/summary` 折叠项补充打开态、悬停态、键盘焦点和 reduced-motion 处理；展开内容的状态行内部使用虚线分隔，折叠项之间及展开区边界仍使用实线，避免层级混乱。
+- Mac Studio WordPress 7.1 / WooCommerce 11.0.1 的 1200px、400px 浏览器样本均无横向溢出，控制台 errors=0；连接头像 fixture 在验证后已删除。
+- `./scripts/ci-local.sh` exit 0：77 个第一方 PHP/JS 语法及全部合同通过，PHPStan 58/58 为 0 errors，A/B 候选包字节一致。本条记录时未合并、发布、部署或连接支付宝。

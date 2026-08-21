@@ -256,8 +256,8 @@ class Wei_Alipay {
 
         add_submenu_page(
             'wei-alipay',
-            __( 'Wei Alipay Feature Center', 'wei-alipay' ),
-            __( 'Features', 'wei-alipay' ),
+            __( 'Wei Alipay Overview', 'wei-alipay' ),
+            __( 'Overview', 'wei-alipay' ),
             'manage_woocommerce',
             'wei-alipay',
             array( $this, 'render_admin_overview_page' )

@@ -198,7 +198,8 @@ Only callback URLs and non-secret identifiers may be copied. Success/failure is 
 
 | Route | Primary task | Composition |
 | --- | --- | --- |
-| `page=wei-alipay` | choose optional products/tools | grouped elevated feature rows, dependency/status summary, explicit Save |
+| `page=wei-alipay` | understand current readiness and choose optional products/tools | native page tabs for Overview, Payment methods, Operations, Account & authorization; grouped feature rows and explicit Save |
+| `page=wei-alipay&view=account` | connect and manage the Weixiaoduo.com site authorization | one connection summary, disclosed data list, connect/manage/unlink actions; no feature toggles |
 | WooCommerce `section=alipay` | configure the core gateway | WooCommerce settings foundation, progressive Basic/Credentials/Reliability/Advanced sections |
 | `page=wei-alipay-profitsharing` | configure and operate sharing | URL tabs: Settings, Query, Receivers, Rules |
 | `page=wei-alipay-ps-jobs` | inspect/retry queue | toolbar, filters, table, pagination, separate danger zone |
@@ -209,6 +210,12 @@ Only callback URLs and non-secret identifiers may be copied. Success/failure is 
 
 ### Detail rules for related screens
 
+- The feature centre is not one endless mixed form. Overview, Payment methods, Operations and Account & authorization are URL-addressable native tabs. Each view has one primary task and retains the product heading.
+- Authorization is explained before it is requested. The unconnected account card lists the exact required service data: normalized site host, installation ID, WordPress/WooCommerce/PHP/plugin versions, locale, currency, enabled feature scopes and last contact time. It also states that orders, amounts, customer records and Alipay private keys are not sent.
+- Use fixed authorization states: `Connect for free`, `Available`, `Alipay product required`, `Commercial authorization required`, `Dependency missing`, `Configuration required`, `Enabled`. A disabled switch always names the unmet condition.
+- Do not repeat two or three sales/documentation links in every feature row. Each row gets one contextual action; complete admission, pricing and privacy information belongs in a disclosure or the Account & authorization view.
+- Account connection and optional diagnostics are separate choices. Required service data is confirmed during connection; extra diagnostics remain off until a separate opt-in.
+- Authorization-server latency is never part of checkout rendering. The UI displays the last successful background sync, and runtime decisions use a locally verified signed entitlement.
 - All standalone tool screens use one product heading, one task sentence and then navigation or content. Do not repeat a second product heading inside the first card.
 - Profit-sharing settings, query, receivers, rules, jobs and compensation form one six-tab family. The active tab uses `aria-current="page"`; each tab has its own URL and browser history entry.
 - Reconciliation uses separate Schedule and Manual URLs. Merely viewing or saving the schedule cannot expose or trigger the provider-contacting manual action.
@@ -216,6 +223,63 @@ Only callback URLs and non-secret identifiers may be copied. Success/failure is 
 - List filters remain native `.subsubsub` or GET controls rather than being disguised as feature tabs. Bulk actions stay visible at 782px and below.
 - Destructive queue cleanup sits in a labelled danger zone separated from non-destructive filter/export controls. The warning names what is deleted and what is retained.
 - Empty queue/log states retain the table or card context, use one concise title and sentence, and never show a success state when the sample count is zero.
+
+### Account progressive-disclosure contract
+
+The Account & authorization view uses this fixed reading order:
+
+1. **Conclusion:** connection state, masked account identity when available and one primary action.
+2. **Access:** only the free/commercial entitlement summary needed to understand why a feature is locked.
+3. **Disclosure:** required connection data and explicit exclusions in a native closed `details` element.
+4. **Diagnostics:** site host, installation-ID suffix and last successful sync in a second closed `details` element.
+5. **Danger:** disconnect/revoke actions appear last, only when connected, in a separate closed disclosure.
+
+Normal state must not show token values, API endpoints, full installation identifiers, event payloads, policy versions or retry traces. Those belong in bounded diagnostics/export flows. An error opens only the disclosure containing the corrective action; unrelated disclosures remain closed. A disabled Connect control must explain that the reviewed connector is not present rather than navigating to an insecure placeholder flow.
+
+### Connected identity and avatar contract
+
+- A connected identity shows the masked account label and the Cravatar image supplied by the reviewed Wei Account connector. The payment plugin never receives an account email solely to compute an avatar and never derives MD5/SHA hashes from account PII.
+- The account-state adapter supplies a complete HTTPS `avatar_url`. Rendering is limited to the explicit Cravatar host allow-list, uses a 40×40 circular image, lazy decoding and `referrerpolicy="no-referrer"`. Invalid, non-HTTPS or non-Cravatar URLs fall back to the WordPress user Dashicon.
+- The unconnected state never loads a remote avatar. Avatar failure must not change entitlement state, block configuration or expose the account email as alternative text.
+- `wei_alipay_cravatar_hosts` is an integration escape hatch for an approved Cravatar delivery host, not a generic remote-image allow-list. Connector review must bind any added host to the Cravatar service before deployment.
+- The connected primary action is labelled `Manage on Weixiaoduo.com` / `在 Weixiaoduo.com 中管理`; the customer-facing destination is the product website rather than the internal connector name.
+
+### Overview information architecture
+
+The Overview page is an operational summary, not a marketing landing page. It contains:
+
+1. Three compact conclusions: main gateway readiness, enabled optional-feature count and Weixiaoduo account state.
+2. **Payment readiness:** sandbox/live environment, gateway enabled, private-key decryptability/storage mode, public merchant configuration, store currency and HTTPS callback readiness. It never prints, returns or exports credential values.
+3. **Account authorization:** connection, locally cached scopes, expiry, offline grace and last successful synchronization. Checkout never waits for the account service.
+4. **Payment reliability:** last callback result and sanitized error code, unresolved recent callback hashes, and the last observed pending-order/timeout task completion.
+5. **Last seven days:** local counts of successful payments, failed payment transitions and created refunds, plus a success rate only when at least one payment event exists. Amounts, order numbers and customers are excluded.
+6. **Compatibility and maintenance:** HPOS mode, Checkout Blocks integration, local WordPress/WooCommerce/PHP/plugin versions and the existing WordPress update-cache state.
+7. **Needs attention:** at most three items, ordered payment/key health → account authorization → callback/recovery → update. A clear local state explicitly says it does not replace an Alipay sandbox acceptance test.
+
+The page performs no Alipay or account-server request, no order-table scan and no webhook-log query during rendering. `Wei_Alipay_Health` records only timestamps, counters, sanitized error codes and site-keyed event hashes in one non-autoloaded option. It retains eight days, caps activity hashes at 500 and callback failures at 100, and uses a short self-healing option lock. Provider acceptance, historical activity before the recorder was installed and real transaction success must not be inferred from a zero-event dashboard.
+
+### Connection-aware navigation and value-added services
+
+The feature centre uses progressive navigation rather than exposing every product before it is relevant:
+
+| Account state | Visible tabs |
+| --- | --- |
+| Not connected | Overview, Payment methods, Operational tools, Account and authorization |
+| Connected | Overview, Payment methods, Operational tools, Value-added services, Account and authorization |
+
+`Value-added services` is the approved label. Do not call the page `Advanced features`: recurring debit, profit sharing, fund authorization and cross-border acceptance are not merely advanced settings; they can require separate Alipay/Alipay+ admission, Weixiaoduo.com authorization and paid implementation or support.
+
+- `Payment methods` keeps the existing gateway list unchanged, including Fund Authorization and Cross-Border where their natural task is checkout configuration.
+- `Operational tools` keeps the existing recovery, webhook, reconciliation, Subscriptions and Profit Sharing rows in their natural task context.
+- `Value-added services` is an authorization and service catalogue for commercial/specialist capabilities. It does not move or duplicate their settings.
+- The connected state controls only whether the catalogue tab is relevant and visible. It never proves entitlement, provider admission or runtime availability.
+- Until the reviewed installation-token and signed-entitlement adapter lands, value-added rows have no enable switch. Each row shows one bounded status and a requirements disclosure; the entire page has one Weixiaoduo.com service action rather than one repeated application button per row. All restricted runtimes remain fail closed.
+- A direct request for `view=services` while disconnected is normalized to Account and authorization. CSS-only hiding is forbidden.
+- When entitlement exists in a later release, each service still requires dependency, signed scope, provider acknowledgement and local configuration before a Configure or Enable action can appear.
+
+Commercial authorization expiry follows “stop new business, preserve existing obligations”: prevent new agreements, receivers or rules, but retain callbacks, refunds, queries, agreement cancellation, existing-job compensation and audit access. Checkout and callbacks never wait synchronously for the account service.
+
+Do not generate a top-level tab for every payment method after it is enabled. Dynamic gateway tabs make navigation unstable and crowded. The Payment methods page retains its list and may add one compact `Enabled payment services` status block when optional gateways are effectively active. The block summarizes readiness only; configuration remains in the existing WooCommerce gateway screen and the original feature row remains the source of activation.
 
 ## 7. Accessibility, localization and responsiveness
 

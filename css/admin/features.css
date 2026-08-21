@@ -26,6 +26,46 @@
 	line-height: 32px;
 }
 
+.wei-alipay-features__heading {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--wei-space-2);
+}
+
+.wei-alipay-features__heading h1 {
+	margin-bottom: 0;
+}
+
+.wei-alipay-header-logo {
+	display: block;
+	flex: 0 0 32px;
+	width: 32px;
+	height: 32px;
+	border-radius: 7px;
+}
+
+.wei-alipay-header-avatar {
+	flex: 0 0 28px;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: var(--wei-color-surface-subtle);
+	object-fit: cover;
+}
+
+.wei-alipay-header-avatar.is-fallback {
+	display: grid;
+	place-items: center;
+	color: var(--wei-color-accent);
+	font-size: 20px;
+	line-height: 1;
+}
+
+.wei-alipay-features > .wei-alipay-tabs {
+	margin: 0 0 var(--wei-space-6);
+}
+
 .wei-alipay-features__header p,
 .wei-alipay-features__section-copy p,
 .wei-alipay-features__row-copy p {
@@ -140,6 +180,29 @@
 }
 
 .wei-alipay-features__row-copy .wei-alipay-features__configure {
+	margin-top: var(--wei-space-2);
+}
+
+.wei-alipay-feature-disclosure {
+	margin-top: var(--wei-space-2);
+	font-size: 13px;
+	line-height: 20px;
+}
+
+.wei-alipay-feature-disclosure summary {
+	width: fit-content;
+	color: var(--wei-color-accent);
+	cursor: pointer;
+}
+
+.wei-alipay-feature-disclosure > div {
+	margin-top: var(--wei-space-2);
+	padding: var(--wei-space-3) var(--wei-space-4);
+	border-left: 3px solid var(--wei-color-border);
+	background: var(--wei-color-surface-subtle);
+}
+
+.wei-alipay-feature-disclosure p + p {
 	margin-top: var(--wei-space-2);
 }
 
@@ -262,6 +325,342 @@
 	font-size: 13px;
 }
 
+.wei-alipay-summary-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--wei-space-4);
+	margin-bottom: var(--wei-space-6);
+}
+
+.wei-alipay-summary-card,
+.wei-alipay-next-step,
+.wei-alipay-overview-panel,
+.wei-alipay-account__primary,
+.wei-alipay-account__entitlements,
+.wei-alipay-disclosure {
+	border: 1px solid var(--wei-color-border);
+	border-radius: 2px;
+	background: var(--wei-color-surface);
+}
+
+.wei-alipay-summary-card {
+	display: flex;
+	min-height: 164px;
+	padding: var(--wei-space-5);
+	flex-direction: column;
+	justify-content: space-between;
+	gap: var(--wei-space-5);
+}
+
+.wei-alipay-summary-card h2,
+.wei-alipay-next-step h2,
+.wei-alipay-overview-panel h2,
+.wei-alipay-account__entitlements h2 {
+	margin: 0 0 var(--wei-space-3);
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.wei-alipay-summary-card p,
+.wei-alipay-next-step p,
+.wei-alipay-account p,
+.wei-alipay-disclosure p {
+	color: var(--wei-color-text-secondary);
+	font-size: 13px;
+	line-height: 20px;
+}
+
+.wei-alipay-summary-card p {
+	margin: var(--wei-space-3) 0 0;
+}
+
+.wei-alipay-next-step {
+	margin-bottom: var(--wei-space-4);
+	padding: var(--wei-space-5);
+	scroll-margin-top: 48px;
+}
+
+.wei-alipay-overview-details {
+	scroll-margin-top: 48px;
+	border: 1px solid var(--wei-color-border);
+	border-radius: 2px;
+	background: var(--wei-color-surface);
+}
+
+.wei-alipay-overview-caveat {
+	margin: var(--wei-space-4) 0 0;
+}
+
+.wei-alipay-overview-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--wei-space-4);
+	margin-bottom: var(--wei-space-4);
+}
+
+.wei-alipay-overview-panel {
+	padding: var(--wei-space-5);
+}
+
+.wei-alipay-overview-panel.is-wide {
+	grid-column: 1 / -1;
+}
+
+.wei-alipay-overview-panel > p {
+	margin: calc(-1 * var(--wei-space-2)) 0 var(--wei-space-4);
+	color: var(--wei-color-text-secondary);
+	font-size: 13px;
+	line-height: 20px;
+}
+
+.wei-alipay-overview-list {
+	margin-bottom: var(--wei-space-4);
+}
+
+.wei-alipay-overview-list > div {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wei-space-3);
+	min-height: 45px;
+	padding: var(--wei-space-2) 0;
+	border-top: 1px dashed var(--wei-color-border);
+}
+
+.wei-alipay-overview-list.is-columns {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: var(--wei-space-6);
+}
+
+.wei-alipay-overview-list .wei-alipay-chip {
+	max-width: 65%;
+	text-align: right;
+	white-space: normal;
+}
+
+.wei-alipay-attention-list {
+	margin: 0;
+}
+
+.wei-alipay-attention-list li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wei-space-5);
+	margin: 0;
+	padding: var(--wei-space-3) 0;
+	border-top: 1px solid var(--wei-color-border);
+}
+
+.wei-alipay-attention-list li:first-child {
+	padding-top: 0;
+	border-top: 0;
+}
+
+.wei-alipay-attention-list li:last-child {
+	padding-bottom: 0;
+}
+
+.wei-alipay-attention-list li.is-clear {
+	justify-content: flex-start;
+	color: var(--wei-color-success, #008a20);
+}
+
+.wei-alipay-attention-list a {
+	flex: 0 0 auto;
+}
+
+.wei-alipay-account {
+	max-width: 760px;
+}
+
+.wei-alipay-account__primary {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--wei-space-6);
+	padding: var(--wei-space-6);
+}
+
+.wei-alipay-account__identity {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--wei-space-4);
+}
+
+.wei-alipay-account__identity > .dashicons {
+	display: grid;
+	flex: 0 0 40px;
+	width: 40px;
+	height: 40px;
+	place-items: center;
+	border-radius: 5px;
+	background: var(--wei-color-surface-subtle);
+	color: var(--wei-color-accent);
+	font-size: 22px;
+}
+
+.wei-alipay-account__avatar {
+	display: block;
+	flex: 0 0 40px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	background: var(--wei-color-surface-subtle);
+	object-fit: cover;
+}
+
+.wei-alipay-account__identity p {
+	margin: var(--wei-space-1) 0 0;
+}
+
+.wei-alipay-account__actions {
+	display: flex;
+	align-items: flex-end;
+	max-width: 260px;
+	flex-direction: column;
+	gap: var(--wei-space-2);
+	text-align: right;
+}
+
+.wei-alipay-account__actions .description {
+	color: var(--wei-color-text-secondary);
+	font-size: 12px;
+	line-height: 18px;
+}
+
+.wei-alipay-account__entitlements {
+	margin-top: var(--wei-space-4);
+	padding: var(--wei-space-5) var(--wei-space-6);
+}
+
+.wei-alipay-account__status-list > div {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--wei-space-4);
+	padding: var(--wei-space-3) 0;
+	border-top: 1px solid var(--wei-color-border);
+}
+
+.wei-alipay-disclosure {
+	margin-top: var(--wei-space-3);
+}
+
+.wei-alipay-disclosure summary {
+	padding: var(--wei-space-4) var(--wei-space-6);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.wei-alipay-disclosure > div {
+	padding: 0 var(--wei-space-6) var(--wei-space-5);
+}
+
+.wei-alipay-disclosure p {
+	margin: 0 0 var(--wei-space-3);
+}
+
+.wei-alipay-overview-attention {
+	margin: 0 0 var(--wei-space-4);
+	padding: var(--wei-space-4) var(--wei-space-5);
+}
+
+.wei-alipay-overview-attention h2 {
+	margin: 0 0 var(--wei-space-2);
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure {
+	margin: 0;
+	border: 0;
+	border-bottom: 1px solid var(--wei-color-border);
+	border-radius: 0;
+	background: transparent;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure:last-child {
+	border-bottom: 0;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure summary {
+	display: grid;
+	grid-template-columns: 12px minmax(0, 1fr) auto;
+	align-items: center;
+	column-gap: var(--wei-space-2);
+	min-height: 20px;
+	padding: var(--wei-space-4) var(--wei-space-5);
+	font-size: 14px;
+	line-height: 20px;
+	list-style: none;
+	cursor: pointer;
+	transition: background-color var(--wei-motion-disclosure);
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure summary:hover,
+.wei-alipay-overview-details .wei-alipay-overview-disclosure[open] summary {
+	background: var(--wei-color-surface-subtle);
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure summary:focus-visible {
+	outline: 2px solid var(--wei-color-accent);
+	outline-offset: -2px;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure summary::-webkit-details-marker {
+	display: none;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure summary::before {
+	color: var(--wei-color-text-secondary);
+	content: "▸";
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure[open] summary::before {
+	content: "▾";
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure summary .wei-alipay-chip {
+	grid-column: 3;
+	margin: -2px 0;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure > div {
+	padding: var(--wei-space-4) var(--wei-space-5) var(--wei-space-5);
+	border-top: 1px solid var(--wei-color-border);
+	background: #fbfbfc;
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure .wei-alipay-overview-list {
+	margin-bottom: var(--wei-space-3);
+}
+
+.wei-alipay-overview-details .wei-alipay-overview-disclosure .wei-alipay-overview-list > div:first-child {
+	border-top: 0;
+}
+
+.wei-alipay-account__facts dl {
+	display: grid;
+	grid-template-columns: minmax(130px, 1fr) minmax(0, 2fr);
+	margin: 0;
+	gap: var(--wei-space-3) var(--wei-space-6);
+}
+
+.wei-alipay-account__facts dt {
+	color: var(--wei-color-text-secondary);
+}
+
+.wei-alipay-account__facts dd {
+	margin: 0;
+	word-break: break-word;
+}
+
+.wei-alipay-disclosure.is-danger {
+	border-left: 4px solid var(--wei-color-error, #d63638);
+}
+
 @media (max-width: 800px) {
 	.wei-alipay-features {
 		padding: 0 24px 40px 4px;
@@ -274,13 +673,52 @@
 	.wei-alipay-features__section-copy {
 		max-width: none;
 	}
+
+	.wei-alipay-summary-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.wei-alipay-overview-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.wei-alipay-overview-list.is-columns {
+		grid-template-columns: 1fr;
+	}
+
+	.wei-alipay-summary-card {
+		min-height: 0;
+	}
 }
 
 @media (max-width: 600px) {
 	.wei-alipay-features__header,
-	.wei-alipay-features__notice {
+	.wei-alipay-features__notice,
+	.wei-alipay-account__primary {
 		align-items: flex-start;
 		flex-direction: column;
+	}
+
+	.wei-alipay-account__actions {
+		align-items: flex-start;
+		max-width: none;
+		text-align: left;
+	}
+
+	.wei-alipay-attention-list li {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: var(--wei-space-2);
+	}
+
+	.wei-alipay-overview-details .wei-alipay-overview-disclosure summary .wei-alipay-chip {
+		grid-column: 2;
+		margin: var(--wei-space-2) 0 0;
+		justify-self: start;
+	}
+
+	.wei-alipay-overview-details .wei-alipay-overview-disclosure summary > span:first-child {
+		grid-column: 2;
 	}
 
 	.wei-alipay-features__row {
@@ -294,7 +732,8 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.wei-alipay-switch > span:last-child,
-	.wei-alipay-switch > span:last-child::after {
+	.wei-alipay-switch > span:last-child::after,
+	.wei-alipay-overview-details .wei-alipay-overview-disclosure summary {
 		transition: none;
 	}
 }

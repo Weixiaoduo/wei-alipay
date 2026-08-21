@@ -104,7 +104,7 @@ $settings_ui    = substr( $gateway, $settings_start, $settings_end - $settings_s
 design_expect( 0 === preg_match( "/(?:__|_e|esc_html__|esc_attr__)\(\s*'[^']*[\x{4e00}-\x{9fff}]/u", $settings_ui ), 'gateway administration uses English source msgids consistently' );
 
 $zh_cn = design_source( $root, 'languages/wei-alipay-zh_CN.po' );
-foreach ( array( 'Basic settings', 'Alipay Profit Sharing', 'Alipay Webhook Logs', 'Alipay Subscriptions', 'Single-order Reconciliation' ) as $msgid ) {
+foreach ( array( 'Basic settings', 'Profit Sharing', 'Webhook Logs and Retry', 'Alipay Subscriptions', 'Single-order Reconciliation' ) as $msgid ) {
 	$pattern = '/msgid "' . preg_quote( $msgid, '/' ) . '"\Rmsgstr "[^"\r\n]+"/';
 	design_expect( 1 === preg_match( $pattern, $zh_cn ), 'zh_CN translates admin string: ' . $msgid );
 }
