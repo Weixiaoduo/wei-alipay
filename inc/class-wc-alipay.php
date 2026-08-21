@@ -1038,15 +1038,36 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function check_alipay_response()
     {
-        $response_data = $_POST; // @codingStandardsIgnoreLine
-        $out_trade_no = isset($_POST['out_trade_no']) ? sanitize_text_field($_POST['out_trade_no']) : '';
-        $response_app_id = isset($_POST['app_id']) ? sanitize_text_field($_POST['app_id']) : '';
-        $trade_status = isset($_POST['trade_status']) ? sanitize_text_field($_POST['trade_status']) : '';
-        $transaction_id = isset($_POST['trade_no']) ? sanitize_text_field($_POST['trade_no']) : '';
-        $response_total = isset($_POST['total_amount']) ? sanitize_text_field($_POST['total_amount']) : '';
-        $fund_bill_list = isset($_POST['fund_bill_list']) ? stripslashes(sanitize_text_field($_POST['fund_bill_list'])) : '';
+        $response_data  = wp_unslash($_POST); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+        $request_method = isset($_SERVER['REQUEST_METHOD']) ? sanitize_key(wp_unslash($_SERVER['REQUEST_METHOD'])) : '';
+        $required       = array('out_trade_no', 'app_id', 'trade_status', 'total_amount', 'sign');
+
+        if ('post' !== $request_method || array_filter($required, static function ($key) use ($response_data) {
+            return !isset($response_data[$key]) || !is_scalar($response_data[$key]) || '' === (string) $response_data[$key];
+        })) {
+            self::log(__METHOD__ . ' rejected incomplete or non-POST callback.', 'warning', true);
+            echo 'fail';
+            exit;
+        }
+
+        $out_trade_no   = sanitize_text_field((string) $response_data['out_trade_no']);
+        $response_app_id = sanitize_text_field((string) $response_data['app_id']);
+        $trade_status   = sanitize_text_field((string) $response_data['trade_status']);
+        $transaction_id = isset($response_data['trade_no']) && is_scalar($response_data['trade_no']) ? sanitize_text_field((string) $response_data['trade_no']) : '';
+        $response_total = sanitize_text_field((string) $response_data['total_amount']);
+        $fund_bill_list = isset($response_data['fund_bill_list']) && is_scalar($response_data['fund_bill_list']) ? sanitize_text_field((string) $response_data['fund_bill_list']) : '';
         $needs_reply = false;
         $error = false;
+
+        $config = $this->get_config();
+        Woo_Alipay::require_lib('check_notification');
+        $aop = new AlipayTradeService($config);
+        $result_check_signature = $aop->check($response_data);
+        if (!$result_check_signature) {
+            self::log(__METHOD__ . ' rejected callback before order lookup: invalid_response_signature', 'warning', true);
+            echo 'fail';
+            exit;
+        }
 
         // 先尝试通过既有规则（WooA前缀）解析订单ID
         $order = null;
@@ -1072,11 +1093,13 @@ class WC_Alipay extends WC_Payment_Gateway
         }
         
         $config = $this->get_config($order_id);
-        $response_data['fund_bill_list'] = stripslashes($response_data['fund_bill_list']);
+        if (isset($response_data['fund_bill_list']) && is_scalar($response_data['fund_bill_list'])) {
+            $response_data['fund_bill_list'] = stripslashes((string) $response_data['fund_bill_list']);
+        }
         $order_total = $this->maybe_convert_amount($order->get_total());
         
         // 处理退款通知：如果包含refund_fee，则验证原始订单金额
-        $refund_fee = isset($_POST['refund_fee']) ? sanitize_text_field($_POST['refund_fee']) : '';
+        $refund_fee = isset($response_data['refund_fee']) && is_scalar($response_data['refund_fee']) ? sanitize_text_field((string) $response_data['refund_fee']) : '';
         if (!empty($refund_fee) && floatval($refund_fee) > 0) {
             // 这是退款通知，验证原始订单金额
             $total_amount_check = ($order_total === $response_total);
@@ -1087,14 +1110,11 @@ class WC_Alipay extends WC_Payment_Gateway
         
         $response_app_id_check = ($response_app_id === $config['app_id']);
 
-        $order->add_meta_data('alipay_initalResponse', json_encode($_POST), true);
-
-        Woo_Alipay::require_lib('check_notification');
-
-        $aop = new AlipayTradeService($config);
-        $result_check_signature = $aop->check($response_data);
-
-        self::log(__METHOD__ . ' Alipay response raw data: ' . wc_print_r($response_data, true));
+        self::log(__METHOD__ . ' verified signed callback.', 'info', false, array(
+            'order_id'     => $order_id,
+            'out_trade_no' => $out_trade_no,
+            'trade_status' => $trade_status,
+        ));
 
         if ($order_check && $result_check_signature && $response_app_id_check && $total_amount_check) {
 
@@ -1148,6 +1168,7 @@ class WC_Alipay extends WC_Payment_Gateway
                 $order->add_order_note(__('Alipay notified it is waiting for payment.', 'woo-alipay'));
             }
         } else {
+            $needs_reply = true;
             $error = __('Invalid Alipay response: ', 'woo-alipay');
 
             if ($order_check) {
@@ -1160,8 +1181,7 @@ class WC_Alipay extends WC_Payment_Gateway
                     $error .= 'invalid_response_total_amount';
                 }
 
-                $order->update_status('failed', $error);
-                self::log(__METHOD__ . ' Found order #' . $order_id . ' and changed status to "failed".', 'error');
+                self::log(__METHOD__ . ' Rejected callback without changing order #' . $order_id . ': ' . $error, 'warning', true);
             } else {
                 self::log(__METHOD__ . ' Alipay error - Order not found after payment.', 'error', true);
 
