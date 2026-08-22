@@ -24,7 +24,7 @@ if ( ! extension_loaded( 'openssl' ) || ! class_exists( 'DOMDocument' ) ) {
 	exit( 1 );
 }
 
-$command = 'openssl genrsa -traditional 2048 2>/dev/null';
+$command = '(openssl genrsa -traditional 2048 2>/dev/null || openssl genrsa 2048 2>/dev/null)';
 $lines = array();
 $status = 1;
 exec( $command, $lines, $status );
