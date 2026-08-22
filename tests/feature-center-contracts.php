@@ -17,6 +17,9 @@ $css = file_get_contents( $root . '/css/admin/features.css' );
 $shared_css = file_get_contents( $root . '/css/admin/design-system.css' );
 $js = file_get_contents( $root . '/js/admin/features.js' );
 $placeholder_logo = file_get_contents( $root . '/assets/images/wei-alipay-placeholder.svg' );
+$render_start = strpos( $features, 'public static function render()' );
+$render_end = strpos( $features, 'private static function render_tabs', $render_start );
+$render_shell = substr( $features, $render_start, $render_end - $render_start );
 
 $gates = array(
 	'profitsharing', 'fund_auth', 'reconcile', 'barcode', 'f2f', 'huabei',
@@ -63,7 +66,7 @@ $expect( 2 === substr_count( $features, "'ui_group' => 'payment'" ), 'subscripti
 $expect( false !== strpos( $features, 'private static function feature_ui_group' ), 'merchant-facing grouping is explicit and separate from stable runtime grouping' );
 $expect( false !== strpos( $features, "if ( \$group !== self::feature_ui_group( \$feature ) )" ), 'payment and operations forms save their merchant-facing groups independently' );
 $expect( false !== strpos( $features, 'private static function render_enabled_payment_summary' ), 'enabled payment services use one compact summary block instead of dynamic tabs' );
-$expect( false !== strpos( $features, 'activation and configuration remain in the payment-method list below' ), 'the payment summary preserves the original list as the configuration source' );
+$expect( false !== strpos( $features, 'Quick readiness check. Turn methods on or off in the list below.' ), 'the payment summary preserves the original list as the configuration source' );
 $expect( false !== strpos( $features, '<details class="wei-alipay-disclosure">' ), 'account technical details use native progressive disclosure' );
 $expect( false !== strpos( $features, 'Data shared when connected' ), 'the account view discloses required connection data on demand' );
 $expect( false !== strpos( $features, 'Never sent:' ), 'the account view states the payment and credential data exclusion' );
@@ -80,12 +83,15 @@ $expect( false !== $placeholder_logo && false !== strpos( $placeholder_logo, '<s
 $expect( strpos( $features, 'class="wei-alipay-header-logo"' ) < strpos( $features, '<h1>' ) && strpos( $features, 'render_header_account_avatar( $account )' ) > strpos( $features, '<h1>' ), 'the plugin logo precedes the title and the connected account avatar follows its status' );
 $expect( false !== strpos( $features, 'class="wei-alipay-header-avatar"' ) && false !== strpos( $features, 'width="28" height="28"' ), 'the header keeps a smaller bounded account avatar distinct from the plugin logo' );
 $expect( false !== strpos( $features, 'wei-alipay-header-avatar is-fallback dashicons dashicons-admin-users' ), 'a connected account without an avatar URL has an accessible native fallback' );
+$expect( false === strpos( $render_shell, 'Main gateway settings' ), 'the compact page header does not duplicate the gateway action from the payment status card' );
+$expect( false !== strpos( $css, '.wei-alipay-features__header > div > p' ) && false === strpos( $css, '.wei-alipay-features__header > .button' ), 'the page header keeps one bounded identity column without a detached action' );
+$expect( false !== strpos( $css, "background: transparent;\n\tborder: 0;" ), 'the identity header has no white banner surface or divider' );
 $expect( false === strpos( $features, 'wei-alipay-overview-snapshot' ) && false === strpos( $css, '.wei-alipay-overview-snapshot' ), 'the redundant overview snapshot module is removed' );
 $expect( false !== strpos( $features, 'Payment status' ) && false !== strpos( $features, 'Ready to accept payments' ), 'the overview leads with one payment conclusion' );
 $expect( false !== strpos( $features, 'Account authorization' ), 'the overview reports account authorization state' );
 $expect( false !== strpos( $features, 'array_slice( $attention, 0, 3 )' ), 'the overview limits visible issues to three priorities' );
 $expect( false !== strpos( $features, '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"' ), 'diagnostic evidence uses native progressive disclosure' );
-$expect( false !== strpos( $features, 'class="wei-alipay-overview-details"' ) && false !== strpos( $features, 'Detailed local status' ), 'overview disclosures share one labelled module container' );
+$expect( false !== strpos( $features, 'class="wei-alipay-overview-details"' ) && false !== strpos( $features, 'Setup details' ), 'overview disclosures share one labelled module container' );
 $expect( false !== strpos( $features, '<summary><span>' ) && false !== strpos( $features, 'self::status_chip( $payment_ready' ), 'each collapsed module exposes its conclusion before expansion' );
 $expect( false !== strpos( $css, '.wei-alipay-overview-details .wei-alipay-overview-disclosure:last-child' ), 'folded modules use one continuous border instead of disconnected cards' );
 $expect( false !== strpos( $css, '.wei-alipay-overview-details .wei-alipay-overview-disclosure > div' ), 'expanded module content has one consistent inset surface' );
@@ -100,7 +106,7 @@ $expect( false !== strpos( $features, 'No payment sample recorded' ) && false !=
 $expect( false !== strpos( $features, '$payment_ready && $reliability_issue ? \' open\' : \'\'' ), 'only the highest-priority failing diagnostic group opens automatically' );
 $expect( false !== strpos( $features, "wp_next_scheduled( 'woo_alipay_check_pending_orders' )" ), 'overview health reads the existing pending-order schedule' );
 $expect( false !== strpos( $features, "wp_next_scheduled( 'woo_alipay_check_timeout_orders' )" ), 'overview health reads the existing timeout schedule' );
-$expect( false !== strpos( $features, 'do not replace an Alipay sandbox acceptance test' ), 'a clean local overview does not imply provider acceptance' );
+$expect( false !== strpos( $features, 'does not replace an Alipay sandbox acceptance test' ), 'a clean local overview does not imply provider acceptance' );
 $expect( false !== strpos( $features, '$effective_enabled = $is_enabled && $available' ), 'missing dependencies produce an unavailable effective state' );
 $expect( false !== strpos( $features, 'checked( $effective_enabled, true, false )' ), 'an unavailable feature never renders a misleading checked switch' );
 $expect( false !== strpos( $features, 'aria-describedby=' ), 'disabled feature switches reference their dependency explanation' );

@@ -22,12 +22,20 @@ function design_source( $root, $relative ) {
 }
 
 $contract = design_source( $root, 'DESIGN.md' );
+$engineering = design_source( $root, 'docs/ADMIN-UI-ENGINEERING.md' );
 $css      = design_source( $root, 'css/admin/design-system.css' );
 $script   = design_source( $root, 'js/admin/design-system.js' );
 $loader   = design_source( $root, 'inc/class-wei-alipay-features.php' );
 $ui       = design_source( $root, 'inc/class-wei-alipay-admin-ui.php' );
+$secret   = design_source( $root, 'inc/class-wei-alipay-secret-store.php' );
 
 design_expect( false !== strpos( $contract, 'WordPress native first' ), 'DESIGN.md makes native WordPress components the default' );
+design_expect( false !== strpos( $engineering, '页面级或网关级问题禁止注册全局 `admin_notices`' ), 'UI engineering handbook forbids global hooks for local notices' );
+design_expect( false !== strpos( $engineering, '.wei-alipay-notice-region' ) && false !== strpos( $engineering, '.wei-alipay-settings-notices' ), 'UI engineering handbook assigns page and gateway notice regions' );
+foreach ( array( '1280', '960', '782', '600', '400' ) as $viewport ) {
+	design_expect( false !== strpos( $engineering, $viewport ), 'UI engineering handbook requires the ' . $viewport . 'px viewport' );
+}
+design_expect( false !== strpos( $engineering, '页眉不放与卡片、标签或表单重复的导航动作' ), 'UI engineering handbook keeps duplicate actions out of the identity header' );
 foreach ( array( 'nav-tab-wrapper', 'notice', 'card', 'form-table', 'wp-list-table', 'tablenav', 'button-link-delete' ) as $native_class ) {
 	design_expect( false !== strpos( $contract, $native_class ), 'DESIGN.md documents native ' . $native_class );
 }
@@ -55,6 +63,10 @@ foreach ( $pages as $relative ) {
 
 $profit = design_source( $root, 'inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php' );
 design_expect( false !== strpos( $ui, 'nav-tab-wrapper wei-alipay-tabs' ) && false !== strpos( $ui, 'nav-tab-active' ), 'shared UI uses native URL-addressable tabs with the WooCommerce settings composition' );
+design_expect( false !== strpos( $ui, 'function wp_header_end' ) && false !== strpos( $ui, 'self::wp_header_end();' ), 'shared UI emits the native WordPress page-header boundary' );
+design_expect( false !== strpos( $ui, 'function notice_region' ) && false !== strpos( $ui, 'wei-alipay-notice-region' ), 'shared UI provides one page-scoped native notice region' );
+design_expect( false !== strpos( $loader, 'Wei_Alipay_Admin_UI::notice_region' ), 'feature feedback uses the shared page-scoped notice region' );
+design_expect( false !== strpos( $contract, 'System notices' ) && false !== strpos( $contract, 'Plugin-page feedback' ) && false !== strpos( $contract, 'Gateway/settings validation' ), 'DESIGN.md defines the three-level notification hierarchy' );
 design_expect( false !== strpos( $ui, "__( 'Profit sharing sections'" ), 'profit sharing tab navigation has an accessible label' );
 foreach ( array( 'settings', 'query', 'receivers', 'rules', 'jobs', 'compensation' ) as $profit_tab ) {
 	design_expect( false !== strpos( $ui, "'" . $profit_tab . "'" ), 'profit sharing navigation includes ' . $profit_tab );
@@ -81,6 +93,7 @@ design_expect( false !== strpos( $subscriptions, "array( 'sign_only', 'sign_and_
 design_expect( false !== strpos( $subscriptions, 'max( $retry_days ) > 365' ), 'subscription retry schedule is bounded' );
 design_expect( false === strpos( $subscriptions_bootstrap, 'Wei Alipay subscriptions require the WooCommerce Subscriptions extension.' ), 'missing subscriptions dependency does not create a duplicate global admin notice' );
 design_expect( false !== strpos( $subscriptions_bootstrap, 'feature centre renders the dependency' ), 'missing subscriptions dependency is delegated to the inline feature state' );
+design_expect( false === strpos( $subscriptions_bootstrap, "add_action( 'admin_notices'" ), 'subscriptions bootstrap does not emit unrelated global notices' );
 
 $reconcile = design_source( $root, 'inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php' );
 design_expect( false !== strpos( $reconcile, "'woo_alipay_reconcile_run_nonce'" ), 'manual reconciliation uses a unique nonce field name' );
@@ -89,6 +102,9 @@ design_expect( false !== strpos( $reconcile, "array( 'schedule', 'manual' )" ), 
 $gateway = design_source( $root, 'inc/class-wc-alipay.php' );
 $gateway_js = design_source( $root, 'js/admin/main.js' );
 $gateway_css = design_source( $root, 'css/admin/main.css' );
+$cross_border = design_source( $root, 'inc/modules/cross-border/includes/class-wc-acbop.php' );
+$mini_program = design_source( $root, 'inc/modules/mini-program/class-wc-alipay-wap.php' );
+$fund_auth = design_source( $root, 'inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php' );
 design_expect( 1 === substr_count( $gateway, 'id="wei-alipay-test-connection"' ), 'gateway connection test has one stable control ID' );
 foreach ( array( 'wei-alipay-notify-url', 'wei-alipay-sign-start', 'wei-alipay-sign-notify', 'wei-alipay-sign-return' ) as $endpoint_id ) {
 	design_expect( 1 === substr_count( $gateway, 'id="' . $endpoint_id . '"' ), 'gateway endpoint ID is unique: ' . $endpoint_id );
@@ -98,6 +114,14 @@ design_expect( false !== strpos( $gateway_js, '.text( message )' ) && false === 
 design_expect( false !== strpos( $gateway_js, "'[data-wei-copy]'" ) && false !== strpos( $gateway_js, 'navigator.clipboard' ), 'gateway endpoint copy uses one delegated clipboard interaction' );
 design_expect( false === strpos( $gateway_css, 'form-table tr[data-field-type="title"]' ), 'gateway CSS does not restyle native WooCommerce section rows' );
 design_expect( false !== strpos( $gateway, 'wei-alipay-settings-tabs' ) && false !== strpos( $gateway, 'woocommerce_alipay_advanced_settings_title' ), 'gateway settings use WooCommerce native section anchors' );
+design_expect( false !== strpos( $gateway, 'wei-alipay-settings-notices' ) && false !== strpos( $gateway, 'Wei_Alipay_Secret_Store::render_health_notice' ), 'main gateway places its health and validation feedback before settings content' );
+design_expect( false === strpos( $gateway, "add_action('admin_notices'" ), 'main gateway does not register settings validation as a global notice' );
+design_expect( false === strpos( $secret, "add_action( 'admin_notices'" ) && false !== strpos( $secret, 'notice notice-warning inline wei-alipay-settings-notice' ), 'secret-store health feedback is inline and not global' );
+foreach ( array( $cross_border, $mini_program, $fund_auth ) as $module_gateway ) {
+	design_expect( false === strpos( $module_gateway, "add_action( 'admin_notices'" ), 'optional gateway does not register global notices' );
+	design_expect( false !== strpos( $module_gateway, 'wei-alipay-settings-notices' ) && false !== strpos( $module_gateway, '$this->requirement_checks();' ), 'optional gateway renders requirements beside its own settings' );
+}
+design_expect( false !== strpos( $gateway_css, '.wei-alipay-settings-notices > .notice' ), 'gateway notice layout changes spacing without replacing native notice visuals' );
 $settings_start = strpos( $gateway, 'protected function setup_form_fields' );
 $settings_end   = strpos( $gateway, 'public function is_account_connected' );
 $settings_ui    = substr( $gateway, $settings_start, $settings_end - $settings_start );

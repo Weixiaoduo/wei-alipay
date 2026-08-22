@@ -1,8 +1,8 @@
 .wei-alipay-features {
 	box-sizing: border-box;
-	max-width: 1032px;
-	margin: 24px auto 0;
-	padding: 0 56px 48px 36px;
+	max-width: var(--wei-content-standard);
+	margin: var(--wei-space-5) auto 0;
+	padding: 0 var(--wei-shell-padding-inline-end) var(--wei-space-8) var(--wei-shell-padding-inline-start);
 	color: var(--wei-color-text);
 }
 
@@ -13,17 +13,17 @@
 }
 
 .wei-alipay-features__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--wei-space-6);
-	margin-bottom: var(--wei-space-6);
+	margin: 0 calc(-1 * var(--wei-shell-padding-inline-end)) 0 calc(-1 * var(--wei-shell-padding-inline-start));
+	padding: var(--wei-space-4) var(--wei-shell-padding-inline-end) var(--wei-space-4) var(--wei-shell-padding-inline-start);
+	background: transparent;
+	border: 0;
 }
 
 .wei-alipay-features__header h1 {
 	margin: 0 0 var(--wei-space-2);
-	font-size: 24px;
-	line-height: 32px;
+	font-size: var(--wei-font-size-page);
+	font-weight: var(--wei-font-weight-regular);
+	line-height: var(--wei-line-height-page);
 }
 
 .wei-alipay-features__heading {
@@ -42,7 +42,7 @@
 	flex: 0 0 32px;
 	width: 32px;
 	height: 32px;
-	border-radius: 7px;
+	border-radius: var(--wei-radius-control);
 }
 
 .wei-alipay-header-avatar {
@@ -58,12 +58,17 @@
 	display: grid;
 	place-items: center;
 	color: var(--wei-color-accent);
-	font-size: 20px;
+	font-size: var(--wei-font-size-page);
 	line-height: 1;
 }
 
+.wei-alipay-features__header > div > p {
+	max-width: var(--wei-content-reading);
+	margin-top: var(--wei-space-2);
+}
+
 .wei-alipay-features > .wei-alipay-tabs {
-	margin: 0 0 var(--wei-space-6);
+	margin: var(--wei-space-5) 0 var(--wei-space-6);
 }
 
 .wei-alipay-features__header p,
@@ -71,23 +76,27 @@
 .wei-alipay-features__row-copy p {
 	margin: 0;
 	color: var(--wei-color-text-secondary);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-features__notice {
 	display: flex;
 	gap: var(--wei-space-3);
-	margin: 0 0 32px;
-	padding: 11px 17px;
+	margin: 0 0 var(--wei-space-6);
+	padding: var(--wei-space-3) var(--wei-space-4);
 	border-left: 4px solid var(--wei-color-accent);
-	border-radius: 2px;
-	background: #f0f6fc;
-	color: #0a4b78;
+	border-radius: var(--wei-radius-small);
+	background: var(--wei-color-info-surface);
+	color: var(--wei-color-info-text);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-features__section {
 	display: flex;
 	gap: var(--wei-space-6);
-	margin-bottom: 40px;
+	margin-bottom: var(--wei-space-7);
 }
 
 .wei-alipay-features__section-copy {
@@ -97,31 +106,28 @@
 
 .wei-alipay-features__section-copy h2 {
 	margin: 0 0 var(--wei-space-2);
-	font-size: 16px;
-	line-height: 24px;
-}
-
-.wei-alipay-features__section-copy p {
-	font-size: 13px;
-	line-height: 20px;
+	color: var(--wei-color-text);
+	font-size: var(--wei-font-size-section);
+	font-weight: var(--wei-font-weight-semibold);
+	line-height: var(--wei-line-height-section);
 }
 
 .wei-alipay-features__card {
 	flex: 1;
 	min-width: 0;
 	border: 1px solid var(--wei-color-border);
-	border-radius: 2px;
+	border-radius: var(--wei-radius-card);
 	background: var(--wei-color-surface);
-	box-shadow: none;
+	box-shadow: var(--wei-shadow-card);
 }
 
 .wei-alipay-features__row {
 	display: flex;
 	align-items: flex-start;
 	gap: var(--wei-space-4);
-	min-height: 88px;
+	min-height: var(--wei-row-height);
 	padding: var(--wei-space-6);
-	border-bottom: 1px solid #e8eaeb;
+	border-bottom: 1px solid var(--wei-color-border-subtle);
 }
 
 .wei-alipay-features__row:last-child {
@@ -134,7 +140,7 @@
 	width: 40px;
 	height: 40px;
 	place-items: center;
-	border-radius: 5px;
+	border-radius: var(--wei-radius-control);
 	background: var(--wei-color-surface-subtle);
 	color: var(--wei-color-accent);
 	font-size: 22px;
@@ -152,14 +158,9 @@
 	flex-wrap: wrap;
 	gap: var(--wei-space-2);
 	margin-bottom: var(--wei-space-1);
-	font-size: 14px;
-	font-weight: 600;
-	line-height: 20px;
-}
-
-.wei-alipay-features__row-copy p {
-	font-size: 13px;
-	line-height: 20px;
+	font-size: var(--wei-font-size-body-emphasis);
+	font-weight: var(--wei-font-weight-semibold);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-features__row-copy .wei-alipay-features__dependency {
@@ -167,7 +168,9 @@
 	align-items: flex-start;
 	gap: var(--wei-space-1);
 	margin-top: var(--wei-space-2);
-	color: #614200;
+	color: var(--wei-color-warning-text);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-features__dependency .dashicons {
@@ -175,7 +178,7 @@
 	width: 16px;
 	height: 16px;
 	margin-top: 2px;
-	font-size: 16px;
+	font-size: var(--wei-font-size-label);
 	line-height: 1;
 }
 
@@ -185,8 +188,8 @@
 
 .wei-alipay-feature-disclosure {
 	margin-top: var(--wei-space-2);
-	font-size: 13px;
-	line-height: 20px;
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-feature-disclosure summary {
@@ -209,26 +212,26 @@
 .wei-alipay-chip {
 	display: inline-flex;
 	align-items: center;
-	padding: 4px 8px;
-	border-radius: 3px;
-	font-size: 13px;
-	font-weight: 400;
-	line-height: 16px;
+	padding: var(--wei-space-1) var(--wei-space-2);
+	border-radius: var(--wei-radius-small);
+	font-size: var(--wei-font-size-body);
+	font-weight: var(--wei-font-weight-regular);
+	line-height: var(--wei-line-height-meta);
 }
 
 .wei-alipay-chip.is-success {
-	background: #edfaef;
-	color: #005c12;
+	background: var(--wei-color-success-surface);
+	color: var(--wei-color-success-text);
 }
 
 .wei-alipay-chip.is-warning {
-	background: #fcf9e8;
-	color: #614200;
+	background: var(--wei-color-warning-surface);
+	color: var(--wei-color-warning-text);
 }
 
 .wei-alipay-chip.is-light {
 	background: var(--wei-color-surface-subtle);
-	color: #2c3338;
+	color: var(--wei-color-text);
 }
 
 .wei-alipay-switch {
@@ -260,11 +263,11 @@
 	display: block;
 	width: 40px;
 	height: 22px;
-	border: 1px solid #757575;
-	border-radius: 999px;
-	background: #757575;
+	border: 1px solid var(--wei-color-text-secondary);
+	border-radius: var(--wei-radius-pill);
+	background: var(--wei-color-text-secondary);
 	cursor: pointer;
-	transition: background-color 150ms ease, border-color 150ms ease;
+	transition: background-color var(--wei-motion-standard) ease, border-color var(--wei-motion-standard) ease;
 }
 
 .wei-alipay-switch > span:last-child::after {
@@ -274,10 +277,10 @@
 	width: 16px;
 	height: 16px;
 	border-radius: 50%;
-	background: #fff;
+	background: var(--wei-color-surface);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, .2);
 	content: "";
-	transition: transform 150ms ease;
+	transition: transform var(--wei-motion-standard) ease;
 }
 
 .wei-alipay-switch input:checked + span {
@@ -295,8 +298,8 @@
 }
 
 .wei-alipay-switch input:disabled + span {
-	border-color: #dcdcde;
-	background: #dcdcde;
+	border-color: var(--wei-color-border-strong);
+	background: var(--wei-color-border-strong);
 	opacity: 1;
 	cursor: not-allowed;
 }
@@ -322,7 +325,8 @@
 
 .wei-alipay-features__dirty {
 	color: var(--wei-color-text-secondary);
-	font-size: 13px;
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-summary-grid {
@@ -339,8 +343,9 @@
 .wei-alipay-account__entitlements,
 .wei-alipay-disclosure {
 	border: 1px solid var(--wei-color-border);
-	border-radius: 2px;
+	border-radius: var(--wei-radius-card);
 	background: var(--wei-color-surface);
+	box-shadow: var(--wei-shadow-card);
 }
 
 .wei-alipay-summary-card {
@@ -357,8 +362,10 @@
 .wei-alipay-overview-panel h2,
 .wei-alipay-account__entitlements h2 {
 	margin: 0 0 var(--wei-space-3);
-	font-size: 14px;
-	line-height: 20px;
+	color: var(--wei-color-text);
+	font-size: var(--wei-font-size-body-emphasis);
+	font-weight: var(--wei-font-weight-semibold);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-summary-card p,
@@ -366,29 +373,39 @@
 .wei-alipay-account p,
 .wei-alipay-disclosure p {
 	color: var(--wei-color-text-secondary);
-	font-size: 13px;
-	line-height: 20px;
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-summary-card p {
 	margin: var(--wei-space-3) 0 0;
 }
 
+.wei-alipay-summary-card a {
+	font-size: var(--wei-font-size-body);
+	font-weight: var(--wei-font-weight-medium);
+	line-height: var(--wei-line-height-body);
+}
+
 .wei-alipay-next-step {
 	margin-bottom: var(--wei-space-4);
 	padding: var(--wei-space-5);
-	scroll-margin-top: 48px;
+	scroll-margin-top: var(--wei-space-8);
 }
 
 .wei-alipay-overview-details {
-	scroll-margin-top: 48px;
+	scroll-margin-top: var(--wei-space-8);
 	border: 1px solid var(--wei-color-border);
-	border-radius: 2px;
+	border-radius: var(--wei-radius-card);
 	background: var(--wei-color-surface);
+	box-shadow: var(--wei-shadow-card);
 }
 
 .wei-alipay-overview-caveat {
 	margin: var(--wei-space-4) 0 0;
+	color: var(--wei-color-text-secondary);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-overview-grid {
@@ -409,8 +426,8 @@
 .wei-alipay-overview-panel > p {
 	margin: calc(-1 * var(--wei-space-2)) 0 var(--wei-space-4);
 	color: var(--wei-color-text-secondary);
-	font-size: 13px;
-	line-height: 20px;
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-overview-list {
@@ -422,9 +439,15 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--wei-space-3);
-	min-height: 45px;
+	min-height: var(--wei-row-height-compact);
 	padding: var(--wei-space-2) 0;
 	border-top: 1px dashed var(--wei-color-border);
+}
+
+.wei-alipay-overview-list > div > span:first-child {
+	color: var(--wei-color-text);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-overview-list.is-columns {
@@ -451,6 +474,8 @@
 	margin: 0;
 	padding: var(--wei-space-3) 0;
 	border-top: 1px solid var(--wei-color-border);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-attention-list li:first-child {
@@ -464,15 +489,11 @@
 
 .wei-alipay-attention-list li.is-clear {
 	justify-content: flex-start;
-	color: var(--wei-color-success, #008a20);
+	color: var(--wpds-color-foreground-content-success-weak, #008030);
 }
 
 .wei-alipay-attention-list a {
 	flex: 0 0 auto;
-}
-
-.wei-alipay-account {
-	max-width: 760px;
 }
 
 .wei-alipay-account__primary {
@@ -495,7 +516,7 @@
 	width: 40px;
 	height: 40px;
 	place-items: center;
-	border-radius: 5px;
+	border-radius: var(--wei-radius-control);
 	background: var(--wei-color-surface-subtle);
 	color: var(--wei-color-accent);
 	font-size: 22px;
@@ -526,8 +547,8 @@
 
 .wei-alipay-account__actions .description {
 	color: var(--wei-color-text-secondary);
-	font-size: 12px;
-	line-height: 18px;
+	font-size: var(--wei-font-size-label);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-account__entitlements {
@@ -542,6 +563,8 @@
 	gap: var(--wei-space-4);
 	padding: var(--wei-space-3) 0;
 	border-top: 1px solid var(--wei-color-border);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-disclosure {
@@ -550,7 +573,9 @@
 
 .wei-alipay-disclosure summary {
 	padding: var(--wei-space-4) var(--wei-space-6);
-	font-weight: 600;
+	font-size: var(--wei-font-size-body-emphasis);
+	font-weight: var(--wei-font-weight-semibold);
+	line-height: var(--wei-line-height-body);
 	cursor: pointer;
 }
 
@@ -569,8 +594,9 @@
 
 .wei-alipay-overview-attention h2 {
 	margin: 0 0 var(--wei-space-2);
-	font-size: 14px;
-	line-height: 20px;
+	font-size: var(--wei-font-size-body-emphasis);
+	font-weight: var(--wei-font-weight-semibold);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-overview-details .wei-alipay-overview-disclosure {
@@ -579,6 +605,7 @@
 	border-bottom: 1px solid var(--wei-color-border);
 	border-radius: 0;
 	background: transparent;
+	box-shadow: none;
 }
 
 .wei-alipay-overview-details .wei-alipay-overview-disclosure:last-child {
@@ -590,10 +617,12 @@
 	grid-template-columns: 12px minmax(0, 1fr) auto;
 	align-items: center;
 	column-gap: var(--wei-space-2);
-	min-height: 20px;
+	min-height: var(--wei-line-height-body);
 	padding: var(--wei-space-4) var(--wei-space-5);
-	font-size: 14px;
-	line-height: 20px;
+	color: var(--wei-color-text);
+	font-size: var(--wei-font-size-body-emphasis);
+	font-weight: var(--wei-font-weight-medium);
+	line-height: var(--wei-line-height-body);
 	list-style: none;
 	cursor: pointer;
 	transition: background-color var(--wei-motion-disclosure);
@@ -630,7 +659,7 @@
 .wei-alipay-overview-details .wei-alipay-overview-disclosure > div {
 	padding: var(--wei-space-4) var(--wei-space-5) var(--wei-space-5);
 	border-top: 1px solid var(--wei-color-border);
-	background: #fbfbfc;
+	background: var(--wei-color-surface-muted);
 }
 
 .wei-alipay-overview-details .wei-alipay-overview-disclosure .wei-alipay-overview-list {
@@ -646,6 +675,8 @@
 	grid-template-columns: minmax(130px, 1fr) minmax(0, 2fr);
 	margin: 0;
 	gap: var(--wei-space-3) var(--wei-space-6);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-account__facts dt {
@@ -655,15 +686,21 @@
 .wei-alipay-account__facts dd {
 	margin: 0;
 	word-break: break-word;
+	color: var(--wei-color-text);
 }
 
 .wei-alipay-disclosure.is-danger {
-	border-left: 4px solid var(--wei-color-error, #d63638);
+	border-left: 4px solid var(--wei-color-error-strong);
 }
 
 @media (max-width: 800px) {
 	.wei-alipay-features {
-		padding: 0 24px 40px 4px;
+		padding: 0 var(--wei-space-5) var(--wei-space-7) var(--wei-space-1);
+	}
+
+	.wei-alipay-features__header {
+		margin-inline: calc(-1 * var(--wei-space-5)) calc(-1 * var(--wei-space-1));
+		padding-inline: var(--wei-space-5) var(--wei-space-1);
 	}
 
 	.wei-alipay-features__section {
@@ -692,7 +729,6 @@
 }
 
 @media (max-width: 600px) {
-	.wei-alipay-features__header,
 	.wei-alipay-features__notice,
 	.wei-alipay-account__primary {
 		align-items: flex-start;

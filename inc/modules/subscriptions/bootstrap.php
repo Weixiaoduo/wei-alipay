@@ -23,11 +23,8 @@ add_action( 'init', function() {
     }
 
     if ( ! class_exists( 'WC_Alipay' ) ) {
-        if ( is_admin() ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Install and activate the main Wei Alipay plugin first.', 'wei-alipay' ) . '</p></div>';
-            } );
-        }
+        // The bundled module never owns a global notice. Its parent plugin or
+        // feature screen is responsible for presenting dependency state.
         return;
     }
 

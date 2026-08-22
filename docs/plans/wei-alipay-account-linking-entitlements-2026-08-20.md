@@ -30,7 +30,7 @@ Wei Alipay 采用“插件免费、账户绑定免费、高级服务收费”的
 
 使用 WordPress/WooCommerce 原生结构：
 
-- 页头：`Wei Alipay`、连接状态 chip、主网关设置按钮。
+- 页头只承载 `Wei Alipay` 本地 Logo、连接状态 chip、连接后头像和一句说明；不放远距离或重复的导航动作。主网关入口保留在收款状态卡片中。
 - 未连接页签：`概览`、`支付方式`、`运营工具`、`账户与授权`。
 - 已连接后在`运营工具`与`账户与授权`之间增加`增值服务`。连接状态只决定该目录是否相关，不代表已经获得任何 scope、支付宝准入或运行权限。
 - `增值服务`汇总商业和专项能力的授权、准入与服务申请状态：自动续费、多商户分账、资金授权、跨境支付。不得命名为模糊的“高级功能”，也不把原配置从支付方式或运营工具迁走。
@@ -147,6 +147,18 @@ UI 灰掉不是安全边界。保存处理、模块 bootstrap、REST/AJAX、cron
 ```
 
 插件只保存加密 installation token 和可公开验证的签名 entitlement；平台私钥不进入插件。
+
+### 4.5 SSO、Wei Account 与 Wei Payments 的责任边界
+
+这不是三选一。目标结构是：
+
+- **SSO 是用户在 Weixiaoduo.com 自有域名内的登录体验**。`account.weixiaoduo.com` 负责登录、注册、Passkey、会话和确认页；共享 `.weixiaoduo.com` cookie 只能覆盖自有子域，不能作为外部 WordPress 商户站的插件凭据。
+- **Wei Account 是账户连接和授权入口**。Wei Alipay 作为安装在任意域名上的公开 OAuth 客户端，使用 authorization code + PKCE S256、一次性 `state`、固定 HTTPS 回调和明确 consent，把当前站点连接到账户。插件获得的是站点级 installation credential，不是用户密码、WordPress 登录 cookie 或账户级 Master API Key。
+- **Wei Payments 是订单、统一收银台、续费和付款状态层**，不签发登录身份，也不被插件当作认证服务器。商业服务购买完成后，由 Wei Payments 通过受控事件/适配器更新 entitlement 真源；Wei Account 展示结果，Wei Alipay 只同步自己被授权的 scopes。
+
+现有 `wei-account` 代码提供的是自有站点 cookie + `X-WP-Nonce` 会话 API，还没有 OAuth/OIDC authorization server、token endpoint、discovery/JWKS 或 installation-token 端点。因此 Phase B 实施前只能保留 presentation-only account state，不能把现有 SSO cookie、分享 token、WooCommerce order key 或 Wei Payments 回跳参数冒充插件授权。
+
+首版不必宣称 OIDC：插件并不需要消费用户身份 claims。先实现符合 OAuth 安全实践的站点授权协议；只有当平台提供规范的 issuer、discovery、JWKS、ID Token、`nonce` 校验和客户端注册模型后，才把认证层命名为 OIDC。
 
 ## 5. 使用数据与隐私边界
 

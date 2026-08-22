@@ -35,4 +35,4 @@ $expect( false !== strpos( $features, 'Wei_Alipay_Health::activity_summary()' ),
 $expect( false !== strpos( $features, "array_slice( \$attention, 0, 3 )" ), 'the needs-attention list is capped at three items' );
 $expect( false !== strpos( $features, "get_site_transient( 'update_plugins' )" ), 'update state comes from the local WordPress cache' );
 $expect( false !== strpos( $features, "'scope_summary' =>" ) && false !== strpos( $features, "'offline_grace_label' =>" ), 'account state supports scopes, expiry and offline grace' );
-$expect( false !== strpos( $features, 'no amounts or customer data are stored' ), 'the seven-day module states its local privacy boundary' );
+$expect( false !== stripos( $features, 'amounts and customer data are not stored' ), 'the seven-day module states its local privacy boundary' );

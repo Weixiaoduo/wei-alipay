@@ -30,7 +30,6 @@ final class Wei_Alipay_Secret_Store {
 			add_filter( 'pre_update_option_' . $option, array( __CLASS__, 'encrypt_option' ), 10, 3 );
 		}
 		add_action( 'woo_alipay_secret_error', array( __CLASS__, 'remember_error' ), 10, 3 );
-		add_action( 'admin_notices', array( __CLASS__, 'render_health_notice' ) );
 	}
 
 	public static function encrypt_value( $plaintext, $material ) {
@@ -309,14 +308,14 @@ final class Wei_Alipay_Secret_Store {
 		}
 		self::audit_stored_secrets();
 		if ( ! empty( self::$errors ) ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'Wei Alipay cannot decrypt one or more stored payment secrets. Payment is disabled until the configured encryption key is restored.', 'wei-alipay' ) . '</p></div>';
+			echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html__( 'Wei Alipay cannot decrypt one or more stored payment secrets. Payment is disabled until the configured encryption key is restored.', 'wei-alipay' ) . '</p></div>';
 			return;
 		}
 		$has_dedicated_key = ( defined( 'WEI_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WEI_ALIPAY_ENCRYPTION_KEY )
 			|| ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY );
 		$settings = get_option( 'woocommerce_alipay_settings', array() );
 		if ( ! $has_dedicated_key && is_array( $settings ) && 'yes' === ( $settings['enabled'] ?? 'no' ) ) {
-			echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site.', 'wei-alipay' ) . '</p></div>';
+			echo '<div class="notice notice-warning inline wei-alipay-settings-notice" role="alert"><p>' . esc_html__( 'Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site.', 'wei-alipay' ) . '</p></div>';
 		}
 	}
 

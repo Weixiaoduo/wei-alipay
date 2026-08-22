@@ -618,8 +618,6 @@ class WC_Alipay extends WC_Payment_Gateway
         $valid = true;
 
         if ($this->requires_exchange_rate() && !$this->exchange_rate) {
-            add_action('admin_notices', array($this, 'missing_exchange_rate_notice'), 10, 0);
-
             $valid = false;
         }
 
@@ -929,7 +927,7 @@ class WC_Alipay extends WC_Payment_Gateway
         $url = admin_url($page);
 
         $currency = $this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency;
-        echo '<div class="error"><p>' . wp_kses_post(sprintf($message, esc_url($url), esc_html($currency))) . '</p></div>';
+        echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . wp_kses_post(sprintf($message, esc_url($url), esc_html($currency))) . '</p></div>';
     }
 
     public function get_icon()
@@ -1053,18 +1051,6 @@ class WC_Alipay extends WC_Payment_Gateway
         echo '<h3>' . esc_html(__('Wei Alipay Payment Gateway', 'wei-alipay')) . '</h3>';
         echo '<p>' . esc_html(__('Alipay is a simple, secure and fast online payment method.', 'wei-alipay')) . '</p>';
         
-        echo '<div class="notice notice-info inline">';
-        echo '<p>';
-        echo wp_kses_post(
-            sprintf(
-                /* translators: %1$s: link to the official documentation */
-                __( 'Need help configuring the gateway? See the %1$s.', 'wei-alipay' ),
-                '<a href="https://weixiaoduo.com/document/wei-alipay" target="_blank" rel="noopener noreferrer">' . esc_html__( 'official documentation', 'wei-alipay' ) . '</a>'
-            )
-        );
-        echo '</p>';
-        echo '</div>';
-
 		echo '<nav class="nav-tab-wrapper wei-alipay-settings-tabs" aria-label="' . esc_attr__( 'Gateway settings sections', 'wei-alipay' ) . '">';
 		foreach ( array(
 			'wei-alipay-section-tools'                     => __( 'Endpoints', 'wei-alipay' ),
@@ -1078,6 +1064,22 @@ class WC_Alipay extends WC_Payment_Gateway
 			echo '<a class="nav-tab" href="#' . esc_attr( $section_id ) . '">' . esc_html( $section_label ) . '</a>';
 		}
 		echo '</nav>';
+
+		echo '<section class="wei-alipay-settings-notices" aria-label="' . esc_attr__( 'Gateway notifications', 'wei-alipay' ) . '">';
+		echo '<div class="notice notice-info inline wei-alipay-settings-notice" role="status"><p>';
+		echo wp_kses_post(
+			sprintf(
+				/* translators: %1$s: link to the official documentation */
+				__( 'Need help configuring the gateway? See the %1$s.', 'wei-alipay' ),
+				'<a href="https://weixiaoduo.com/document/wei-alipay" target="_blank" rel="noopener noreferrer">' . esc_html__( 'official documentation', 'wei-alipay' ) . '</a>'
+			)
+		);
+		echo '</p></div>';
+		Wei_Alipay_Secret_Store::render_health_notice();
+		if ( $this->requires_exchange_rate() && ! $this->exchange_rate ) {
+			$this->missing_exchange_rate_notice();
+		}
+		echo '</section>';
 
 
         // 实用端点与工具

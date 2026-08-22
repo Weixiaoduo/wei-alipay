@@ -1,65 +1,78 @@
 :root {
-	/* Reviewed aliases from WooPayments 11.0.0 and WooCommerce 11.0.1. */
-	--wei-color-text: #1e1e1e;
-	--wei-color-text-secondary: #757575;
-	--wei-color-text-wp: #646970;
-	--wei-color-surface: #fff;
-	--wei-color-surface-subtle: #f6f7f7;
-	--wei-color-surface-hover: #f0f0f0;
-	--wei-color-border: #e0e0e0;
-	--wei-color-border-strong: #c3c4c7;
-	--wei-color-accent: var(--wp-admin-theme-color, #2271b1);
-	--wei-color-accent-subtle: #f0f6fc;
-	--wei-color-success-text: #005c12;
-	--wei-color-success-surface: #edfaef;
-	--wei-color-warning-text: #614200;
-	--wei-color-warning-surface: #fcf9e8;
-	--wei-color-error-text: #8a2424;
-	--wei-color-error-surface: #fcf0f1;
-	--wei-color-info-text: #0a4b78;
-	--wei-color-info-surface: #f0f6fc;
-	--wei-font-size-meta: 11px;
-	--wei-font-size-label: 12px;
-	--wei-font-size-body: 13px;
-	--wei-font-size-body-emphasis: 14px;
-	--wei-font-size-section: 16px;
-	--wei-font-size-page: 20px;
-	--wei-font-size-display: 24px;
-	--wei-line-height-meta: 16px;
-	--wei-line-height-body: 20px;
-	--wei-line-height-section: 24px;
-	--wei-line-height-page: 28px;
-	--wei-line-height-display: 32px;
-	--wei-font-weight-regular: 400;
-	--wei-font-weight-medium: 500;
+	/*
+	 * Semantic aliases mapped to WooCommerce 11 WPDS tokens.
+	 * Source: woocommerce/assets/client/admin/settings-embed/style.css (:root --wpds-* block)
+	 * and woocommerce/assets/client/admin/app/style.css layout variables.
+	 */
+	--wei-color-text: var(--wpds-color-foreground-content-neutral, #1e1e1e);
+	--wei-color-text-secondary: var(--wpds-color-foreground-content-neutral-weak, #707070);
+	--wei-color-text-wp: var(--wpds-color-foreground-content-neutral-weak, #707070);
+	--wei-color-text-active: var(--wpds-color-foreground-content-neutral, #070707);
+	--wei-color-surface: var(--wpds-color-background-surface-neutral-strong, #fff);
+	--wei-color-surface-subtle: var(--wpds-color-background-surface-neutral-weak, #f4f4f4);
+	--wei-color-surface-muted: var(--wpds-color-background-surface-neutral, #fcfcfc);
+	--wei-color-page-background: #f0f0f1;
+	--wei-color-surface-hover: var(--wpds-color-background-interactive-neutral-weak-active, #ededed);
+	--wei-color-border: var(--wpds-color-stroke-surface-neutral, #dbdbdb);
+	--wei-color-border-subtle: var(--wpds-color-stroke-surface-neutral-weak, #f0f0f0);
+	--wei-color-header-divider: var(--wpds-color-stroke-surface-neutral, #dbdbdb);
+	--wei-color-border-strong: var(--wpds-color-stroke-interactive-neutral-disabled, #dbdbdb);
+	--wei-color-accent: var(--wpds-color-foreground-interactive-brand, var(--wp-admin-theme-color, #3858e9));
+	--wei-color-accent-subtle: var(--wpds-color-background-surface-brand, #ecf0fa);
+	--wei-color-success-text: var(--wpds-color-foreground-content-success, #002900);
+	--wei-color-success-surface: var(--wpds-color-background-surface-success-weak, #ebffed);
+	--wei-color-warning-text: var(--wpds-color-foreground-content-warning, #2e1900);
+	--wei-color-warning-surface: var(--wpds-color-background-surface-warning-weak, #fff7e1);
+	--wei-color-error-text: var(--wpds-color-foreground-content-error, #470000);
+	--wei-color-error-surface: var(--wpds-color-background-surface-error-weak, #fff6f5);
+	--wei-color-error-strong: var(--wpds-color-foreground-interactive-error, #cc1818);
+	--wei-color-info-text: var(--wpds-color-foreground-content-info, #001b4f);
+	--wei-color-info-surface: var(--wpds-color-background-surface-info-weak, #f3f9ff);
+	--wei-font-size-meta: var(--wpds-typography-font-size-xs, 11px);
+	--wei-font-size-label: var(--wpds-typography-font-size-sm, 12px);
+	--wei-font-size-body: var(--wpds-typography-font-size-md, 13px);
+	--wei-font-size-body-emphasis: var(--wpds-typography-font-size-lg, 15px);
+	--wei-font-size-section: var(--wpds-typography-font-size-lg, 15px);
+	--wei-font-size-page: var(--wpds-typography-font-size-xl, 20px);
+	--wei-font-size-display: var(--wpds-typography-font-size-xl, 20px);
+	--wei-line-height-meta: var(--wpds-typography-line-height-xs, 16px);
+	--wei-line-height-body: var(--wpds-typography-line-height-sm, 20px);
+	--wei-line-height-section: var(--wpds-typography-line-height-md, 24px);
+	--wei-line-height-page: var(--wpds-typography-line-height-xl, 32px);
+	--wei-line-height-display: var(--wpds-typography-line-height-xl, 32px);
+	--wei-font-weight-regular: var(--wpds-typography-font-weight-regular, 400);
+	--wei-font-weight-medium: var(--wpds-typography-font-weight-medium, 500);
 	--wei-font-weight-semibold: 600;
-	--wei-space-1: 4px;
-	--wei-space-2: 8px;
-	--wei-space-3: 12px;
-	--wei-space-4: 16px;
-	--wei-space-5: 24px;
-	--wei-space-6: 32px;
-	--wei-space-7: 40px;
+	--wei-space-1: var(--wpds-dimension-gap-xs, 4px);
+	--wei-space-2: var(--wpds-dimension-gap-sm, 8px);
+	--wei-space-3: var(--wpds-dimension-gap-md, 12px);
+	--wei-space-4: var(--wpds-dimension-gap-lg, 16px);
+	--wei-space-5: var(--wpds-dimension-gap-xl, 24px);
+	--wei-space-6: var(--wpds-dimension-gap-2xl, 32px);
+	--wei-space-7: var(--wpds-dimension-gap-3xl, 40px);
 	--wei-space-8: 48px;
 	--wei-radius-small: 2px;
 	--wei-radius-control: 4px;
-	--wei-radius-card: 8px;
+	--wei-radius-card: 2px;
 	--wei-radius-pill: 9999px;
-	--wei-shadow-quiet: 0 2px 6px rgba(0, 0, 0, 0.05);
-	--wei-shadow-card: 0 2px 3px rgba(0, 0, 0, 0.05), 0 4px 5px rgba(0, 0, 0, 0.04), 0 16px 16px rgba(0, 0, 0, 0.02);
-	--wei-focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--wei-color-accent);
-	--wei-motion-fast: 100ms;
-	--wei-motion-standard: 150ms;
-	--wei-motion-disclosure: 200ms;
-	--wei-motion-long: 300ms;
+	--wei-shadow-quiet: none;
+	--wei-shadow-card: none;
+	--wei-focus-ring: 0 0 0 2px var(--wei-color-surface), 0 0 0 4px var(--wpds-color-stroke-focus, var(--wei-color-accent));
+	--wei-motion-fast: var(--wpds-motion-duration-sm, 100ms);
+	--wei-motion-standard: var(--wpds-motion-duration-sm, 150ms);
+	--wei-motion-disclosure: var(--wpds-motion-duration-md, 200ms);
+	--wei-motion-long: var(--wpds-motion-duration-lg, 300ms);
 	--wei-control-height: 36px;
 	--wei-row-height-compact: 48px;
 	--wei-row-height: 64px;
-	--wei-card-padding: 24px;
-	--wei-card-padding-mobile: 16px;
-	--wei-content-reading: 680px;
-	--wei-content-standard: 1120px;
-	--wei-content-wide: 1280px;
+	--wei-card-padding: var(--wpds-dimension-padding-2xl, 24px);
+	--wei-card-padding-mobile: var(--wpds-dimension-padding-lg, 16px);
+	--wei-shell-padding-inline: var(--wpds-dimension-gap-3xl, 40px);
+	--wei-shell-padding-inline-start: 36px;
+	--wei-shell-padding-inline-end: 56px;
+	--wei-content-reading: var(--wpds-dimension-surface-width-xl, 720px);
+	--wei-content-standard: 1032px;
+	--wei-content-wide: var(--wpds-dimension-surface-width-2xl, 960px);
 	--wei-breakpoint-wide: 1280px;
 	--wei-breakpoint-admin: 960px;
 	--wei-breakpoint-mobile: 782px;
@@ -67,31 +80,54 @@
 	--wei-breakpoint-compact: 400px;
 }
 
+body.toplevel_page_wei-alipay #wpcontent,
+body.toplevel_page_wei-alipay #wpbody-content {
+	background-color: var(--wei-color-page-background);
+}
+
 /* Do not restyle WordPress buttons, notices, tabs, forms or list tables here. */
 .wei-alipay-admin {
 	box-sizing: border-box;
 	max-width: var(--wei-content-wide);
+	color: var(--wei-color-text);
+	font-family: var(--wpds-typography-font-family-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-page-header {
 	max-width: var(--wei-content-standard);
 	margin: 0 0 var(--wei-space-5);
+	padding: var(--wei-space-5);
+	background: var(--wei-color-surface);
+	border-bottom: 1px solid var(--wei-color-header-divider);
+}
+
+.wei-alipay-admin > .wp-header-end {
+	display: none;
+}
+
+.wei-alipay-admin > .notice {
+	width: 100%;
+	margin: 0 0 var(--wei-space-5);
+	box-sizing: border-box;
 }
 
 .wei-alipay-page-header h1 {
 	margin: 0;
 	color: var(--wei-color-text);
-	font-size: var(--wei-font-size-display);
+	font-size: var(--wei-font-size-page);
 	font-weight: var(--wei-font-weight-regular);
-	line-height: var(--wei-line-height-display);
+	line-height: var(--wei-line-height-page);
 }
 
 .wei-alipay-admin__description {
-	max-width: 760px;
+	max-width: var(--wei-content-reading);
 	margin: var(--wei-space-2) 0 0;
 	color: var(--wei-color-text-secondary);
-	font-size: 14px;
-	line-height: 1.6;
+	font-size: var(--wei-font-size-body);
+	font-weight: var(--wei-font-weight-regular);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-admin .wei-alipay-tabs {
@@ -101,7 +137,7 @@
 	margin: var(--wei-space-5) 0;
 	padding: 0 var(--wei-space-2);
 	overflow: visible;
-	border-bottom: 1px solid #dcdcde;
+	border-bottom: 1px solid var(--wei-color-header-divider);
 	list-style: none;
 }
 
@@ -115,8 +151,8 @@
 	padding: 0 0 10px;
 	border: 0;
 	background: transparent;
-	color: #505050;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	color: var(--wei-color-text-secondary);
+	font-family: inherit;
 	font-size: var(--wei-font-size-body);
 	font-weight: var(--wei-font-weight-medium);
 	line-height: var(--wei-line-height-body);
@@ -144,14 +180,14 @@
 .wei-alipay-admin .wei-alipay-tabs .nav-tab-active:focus {
 	margin-bottom: -1px;
 	border-bottom: 2px solid var(--wei-color-accent);
-	color: #070707;
+	color: var(--wei-color-text-active);
 }
 
 .wei-alipay-admin .card.wei-alipay-card-wide {
 	box-sizing: border-box;
 	width: 100%;
 	max-width: none;
-	margin: 0 0 20px;
+	margin: 0 0 var(--wei-space-5);
 	padding: var(--wei-card-padding);
 	border-color: var(--wei-color-border);
 	border-radius: var(--wei-radius-card);
@@ -166,6 +202,7 @@
 .wei-alipay-section-title {
 	margin: var(--wei-space-5) 0 var(--wei-space-3);
 	font-size: var(--wei-font-size-section);
+	font-weight: var(--wei-font-weight-semibold);
 	line-height: var(--wei-line-height-section);
 }
 
@@ -176,10 +213,16 @@
 .wei-alipay-admin .form-table th {
 	width: 200px;
 	padding: var(--wei-space-4) var(--wei-space-5) var(--wei-space-4) 0;
+	color: var(--wei-color-text);
+	font-size: var(--wei-font-size-body);
+	font-weight: var(--wei-font-weight-regular);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-admin .form-table td {
 	padding: var(--wei-space-3) var(--wei-space-2);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-admin .form-table input.regular-text,
@@ -194,7 +237,7 @@
 }
 
 .wei-alipay-table-wrap .wp-list-table {
-	min-width: 760px;
+	min-width: var(--wei-content-reading);
 }
 
 .wei-alipay-inline-form {
@@ -206,8 +249,8 @@
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 8px;
-	margin: 12px 0 16px;
+	gap: var(--wei-space-2);
+	margin: var(--wei-space-3) 0 var(--wei-space-4);
 }
 
 .wei-alipay-actions form,
@@ -238,7 +281,7 @@
 .wei-alipay-danger-zone {
 	margin: 0 0 var(--wei-space-5);
 	padding: var(--wei-space-4);
-	border: 1px solid #d63638;
+	border: 1px solid var(--wei-color-error-strong);
 	border-inline-start-width: 4px;
 	border-radius: var(--wei-radius-control);
 	background: var(--wei-color-surface);
@@ -247,62 +290,69 @@
 .wei-alipay-danger-zone h2 {
 	margin: 0 0 var(--wei-space-1);
 	font-size: var(--wei-font-size-body-emphasis);
+	font-weight: var(--wei-font-weight-semibold);
 	line-height: var(--wei-line-height-section);
 }
 
 .wei-alipay-danger-zone > p {
 	margin: 0;
 	color: var(--wei-color-text-secondary);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-danger-zone .button-link-delete {
-	border-color: #d63638;
-	color: #b32d2e;
+	border-color: var(--wei-color-error-strong);
+	color: var(--wei-color-error-strong);
 }
 
 .wei-alipay-danger-zone .button-link-delete:hover,
 .wei-alipay-danger-zone .button-link-delete:focus {
-	border-color: #b32d2e;
-	color: #8a2424;
+	border-color: var(--wei-color-error-text);
+	color: var(--wei-color-error-text);
 }
 
 .wei-alipay-status {
 	display: inline-block;
-	padding: 2px 7px;
+	padding: var(--wei-space-1) var(--wei-space-2);
 	border: 1px solid var(--wei-color-border);
 	border-radius: var(--wei-radius-pill);
 	background: var(--wei-color-surface-subtle);
 	color: var(--wei-color-text-secondary);
-	font-size: 12px;
-	line-height: 1.5;
+	font-size: var(--wei-font-size-label);
+	line-height: var(--wei-line-height-meta);
 }
 
-.wei-alipay-status.is-success { background: var(--wei-color-success-surface); color: var(--wei-color-success-text); }
-.wei-alipay-status.is-warning { background: var(--wei-color-warning-surface); color: var(--wei-color-warning-text); }
-.wei-alipay-status.is-error { background: var(--wei-color-error-surface); color: var(--wei-color-error-text); }
-.wei-alipay-status.is-info { background: var(--wei-color-info-surface); color: var(--wei-color-info-text); }
+.wei-alipay-status.is-success { background: var(--wei-color-success-surface); color: var(--wei-color-success-text); border-color: transparent; }
+.wei-alipay-status.is-warning { background: var(--wei-color-warning-surface); color: var(--wei-color-warning-text); border-color: transparent; }
+.wei-alipay-status.is-error { background: var(--wei-color-error-surface); color: var(--wei-color-error-text); border-color: transparent; }
+.wei-alipay-status.is-info { background: var(--wei-color-info-surface); color: var(--wei-color-info-text); border-color: transparent; }
 
 .wei-alipay-empty {
-	padding: 32px 16px;
+	padding: var(--wei-space-6) var(--wei-space-4);
 	text-align: center;
 	color: var(--wei-color-text-secondary);
 }
 
 .wei-alipay-empty .dashicons {
-	width: 32px;
-	height: 32px;
-	font-size: 32px;
-	line-height: 32px;
+	width: var(--wei-space-6);
+	height: var(--wei-space-6);
+	font-size: var(--wei-space-6);
+	line-height: var(--wei-space-6);
 }
 
 .wei-alipay-empty h2 {
 	margin: var(--wei-space-2) 0 var(--wei-space-1);
 	color: var(--wei-color-text);
 	font-size: var(--wei-font-size-section);
+	font-weight: var(--wei-font-weight-semibold);
+	line-height: var(--wei-line-height-section);
 }
 
 .wei-alipay-empty p {
 	margin: 0;
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 .wei-alipay-table-empty {
@@ -315,19 +365,34 @@
 	margin: 0 0 var(--wei-space-4);
 }
 
+.wei-alipay-notice-region {
+	display: grid;
+	max-width: var(--wei-content-wide);
+	margin: var(--wei-space-4) 0;
+	gap: var(--wei-space-2);
+}
+
+.wei-alipay-notice-region > .notice {
+	margin: 0;
+}
+
 .wei-alipay-admin pre.wei-alipay-code {
 	max-width: 100%;
-	padding: 12px;
+	padding: var(--wei-space-3);
 	overflow: auto;
 	border: 1px solid var(--wei-color-border);
 	background: var(--wei-color-surface-subtle);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 	white-space: pre-wrap;
 	word-break: break-word;
 }
 
 .wei-alipay-admin [data-wei-dirty-message] {
-	margin-left: 8px;
+	margin-left: var(--wei-space-2);
 	color: var(--wei-color-text-secondary);
+	font-size: var(--wei-font-size-body);
+	line-height: var(--wei-line-height-body);
 }
 
 @media (max-width: 782px) {

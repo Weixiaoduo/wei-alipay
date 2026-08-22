@@ -38,6 +38,8 @@ composer validate --strict
 | `tests/` | 合约、静态分析引导和安全测试 |
 | `scripts/` | 本地 CI、可复现构建和下游镜像脚本 |
 
+后台页面的结构、通知归属、容器约束、响应式样本和防挤破门禁见 [`ADMIN-UI-ENGINEERING.md`](ADMIN-UI-ENGINEERING.md)。`DESIGN.md` 说明视觉与交互目标；工程手册规定开发时不可破坏的 DOM/CSS/测试契约。
+
 ## 4. 不可随意改名的运行身份
 
 即使产品名、目录和 text domain 改为 Wei Alipay，以下身份仍与商城数据相连：
@@ -124,6 +126,7 @@ SDK 目录不得计入第一方零错误结论，也不得因为排除 SDK 就�
 - 关闭功能不得删除设置、订单元数据或历史记录，只能停止该模块注册并清理模块自有的待执行计划任务。
 - 功能开关和 WooCommerce 网关启用是两个不同状态；后台必须明确解释两步启用，不能替商户静默启用支付能力。
 - 设计 token、组件边界、证据 SHA 和可复现提取命令见 `docs/design/woopayments-admin-design-reference.md`。WooCommerce 支付列表的拖拽壳属于 WooCommerce core，不得错误归因或复制 WooPayments 私有组件。
+- 页眉只显示产品身份、连接状态和说明；页面导航与任务动作进入标签、状态卡或对应内容区，不在页眉远端重复放置。
 
 ## 7. WordPress/WooCommerce 运行矩阵
 
@@ -158,6 +161,14 @@ SDK 结论、固定提交、哈希、许可缺口和升级步骤见 [SDK-MAINTEN
 5. 离线签名/验签、查询、关单、退款和并发回调回归；
 6. 沙箱验收；禁止用生产商户验证候选。
 
-## 10. 提交与发布门
+## 10. 支付网关生产切换 SOP
+
+凡是出现插件目录/入口切换、SDK 更新或裁剪、密钥存储迁移、签名适配器变化、回调路由变化、网关 ID 或订单身份迁移，必须执行 `docs/governance/payment-gateway-production-cutover-sop.md`。事故背景和证据边界见 `docs/audits/wei-alipay-production-cutover-incident-2026-08-21.md`。
+
+验收必须把 SDK tree、密钥容器、密钥格式、密钥对一致性、离线签名、沙箱、生产 canary 分开记录。`decryptable` 不是 `sign-ready`；后台可打开、支付方式可启用、候选 ZIP 可构建也都不是生产支付验收。真实生产 canary 必须另有精确 SHA、订单、金额、观察窗口和回滚审批；没有授权就标为 `BLOCKED`。
+
+恢复旧私钥时只能从受控备份或原始密钥工具恢复。若原私钥不可恢复，必须生成新密钥对，并同步更新支付宝开放平台登记的应用公钥或证书；不能只在插件内替换私钥。日志、工单、HANDOFF 和测试输出只记录不可逆指纹，不记录密钥内容。
+
+## 11. 提交与发布门
 
 提交前更新 `[CX]` HANDOFF，记录精确 HEAD、测试命令/退出码、工件 SHA-256、未验证项。普通 push 也必须由 Board change 绑定精确 SHA；CI 审批、合并、Release、GitHub 同步和商城切换分别审批。

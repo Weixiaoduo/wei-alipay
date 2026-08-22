@@ -218,9 +218,16 @@ class Wei_Alipay {
         $version_js  = filemtime( WEI_ALIPAY_PLUGIN_PATH . 'js/admin/main' . $js_ext );
 
         wp_enqueue_style(
+            'wei-alipay-design-system',
+            WEI_ALIPAY_PLUGIN_URL . 'css/admin/design-system.css',
+            array(),
+            filemtime( WEI_ALIPAY_PLUGIN_PATH . 'css/admin/design-system.css' )
+        );
+
+        wp_enqueue_style(
             'wei-alipay',
             WEI_ALIPAY_PLUGIN_URL . 'css/admin/main' . $css_ext,
-            array(),
+            array( 'wei-alipay-design-system' ),
             $version_css
         );
 
@@ -410,8 +417,11 @@ class Wei_Alipay {
                 }
             }
         }
-        echo '<div class="wrap wei-alipay-admin"><h1>' . esc_html__( 'Single-order Reconciliation', 'wei-alipay' ) . '</h1>';
-        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Query one transaction from the configured Alipay environment and optionally synchronize a matching WooCommerce order.', 'wei-alipay' ) . '</p>';
+        echo '<div class="wrap wei-alipay-admin">';
+        Wei_Alipay_Admin_UI::page_header(
+            __( 'Single-order Reconciliation', 'wei-alipay' ),
+            __( 'Query one transaction from the configured Alipay environment and optionally synchronize a matching WooCommerce order.', 'wei-alipay' )
+        );
         echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Querying contacts Alipay. Synchronization is offered only after the payment method, amount and transaction number match the order.', 'wei-alipay' ) . '</p></div>';
         echo '<form class="card wei-alipay-card-wide" method="post">';
         wp_nonce_field( 'woo_alipay_reconcile', 'woo_alipay_reconcile_nonce' );

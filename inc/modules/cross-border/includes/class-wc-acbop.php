@@ -97,7 +97,6 @@ class Wei_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 
         self::$log_enabled    = $this->debug;
 
-        add_action( 'admin_notices', array( $this, 'requirement_checks' ) ); 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
         add_action( 'woocommerce_api_woo_alipay_cross_border_gateway', array( $this, 'check_alipay_response' ) );
         add_action( 'woocommerce_thankyou_acbop', array( $this, 'thankyou_page' ) );
@@ -140,13 +139,13 @@ class Wei_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 
         if (!array_key_exists($this->selected_currency, $this->function->getAliPaySupportedCurrencies())) {
             /* translators: %1s: store currency code */
-            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay is enabled, but the store currency is %1s, which is not supported.', 'wei-alipay' ), $this->selected_currency ) ) . '</p></div>';
+            echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html( sprintf( __( 'Alipay is enabled, but the store currency is %1s, which is not supported.', 'wei-alipay' ), $this->selected_currency ) ) . '</p></div>';
         }
 
 		$missing_fields = $this->get_missing_core_fields();
 		if ( ! empty( $missing_fields ) ) {
 			/* translators: %s: comma-separated list of missing configuration field names */
-			echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
+            echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
 		}
     }
 
@@ -372,6 +371,9 @@ class Wei_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
         ?>
         <h3><?php esc_html_e( 'Alipay', 'wei-alipay' ); ?></h3>
         <p><?php esc_html_e( 'Alipay is a simple, secure and fast online payment method, customer can pay via debit card, credit card or alipay balance.', 'wei-alipay' ); ?></p>
+        <section class="wei-alipay-settings-notices" aria-label="<?php esc_attr_e( 'Gateway notifications', 'wei-alipay' ); ?>">
+            <?php $this->requirement_checks(); ?>
+        </section>
        
         <table class="form-table">
             <?php

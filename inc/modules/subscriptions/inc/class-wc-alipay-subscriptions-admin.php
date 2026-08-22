@@ -54,8 +54,10 @@ class WC_Alipay_Subscriptions_Admin {
         $is_sandbox    = 'yes' === ( $core_settings['sandbox'] ?? 'no' );
 
         echo '<div class="wrap wei-alipay-admin">';
-        echo '<h1>' . esc_html__( 'Alipay Subscriptions', 'wei-alipay' ) . '</h1>';
-        echo '<p class="wei-alipay-admin__description">' . esc_html__( 'Configure agreement payments and renewal behavior. Credentials and provider environment are inherited from the main Wei Alipay gateway.', 'wei-alipay' ) . '</p>';
+        Wei_Alipay_Admin_UI::page_header(
+            __( 'Alipay Subscriptions', 'wei-alipay' ),
+            __( 'Configure agreement payments and renewal behavior. Credentials and provider environment are inherited from the main Wei Alipay gateway.', 'wei-alipay' )
+        );
         if ( $saved ) {
             echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings saved.', 'wei-alipay' ) . '</p></div>';
         }

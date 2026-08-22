@@ -21,6 +21,58 @@ class Wei_Alipay_Admin_UI {
 		echo '<h1>' . esc_html( $title ) . '</h1>';
 		echo '<p class="wei-alipay-admin__description">' . esc_html( $description ) . '</p>';
 		echo '</header>';
+		self::wp_header_end();
+	}
+
+	/**
+	 * Emit the native WordPress page-header boundary after the plugin heading.
+	 */
+	public static function wp_header_end() {
+		echo '<div class="wp-header-end" aria-hidden="true"></div>';
+	}
+
+	/**
+	 * Render page-scoped feedback in one predictable region.
+	 *
+	 * WordPress keeps system-wide notices in its global notice area. This
+	 * helper is only for feedback owned by the current Wei Alipay page.
+	 *
+	 * @param array<int,array{message:string,type?:string,dismissible?:bool}> $notices Notice definitions.
+	 * @param string                                                            $label   Region label.
+	 */
+	public static function notice_region( $notices, $label ) {
+		if ( empty( $notices ) ) {
+			return;
+		}
+
+		echo '<section class="wei-alipay-notice-region" aria-label="' . esc_attr( $label ) . '">';
+		foreach ( $notices as $notice ) {
+			self::notice(
+				isset( $notice['message'] ) ? $notice['message'] : '',
+				isset( $notice['type'] ) ? $notice['type'] : 'info',
+				! empty( $notice['dismissible'] )
+			);
+		}
+		echo '</section>';
+	}
+
+	/**
+	 * Render one native WordPress notice without redefining its appearance.
+	 *
+	 * @param string $message     Notice body. Safe HTML is allowed.
+	 * @param string $type        success, error, warning or info.
+	 * @param bool   $dismissible Whether WordPress should add dismiss controls.
+	 */
+	private static function notice( $message, $type, $dismissible ) {
+		$allowed = array( 'success', 'error', 'warning', 'info' );
+		$type = in_array( $type, $allowed, true ) ? $type : 'info';
+		$classes = 'notice notice-' . $type . ' inline';
+		if ( $dismissible ) {
+			$classes .= ' is-dismissible';
+		}
+		$role = in_array( $type, array( 'error', 'warning' ), true ) ? 'alert' : 'status';
+
+		echo '<div class="' . esc_attr( $classes ) . '" role="' . esc_attr( $role ) . '"><p>' . wp_kses_post( $message ) . '</p></div>';
 	}
 
 	/**

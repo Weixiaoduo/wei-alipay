@@ -1351,7 +1351,7 @@ msgstr "可以收款"
 #: inc/class-wei-alipay-features.php:450 inc/class-wei-alipay-features.php:464
 #: inc/class-wei-alipay-features.php:772 inc/class-wei-alipay-features.php:824
 msgid "Action needed"
-msgstr "需要配置"
+msgstr "待处理"
 
 #: inc/class-wei-alipay-features.php:450
 msgid "The local gateway checks are ready."
@@ -1359,7 +1359,7 @@ msgstr "本地网关检查已就绪。"
 
 #: inc/class-wei-alipay-features.php:450
 msgid "Complete the blocking gateway checks before accepting live payments."
-msgstr "在接受正式付款前，请完成阻断收款的网关检查。"
+msgstr "正式收款前，请先完成必要的网关检查。"
 
 #: inc/class-wei-alipay-features.php:450
 msgid "Open gateway settings"
@@ -1380,7 +1380,7 @@ msgstr "查看账户"
 
 #: inc/class-wei-alipay-features.php:452 inc/class-wei-alipay-features.php:456
 msgid "Needs attention"
-msgstr "需要处理"
+msgstr "待办事项"
 
 #: inc/class-wei-alipay-features.php:452
 msgid "Only the three highest-priority local issues are shown."
@@ -1404,7 +1404,7 @@ msgstr "本地详细状态"
 
 #: inc/class-wei-alipay-features.php:464
 msgid "Payment environment and security"
-msgstr "支付环境与安全"
+msgstr "收款环境与安全"
 
 #: inc/class-wei-alipay-features.php:464 inc/class-wei-alipay-features.php:804
 msgid "Ready"
@@ -1418,7 +1418,7 @@ msgstr "本地就绪证据；展开此区域不会向支付宝发送请求。"
 
 #: inc/class-wei-alipay-features.php:465
 msgid "Payment environment"
-msgstr "支付环境"
+msgstr "运行环境"
 
 #: inc/class-wei-alipay-features.php:465
 msgid "Sandbox"
@@ -1426,11 +1426,11 @@ msgstr "沙箱"
 
 #: inc/class-wei-alipay-features.php:465
 msgid "Live"
-msgstr "正式环境"
+msgstr "生产环境"
 
 #: inc/class-wei-alipay-features.php:466
 msgid "Gateway enabled"
-msgstr "网关已启用"
+msgstr "网关状态"
 
 #: inc/class-wei-alipay-features.php:466 inc/class-wei-alipay-features.php:821
 #: inc/class-wei-alipay-features.php:836
@@ -1454,7 +1454,7 @@ msgstr "已配置"
 
 #: inc/class-wei-alipay-features.php:467 inc/class-wei-alipay-features.php:804
 msgid "Configuration required"
-msgstr "需要配置"
+msgstr "待配置"
 
 #: inc/class-wei-alipay-features.php:468
 msgid "Private key protection"
@@ -1470,7 +1470,7 @@ msgstr "未知"
 
 #: inc/class-wei-alipay-features.php:470
 msgid "Secure callback URL"
-msgstr "安全回调地址"
+msgstr "回调地址（HTTPS）"
 
 #: inc/class-wei-alipay-features.php:470
 msgid "HTTPS"
@@ -1486,7 +1486,7 @@ msgstr "检查网关配置"
 
 #: inc/class-wei-alipay-features.php:474
 msgid "Review required"
-msgstr "需要检查"
+msgstr "待检查"
 
 #: inc/class-wei-alipay-features.php:474
 msgid "No issue recorded"
@@ -1494,11 +1494,11 @@ msgstr "未记录问题"
 
 #: inc/class-wei-alipay-features.php:474
 msgid "No callback sample"
-msgstr "尚无回调样本"
+msgstr "尚无回调记录"
 
 #: inc/class-wei-alipay-features.php:475
 msgid "Callbacks and background recovery"
-msgstr "回调与后台恢复"
+msgstr "回调与后台任务"
 
 #: inc/class-wei-alipay-features.php:475
 msgid "A missing sample is reported separately from a successful observation."
@@ -1518,15 +1518,15 @@ msgstr "暂无记录"
 
 #: inc/class-wei-alipay-features.php:478
 msgid "Unresolved callback failures"
-msgstr "未解决的回调失败"
+msgstr "未处理的回调失败"
 
 #: inc/class-wei-alipay-features.php:479
 msgid "Last pending-order check"
-msgstr "最近待处理订单检查"
+msgstr "最近待付款订单检查"
 
 #: inc/class-wei-alipay-features.php:480
 msgid "Last timeout check"
-msgstr "最近支付超时检查"
+msgstr "最近超时订单检查"
 
 #: inc/class-wei-alipay-features.php:481
 msgid "Review callback logs"
@@ -1582,15 +1582,15 @@ msgstr "打开 WooCommerce 状态"
 
 #: inc/class-wei-alipay-features.php:491
 msgid "Payment activity in the last 7 days"
-msgstr "最近 7 天支付活动"
+msgstr "近 7 天收款情况"
 
 #: inc/class-wei-alipay-features.php:491 inc/class-wei-alipay-features.php:492
 msgid "Events recorded"
-msgstr "已记录事件"
+msgstr "有记录"
 
 #: inc/class-wei-alipay-features.php:491 inc/class-wei-alipay-features.php:492
 msgid "No payment sample recorded"
-msgstr "尚无支付样本"
+msgstr "近 7 天暂无收款记录"
 
 #: inc/class-wei-alipay-features.php:491
 msgid ""
@@ -1600,7 +1600,7 @@ msgstr "此插件版本记录的本地事件计数；不存储金额或客户数
 
 #: inc/class-wei-alipay-features.php:492
 msgid "Activity sample"
-msgstr "活动样本"
+msgstr "活动概况"
 
 #: inc/class-wei-alipay-features.php:493
 msgid "Successful payments"
@@ -1704,7 +1704,7 @@ msgstr "此候选版本尚未接入安全的账户连接流程，生产功能继
 
 #: inc/class-wei-alipay-features.php:628
 msgid "Feature access"
-msgstr "功能权限"
+msgstr "功能授权"
 
 #: inc/class-wei-alipay-features.php:629
 msgid "Standard store features"
@@ -1728,7 +1728,7 @@ msgstr "需要商业授权"
 
 #: inc/class-wei-alipay-features.php:633
 msgid "Data shared when connected"
-msgstr "连接时发送的数据"
+msgstr "连接时会发送哪些数据"
 
 #: inc/class-wei-alipay-features.php:633
 msgid ""
@@ -1755,7 +1755,7 @@ msgstr "查看数据与隐私说明"
 
 #: inc/class-wei-alipay-features.php:635
 msgid "Connection details"
-msgstr "连接详情"
+msgstr "连接信息"
 
 #: inc/class-wei-alipay-features.php:635
 msgid "Site"
@@ -1845,7 +1845,7 @@ msgstr "关闭的工具不会注册后台页面或后台任务。"
 
 #: inc/class-wei-alipay-features.php:767
 msgid "Save feature settings"
-msgstr "保存功能设置"
+msgstr "保存设置"
 
 #: inc/class-wei-alipay-features.php:772
 msgid "Active"
@@ -1865,7 +1865,7 @@ msgstr "适用于人民币商店的标准支付宝结账。"
 
 #: inc/class-wei-alipay-features.php:775
 msgid "Required"
-msgstr "必需"
+msgstr "必选"
 
 #: inc/class-wei-alipay-features.php:801
 msgid "Enabled payment services"
@@ -1880,7 +1880,7 @@ msgstr "快速查看就绪状态；启用和配置仍在下方的支付方式列
 #: inc/class-wei-alipay-features.php:821 inc/class-wei-alipay-features.php:836
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:182
 msgid "Inactive"
-msgstr "未开启"
+msgstr "未启用"
 
 #: inc/class-wei-alipay-features.php:828
 msgid "Dependency missing"
@@ -1893,7 +1893,7 @@ msgstr "请先安装并启用 WooCommerce Subscriptions，再开启此功能。"
 
 #: inc/class-wei-alipay-features.php:840
 msgid "View requirements"
-msgstr "查看要求"
+msgstr "查看开通条件"
 
 #: inc/class-wei-alipay-features.php:840
 msgid "Alipay product requirements"
@@ -4463,3 +4463,115 @@ msgstr "支付宝"
 #: js/frontend/blocks.js:8
 msgid "通过支付宝付款（中国大陆，包括香港和澳门）。"
 msgstr "通过支付宝付款（中国大陆，包括香港和澳门）。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Manage Alipay checkout, optional payment methods, operational tools and your Weixiaoduo account."
+msgstr "管理支付宝收款、可选支付方式、运营工具和薇晓朵账户。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Complete gateway setup before accepting live payments."
+msgstr "正式收款前请先完成网关配置。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Check your Weixiaoduo.com connection and cached feature authorization."
+msgstr "请检查薇晓朵账户连接和功能授权缓存。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Some recent payment callbacks need review."
+msgstr "有近期支付回调需要处理。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Some payment recovery tasks are not scheduled."
+msgstr "部分支付恢复任务尚未加入计划。"
+
+#: inc/class-wei-alipay-features.php
+msgid "A Wei Alipay update is available."
+msgstr "有可用的 Wei Alipay 更新。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Open account"
+msgstr "打开账户页"
+
+#: inc/class-wei-alipay-features.php
+msgid "Open callback logs"
+msgstr "打开回调日志"
+
+#: inc/class-wei-alipay-features.php
+msgid "Open scheduled actions"
+msgstr "打开计划任务"
+
+#: inc/class-wei-alipay-features.php
+msgid "Open plugins"
+msgstr "打开插件页"
+
+#: inc/class-wei-alipay-features.php
+msgid "Gateway credentials and security checks passed."
+msgstr "网关凭据和安全检查已通过。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Weixiaoduo account connection is separate from Alipay payment processing."
+msgstr "薇晓朵账户连接与支付宝收款相互独立。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Up to three setup issues are listed below."
+msgstr "下方最多列出 3 个待办项。"
+
+#: inc/class-wei-alipay-features.php
+msgid "No blocking setup issues were found."
+msgstr "未发现阻断收款的配置问题。"
+
+#: inc/class-wei-alipay-features.php
+msgid "View issues"
+msgstr "查看待办"
+
+#: inc/class-wei-alipay-features.php
+msgid "View details"
+msgstr "查看详情"
+
+#: inc/class-wei-alipay-features.php
+msgid "Setup details"
+msgstr "配置详情"
+
+#: inc/class-wei-alipay-features.php
+msgid "Local checks only. Opening this section does not contact Alipay."
+msgstr "以下为本地检查结果，展开此区域不会联系支付宝。"
+
+#: inc/class-wei-alipay-features.php
+msgid "No callback sample means no data yet, not that callbacks are broken."
+msgstr "「尚无回调记录」表示还没有数据，不代表回调异常。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Counts successful, failed and refunded payments from this plugin only. Amounts and customer data are not stored."
+msgstr "仅统计本插件记录的成功、失败和退款次数，不含金额或客户信息。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Passing local checks does not replace an Alipay sandbox acceptance test."
+msgstr "本地检查通过，不能代替支付宝沙箱验收。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Connect your Weixiaoduo account to unlock free features, commercial authorization and updates."
+msgstr "连接薇晓朵账户后，可启用免费功能、商业授权和更新服务。"
+
+#: inc/class-wei-alipay-features.php
+msgid "How activation works"
+msgstr "启用说明"
+
+#: inc/class-wei-alipay-features.php
+msgid "Features stay off until dependencies, Alipay product approval and Wei Alipay authorization are all satisfied."
+msgstr "未满足插件依赖、支付宝产品开通和 Wei Alipay 授权前，相关功能会保持关闭。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Enabled methods appear in WooCommerce → Settings → Payments."
+msgstr "已启用的方式会出现在 WooCommerce → 设置 → 支付 中。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Disabled tools hide their admin pages and stop background jobs."
+msgstr "关闭后，对应后台页面和后台任务将不再运行。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Standard Alipay checkout. Configure credentials in WooCommerce gateway settings."
+msgstr "标准支付宝结账。请在 WooCommerce 网关设置中配置凭据。"
+
+#: inc/class-wei-alipay-features.php
+msgid "Quick readiness check. Turn methods on or off in the list below."
+msgstr "快速查看就绪状态；请在下方列表中开启或关闭支付方式。"

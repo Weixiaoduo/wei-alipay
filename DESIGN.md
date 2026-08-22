@@ -17,69 +17,85 @@ Product rules:
 
 ## 2. Evidence
 
-The source packages, extraction command, artifact SHA-256 values, raw inventories and interaction-marker counts are recorded in:
+The semantic token contract is derived from the **WooCommerce 11 WPDS `:root` block** shipped in the active admin bundles, not from raw color-frequency counts.
+
+Primary sources (WooCommerce 11.0.1 in this workspace):
+
+- `woocommerce/assets/client/admin/settings-embed/style.css` — WPDS color, typography, spacing, motion and settings-shell composition (`wc-settings-ui-shell__*`, `#mainform` padding).
+- `woocommerce/assets/client/admin/app/style.css` — admin layout rhythm (`--large-gap`, `--main-gap`) and page shell behavior.
+
+Secondary inventory (artifact coverage and regression evidence only):
 
 - `docs/design/woopayments-admin-design-reference.md`
 - `docs/design/woopayments-admin-tokens.json`
 - `scripts/extract-woopayments-admin-design.py`
 
-The inventory covers 30 WooPayments CSS, 45 WooPayments JavaScript, 27 WooCommerce CSS and 152 WooCommerce JavaScript administration artifacts. Raw occurrence counts are evidence, not semantic tokens. The tables below are the reviewed semantic layer.
+The WooPayments/WooCommerce CSS inventories cover 30 WooPayments CSS, 45 WooPayments JavaScript, 27 WooCommerce CSS and 152 WooCommerce JavaScript administration artifacts. **Raw occurrence counts and compiled hex frequency are evidence, not semantic tokens.** When a compiled bundle hard-codes a value that is not exposed as `--wpds-*` (for example a 16px settings-shell title), Wei documents it as a scoped composition rule rather than inventing a new global token.
+
+Implementation rule: `--wei-*` aliases must either map to an existing `--wpds-*` token with the same fallback, or to a named composition constant documented in this file. Do not select colors by occurrence rank alone.
 
 ## 3. Token contract
 
 All tokens live under `.wei-alipay-admin` or the scoped WooCommerce gateway settings section. Never define global `body`, `.button`, `.notice`, `.form-table` or `.wp-list-table` replacements.
 
+WPDS is loaded by WooCommerce on modern admin screens. Wei keeps identical fallbacks so standalone pages still render when a host bundle is absent.
+
 ### 3.1 Color
 
-| Token | Value | Use |
+| Token | WPDS / fallback | Use |
 | --- | --- | --- |
-| `--wei-color-text` | `#1e1e1e` | headings and primary copy |
-| `--wei-color-text-secondary` | `#757575` | descriptions and row metadata |
-| `--wei-color-text-wp` | `#646970` | WordPress-compatible secondary copy |
-| `--wei-color-surface` | `#fff` | primary cards and tables |
-| `--wei-color-surface-subtle` | `#f6f7f7` | grouped content and code blocks |
-| `--wei-color-surface-hover` | `#f0f0f0` | hover/selected-row background |
-| `--wei-color-border` | `#e0e0e0` | internal dividers and quiet cards |
-| `--wei-color-border-strong` | `#c3c4c7` | controls and legacy WP boundaries |
-| `--wei-color-accent` | `var(--wp-admin-theme-color, #2271b1)` | focus, link and selected state |
-| `--wei-color-accent-subtle` | `#f0f6fc` | selected/linked quiet surface |
-| `--wei-color-success-text` | `#005c12` | success text |
-| `--wei-color-success-surface` | `#edfaef` | success pill/callout surface |
-| `--wei-color-warning-text` | `#614200` | warning text |
-| `--wei-color-warning-surface` | `#fcf9e8` | warning pill/callout surface |
-| `--wei-color-error-text` | `#8a2424` | error/danger text |
-| `--wei-color-error-surface` | `#fcf0f1` | error pill/callout surface |
-| `--wei-color-info-text` | `#0a4b78` | informational text |
-| `--wei-color-info-surface` | `#f0f6fc` | informational surface |
+| `--wei-color-text` | `--wpds-color-foreground-content-neutral` / `#1e1e1e` | headings and primary copy |
+| `--wei-color-text-secondary` | `--wpds-color-foreground-content-neutral-weak` / `#707070` | descriptions and row metadata |
+| `--wei-color-text-active` | `--wpds-color-foreground-content-neutral` / `#070707` | active tab label |
+| `--wei-color-surface` | `--wpds-color-background-surface-neutral-strong` / `#fff` | primary cards and tables |
+| `--wei-color-surface-subtle` | `--wpds-color-background-surface-neutral-weak` / `#f4f4f4` | grouped content and code blocks |
+| `--wei-color-surface-muted` | `--wpds-color-background-surface-neutral` / `#fcfcfc` | expanded disclosure inset |
+| `--wei-color-page-background` | `#f0f0f1` | WordPress admin canvas on Wei pages |
+| `--wei-color-border` | `--wpds-color-stroke-surface-neutral` / `#dbdbdb` | internal dividers and quiet cards |
+| `--wei-color-border-subtle` | `--wpds-color-stroke-surface-neutral-weak` / `#f0f0f0` | tab rail and row separators |
+| `--wei-color-accent` | `--wpds-color-foreground-interactive-brand` / admin theme | focus, link and selected state |
+| `--wei-color-success-text` | `--wpds-color-foreground-content-success` / `#002900` | success text |
+| `--wei-color-success-surface` | `--wpds-color-background-surface-success-weak` / `#ebffed` | success pill/callout surface |
+| `--wei-color-warning-text` | `--wpds-color-foreground-content-warning` / `#2e1900` | warning text |
+| `--wei-color-warning-surface` | `--wpds-color-background-surface-warning-weak` / `#fff7e1` | warning pill/callout surface |
+| `--wei-color-error-text` | `--wpds-color-foreground-content-error` / `#470000` | error/danger text |
+| `--wei-color-error-surface` | `--wpds-color-background-surface-error-weak` / `#fff6f5` | error pill/callout surface |
+| `--wei-color-info-text` | `--wpds-color-foreground-content-info` / `#001b4f` | informational text |
+| `--wei-color-info-surface` | `--wpds-color-background-surface-info-weak` / `#f3f9ff` | informational surface |
 
 Color never carries state alone. Every semantic color has text or a meaningful icon. Ordinary primary actions use the admin theme color, not semantic green.
 
 ### 3.2 Typography
 
-Use the inherited WordPress system stack. Product/UI copy must not load a remote font. `code` and machine identifiers may use the WordPress monospace stack.
+Use the inherited WordPress/WPDS system stack. Product/UI copy must not load a remote font. `code` and machine identifiers may use the WordPress monospace stack.
 
-| Token | Size / line height | Use |
+| Token | WPDS / fallback | Use |
 | --- | --- | --- |
-| `--wei-font-size-meta` | `11px / 16px` | timestamps and tertiary metadata |
-| `--wei-font-size-label` | `12px / 16px` | compact status and helper labels |
-| `--wei-font-size-body` | `13px / 20px` | default administration copy |
-| `--wei-font-size-body-emphasis` | `14px / 20px` | emphasized row text |
-| `--wei-font-size-section` | `16px / 24px` | card/section heading |
-| `--wei-font-size-page` | `20px / 28px` | page heading when not provided by core |
-| `--wei-font-size-display` | `24px / 32px` | empty-state or onboarding heading only |
+| `--wei-font-size-meta` | `--wpds-typography-font-size-xs` / `11px` | timestamps and tertiary metadata |
+| `--wei-font-size-label` | `--wpds-typography-font-size-sm` / `12px` | compact status and helper labels |
+| `--wei-font-size-body` | `--wpds-typography-font-size-md` / `13px` | default administration copy |
+| `--wei-font-size-body-emphasis` | `--wpds-typography-font-size-lg` / `15px` | row titles, card headings, disclosure summaries |
+| `--wei-font-size-section` | `--wpds-typography-font-size-lg` / `15px` | section heading in two-column layouts |
+| `--wei-font-size-page` | `--wpds-typography-font-size-xl` / `20px` | product/page heading |
+| `--wei-font-size-display` | `--wpds-typography-font-size-xl` / `20px` | reserved alias for page-level headings |
 
-Weights are 400 regular, 500 medium and 600 semibold. Avoid all-caps translated labels and decorative bold paragraphs.
+Matching line-height tokens use the WPDS `--wpds-typography-line-height-*` scale (`xs` 16, `sm` 20, `md` 24, `xl` 32).
+
+Weights are 400 regular, 500 medium (`--wpds-typography-font-weight-medium`) and 600 semibold. Avoid all-caps translated labels and decorative bold paragraphs.
 
 ### 3.3 Spacing and density
 
-| Token | Value | Use |
-| --- | ---: | --- |
-| `--wei-space-1` … `--wei-space-8` | `4, 8, 12, 16, 24, 32, 40, 48px` | four-point spacing scale |
+| Token | WPDS / fallback | Use |
+| --- | --- | --- |
+| `--wei-space-1` … `--wei-space-7` | `--wpds-dimension-gap-xs` … `--wpds-dimension-gap-3xl` | four-point spacing scale |
+| `--wei-space-8` | `48px` | page-bottom inset and scroll margin |
 | `--wei-control-height` | `36px` | custom compact control only |
 | `--wei-row-height-compact` | `48px` | compact operational row minimum |
 | `--wei-row-height` | `64px` | standard settings/feature row minimum |
-| `--wei-card-padding` | `24px` | desktop card inset |
-| `--wei-card-padding-mobile` | `16px` | card inset below 782px |
+| `--wei-card-padding` | `--wpds-dimension-padding-2xl` / `24px` | desktop card inset |
+| `--wei-card-padding-mobile` | `--wpds-dimension-padding-lg` / `16px` | card inset below 782px |
+| `--wei-shell-padding-inline-start` | `36px` | feature-centre left inset (reviewed composition) |
+| `--wei-shell-padding-inline-end` | `56px` | feature-centre right inset (reviewed composition) |
 
 Do not override native button/input dimensions merely to reach these values. The tokens control Wei composition and custom exceptions.
 
@@ -87,23 +103,23 @@ Do not override native button/input dimensions merely to reach these values. The
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--wei-radius-small` | `2px` | compact indicator |
-| `--wei-radius-control` | `4px` | custom control or quiet card |
-| `--wei-radius-card` | `8px` | elevated feature/summary card |
-| `--wei-radius-pill` | `9999px` | text status only |
-| `--wei-shadow-quiet` | `0 2px 6px rgba(0,0,0,.05)` | floating summary card |
-| `--wei-shadow-card` | layered 2/4/16px, 2–5% alpha | feature/onboarding card only |
-| `--wei-focus-ring` | white 2px + admin-theme 4px | custom interactive control |
+| `--wei-radius-small` | `2px` | compact indicator and chips |
+| `--wei-radius-control` | `4px` | custom control |
+| `--wei-radius-card` | `2px` | bordered section/card (WC settings flat style) |
+| `--wei-radius-pill` | `9999px` | switch track only |
+| `--wei-shadow-quiet` | `none` | reserved; WC settings UI is flat |
+| `--wei-shadow-card` | `none` | reserved; bordered cards do not float |
+| `--wei-focus-ring` | white 2px + `--wpds-color-stroke-focus` 4px | custom interactive control |
 
-A card uses either a quiet border or an elevation token. Tables and routine settings rows remain flat.
+A card uses a quiet border, not elevation. Tables and routine settings rows remain flat.
 
 ### 3.5 Layout and breakpoints
 
-| Token | Value | Use |
-| --- | ---: | --- |
-| `--wei-content-reading` | `680px` | explanatory content |
-| `--wei-content-standard` | `1120px` | ordinary page shell |
-| `--wei-content-wide` | `1280px` | operational tables |
+| Token | WPDS / fallback | Use |
+| --- | --- | --- |
+| `--wei-content-reading` | `--wpds-dimension-surface-width-xl` / `720px` | explanatory content |
+| `--wei-content-standard` | `1032px` | feature-centre shell (reviewed composition) |
+| `--wei-content-wide` | `--wpds-dimension-surface-width-2xl` / `960px` | operational admin shell |
 | `--wei-breakpoint-wide` | `1280px` | wide-grid reduction |
 | `--wei-breakpoint-admin` | `960px` | admin navigation composition |
 | `--wei-breakpoint-mobile` | `782px` | WordPress mobile behavior |
@@ -140,29 +156,39 @@ CSS custom properties cannot be used directly in media conditions; implementatio
 
 ### 4.2 Page header
 
-One `h1`, optional 680px description and an optional right-aligned action group. Do not duplicate the title inside the first card. Header actions collapse below the title under 600px.
+One compact identity row contains the local product logo, one `h1` at `--wei-font-size-page` (20px), connection status and the connected-account avatar when available. A single `--wei-content-reading` description follows with an 8px gap. The feature-centre header uses 16px vertical padding and shares the shell's left edge, but has no separate background surface, border or divider: it belongs to the page canvas rather than forming a white banner. It does not contain navigation actions: gateway configuration remains the contextual recovery action in the payment-status card. This prevents a distant header button, duplicated actions and empty banner-like space.
 
-### 4.3 Section card
+### 4.3 Notification hierarchy
+
+Notifications have three owners and must not be mixed:
+
+1. **System notices** belong to WordPress or WooCommerce and stay in the native global notice area. Wei Alipay never moves, clones or wraps third-party notices.
+2. **Plugin-page feedback** belongs to the current Wei Alipay screen and appears once, immediately after the page header and tabs, inside `.wei-alipay-notice-region`. It keeps native `notice notice-* inline` markup, dismissal behavior and live-region semantics.
+3. **Gateway/settings validation** belongs to one payment method and appears inside that gateway's settings screen, after its title/section navigation and before tools or fields, inside `.wei-alipay-settings-notices`. Disabled gateways do not emit unrelated global warnings.
+
+Only spacing and placement are customized. Notice colors, borders, icons, dismissal controls and accessibility behavior remain WordPress-owned. Use `role="alert"` for errors/warnings and `role="status"` for success/information. Do not repeat the same condition in the system area, page region and settings region.
+
+### 4.4 Section card
 
 Use a flat bordered section for routine forms and an elevated 8px card only for feature selection, onboarding or a high-level summary. Card header contains title, description and optional status/action; body contains one conceptual task. Avoid nested cards.
 
-### 4.4 Tabs and filters
+### 4.5 Tabs and filters
 
 Tabs are URL-addressable and preserve browser back/reload. Use `aria-current="page"` or the native active class. Operational status filters use `subsubsub` or a compact segmented row; search/filter is GET and mutations are POST.
 
-### 4.5 Status pill
+### 4.6 Status pill
 
 Pills contain text and optionally a 12–16px icon. Variants: neutral, info, success, warning and error. “Inactive” is neutral; “Action needed” is warning; provider/network failures are error. Do not use a pill as a button.
 
-### 4.6 Settings row
+### 4.7 Settings row
 
 A row has label, concise description, control and validation/metadata. Advanced or dangerous fields are progressively disclosed rather than mixed into the first screen. Secret values are masked and never restored into visible HTML after save.
 
-### 4.7 Data table
+### 4.8 Data table
 
 Use native table semantics, sticky behavior only when useful, 48px minimum row height, sortable headers with announced direction, status text, bounded errors and an action menu/explicit action column. Wide tables scroll inside `.wei-alipay-table-wrap`; the admin body never overflows.
 
-### 4.8 Empty, loading and error states
+### 4.9 Empty, loading and error states
 
 - Empty: 24px title at most, explanation, one primary recovery action and optional documentation link.
 - Loading: preserve geometry, apply `aria-busy="true"`, disable only the initiating control and show text plus spinner/skeleton.

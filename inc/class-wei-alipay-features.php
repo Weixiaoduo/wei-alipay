@@ -351,11 +351,21 @@ class Wei_Alipay_Features {
 		echo '<img class="wei-alipay-header-logo" src="' . esc_url( WEI_ALIPAY_PLUGIN_URL . 'assets/images/wei-alipay-placeholder.svg' ) . '" alt="" width="32" height="32">';
 		echo '<h1>' . esc_html__( 'Wei Alipay', 'wei-alipay' ) . '</h1>' . wp_kses_post( self::status_chip( $account['status_label'], $account['status_class'] ) );
 		self::render_header_account_avatar( $account );
-		echo '</div><p>' . esc_html__( 'Alipay payments, operational tools and site authorization.', 'wei-alipay' ) . '</p></div>';
-		echo '<a class="button" href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ) ) . '">' . esc_html__( 'Main gateway settings', 'wei-alipay' ) . '</a></div>';
+		echo '</div><p>' . esc_html__( 'Manage Alipay checkout, optional payment methods, operational tools and your Weixiaoduo account.', 'wei-alipay' ) . '</p></div>';
+		echo '</div>';
+		Wei_Alipay_Admin_UI::wp_header_end();
 		self::render_tabs( $view );
 		if ( isset( $_GET['features-updated'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- success notice only.
-			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Wei Alipay features saved.', 'wei-alipay' ) . '</p></div>';
+			Wei_Alipay_Admin_UI::notice_region(
+				array(
+					array(
+						'message'     => esc_html__( 'Wei Alipay features saved.', 'wei-alipay' ),
+						'type'        => 'success',
+						'dismissible' => true,
+					),
+				),
+				esc_html__( 'Wei Alipay notifications', 'wei-alipay' )
+			);
 		}
 
 		if ( 'overview' === $view ) {
@@ -429,19 +439,19 @@ class Wei_Alipay_Features {
 			$attention[] = array( __( 'The stored private key cannot be decrypted. Payments must remain disabled until the encryption key is restored.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Review key health', 'wei-alipay' ) );
 		}
 		if ( ! $payment_ready ) {
-			$attention[] = array( __( 'Complete the payment-readiness checks before accepting live payments.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Review gateway', 'wei-alipay' ) );
+			$attention[] = array( __( 'Complete gateway setup before accepting live payments.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Open gateway settings', 'wei-alipay' ) );
 		}
 		if ( 'connected' !== $account['status'] || 'warning' === $account['authorization_class'] ) {
-			$attention[] = array( __( 'Review the Weixiaoduo.com connection and locally cached feature authorization.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Review authorization', 'wei-alipay' ) );
+			$attention[] = array( __( 'Check your Weixiaoduo.com connection and cached feature authorization.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Open account', 'wei-alipay' ) );
 		}
 		if ( $failed_webhooks || false === $last_webhook_success ) {
-			$attention[] = array( __( 'One or more recent callbacks require review.', 'wei-alipay' ), admin_url( 'admin.php?page=wei-alipay-webhooks&status=failed' ), __( 'Review callbacks', 'wei-alipay' ) );
+			$attention[] = array( __( 'Some recent payment callbacks need review.', 'wei-alipay' ), admin_url( 'admin.php?page=wei-alipay-webhooks&status=failed' ), __( 'Open callback logs', 'wei-alipay' ) );
 		}
 		if ( $main_active && ( ! $order_query_scheduled || ! $timeout_scheduled ) ) {
-			$attention[] = array( __( 'One or more payment recovery schedules are missing.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-status&tab=action-scheduler' ), __( 'Review scheduled actions', 'wei-alipay' ) );
+			$attention[] = array( __( 'Some payment recovery tasks are not scheduled.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-status&tab=action-scheduler' ), __( 'Open scheduled actions', 'wei-alipay' ) );
 		}
 		if ( $update_available ) {
-			$attention[] = array( __( 'A Wei Alipay update is available in the local WordPress update cache.', 'wei-alipay' ), admin_url( 'plugins.php' ), __( 'Review update', 'wei-alipay' ) );
+			$attention[] = array( __( 'A Wei Alipay update is available.', 'wei-alipay' ), admin_url( 'plugins.php' ), __( 'Open plugins', 'wei-alipay' ) );
 		}
 		$attention = array_slice( $attention, 0, 3 );
 		$attention_count = count( $attention );
@@ -449,9 +459,9 @@ class Wei_Alipay_Features {
 		$attention_status = $attention_count ? sprintf( _n( '%d issue', '%d issues', $attention_count, 'wei-alipay' ), $attention_count ) : __( 'No local issues', 'wei-alipay' );
 
 		echo '<div class="wei-alipay-summary-grid">';
-		self::summary_card( __( 'Payment status', 'wei-alipay' ), $payment_ready ? __( 'Ready to accept payments', 'wei-alipay' ) : __( 'Action needed', 'wei-alipay' ), $payment_ready ? 'success' : 'warning', $payment_ready ? __( 'The local gateway checks are ready.', 'wei-alipay' ) : __( 'Complete the blocking gateway checks before accepting live payments.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Open gateway settings', 'wei-alipay' ) );
-		self::summary_card( __( 'Account authorization', 'wei-alipay' ), $account['status_label'], $account['status_class'], __( 'Connection and authorization are managed separately from payment processing.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Review account', 'wei-alipay' ) );
-		self::summary_card( __( 'Needs attention', 'wei-alipay' ), $attention_status, $attention_count ? 'warning' : 'success', $attention_count ? __( 'Only the three highest-priority local issues are shown.', 'wei-alipay' ) : __( 'No blocking local setup issue was detected.', 'wei-alipay' ), $attention_count ? '#wei-alipay-attention' : '#wei-alipay-diagnostics', $attention_count ? __( 'Review issues', 'wei-alipay' ) : __( 'View diagnostic details', 'wei-alipay' ) );
+		self::summary_card( __( 'Payment status', 'wei-alipay' ), $payment_ready ? __( 'Ready to accept payments', 'wei-alipay' ) : __( 'Action needed', 'wei-alipay' ), $payment_ready ? 'success' : 'warning', $payment_ready ? __( 'Gateway credentials and security checks passed.', 'wei-alipay' ) : __( 'Complete the blocking gateway checks before accepting live payments.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Open gateway settings', 'wei-alipay' ) );
+		self::summary_card( __( 'Account authorization', 'wei-alipay' ), $account['status_label'], $account['status_class'], __( 'Weixiaoduo account connection is separate from Alipay payment processing.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Open account', 'wei-alipay' ) );
+		self::summary_card( __( 'Needs attention', 'wei-alipay' ), $attention_status, $attention_count ? 'warning' : 'success', $attention_count ? __( 'Up to three setup issues are listed below.', 'wei-alipay' ) : __( 'No blocking setup issues were found.', 'wei-alipay' ), $attention_count ? '#wei-alipay-attention' : '#wei-alipay-diagnostics', $attention_count ? __( 'View issues', 'wei-alipay' ) : __( 'View details', 'wei-alipay' ) );
 		echo '</div>';
 
 		if ( $attention_count ) {
@@ -462,25 +472,25 @@ class Wei_Alipay_Features {
 			echo '</ul></section>';
 		}
 
-		echo '<div class="wei-alipay-overview-details" id="wei-alipay-diagnostics" aria-label="' . esc_attr__( 'Detailed local status', 'wei-alipay' ) . '">';
-		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"' . ( $payment_ready ? '' : ' open' ) . '><summary><span>' . esc_html__( 'Payment environment and security', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $payment_ready ? __( 'Ready', 'wei-alipay' ) : __( 'Action needed', 'wei-alipay' ), $payment_ready ? 'success' : 'warning' ) ) . '</summary><div><p>' . esc_html__( 'Local readiness evidence; no Alipay request is made when this section is opened.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
+		echo '<div class="wei-alipay-overview-details" id="wei-alipay-diagnostics" aria-label="' . esc_attr__( 'Setup details', 'wei-alipay' ) . '">';
+		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"' . ( $payment_ready ? '' : ' open' ) . '><summary><span>' . esc_html__( 'Payment environment and security', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $payment_ready ? __( 'Ready', 'wei-alipay' ) : __( 'Action needed', 'wei-alipay' ), $payment_ready ? 'success' : 'warning' ) ) . '</summary><div><p>' . esc_html__( 'Local checks only. Opening this section does not contact Alipay.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
 		self::overview_status_row( __( 'Payment environment', 'wei-alipay' ), $sandbox ? __( 'Sandbox', 'wei-alipay' ) : __( 'Live', 'wei-alipay' ), $sandbox ? 'light' : 'warning' );
 		self::overview_status_row( __( 'Gateway enabled', 'wei-alipay' ), $main_active ? __( 'Enabled', 'wei-alipay' ) : __( 'Disabled', 'wei-alipay' ), $main_active ? 'success' : 'warning' );
 		self::overview_status_row( __( 'Merchant credentials', 'wei-alipay' ), $gateway_ready ? __( 'Configured', 'wei-alipay' ) : __( 'Configuration required', 'wei-alipay' ), $gateway_ready ? 'success' : 'warning' );
 		self::overview_status_row( __( 'Private key protection', 'wei-alipay' ), self::secret_protection_label( $secret_health ), self::secret_protection_class( $secret_health ) );
 		self::overview_status_row( __( 'Store currency', 'wei-alipay' ), $currency ? strtoupper( (string) $currency ) : __( 'Unknown', 'wei-alipay' ), $currency_ready ? 'success' : 'warning' );
 		self::overview_status_row( __( 'Secure callback URL', 'wei-alipay' ), $site_secure ? __( 'HTTPS', 'wei-alipay' ) : __( 'HTTPS required', 'wei-alipay' ), $site_secure ? 'success' : 'warning' );
-		echo '</div><a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ) ) . '">' . esc_html__( 'Review gateway configuration', 'wei-alipay' ) . '</a></div></details>';
+		echo '</div><a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ) ) . '">' . esc_html__( 'Open gateway settings', 'wei-alipay' ) . '</a></div></details>';
 
 		$last_error_code = (string) $health['webhook']['last_error_code'];
 		$reliability_label = $reliability_issue ? __( 'Review required', 'wei-alipay' ) : ( $last_webhook_at ? __( 'No issue recorded', 'wei-alipay' ) : __( 'No callback sample', 'wei-alipay' ) );
-		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"' . ( $payment_ready && $reliability_issue ? ' open' : '' ) . '><summary><span>' . esc_html__( 'Callbacks and background recovery', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $reliability_label, $reliability_issue ? 'warning' : 'light' ) ) . '</summary><div><p>' . esc_html__( 'A missing sample is reported separately from a successful observation.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
+		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"' . ( $payment_ready && $reliability_issue ? ' open' : '' ) . '><summary><span>' . esc_html__( 'Callbacks and background recovery', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $reliability_label, $reliability_issue ? 'warning' : 'light' ) ) . '</summary><div><p>' . esc_html__( 'No callback sample means no data yet, not that callbacks are broken.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
 		self::overview_status_row( __( 'Last callback', 'wei-alipay' ), $last_webhook_label, $last_webhook_class );
 		self::overview_status_row( __( 'Last callback issue', 'wei-alipay' ), $last_error_code ? str_replace( '_', ' ', $last_error_code ) : __( 'None recorded', 'wei-alipay' ), $last_error_code ? 'warning' : 'light' );
 		self::overview_status_row( __( 'Unresolved callback failures', 'wei-alipay' ), number_format_i18n( $failed_webhooks ), $failed_webhooks ? 'warning' : 'light' );
 		self::overview_status_row( __( 'Last pending-order check', 'wei-alipay' ), self::job_status_label( $health['jobs']['order_query'], $order_query_scheduled ), $order_query_scheduled ? 'light' : ( $main_active ? 'warning' : 'light' ) );
 		self::overview_status_row( __( 'Last timeout check', 'wei-alipay' ), self::job_status_label( $health['jobs']['timeout'], $timeout_scheduled ), $timeout_scheduled ? 'light' : ( $main_active ? 'warning' : 'light' ) );
-		echo '</div><a href="' . esc_url( admin_url( 'admin.php?page=wei-alipay-webhooks' ) ) . '">' . esc_html__( 'Review callback logs', 'wei-alipay' ) . '</a></div></details>';
+		echo '</div><a href="' . esc_url( admin_url( 'admin.php?page=wei-alipay-webhooks' ) ) . '">' . esc_html__( 'Open callback logs', 'wei-alipay' ) . '</a></div></details>';
 
 		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"><summary><span>' . esc_html__( 'Compatibility and diagnostics', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $blocks_loaded ? __( 'Integration loaded', 'wei-alipay' ) : __( 'Not loaded', 'wei-alipay' ), $blocks_loaded ? 'light' : 'warning' ) ) . '</summary><div><div class="wei-alipay-overview-list">';
 		self::overview_status_row( __( 'Order storage', 'wei-alipay' ), $hpos_enabled ? __( 'HPOS enabled', 'wei-alipay' ) : __( 'WordPress posts mode', 'wei-alipay' ), 'light' );
@@ -490,14 +500,14 @@ class Wei_Alipay_Features {
 		echo '</div><a href="' . esc_url( admin_url( 'admin.php?page=wc-status' ) ) . '">' . esc_html__( 'Open WooCommerce status', 'wei-alipay' ) . '</a></div></details>';
 
 		$orders_url = $hpos_enabled ? admin_url( 'admin.php?page=wc-orders' ) : admin_url( 'edit.php?post_type=shop_order' );
-		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"><summary><span>' . esc_html__( 'Payment activity in the last 7 days', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $activity_total ? __( 'Events recorded', 'wei-alipay' ) : __( 'No payment sample recorded', 'wei-alipay' ), 'light' ) ) . '</summary><div><p>' . esc_html__( 'Local event counters recorded by this plugin version; no amounts or customer data are stored.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
+		echo '<details class="wei-alipay-disclosure wei-alipay-overview-disclosure"><summary><span>' . esc_html__( 'Payment activity in the last 7 days', 'wei-alipay' ) . '</span>' . wp_kses_post( self::status_chip( $activity_total ? __( 'Events recorded', 'wei-alipay' ) : __( 'No payment sample recorded', 'wei-alipay' ), 'light' ) ) . '</summary><div><p>' . esc_html__( 'Counts successful, failed and refunded payments from this plugin only. Amounts and customer data are not stored.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
 		self::overview_status_row( __( 'Activity sample', 'wei-alipay' ), $activity_total ? __( 'Events recorded', 'wei-alipay' ) : __( 'No payment sample recorded', 'wei-alipay' ), $activity_total ? 'success' : 'light' );
 		self::overview_status_row( __( 'Successful payments', 'wei-alipay' ), number_format_i18n( $activity['paid'] ), $activity['paid'] ? 'success' : 'light' );
 		self::overview_status_row( __( 'Failed payments', 'wei-alipay' ), number_format_i18n( $activity['failed'] ), $activity['failed'] ? 'warning' : 'light' );
 		self::overview_status_row( __( 'Refunds created', 'wei-alipay' ), number_format_i18n( $activity['refunded'] ), 'light' );
 		self::overview_status_row( __( 'Payment success rate', 'wei-alipay' ), null === $activity['success_rate'] ? __( 'Not enough data', 'wei-alipay' ) : $activity['success_rate'] . '%', null === $activity['success_rate'] ? 'light' : ( $activity['success_rate'] >= 95 ? 'success' : 'warning' ) );
 		echo '</div><a href="' . esc_url( $orders_url ) . '">' . esc_html__( 'Open WooCommerce orders', 'wei-alipay' ) . '</a></div></details>';
-		echo '</div><p class="description wei-alipay-overview-caveat">' . esc_html__( 'Local checks and an empty issue list do not replace an Alipay sandbox acceptance test.', 'wei-alipay' ) . '</p>';
+		echo '</div><p class="description wei-alipay-overview-caveat">' . esc_html__( 'Passing local checks does not replace an Alipay sandbox acceptance test.', 'wei-alipay' ) . '</p>';
 	}
 
 	/**
@@ -617,7 +627,7 @@ class Wei_Alipay_Features {
 		if ( 'connected' === $account['status'] ) {
 			echo '<p>' . esc_html( $account['account_label'] ) . '</p>';
 		} else {
-			echo '<p>' . esc_html__( 'Connect once to manage this site, free feature access, commercial authorization and updates.', 'wei-alipay' ) . '</p>';
+			echo '<p>' . esc_html__( 'Connect your Weixiaoduo account to unlock free features, commercial authorization and updates.', 'wei-alipay' ) . '</p>';
 		}
 		echo '</div></div><div class="wei-alipay-account__actions">';
 		if ( 'connected' === $account['status'] && $account['manage_url'] ) {
@@ -751,7 +761,7 @@ class Wei_Alipay_Features {
 	 * Render one feature group. Saving this form leaves the other group intact.
 	 */
 	private static function render_feature_form( $group, $enabled, $main_active ) {
-		echo '<div class="wei-alipay-features__notice" role="status"><strong>' . esc_html__( 'Controlled activation', 'wei-alipay' ) . '</strong><span>' . esc_html__( 'Unavailable products stay off until their dependency, Alipay admission and Wei Alipay authorization requirements are satisfied.', 'wei-alipay' ) . '</span></div>';
+		echo '<div class="notice notice-info inline" role="status"><p><strong>' . esc_html__( 'How activation works', 'wei-alipay' ) . '</strong> ' . esc_html__( 'Features stay off until dependencies, Alipay product approval and Wei Alipay authorization are all satisfied.', 'wei-alipay' ) . '</p></div>';
 		if ( 'payment' === $group ) {
 			self::render_enabled_payment_summary( $enabled );
 		}
@@ -761,9 +771,9 @@ class Wei_Alipay_Features {
 		wp_nonce_field( 'wei_alipay_save_features' );
 		if ( 'payment' === $group ) {
 			self::render_required_gateway( $main_active );
-			self::render_group( 'payment', __( 'Optional payment methods', 'wei-alipay' ), __( 'Only enabled methods are registered with WooCommerce and shown in its Payments list.', 'wei-alipay' ), $enabled );
+			self::render_group( 'payment', __( 'Optional payment methods', 'wei-alipay' ), __( 'Enabled methods appear in WooCommerce → Settings → Payments.', 'wei-alipay' ), $enabled );
 		} else {
-			self::render_group( 'operations', __( 'Operational tools', 'wei-alipay' ), __( 'Disabled tools do not register admin pages or background processing.', 'wei-alipay' ), $enabled );
+			self::render_group( 'operations', __( 'Operational tools', 'wei-alipay' ), __( 'Disabled tools hide their admin pages and stop background jobs.', 'wei-alipay' ), $enabled );
 		}
 
 		echo '<div class="wei-alipay-features__actions"><span class="wei-alipay-features__dirty" aria-live="polite"></span><button type="submit" class="button button-primary" disabled>' . esc_html__( 'Save feature settings', 'wei-alipay' ) . '</button></div>';
@@ -773,7 +783,7 @@ class Wei_Alipay_Features {
 	private static function render_required_gateway( $active ) {
 		$status = $active ? __( 'Active', 'wei-alipay' ) : __( 'Action needed', 'wei-alipay' );
 		$class = $active ? 'success' : 'warning';
-		echo '<section class="wei-alipay-features__section"><div class="wei-alipay-features__section-copy"><h2>' . esc_html__( 'Main payment gateway', 'wei-alipay' ) . '</h2><p>' . esc_html__( 'The core Alipay gateway is always available and cannot be removed here.', 'wei-alipay' ) . '</p></div>';
+		echo '<section class="wei-alipay-features__section"><div class="wei-alipay-features__section-copy"><h2>' . esc_html__( 'Main payment gateway', 'wei-alipay' ) . '</h2><p>' . esc_html__( 'Standard Alipay checkout. Configure credentials in WooCommerce gateway settings.', 'wei-alipay' ) . '</p></div>';
 		echo '<div class="wei-alipay-features__card"><div class="wei-alipay-features__row is-required"><span class="dashicons dashicons-money-alt" aria-hidden="true"></span><div class="wei-alipay-features__row-copy"><div class="wei-alipay-features__title">' . esc_html__( 'Alipay', 'wei-alipay' ) . ' <span class="wei-alipay-chip is-' . esc_attr( $class ) . '">' . esc_html( $status ) . '</span></div><p>' . esc_html__( 'Standard Alipay checkout for CNY stores.', 'wei-alipay' ) . '</p></div><span class="wei-alipay-chip is-light">' . esc_html__( 'Required', 'wei-alipay' ) . '</span></div></div></section>';
 	}
 
@@ -800,7 +810,7 @@ class Wei_Alipay_Features {
 			return;
 		}
 
-		echo '<section class="wei-alipay-overview-panel is-wide"><h2>' . esc_html__( 'Enabled payment services', 'wei-alipay' ) . '</h2><p>' . esc_html__( 'A quick readiness summary; activation and configuration remain in the payment-method list below.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
+		echo '<section class="wei-alipay-overview-panel is-wide"><h2>' . esc_html__( 'Enabled payment services', 'wei-alipay' ) . '</h2><p>' . esc_html__( 'Quick readiness check. Turn methods on or off in the list below.', 'wei-alipay' ) . '</p><div class="wei-alipay-overview-list">';
 		foreach ( $active as $feature ) {
 			$configured = self::is_configured( $feature );
 			self::overview_status_row( $feature['name'], $configured ? __( 'Ready', 'wei-alipay' ) : __( 'Configuration required', 'wei-alipay' ), $configured ? 'success' : 'warning' );

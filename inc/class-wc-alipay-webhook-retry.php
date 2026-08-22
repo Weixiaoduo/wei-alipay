@@ -367,6 +367,7 @@ class WC_Alipay_Webhook_Retry {
 		global $wpdb;
 		
 		$table_name = $wpdb->prefix . self::TABLE_NAME;
+		$retry_notice = false;
 		
 		// Handle bulk actions
 		if ( isset( $_POST['action'], $_POST['webhook_ids'] ) && 'retry_selected' === sanitize_key( wp_unslash( $_POST['action'] ) ) ) {
@@ -385,7 +386,7 @@ class WC_Alipay_Webhook_Retry {
 				}
 			}
 			
-			echo '<div class="notice notice-success"><p>' . esc_html__( 'Selected webhooks have been retried.', 'wei-alipay' ) . '</p></div>';
+			$retry_notice = true;
 		}
 
 		// Get statistics
@@ -421,6 +422,9 @@ class WC_Alipay_Webhook_Retry {
 				__( 'Wei Alipay Webhook Logs', 'wei-alipay' ),
 				__( 'Inspect callback processing and retry failed records. Stored request data is limited to an allow-list and never includes signatures or private keys.', 'wei-alipay' )
 			);
+			if ( $retry_notice ) {
+				echo '<div class="notice notice-success"><p>' . esc_html__( 'Selected webhooks have been retried.', 'wei-alipay' ) . '</p></div>';
+			}
 			?>
 			
 			<ul class="subsubsub" aria-label="<?php echo esc_attr__( 'Webhook status filters', 'wei-alipay' ); ?>">

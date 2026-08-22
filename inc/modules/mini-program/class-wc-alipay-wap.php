@@ -90,7 +90,6 @@ class Wei_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         }
 
         // Actions
-        add_action( 'admin_notices', array( $this, 'requirement_checks' ) );
         add_action( 'woocommerce_update_options_payment_gateways_wap', array( $this, 'process_admin_options' ) ); // WC <= 1.6.6
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) ); // WC >= 2.0
         add_action( 'woocommerce_thankyou_alipay_wap', array( $this, 'thankyou_page' ) );
@@ -149,17 +148,17 @@ class Wei_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         $currency = $this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency;
         if ( !in_array( $currency, array( 'RMB', 'CNY'), true ) && !$this->exchange_rate ) {
             /* translators: %1$s: link to the exchange rate settings page. %2$s: effective checkout currency code. */
-            echo '<div class="error"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'wei-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $currency ) ) ) . '</p></div>';
+            echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . wp_kses_post( sprintf( __('Alipay is enabled, but the store currency is not set to Chinese Yuan. Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'wei-alipay' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay_wap#woocommerce_alipay_exchange_rate' ) ), esc_html( $currency ) ) ) . '</p></div>';
         }
 
         $protocol = $this->selected_protocol();
         $missing_fields = $this->get_missing_core_fields();
         if ( Wei_Alipay_Mini_Protocol::RSA2 === $protocol && ! empty( $missing_fields ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
+            echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html( sprintf( __( 'Alipay core configuration is incomplete. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing_fields ) ) ) . '</p></div>';
         }
         if ( is_wp_error( $protocol ) ) {
-            echo '<div class="error"><p>' . esc_html( $protocol->get_error_message() ) . '</p></div>';
+            echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html( $protocol->get_error_message() ) . '</p></div>';
         }
     }
 
@@ -256,6 +255,9 @@ class Wei_Alipay_Mini_Program_Gateway extends WC_Payment_Gateway {
         ?>
         <h3><?php esc_html_e('Alipay', 'wei-alipay'); ?></h3>
         <p><?php esc_html_e('Alipay is a simple, secure and fast online payment method, customer can pay via debit card, credit card or alipay balance.', 'wei-alipay'); ?></p>
+        <section class="wei-alipay-settings-notices" aria-label="<?php esc_attr_e( 'Gateway notifications', 'wei-alipay' ); ?>">
+            <?php $this->requirement_checks(); ?>
+        </section>
        
         <table class="form-table">
             <?php
