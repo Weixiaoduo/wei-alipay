@@ -34,6 +34,8 @@ run_contracts() {
   php "$ROOT_DIR/tests/translation-contracts.php"
   php "$ROOT_DIR/tests/security-contracts.php"
   php "$ROOT_DIR/tests/sdk-signing-contracts.php"
+  php "$ROOT_DIR/tests/reconcile-details-contracts.php"
+  php "$ROOT_DIR/tests/reconcile-runtime-contracts.php"
   php "$ROOT_DIR/tests/cross-border-availability-contracts.php"
   php "$ROOT_DIR/tests/release-security-contracts.php"
   php "$ROOT_DIR/tests/multisite-lifecycle-contracts.php"

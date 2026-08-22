@@ -240,6 +240,10 @@ body.toplevel_page_wei-alipay #wpbody-content {
 	min-width: var(--wei-content-reading);
 }
 
+.wei-alipay-table-wrap .wei-alipay-reconcile-table {
+	min-width: var(--wei-content-wide);
+}
+
 .wei-alipay-inline-form {
 	display: inline-block;
 	margin: 0;

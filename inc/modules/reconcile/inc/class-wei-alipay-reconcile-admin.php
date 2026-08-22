@@ -4,6 +4,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 class Wei_Alipay_Reconcile_Admin {
     const OPTION_KEY = 'woo_alipay_reconcile_pro_settings';
 
+    public static function result_transient_key( $user_id = null ) {
+        $user_id = null === $user_id ? get_current_user_id() : absint( $user_id );
+        return 'woo_alipay_reconcile_last_result_' . $user_id;
+    }
+
     public function __construct() {
         add_action( 'admin_menu', array( $this, 'add_menu' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
@@ -135,9 +140,10 @@ class Wei_Alipay_Reconcile_Admin {
         echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Manual reconciliation downloads a statement from Alipay. It does not send a payment or refund, but it does contact the configured provider environment.', 'wei-alipay' ) . '</p></div>';
 
         // Result panel
-        $last = get_transient( 'woo_alipay_reconcile_last_result' );
+        $result_key = self::result_transient_key();
+        $last = get_transient( $result_key );
         if ( $last ) {
-            delete_transient( 'woo_alipay_reconcile_last_result' );
+            delete_transient( $result_key );
             if ( ! empty( $last['error'] ) ) {
                 echo '<div class="notice notice-error"><p>' . esc_html( $last['error'] ) . '</p></div>';
             } else {
@@ -153,17 +159,7 @@ class Wei_Alipay_Reconcile_Admin {
                     intval( $last['unmatched'] ?? 0 )
                 );
                 echo '</p>';
-                if ( ! empty( $last['file_url'] ) ) {
-                    /* translators: %s: link to the downloaded source file */
-                    echo '<p>' . sprintf( esc_html__( 'Source file: %s', 'wei-alipay' ), '<a href="' . esc_url( $last['file_url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( basename( $last['file'] ) ) . '</a>' ) . '</p>';
-                }
-                if ( ! empty( $last['notes'] ) && is_array( $last['notes'] ) ) {
-                    echo '<details><summary>' . esc_html__( 'Details', 'wei-alipay' ) . '</summary><ul class="ul-disc">';
-                    foreach ( $last['notes'] as $note ) {
-                        echo '<li>' . esc_html( $note ) . '</li>';
-                    }
-                    echo '</ul></details>';
-                }
+                $this->render_result_details( $last );
             }
         }
 
@@ -187,6 +183,119 @@ class Wei_Alipay_Reconcile_Admin {
         }
 
         echo '</div>';
+    }
+
+    private function render_result_details( $result ) {
+        $details = isset( $result['details'] ) && is_array( $result['details'] ) ? $result['details'] : array();
+        $counts = isset( $result['detail_counts'] ) && is_array( $result['detail_counts'] ) ? $result['detail_counts'] : array();
+        $anomalies = isset( $details['anomalies'] ) && is_array( $details['anomalies'] ) ? $details['anomalies'] : array();
+        $matched = isset( $details['matched'] ) && is_array( $details['matched'] ) ? $details['matched'] : array();
+
+        echo '<p class="description">' . esc_html__( 'Reconciliation only reports differences. It never changes an order, captures funds, closes a trade, or issues a refund.', 'wei-alipay' ) . '</p>';
+
+        $anomaly_total = absint( $counts['anomalies'] ?? count( $anomalies ) );
+        $matched_total = absint( $counts['matched'] ?? count( $matched ) );
+        if ( $anomaly_total > 0 ) {
+            echo '<details open class="wei-alipay-reconcile-results">';
+            /* translators: %d: anomaly count. */
+            echo '<summary><strong>' . esc_html( sprintf( __( 'Exceptions requiring review (%d)', 'wei-alipay' ), $anomaly_total ) ) . '</strong></summary>';
+            $this->render_result_table( $anomalies );
+            $this->render_result_limit_notice( count( $anomalies ), $anomaly_total );
+            echo '</details>';
+        } else {
+            echo '<div class="notice notice-success inline"><p>' . esc_html__( 'No amount mismatch or unmatched statement row was found.', 'wei-alipay' ) . '</p></div>';
+        }
+
+        if ( $matched_total > 0 ) {
+            echo '<details class="wei-alipay-reconcile-results">';
+            /* translators: %d: matched count. */
+            echo '<summary><strong>' . esc_html( sprintf( __( 'Matched rows (%d)', 'wei-alipay' ), $matched_total ) ) . '</strong></summary>';
+            $this->render_result_table( $matched );
+            $this->render_result_limit_notice( count( $matched ), $matched_total );
+            echo '</details>';
+        }
+    }
+
+    private function render_result_limit_notice( $shown, $total ) {
+        if ( $shown >= $total ) {
+            return;
+        }
+        /* translators: %1$d: displayed rows. %2$d: total rows in category. */
+        echo '<p class="description">' . esc_html( sprintf( __( 'Showing the first %1$d of %2$d rows. Narrow the statement date before retrying.', 'wei-alipay' ), $shown, $total ) ) . '</p>';
+    }
+
+    private function render_result_table( $rows ) {
+        if ( empty( $rows ) ) {
+            return;
+        }
+        echo '<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat striped wei-alipay-reconcile-table"><thead><tr>';
+        echo '<th>' . esc_html__( 'Result', 'wei-alipay' ) . '</th>';
+        echo '<th>' . esc_html__( 'Merchant order number', 'wei-alipay' ) . '</th>';
+        echo '<th>' . esc_html__( 'Alipay trade number', 'wei-alipay' ) . '</th>';
+        echo '<th>' . esc_html__( 'Statement / order amount', 'wei-alipay' ) . '</th>';
+        echo '<th>' . esc_html__( 'Statement status / time', 'wei-alipay' ) . '</th>';
+        echo '<th>' . esc_html__( 'WooCommerce order', 'wei-alipay' ) . '</th>';
+        echo '<th>' . esc_html__( 'Reason', 'wei-alipay' ) . '</th>';
+        echo '</tr></thead><tbody>';
+        foreach ( $rows as $row ) {
+            $row = is_array( $row ) ? $row : array();
+            $result = sanitize_key( $row['result'] ?? '' );
+            $order_id = absint( $row['order_id'] ?? 0 );
+            $order = $order_id ? wc_get_order( $order_id ) : false;
+            echo '<tr>';
+            echo '<td>' . esc_html( $this->result_label( $result ) ) . '</td>';
+            echo '<td><code>' . esc_html( (string) ( $row['out_trade_no'] ?? '' ) ) . '</code></td>';
+            echo '<td><code>' . esc_html( (string) ( $row['trade_no_masked'] ?? '' ) ) . '</code></td>';
+            echo '<td>' . esc_html( $this->amount_pair_label( $row ) ) . '</td>';
+            echo '<td>' . esc_html( $this->statement_state_label( $row ) ) . '</td>';
+            echo '<td>';
+            if ( $order && current_user_can( 'edit_shop_order', $order_id ) ) {
+                echo '<a href="' . esc_url( $order->get_edit_order_url() ) . '">' . esc_html( sprintf( '#%s', $order->get_order_number() ) ) . '</a>';
+                echo '<br><span class="description">' . esc_html( wc_get_order_status_name( $order->get_status() ) ) . '</span>';
+            } else {
+                echo '&mdash;';
+            }
+            echo '</td>';
+            echo '<td>' . esc_html( $this->reason_label( sanitize_key( $row['reason'] ?? '' ) ) ) . '</td>';
+            echo '</tr>';
+        }
+        echo '</tbody></table></div>';
+    }
+
+    private function result_label( $result ) {
+        $labels = array(
+            'matched'    => __( 'Matched', 'wei-alipay' ),
+            'mismatched' => __( 'Amount mismatch', 'wei-alipay' ),
+            'unmatched'  => __( 'Unmatched', 'wei-alipay' ),
+        );
+        return $labels[ $result ] ?? __( 'Unknown', 'wei-alipay' );
+    }
+
+    private function reason_label( $reason ) {
+        $labels = array(
+            'amounts_match'                    => __( 'Statement and order amounts match.', 'wei-alipay' ),
+            'amount_mismatch'                  => __( 'Statement and WooCommerce order amounts differ.', 'wei-alipay' ),
+            'missing_merchant_order_number'    => __( 'The statement row has no merchant order number.', 'wei-alipay' ),
+            'different_site'                   => __( 'The merchant order number belongs to another site in this network.', 'wei-alipay' ),
+            'unrecognized_merchant_order_number'=> __( 'The merchant order number format is not recognized.', 'wei-alipay' ),
+            'order_not_found'                  => __( 'No WooCommerce order exists for the parsed order ID.', 'wei-alipay' ),
+            'merchant_order_number_not_bound'  => __( 'The order exists, but its stored merchant order number does not match this statement row.', 'wei-alipay' ),
+        );
+        return $labels[ $reason ] ?? __( 'Review this statement row manually.', 'wei-alipay' );
+    }
+
+    private function amount_pair_label( $row ) {
+        $statement = (string) ( $row['statement_amount'] ?? '' );
+        $order = (string) ( $row['order_amount'] ?? '' );
+        return '' === $order ? $statement : $statement . ' / ' . $order;
+    }
+
+    private function statement_state_label( $row ) {
+        $parts = array_filter( array(
+            sanitize_text_field( (string) ( $row['trade_status'] ?? '' ) ),
+            sanitize_text_field( (string) ( $row['completed_at'] ?? '' ) ),
+        ) );
+        return empty( $parts ) ? '—' : implode( ' / ', $parts );
     }
 
     public function field_enable_schedule() {
