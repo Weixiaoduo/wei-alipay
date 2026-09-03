@@ -1,4 +1,6 @@
-# Woo Alipay handoff
+# Wei Alipay handoff
+
+> 2026-09-03 naming note: the product, FeiCode repository and GitHub mirror now use `wei-alipay` / `Weixiaoduo/wei-alipay`. Existing `woo-alipay` names below are immutable historical URLs, paths, branches or stable runtime compatibility identifiers, not the current product identity.
 
 ## [CX] 2026-08-09 comprehensive audit/remediation
 
@@ -314,3 +316,10 @@
 - Added 14 static reconciliation contracts and an offline 4-row parser fixture with 14 assertions covering one match, one amount mismatch, missing order, cross-site row, masked provider ID, status/time and the Woo order link. `./scripts/ci-local.sh` exit 0: 80 first-party PHP files plus first-party JavaScript syntax, all contracts, PHPStan 58/58 with 0 errors and reproducible A/B ZIP. The pre-commit reproducibility run produced a 9,026,469-byte candidate; the exact committed-head hash is recorded in the Mac acceptance log. Targeted WordPress security PHPCS over the three runtime PHP files exit 0; full WordPress style PHPCS remains legacy debt and was not formatted wholesale.
 - POT now contains 993 msgids; zh_CN has untranslated=0 and fuzzy=0, compiled MO passes `msgfmt --check --check-format`. The generated support header now points to Weixiaoduo.com rather than a worktree-derived wordpress.org slug.
 - Local Studio WordPress 7.1 / WooCommerce 11.0.1 / PHP 8.4 used a synthetic, non-provider three-row result only for UI acceptance. At the normal viewport: 2 result tables, exactly 1 open exception disclosure, 1 matched disclosure closed. At 400px: document scroll width=viewport=400, both table wrappers 378px viewport / 960px content / `overflow-x:auto`, one H1 and one open exception disclosure; console errors=0. Temporary result transients were deleted and six unrelated test plugins were restored to their prior active state. No Alipay request, payment, refund, close or production write occurred.
+
+## 2026-09-03 - [CX] Canonical name migration to Wei Alipay
+
+- FeiCode and GitHub repositories were renamed from the historical `Weixiaoduo/woo-alipay` path to `Weixiaoduo/wei-alipay`; current development, review and mirror references now use the new path.
+- The WenPai resident checkout is `/home/parallels/Projects/wei-alipay`. All eight worktrees registered before the migration kept the same HEAD, branch/detached state and dirty fingerprints after `git worktree repair`; the pre-existing dirty `wei-alipay-cx-401` worktree was preserved. This naming-only candidate was created afterward as a ninth isolated worktree.
+- Product/package/plugin identities use `wei-alipay` and `Wei Alipay`. Existing `woo_alipay_*`, `WOO_ALIPAY_*`, encrypted prefixes, option names, hooks, cron names, historical URLs, paths and branch names remain compatibility or historical evidence and were not mass-renamed.
+- This isolated branch changes current documentation and release metadata only. It does not deploy, change active plugins, rewrite payment data, contact Alipay, create a payment/refund, merge, tag or publish a Release.

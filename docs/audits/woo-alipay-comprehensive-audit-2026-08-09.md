@@ -1,5 +1,7 @@
 # Woo Alipay comprehensive audit — 2026-08-09
 
+> Historical naming note (2026-09-03): the current product and repository name is `Wei Alipay` / `Weixiaoduo/wei-alipay`. The `Woo Alipay` title, old URLs, paths, branch names and package names below are preserved as evidence from this audit date.
+
 > [CX] Scope: FeiCode source `ssh://git@feicode.com:2222/Weixiaoduo/woo-alipay.git`, commit `d135d670b1ee8ff0dcdc02e55f72e5b5312f1c47`, isolated branch `codex/woo-alipay-audit-20260809`. No production deployment, release, live merchant API call, or real transaction was performed.
 
 ## Source and boundary evidence

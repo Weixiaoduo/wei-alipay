@@ -2,7 +2,7 @@
 
 Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixiaoduo.com/) 维护的 WooCommerce 支付宝网关。项目面向中国大陆支付宝商户，主网关支持电脑网站支付、手机网站支付、退款、异步通知和人民币换算，并提供若干按商户签约能力启用的扩展模块。
 
-> 4.0.1 是 FeiCode 发布候选；mall.weixiaoduo.com 当前仍运行 4.0.0，生产升级需要独立备份、验证与回滚门。FeiCode 是开发上游；当前 GitHub `Weixiaoduo/woo-alipay` 只作为公开下游；远端完成审批改名后目标为 `Weixiaoduo/wei-alipay`。
+> 当前候选版本为 4.0.1；mall.weixiaoduo.com 也运行 4.0.1，但 live 仍有 2 个 PHP 修订未回收到任何 Git ref，本候选不得用于直接覆盖生产。FeiCode `Weixiaoduo/wei-alipay` 是开发上游；GitHub `Weixiaoduo/wei-alipay` 只作为公开下游。旧仓名 `woo-alipay` 仅用于历史链接和运行兼容标识。
 
 ## 运行要求
 
@@ -86,7 +86,7 @@ Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixi
 
 ## 源码、问题与安全报告
 
-开发、评审、CI、标签和 Release 以 FeiCode `Weixiaoduo/woo-alipay` 的精确提交为准；仓库正式改名完成前不要根据显示名称猜测远端地址。GitHub（当前 `Weixiaoduo/woo-alipay`，计划改名为 `Weixiaoduo/wei-alipay`）仅接收审批后精确 SHA 的单向快进同步，不接受反向开发。
+开发、评审、CI、标签和 Release 以 FeiCode `Weixiaoduo/wei-alipay` 的精确提交为准。GitHub `Weixiaoduo/wei-alipay` 仅接收审批后精确 SHA 的单向快进同步，不接受反向开发。历史文档中的 `Weixiaoduo/woo-alipay` URL、分支和路径只用于还原当时证据，不是当前远端地址。
 
 问题报告不得包含真实私钥、应用密钥、完整通知报文、客户身份信息或可用交易凭据。支付安全问题请通过 Weixiaoduo.com 的私有支持渠道提交脱敏复现材料。
 

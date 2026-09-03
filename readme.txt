@@ -36,7 +36,7 @@ Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+. The 4.0.1 candidate was
 
 = Source and support =
 
-Wei Alipay is developed by Weixiaoduo.com. FeiCode is the canonical development upstream. The current `Weixiaoduo/woo-alipay` GitHub repository is a downstream mirror. After an approved remote rename, its target name is `Weixiaoduo/wei-alipay`; only approved FeiCode commits may be synchronized.
+Wei Alipay is developed by Weixiaoduo.com. FeiCode `Weixiaoduo/wei-alipay` is the canonical development upstream, and GitHub `Weixiaoduo/wei-alipay` is a downstream mirror. The former `woo-alipay` name is retained only in historical references and stable runtime compatibility identifiers; only approved FeiCode commits may be synchronized.
 
 The project preserves applicable upstream copyright and license notices. Third-party component provenance and license status are recorded in the package SBOM.
 

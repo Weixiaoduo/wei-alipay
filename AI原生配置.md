@@ -49,8 +49,8 @@ developer: Weixiaoduo.com
 candidate_version: 4.0.1
 package_slug: wei-alipay
 text_domain: wei-alipay
-canonical_upstream: FeiCode Weixiaoduo organization
-public_downstream: GitHub Weixiaoduo/woo-alipay (planned rename to Weixiaoduo/wei-alipay)
+canonical_upstream: FeiCode Weixiaoduo/wei-alipay
+public_downstream: GitHub Weixiaoduo/wei-alipay
 minimum:
   php: "7.4"
   wordpress: "6.6"
@@ -68,7 +68,7 @@ feature_center:
   disable_policy: preserve_settings_orders_and_history
 ```
 
-产品名和包名可以整理；稳定财务身份不能在没有迁移、克隆站验收和回滚时更改。
+产品名、包名、仓名和当前路径统一使用 `wei-alipay`；历史文档可保留旧仓名作为证据。稳定财务身份不能在没有迁移、克隆站验收和回滚时更改。
 
 主 `alipay` 网关始终注册。可选支付方式和运营工具只有进入功能白名单后才允许加载；不得绕过功能中心批量启用。功能开关只决定模块注册，支付方式仍需在 WooCommerce 完成配置和第二步启用。后台设计依据及可复现 token 清单见 `docs/design/woopayments-admin-design-reference.md` 和 `docs/design/woopayments-admin-tokens.json`。
 
