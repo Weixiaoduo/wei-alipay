@@ -41,6 +41,8 @@ run_contracts() {
   php "$ROOT_DIR/tests/w4-sdk-allowlist-contract.php"
   php "$ROOT_DIR/tests/w2-b-shell-contracts.php"
   php "$ROOT_DIR/tests/w411-hotfix-contracts.php"
+  php "$ROOT_DIR/tests/w42-cert-mode-contracts.php"
+  php "$ROOT_DIR/tests/w42-reconcile-scheduler-contracts.php"
   php "$ROOT_DIR/tests/sdk-signing-contracts.php"
   php "$ROOT_DIR/tests/reconcile-details-contracts.php"
   php "$ROOT_DIR/tests/reconcile-runtime-contracts.php"

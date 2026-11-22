@@ -84,7 +84,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
     // Provider state methods for WooCommerce Payments list badges
     public function is_account_connected() {
         $core = get_option( 'woocommerce_alipay_settings', array() );
-        return (bool) ( ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] ) );
+        return class_exists( 'Alipay_SDK_Helper' ) ? Alipay_SDK_Helper::has_valid_credentials( $core ) : (bool) ( ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] ) );
     }
 
     public function needs_setup() {
@@ -488,7 +488,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
         
         $main_gateway = new WC_Alipay(false);
-        $alipay_public_key = $main_gateway->get_option('public_key');
+        $alipay_public_key = Alipay_SDK_Helper::resolve_verify_key();
         
         if (!Alipay_SDK_Helper::verify_notify($params, $alipay_public_key)) {
             self::log('当面付通知签名验证失败', 'error');

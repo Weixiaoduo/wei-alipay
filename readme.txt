@@ -3,7 +3,7 @@ Contributors: weixiaoduo
 Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 4.1.1
+Stable tag: 4.2.0
 Requires PHP: 7.4
 WC requires at least: 8.3
 WC tested up to: 10.9.4
@@ -69,6 +69,11 @@ They must not be. Sensitive settings are encrypted where supported and logging i
 No. Availability depends on the merchant agreement, store configuration, and module-specific acceptance evidence.
 
 == Changelog ==
+
+= 4.2.0 =
+* Added Alipay Public Key Certificate Mode (`appCert` / `alipayCert` / `alipayRootCert` via `AopCertClient`) across main gateway, F2F, Huabei, Barcode, Reconcile, and notification verification, with Overview certificate expiry warnings (30-day warn / 7-day critical) and zero migration impact for existing public-key sites.
+* Added Scheduled Daily Reconciliation (`Wei_Alipay_Reconcile_Scheduler`) using WooCommerce Action Scheduler (with WP-Cron fallback), privacy-safe 30-day summary history, idempotent daily execution, throttled discrepancy email alerts, collapsible schedule card on the Reconcile page, and Overview 7-day activity status.
+* Eliminated PHP 8.4 dynamic property deprecation on `AopClient::$charset` / `AopCertClient::$charset` (switched to native `$postCharset`).
 
 = 4.1.1 =
 * Fixed orphan transaction email PHP 8.4 / WooCommerce 11 Email Preview TypeError, broken template path arguments, `{transaction_id}` heading placeholder mismatch, plain-text `<code>` markup, and localized Recipient(s) / heading description fields.

@@ -179,6 +179,8 @@ body.wei-alipay-admin :is(.wenpai-native .notice, .notice.wenpai-native).info {
 }
 
 .wei-alipay-reconcile-form__field input[type="date"],
+.wei-alipay-reconcile-form__field input[type="time"],
+.wei-alipay-reconcile-form__field input[type="email"],
 .wei-alipay-reconcile-form__field select {
   min-height: var(--wenpai-size-control);
   border: 1px solid var(--wenpai-control-line);

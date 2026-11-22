@@ -23,6 +23,8 @@ $purge_current_site = static function() {
 		'wei_alipay_features',
 		'wei_alipay_features_version',
 		'wei_alipay_account_link',
+		'wei_alipay_reconcile_schedule',
+		'wei_alipay_reconcile_history',
 		'woo_alipay_webhook_schema_version',
 		'woo_alipay_reconcile_options',
 	) as $option ) {
@@ -33,9 +35,13 @@ $purge_current_site = static function() {
 		'woo_alipay_check_timeout_orders',
 		'woo_alipay_retry_failed_webhooks',
 		'woo_alipay_cleanup_webhook_logs',
+		'woo_alipay_scheduled_reconcile',
 		'woo_alipay_ps_process_jobs',
 	) as $hook ) {
 		wp_clear_scheduled_hook( $hook );
+		if ( function_exists( 'as_unschedule_all_actions' ) ) {
+			as_unschedule_all_actions( $hook, array(), 'wei-alipay' );
+		}
 	}
 	global $wpdb;
 	if ( isset( $wpdb ) && is_object( $wpdb ) && isset( $wpdb->prefix ) && method_exists( $wpdb, 'query' ) ) {

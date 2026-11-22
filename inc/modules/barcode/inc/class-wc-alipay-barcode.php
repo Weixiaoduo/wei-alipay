@@ -120,7 +120,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         }
         $core = $this->get_core_settings();
         $currency_supported = in_array( strtoupper( get_woocommerce_currency() ), array( 'CNY', 'RMB' ), true ) || floatval( $core['exchange_rate'] ) > 0;
-        return $currency_supported && ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] );
+        return $currency_supported && ( class_exists( 'Alipay_SDK_Helper' ) ? Alipay_SDK_Helper::has_valid_credentials( $core ) : ( ! empty( $core['appid'] ) && ! empty( $core['private_key'] ) && ! empty( $core['public_key'] ) ) );
     }
 
     public function payment_fields() {
@@ -454,7 +454,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         if ( empty( $params ) ) { exit; }
 
         require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
-        $verified = Alipay_SDK_Helper::verify_notify( $params, $core['public_key'] );
+        $verified = Alipay_SDK_Helper::verify_notify( $params, Alipay_SDK_Helper::resolve_verify_key( $core ) );
         if ( ! $verified ) { echo 'fail'; exit; }
 
         $out_trade_no = isset( $params['out_trade_no'] ) ? sanitize_text_field( $params['out_trade_no'] ) : '';
@@ -519,7 +519,7 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
     // WooCommerce Payments 列表徽章兼容
     public function is_account_connected() {
         $core = $this->get_core_settings();
-        return (bool) ( $core['appid'] && $core['private_key'] && $core['public_key'] );
+        return class_exists( 'Alipay_SDK_Helper' ) ? Alipay_SDK_Helper::has_valid_credentials( $core ) : (bool) ( $core['appid'] && $core['private_key'] && $core['public_key'] );
     }
     public function needs_setup() { return ! $this->is_account_connected(); }
     public function is_test_mode() {
