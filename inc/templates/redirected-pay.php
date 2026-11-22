@@ -21,3 +21,30 @@
 <?php
  
 echo Alipay_SDK_Helper::sanitize_payment_form( $dispatcher_form ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist. ?>
+<script id="wei-alipay-auto-submit">
+( function () {
+	'use strict';
+	var form = document.getElementById( 'alipaysubmit' );
+	if ( ! form ) {
+		return;
+	}
+	var action;
+	try {
+		action = new URL( form.action, window.location.href );
+	} catch ( error ) {
+		return;
+	}
+	if (
+		'https:' !== action.protocol ||
+		-1 === [ 'openapi.alipay.com', 'openapi.alipaydev.com' ].indexOf( action.hostname )
+	) {
+		return;
+	}
+	var signature = form.querySelector( 'input[name="sign"]' );
+	var signType = form.querySelector( 'input[name="sign_type"]' );
+	if ( ! signature || ! signature.value || ! signType || 'RSA2' !== signType.value.toUpperCase() ) {
+		return;
+	}
+	HTMLFormElement.prototype.submit.call( form );
+}() );
+</script>
