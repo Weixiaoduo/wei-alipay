@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-22T12:40:35+08:00\n"
+"POT-Creation-Date: 2026-11-22T12:56:11+08:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wei-alipay\n"
@@ -221,7 +221,7 @@ msgid "立即授权"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:403
-#: inc/class-wc-alipay-webhook-retry.php:478
+#: inc/class-wc-alipay-webhook-retry.php:487
 msgid "Wei Alipay Webhook Logs"
 msgstr ""
 
@@ -234,51 +234,57 @@ msgid "You do not have permission to view webhook logs."
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:479
+#: inc/class-wei-alipay-shell.php:374
+#: inc/class-wei-alipay-shell.php:882
+msgid "回调日志"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:479
+msgid "仅记录通过安全校验的异步通知，支持对临时失败条目重新查单确认。"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:481
+msgid "已对选中的回调记录发起重新核验。"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:483
+msgid "最近异步通知"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:488
 msgid "Inspect callback processing and retry failed records. Stored request data is limited to an allow-list and never includes signatures or private keys."
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:482
-msgid "Selected webhooks have been retried."
+#: inc/class-wc-alipay-webhook-retry.php:496
+msgid "回调状态筛选"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:486
-msgid "Webhook status filters"
-msgstr ""
-
-#. translators: %d: total webhook log count
-#: inc/class-wc-alipay-webhook-retry.php:487
+#: inc/class-wc-alipay-webhook-retry.php:497
 #, php-format
-msgid "All (%d)"
+msgid "全部 (%s)"
 msgstr ""
 
-#. translators: %d: pending webhook log count
-#: inc/class-wc-alipay-webhook-retry.php:488
+#: inc/class-wc-alipay-webhook-retry.php:498
 #, php-format
-msgid "Pending (%d)"
+msgid "待处理 (%s)"
 msgstr ""
 
-#. translators: %d: successful webhook log count
-#: inc/class-wc-alipay-webhook-retry.php:489
+#: inc/class-wc-alipay-webhook-retry.php:499
 #, php-format
-msgid "Success (%d)"
+msgid "已确认 (%s)"
 msgstr ""
 
-#. translators: %d: failed webhook log count
-#: inc/class-wc-alipay-webhook-retry.php:490
+#: inc/class-wc-alipay-webhook-retry.php:500
 #, php-format
-msgid "Failed (%d)"
+msgid "失败 (%s)"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:493
-msgid "Retrying may query Alipay for current transaction status. Select only records that require another verification attempt."
-msgstr ""
-
-#: inc/class-wc-alipay-webhook-retry.php:501
+#: inc/class-wc-alipay-webhook-retry.php:502
 msgid "Retry the selected webhook records now?"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:501
-msgid "Retry Selected"
+#: inc/class-wc-alipay-webhook-retry.php:502
+msgid "重试所选"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:508
@@ -286,75 +292,104 @@ msgid "Select all webhook records"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:509
-#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:122
-msgid "Order"
+msgid "订单"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:510
-msgid "Trade No"
+msgid "商户单号"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:511
-#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:68
-#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:124
-msgid "Status"
+msgid "支付宝交易号"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:512
-msgid "Retry Count"
+msgid "结果"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:513
-msgid "Error"
+msgid "重试次数"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:514
-msgid "Created"
+msgid "时间"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:515
-#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:176
-#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:243
-#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:131
-msgid "Actions"
+msgid "操作"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:520
-msgid "No webhook logs match the current filter."
+msgid "当前筛选条件下没有已验签的回调记录。"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:553
-#: inc/class-wc-alipay-webhook-retry.php:604
-#: inc/class-wc-alipay-webhook-retry.php:609
+#: inc/class-wc-alipay-webhook-retry.php:543
+msgid "已确认"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:543
+#: inc/class-wei-alipay-shell.php:394
+msgid "失败"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:543
+msgid "待处理"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:552
+msgid "立即重试"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:582
+msgid "重试与保留策略"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:583
+msgid "自动重试范围与日志清理规则"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:583
+#, php-format
+msgid "仅对并发通知锁与临时处理异常自动查单重试，日志默认保留 %d 天并每日自动清理，绝不保存签名与私钥。"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:583
+#: inc/class-wei-alipay-shell.php:538
+#: inc/class-wei-alipay-shell.php:849
+msgid "已开启"
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:598
+msgid "Retrying..."
+msgstr ""
+
+#: inc/class-wc-alipay-webhook-retry.php:613
+#: inc/class-wc-alipay-webhook-retry.php:618
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:154
 msgid "Retry"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:589
-msgid "Retrying..."
-msgstr ""
-
-#: inc/class-wc-alipay-webhook-retry.php:608
+#: inc/class-wc-alipay-webhook-retry.php:617
 msgid "The retry request could not be completed. Check the connection and try again."
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:629
+#: inc/class-wc-alipay-webhook-retry.php:638
 msgid "Permission denied"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:635
+#: inc/class-wc-alipay-webhook-retry.php:644
 msgid "Invalid webhook ID"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:648
+#: inc/class-wc-alipay-webhook-retry.php:657
 msgid "Webhook not found"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:654
+#: inc/class-wc-alipay-webhook-retry.php:663
 msgid "Webhook retried successfully"
 msgstr ""
 
-#: inc/class-wc-alipay-webhook-retry.php:656
+#: inc/class-wc-alipay-webhook-retry.php:665
 msgid "Webhook retry failed"
 msgstr ""
 
@@ -1436,7 +1471,7 @@ msgid "Store currency"
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:547
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:253
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:266
 msgid "Unknown"
 msgstr ""
 
@@ -2084,11 +2119,6 @@ msgstr ""
 msgid "近 7 日本地活动"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:374
-#: inc/class-wei-alipay-shell.php:882
-msgid "回调日志"
-msgstr ""
-
 #: inc/class-wei-alipay-shell.php:388
 msgid "收款"
 msgstr ""
@@ -2102,10 +2132,6 @@ msgstr ""
 #: inc/class-wei-alipay-shell.php:397
 #: inc/class-wei-alipay-shell.php:403
 msgid "7 日内"
-msgstr ""
-
-#: inc/class-wei-alipay-shell.php:394
-msgid "失败"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:396
@@ -2212,11 +2238,6 @@ msgstr ""
 
 #: inc/class-wei-alipay-shell.php:524
 msgid "已就绪 · 不受连接影响"
-msgstr ""
-
-#: inc/class-wei-alipay-shell.php:538
-#: inc/class-wei-alipay-shell.php:849
-msgid "已开启"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:538
@@ -2445,6 +2466,7 @@ msgid "应用配色"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:876
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:118
 msgid "对账"
 msgstr ""
 
@@ -2490,7 +2512,7 @@ msgstr ""
 
 #: inc/class-wei-alipay.php:277
 #: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:20
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:114
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:169
 msgid "Wei Alipay Reconciliation"
 msgstr ""
 
@@ -3835,6 +3857,12 @@ msgstr ""
 msgid "Identity"
 msgstr ""
 
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:176
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:243
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:131
+msgid "Actions"
+msgstr ""
+
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:189
 msgid "Delete this receiver? Existing order history is retained."
 msgstr ""
@@ -4027,6 +4055,11 @@ msgid "Failed"
 msgstr ""
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:68
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:124
+msgid "Status"
+msgstr ""
+
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:68
 msgid "All"
 msgstr ""
 
@@ -4086,6 +4119,10 @@ msgstr ""
 msgid "Job ID"
 msgstr ""
 
+#: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:122
+msgid "Order"
+msgstr ""
+
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:123
 msgid "Phase"
 msgstr ""
@@ -4107,7 +4144,7 @@ msgid "Updated"
 msgstr ""
 
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-jobs-admin.php:129
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:220
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:233
 msgid "Reason"
 msgstr ""
 
@@ -4204,151 +4241,183 @@ msgstr ""
 msgid "Notification email"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:115
-msgid "Download a daily Alipay statement and compare it against local WooCommerce orders."
-msgstr ""
-
 #: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:118
-msgid "Manual reconciliation"
+msgid "按日拉取支付宝账单并与本地订单逐笔比对，不自动修改订单状态。"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:119
-msgid "Manual reconciliation downloads a statement from Alipay. It does not send a payment or refund, but it does contact the configured provider environment."
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:120
+msgid "拉取日账单"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:129
-msgid "Reconciliation completed."
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:124
+msgid "账单日期"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:125
+msgid "账单类型"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:125
+msgid "业务明细 (trade)"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:125
+msgid "资金流水 (signcustomer)"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:126
+msgid "Download and reconcile this Alipay statement now?"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:126
+msgid "拉取并核对"
 msgstr ""
 
 #. translators: %1$s: bill date. %2$s: bill type. %3$d: total row count. %4$d: matched count. %5$d: mismatched count. %6$d: unmatched count.
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:132
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:136
 #, php-format
 msgid "Statement date: %1$s; type: %2$s. Rows: %3$d; matched: %4$d; amount mismatches: %5$d; unmatched: %6$d."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:150
-msgid "Statement date"
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:146
+msgid "核对明细"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:153
-msgid "Statement type"
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:154
+msgid "手动对账会向当前配置的支付宝环境请求下载日账单，仅用于核对差异，不会发起扣款、关单或退款。"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:155
-msgid "Trade statement (trade)"
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:157
+msgid "对账说明"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:156
-msgid "Funds statement (signcustomer)"
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:158
+msgid "支持全通道单号前缀识别"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:160
-msgid "Download and reconcile this Alipay statement now?"
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:158
+msgid "覆盖主网关（WooA）、当面付（F2F）、花呗分期（HBFQ）与条码付（WooB），多站点会自动隔离博客号。"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:160
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:159
+msgid "账单生成时间与隐私边界"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:159
+msgid "支付宝通常在次日 10:00 后生成前一日账单；核对明细仅对当前管理员保留 10 分钟，不公开账单文件地址。"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:170
+msgid "Download a daily Alipay statement and compare it against local WooCommerce orders."
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:173
+msgid "Manual reconciliation"
+msgstr ""
+
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:177
 msgid "Start reconciliation"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:176
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:189
 msgid "Reconciliation only reports differences. It never changes an order, captures funds, closes a trade, or issues a refund."
 msgstr ""
 
 #. translators: %d: anomaly count.
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:183
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:196
 #, php-format
 msgid "Exceptions requiring review (%d)"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:188
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:201
 msgid "No amount mismatch or unmatched statement row was found."
 msgstr ""
 
 #. translators: %d: matched count.
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:194
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:207
 #, php-format
 msgid "Matched rows (%d)"
 msgstr ""
 
 #. translators: %1$d: displayed rows. %2$d: total rows in category.
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:206
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:219
 #, php-format
 msgid "Showing the first %1$d of %2$d rows. Narrow the statement date before retrying."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:214
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:227
 msgid "Result"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:215
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:228
 msgid "Merchant order number"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:216
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:229
 msgid "Alipay trade number"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:217
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:230
 msgid "Statement / order amount"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:218
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:231
 msgid "Statement status / time"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:219
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:232
 msgid "WooCommerce order"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:249
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:262
 msgid "Matched"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:250
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:263
 msgid "Amount mismatch"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:251
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:264
 msgid "Unmatched"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:258
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:271
 msgid "Statement and order amounts match."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:259
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:272
 msgid "Statement and WooCommerce order amounts differ."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:260
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:273
 msgid "The statement row has no merchant order number."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:261
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:274
 msgid "The merchant order number belongs to another site in this network."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:262
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:275
 msgid "The merchant order number format is not recognized."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:263
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:276
 msgid "No WooCommerce order exists for the parsed order ID."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:264
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:277
 msgid "The order exists, but its stored merchant order number does not match this statement row."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:266
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:279
 msgid "Review this statement row manually."
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:285
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:298
 msgid "Run automatic reconciliation every day"
 msgstr ""
 
-#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:294
+#: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:307
 msgid "Uses the site timezone by default. Example: Asia/Shanghai"
 msgstr ""
 
