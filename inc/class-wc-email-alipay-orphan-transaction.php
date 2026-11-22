@@ -5,7 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 
-	protected $template_variables;
+	/**
+	 * Template variables populated on trigger() or defaulted for WC Email Preview.
+	 *
+	 * @var array<string,mixed>
+	 */
+	protected $template_variables = array(
+		'order_id'       => '',
+		'transaction_id' => '',
+		'log_path'       => '',
+		'type'           => '',
+	);
 
 	public function __construct() {
 		$this->id             = 'alipay_orphan_transaction';
@@ -16,6 +26,7 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 		$this->template_base  = WEI_ALIPAY_PLUGIN_PATH . 'inc/templates/';
 		$this->recipient      = $this->get_option( 'recipient' );
 		$this->placeholders   = array(
+			'{transaction_id}'     => '',
 			'{transaction_number}' => '',
 			'{order_number}'       => '',
 		);
@@ -35,12 +46,10 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 	}
 
 	public function get_default_subject() {
-
 		return __( '[{site_title}]: Order #{order_number} was not found but an Alipay transaction was registered', 'wei-alipay' );
 	}
 
 	public function get_default_heading() {
-
 		return __( 'Orphan order: #{order_number} - Alipay transaction: #{transaction_id}', 'wei-alipay' );
 	}
 
@@ -48,6 +57,7 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 		$this->setup_locale();
 
 		$this->placeholders['{order_number}']       = $order_id;
+		$this->placeholders['{transaction_id}']     = $transaction_id;
 		$this->placeholders['{transaction_number}'] = $transaction_id;
 		$this->template_variables                   = array(
 			'order_id'       => $order_id,
@@ -63,8 +73,25 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 		$this->restore_locale();
 	}
 
-	public function get_content_html() {
+	/**
+	 * Return normalized template variables even when rendered in WooCommerce Email Preview.
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function safe_template_variables() {
+		$vars = is_array( $this->template_variables ) ? $this->template_variables : array();
+		return array_merge(
+			array(
+				'order_id'       => '',
+				'transaction_id' => '',
+				'log_path'       => '',
+				'type'           => '',
+			),
+			$vars
+		);
+	}
 
+	public function get_content_html() {
 		return wc_get_template_html(
 			$this->template_html,
 			array_merge(
@@ -74,15 +101,14 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 					'email'              => $this,
 					'site_name'          => $this->get_blogname(),
 				),
-				$this->template_variables
+				$this->safe_template_variables()
 			),
-			$this->template_base . $this->template_html,
-			$this->template_base . $this->template_html
+			'',
+			$this->template_base
 		);
 	}
 
 	public function get_content_plain() {
-
 		return wc_get_template_html(
 			$this->template_plain,
 			array_merge(
@@ -91,16 +117,14 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 					'additional_content' => $this->get_additional_content(),
 					'site_name'          => $this->get_blogname(),
 				),
-				$this->template_variables
+				$this->safe_template_variables()
 			),
-			$this->template_base . $this->template_html,
-			$this->template_base . $this->template_html
+			'',
+			$this->template_base
 		);
 	}
 
-
 	public function get_default_additional_content() {
-
 		return __( 'You may need to double check the Alipay transactions in the merchant platform and take care of refunds by other means if necessary.', 'wei-alipay' );
 	}
 
@@ -108,9 +132,13 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 		parent::init_form_fields();
 
 		$this->form_fields['recipient'] = array(
-			'title'       => 'Recipient(s)',
+			'title'       => __( 'Recipient(s)', 'wei-alipay' ),
 			'type'        => 'text',
-			'description' => sprintf( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', esc_attr( get_option( 'admin_email' ) ) ),
+			'description' => sprintf(
+				/* translators: %s: site admin email address */
+				__( 'Enter recipients (comma separated) for this email. Defaults to <code>%s</code>.', 'wei-alipay' ),
+				esc_attr( get_option( 'admin_email' ) )
+			),
 			'placeholder' => '',
 			'default'     => '',
 		);
@@ -124,7 +152,7 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 
 		$this->form_fields['heading']['description']  = __( 'Default value: ', 'wei-alipay' );
 		$this->form_fields['heading']['description'] .= $this->form_fields['heading']['placeholder'] . '<br/>';
-		$this->form_fields['heading']['description'] .= $subject_desc;
+		$this->form_fields['heading']['description'] .= $heading_desc;
 	}
 
 	public function options_to_translate( $options ) {
@@ -134,13 +162,10 @@ class WC_Email_Alipay_Orphan_Transaction extends WC_Email {
 	}
 
 	public function section_name_to_translate( $section_name ) {
-
 		if ( 'alipay_orphan_transaction' === $section_name ) {
-
 			return 'wc_email_alipay_orphan_transaction';
 		}
 
 		return $section_name;
 	}
-
 }

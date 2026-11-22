@@ -3,7 +3,7 @@ Contributors: weixiaoduo
 Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 4.1.0
+Stable tag: 4.1.1
 Requires PHP: 7.4
 WC requires at least: 8.3
 WC tested up to: 10.9.4
@@ -69,6 +69,18 @@ They must not be. Sensitive settings are encrypted where supported and logging i
 No. Availability depends on the merchant agreement, store configuration, and module-specific acceptance evidence.
 
 == Changelog ==
+
+= 4.1.1 =
+* Fixed orphan transaction email PHP 8.4 / WooCommerce 11 Email Preview TypeError, broken template path arguments, `{transaction_id}` heading placeholder mismatch, plain-text `<code>` markup, and localized Recipient(s) / heading description fields.
+* Absorbed lower-precedence key-material decryption fallback in `Wei_Alipay_Secret_Store::keyring()` so adding `WEI_ALIPAY_ENCRYPTION_KEY` on an existing site keeps previously encrypted secrets readable.
+* Fixed `Aliay` typo and broken `section=wc_alipay` link in currency notice; added `wc_back_link()` on WooCommerce Alipay / F2F / Huabei settings screens.
+* Upgraded Account disconnect action to a gated POST confirmation form (`Wenpai_Admin_UI::gate_html()`) and aligned in-plugin help/directory links to live `www.weixiaoduo.com` endpoints.
+
+= 4.1.0 =
+* Upgraded standalone Wei Alipay admin screens (Overview, Payment Methods, Reconcile, Webhooks, Account, Help) to vendored `wenpai-admin-ui` v0.13.8 with Weixiaoduo brand tokens and per-admin optional Alipay Blue (`#1677ff`) palette toggle.
+* Switched plugin updates to `updates.weixiaoduo.com` (shared UpdatePulse infrastructure with `updates.wenpai.net`).
+* Implemented Connect-Latch v3 site identity linking (PKCE S256 via `account.weixiaoduo.com`) with server-side `pre_update_option_*` save lock on disconnected optional methods while preserving live payments, callbacks, and refunds.
+* Removed legacy `mini-program` (`alipay_wap`) module, slimmed bundled Alipay SDK via allowlist from 8,829 to 41 files (ZIP reduced to 1.4 MB), and fixed P0/P1 issues across F2F, Huabei, Barcode, Reconcile, Webhooks, Blocks, HPOS, and zh_CN translations.
 
 = 4.0.1 =
 * Require feature enablement, user/order ownership, nonces, app binding and persistent idempotency for subscription signing and initial charges.

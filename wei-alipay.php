@@ -1,10 +1,10 @@
 <?php
 /*
 * Plugin Name: Wei Alipay Payment Gateway for WooCommerce
-* Plugin URI: https://weixiaoduo.com/product/wei-alipay.html
+* Plugin URI: https://www.weixiaoduo.com/product/wei-alipay.html
 * Update URI: https://updates.weixiaoduo.com
 * Description: Integrate Woocommerce with Alipay (Mainland China). Supports WooCommerce Blocks and HPOS.
-* Version: 4.1.0
+* Version: 4.1.1
 * Author: Weixiaoduo.com
 * Author URI: https://weixiaoduo.com/
 * Text Domain: wei-alipay
@@ -35,7 +35,7 @@ if ( ! defined( 'WEI_ALIPAY_PLUGIN_URL' ) ) {
 }
 
 if ( ! defined( 'WEI_ALIPAY_VERSION' ) ) {
-	define( 'WEI_ALIPAY_VERSION', '4.1.0' );
+	define( 'WEI_ALIPAY_VERSION', '4.1.1' );
 }
 
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay.php';

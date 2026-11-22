@@ -56,7 +56,7 @@ printf(
 		'The complete error data can be found in the log files on the server at the following location: %1$s',
 		'wei-alipay'
 	),
-	'<code>' . esc_html( $log_path ) . '</code>'
+	esc_html( $log_path )
 );
 
 echo "\n\n----------------------------------------\n\n";

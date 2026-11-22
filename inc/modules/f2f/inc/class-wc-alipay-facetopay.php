@@ -68,7 +68,11 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
 
     public function admin_options()
     {
-        echo '<h3>' . esc_html__('支付宝当面付', 'wei-alipay') . '</h3>';
+        echo '<h3>' . esc_html__('支付宝当面付', 'wei-alipay');
+        if ( function_exists( 'wc_back_link' ) ) {
+            wc_back_link( __( 'Return to Wei Alipay', 'wei-alipay' ), admin_url( 'admin.php?page=wei-alipay&view=payments' ) );
+        }
+        echo '</h3>';
         echo '<p>' . esc_html__('用于线下扫码场景的当面付支付方式。', 'wei-alipay') . '</p>';
 
 

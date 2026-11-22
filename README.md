@@ -2,7 +2,7 @@
 
 Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixiaoduo.com/) 维护的 WooCommerce 支付宝网关。项目面向中国大陆支付宝商户，主网关支持电脑网站支付、手机网站支付、退款、异步通知和人民币换算，并提供若干按商户签约能力启用的扩展模块。
 
-> 当前候选版本为 4.0.1；mall.weixiaoduo.com 也运行 4.0.1，但 live 仍有 2 个 PHP 修订未回收到任何 Git ref，本候选不得用于直接覆盖生产。FeiCode `Weixiaoduo/wei-alipay` 是开发上游；GitHub `Weixiaoduo/wei-alipay` 只作为公开下游。旧仓名 `woo-alipay` 仅用于历史链接和运行兼容标识。
+> 当前稳定发布版本为 **4.1.1**（已合并主分支并部署至 `mall.weixiaoduo.com`）。FeiCode `Weixiaoduo/wei-alipay` 为开发上游，GitHub `Weixiaoduo/wei-alipay` 为公开下游镜像，插件自动更新走 `updates.weixiaoduo.com`（与 `updates.wenpai.net` 共用更新基础设施）。旧仓名 `woo-alipay` 仅保留在历史证据与稳定运行兼容标识中。
 
 ## 运行要求
 
@@ -54,7 +54,9 @@ Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixi
 
 插件将支持的私钥设置迁移到版本化 AES-256-GCM 密文，并在无法解密时失败关闭。生产环境应通过 `WEI_ALIPAY_ENCRYPTION_KEY` 或受控外部密钥提供器提供独立密钥；不要依赖可与数据库一起导出的默认材料。
 
-以下运行身份在 4.0.1 中仍保持稳定，以保护商城订单与回调数据：
+从默认 WordPress 安全密钥迁移到独立密钥 `WEI_ALIPAY_ENCRYPTION_KEY` 时，解密密钥环会自动按优先级依次尝试全部本机候选材料，确保切换前写入的密文仍可读取，新写入密文统一使用最高优先级材料。
+
+以下运行身份在 4.1.x 中仍保持稳定，以保护商城订单与回调数据：
 
 - 网关 ID：`alipay`
 - 设置项：`woocommerce_alipay_settings`
