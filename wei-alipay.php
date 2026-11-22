@@ -1,10 +1,10 @@
 <?php
 /*
 * Plugin Name: Wei Alipay Payment Gateway for WooCommerce
-* Plugin URI: https://wenpai.org/plugins/wei-alipay
-* Update URI: https://updates.wenpai.net
+* Plugin URI: https://weixiaoduo.com/product/wei-alipay.html
+* Update URI: https://updates.weixiaoduo.com
 * Description: Integrate Woocommerce with Alipay (Mainland China). Supports WooCommerce Blocks and HPOS.
-* Version: 4.0.1
+* Version: 4.1.0
 * Author: Weixiaoduo.com
 * Author URI: https://weixiaoduo.com/
 * Text Domain: wei-alipay
@@ -35,7 +35,7 @@ if ( ! defined( 'WEI_ALIPAY_PLUGIN_URL' ) ) {
 }
 
 if ( ! defined( 'WEI_ALIPAY_VERSION' ) ) {
-	define( 'WEI_ALIPAY_VERSION', '4.0.1' );
+	define( 'WEI_ALIPAY_VERSION', '4.1.0' );
 }
 
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay.php';
@@ -111,14 +111,6 @@ if ( ! defined( 'WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_URL' ) ) {
 	define( 'WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_URL', WEI_ALIPAY_PLUGIN_URL . 'inc/modules/subscriptions/' );
 }
 
-if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH' ) ) {
-	define( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH', WEI_ALIPAY_PLUGIN_PATH . 'inc/modules/mini-program/' );
-}
-
-if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_URL' ) ) {
-	define( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_URL', WEI_ALIPAY_PLUGIN_URL . 'inc/modules/mini-program/' );
-}
-
 if ( ! defined( 'WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH' ) ) {
 	define( 'WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH', WEI_ALIPAY_PLUGIN_PATH . 'inc/modules/cross-border/' );
 }
@@ -153,10 +145,6 @@ if ( Wei_Alipay_Features::is_enabled( 'huabei' ) && file_exists( WEI_ALIPAY_HUAB
 
 if ( Wei_Alipay_Features::is_enabled( 'subscriptions' ) && file_exists( WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php';
-}
-
-if ( Wei_Alipay_Features::is_enabled( 'mini_program' ) && file_exists( WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php' ) ) {
-	require_once WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php';
 }
 
 if ( Wei_Alipay_Features::is_enabled( 'cross_border' ) && file_exists( WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH . 'bootstrap.php' ) ) {

@@ -335,7 +335,7 @@ class WC_Alipay_FaceToPay extends WC_Payment_Gateway
         $qrcode_size = intval($this->get_option('qrcode_size', 300));
         $timeout = intval($this->get_option('qrcode_timeout', 120));
         
-        $template_path = apply_filters( 'woo_alipay_facetopay_qrcode_template', WEI_ALIPAY_PLUGIN_PATH . 'inc/templates/payment-qrcode.php', $order, $qr_code, $qrcode_size, $timeout );
+        $template_path = apply_filters( 'woo_alipay_facetopay_qrcode_template', WEI_ALIPAY_F2F_PLUGIN_PATH . 'inc/templates/payment-qrcode.php', $order, $qr_code, $qrcode_size, $timeout );
         include $template_path;
     }
 

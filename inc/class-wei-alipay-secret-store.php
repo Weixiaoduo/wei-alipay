@@ -383,7 +383,7 @@ final class Wei_Alipay_Secret_Store {
 		}
 		$page    = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
 		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
-		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'wei-alipay', 'woo-alipay' ), true );
+		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'acbop', 'wei-alipay', 'woo-alipay' ), true );
 	}
 
 	private static function raw_option( $option ) {

@@ -31,6 +31,29 @@ add_filter( 'woocommerce_payment_gateways', function( $methods ) {
     return $methods;
 }, 11, 1 );
 
+// Save selected installment period from Store API payment_data for Blocks Checkout compatibility.
+add_action( 'woocommerce_store_api_checkout_update_order_from_request', function( $order, $request ) {
+    try {
+        if ( ! ( $order instanceof WC_Order ) ) {
+            return;
+        }
+        $payment_data = array();
+        if ( ! empty( $request['payment_data'] ) && is_array( $request['payment_data'] ) ) {
+            foreach ( $request['payment_data'] as $pair ) {
+                if ( isset( $pair['key'], $pair['value'] ) ) {
+                    $payment_data[ sanitize_key( $pair['key'] ) ] = wc_clean( $pair['value'] );
+                }
+            }
+        }
+        if ( isset( $payment_data['alipay_installment_period'] ) && in_array( (string) $payment_data['alipay_installment_period'], array( '3', '6', '12' ), true ) ) {
+            $order->update_meta_data( '_alipay_installment_period', (string) $payment_data['alipay_installment_period'] );
+            $order->save();
+        }
+    } catch ( Exception $e ) {
+        // Silence.
+    }
+}, 10, 2 );
+
 // Register Blocks support from this extension
 add_action(
     'woocommerce_blocks_payment_method_type_registration',

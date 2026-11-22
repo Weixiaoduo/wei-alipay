@@ -43,15 +43,22 @@ class WC_Alipay extends WC_Payment_Gateway
         $this->supports = array(
             'products',
             'refunds',
-            'subscriptions',
-            'subscription_cancellation',
-            'subscription_suspension',
-            'subscription_reactivation',
-            'subscription_amount_changes',
-            'subscription_date_changes',
-            'multiple_subscriptions',
-            'tokenization',
         );
+        if ( class_exists( 'Wei_Alipay_Features' ) && Wei_Alipay_Features::is_enabled( 'subscriptions' ) ) {
+            $this->supports = array_merge(
+                $this->supports,
+                array(
+                    'subscriptions',
+                    'subscription_cancellation',
+                    'subscription_suspension',
+                    'subscription_reactivation',
+                    'subscription_amount_changes',
+                    'subscription_date_changes',
+                    'multiple_subscriptions',
+                    'tokenization',
+                )
+            );
+        }
 
         if (!in_array($this->charset, array('gbk', 'utf-8'), true)) {
             $this->charset = 'utf-8';

@@ -21,7 +21,7 @@ rsync -a --delete \
 find "$OUT/stage" -exec touch -h -d "@$SOURCE_DATE_EPOCH" {} +
 (
   cd "$ROOT"
-  find lib/alipay inc/modules/mini-program/lib inc/modules/cross-border/lib -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum
+  find lib/alipay inc/modules/cross-border/lib -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum
 ) > "$OUT/sdk-files.sha256"
 sha256sum "$OUT/sdk-files.sha256" | awk '{print $1"  sdk-files.sha256"}' > "$OUT/sdk-tree.sha256"
 (

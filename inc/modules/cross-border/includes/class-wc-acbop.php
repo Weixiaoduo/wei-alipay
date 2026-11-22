@@ -75,7 +75,6 @@ class Wei_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
 		$this->method_description 	= sprintf( __( 'With the growing number of Chinese consumers purchasing merchandise on the oversea merchants’ site direct, the merchant could integrate with Alipay Standard Payment solution to offer the users the familiar user experience that they comfortable with, along the convenience provided for both the merchants and the consumers on the payment, FX exchange and settlement.', 'wei-alipay' ));
 		$this->supports 			= array(
 			'products',
-			'refunds',
 		);
 
 		// Load the settings.
@@ -98,6 +97,7 @@ class Wei_Alipay_Cross_Border_Gateway extends WC_Payment_Gateway {
         self::$log_enabled    = $this->debug;
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+        add_action( 'woocommerce_api_wei_alipay_cross_border_gateway', array( $this, 'check_alipay_response' ) );
         add_action( 'woocommerce_api_woo_alipay_cross_border_gateway', array( $this, 'check_alipay_response' ) );
         add_action( 'woocommerce_thankyou_acbop', array( $this, 'thankyou_page' ) );
 	}

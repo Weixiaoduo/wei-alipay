@@ -352,8 +352,8 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             return;
         }
 
-        $style_url  = apply_filters( 'woo_alipay_installment_style_url', WEI_ALIPAY_PLUGIN_URL . 'css/alipay-installment.css' );
-        $script_url = apply_filters( 'woo_alipay_installment_script_url', WEI_ALIPAY_PLUGIN_URL . 'js/alipay-installment.js' );
+        $style_url  = apply_filters( 'woo_alipay_installment_style_url', WEI_ALIPAY_HUABEI_PLUGIN_URL . 'css/alipay-installment.css' );
+        $script_url = apply_filters( 'woo_alipay_installment_script_url', WEI_ALIPAY_HUABEI_PLUGIN_URL . 'js/alipay-installment.js' );
 
         wp_enqueue_style(
             'alipay-installment',
@@ -378,8 +378,9 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
     {
         $order = wc_get_order($order_id);
 
-        // 获取分期期数 - 支持传统表单和 Blocks
-        $installment_period = $this->get_option('default_period', '3');
+        // 获取分期期数 - 支持传统表单和 Blocks（Store API 写入的订单元数据优先于默认值）
+        $saved_period = $order instanceof WC_Order ? (string) $order->get_meta('_alipay_installment_period', true) : '';
+        $installment_period = '' !== $saved_period ? $saved_period : $this->get_option('default_period', '3');
 
         // 从传统表单获取
         if (isset($_POST['alipay_installment_period'])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce checkout request; order/customer authorization is handled by checkout.
@@ -485,6 +486,7 @@ class WC_Alipay_Installment extends WC_Payment_Gateway
             );
 
             echo Alipay_SDK_Helper::sanitize_payment_form( $html ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- sanitized against a payment-form-only allowlist.
+            echo '<script id="wei-alipay-installment-auto-submit">(function(){"use strict";var f=document.getElementById("alipaysubmit");if(!f){return;}var a;try{a=new URL(f.action,window.location.href);}catch(e){return;}if("https:"!==a.protocol||-1===["openapi.alipay.com","openapi.alipaydev.com"].indexOf(a.hostname)){return;}var s=f.querySelector("input[name=\"sign\"]");var t=f.querySelector("input[name=\"sign_type\"]");if(!s||!s.value||!t||"RSA2"!==t.value.toUpperCase()){return;}HTMLFormElement.prototype.submit.call(f);}());</script>';
 
         } catch (Exception $e) {
             self::log('花呗分期支付异常: ' . $e->getMessage(), 'error');

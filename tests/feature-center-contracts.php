@@ -23,7 +23,7 @@ $render_shell = substr( $features, $render_start, $render_end - $render_start );
 
 $gates = array(
 	'profitsharing', 'fund_auth', 'reconcile', 'barcode', 'f2f', 'huabei',
-	'subscriptions', 'mini_program', 'cross_border', 'webhook_retry',
+	'subscriptions', 'cross_border', 'webhook_retry',
 );
 foreach ( $gates as $key ) {
 	$expect( false !== strpos( $loader, "Wei_Alipay_Features::is_enabled( '{$key}' )" ), "{$key} runtime is explicitly gated" );

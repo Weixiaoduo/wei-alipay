@@ -71,9 +71,8 @@ foreach ( $asset_contracts as $support_file => $asset_file ) {
 }
 
 $core = source_file( $root, 'inc/class-wc-alipay.php' );
-$mini = source_file( $root, 'inc/modules/mini-program/class-wc-alipay-wap.php' );
 check_contract( false !== strpos( $core, '$this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency' ), 'core notices use effective checkout currency' );
-check_contract( false !== strpos( $mini, '$this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency' ), 'mini notices use effective checkout currency' );
+check_contract( ! is_dir( $root . '/inc/modules/mini-program' ), 'legacy mini-program (alipay_wap) module removed in 4.1' );
 
 $secrets = source_file( $root, 'inc/class-wei-alipay-secret-store.php' );
 check_contract( false !== strpos( $secrets, 'cannot decrypt one or more stored payment secrets' ), 'secret decryption failures produce an operator health notice' );
@@ -81,7 +80,8 @@ check_contract( false !== strpos( $secrets, 'Configure WEI_ALIPAY_ENCRYPTION_KEY
 
 $updater = source_file( $root, 'includes/class-wenpai-updater.php' );
 check_contract( false !== strpos( $updater, 'is_allowed_distribution_url' ), 'private updater validates package origin' );
-check_contract( false !== strpos( $updater, "[ 'updates.wenpai.net', 'feicode.com' ]" ), 'private updater has an exact host allowlist' );
+check_contract( false !== strpos( $updater, "[ 'updates.weixiaoduo.com' ]" ), 'private updater has an exact Weixiaoduo host allowlist' );
+check_contract( false === strpos( $updater, 'updates.wenpai.net' ), 'private updater no longer references updates.wenpai.net' );
 check_contract( false !== strpos( $updater, "esc_url( html_entity_decode" ), 'remote markdown links are protocol-sanitized' );
 
 if ( $failures ) {

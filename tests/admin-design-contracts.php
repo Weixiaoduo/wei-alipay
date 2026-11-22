@@ -103,7 +103,6 @@ $gateway = design_source( $root, 'inc/class-wc-alipay.php' );
 $gateway_js = design_source( $root, 'js/admin/main.js' );
 $gateway_css = design_source( $root, 'css/admin/main.css' );
 $cross_border = design_source( $root, 'inc/modules/cross-border/includes/class-wc-acbop.php' );
-$mini_program = design_source( $root, 'inc/modules/mini-program/class-wc-alipay-wap.php' );
 $fund_auth = design_source( $root, 'inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php' );
 design_expect( 1 === substr_count( $gateway, 'id="wei-alipay-test-connection"' ), 'gateway connection test has one stable control ID' );
 foreach ( array( 'wei-alipay-notify-url', 'wei-alipay-sign-start', 'wei-alipay-sign-notify', 'wei-alipay-sign-return' ) as $endpoint_id ) {
@@ -117,7 +116,7 @@ design_expect( false !== strpos( $gateway, 'wei-alipay-settings-tabs' ) && false
 design_expect( false !== strpos( $gateway, 'wei-alipay-settings-notices' ) && false !== strpos( $gateway, 'Wei_Alipay_Secret_Store::render_health_notice' ), 'main gateway places its health and validation feedback before settings content' );
 design_expect( false === strpos( $gateway, "add_action('admin_notices'" ), 'main gateway does not register settings validation as a global notice' );
 design_expect( false === strpos( $secret, "add_action( 'admin_notices'" ) && false !== strpos( $secret, 'notice notice-warning inline wei-alipay-settings-notice' ), 'secret-store health feedback is inline and not global' );
-foreach ( array( $cross_border, $mini_program, $fund_auth ) as $module_gateway ) {
+foreach ( array( $cross_border, $fund_auth ) as $module_gateway ) {
 	design_expect( false === strpos( $module_gateway, "add_action( 'admin_notices'" ), 'optional gateway does not register global notices' );
 	design_expect( false !== strpos( $module_gateway, 'wei-alipay-settings-notices' ) && false !== strpos( $module_gateway, '$this->requirement_checks();' ), 'optional gateway renders requirements beside its own settings' );
 }

@@ -45,8 +45,6 @@ function is_wp_error( $value ) {
 }
 
 require dirname( __DIR__ ) . '/inc/modules/cross-border/includes/class-wc-acbop.php';
-require dirname( __DIR__ ) . '/inc/modules/mini-program/class-mini-protocol.php';
-require dirname( __DIR__ ) . '/inc/modules/mini-program/class-wc-alipay-wap.php';
 
 class Wei_Alipay_Test_Cross_Border_Gateway extends Wei_Alipay_Cross_Border_Gateway {
 	public function prime( $enabled, $currency ) {
@@ -86,21 +84,5 @@ if ( false === strpos( $notice, 'store currency is CNY, which is not supported' 
 	echo "PASS: enabled cross-border gateway reports unsupported CNY\n";
 }
 
-
-class Wei_Alipay_Test_Mini_Program_Gateway extends Wei_Alipay_Mini_Program_Gateway {
-	public function prime( $enabled, $currency, $protocol, $acknowledged ) {
-		$this->enabled          = $enabled;
-		$this->current_currency = $currency;
-		$this->exchange_rate    = '';
-		$this->protocol_mode    = $protocol;
-		$this->legacy_md5_ack   = $acknowledged;
-	}
-}
-
-$mini = ( new ReflectionClass( Wei_Alipay_Test_Mini_Program_Gateway::class ) )->newInstanceWithoutConstructor();
-$mini->prime( 'no', 'CNY', 'legacy_md5', 'no' );
-ob_start();
-$mini->requirement_checks();
-expect_output( '', ob_get_clean(), 'disabled Mini-program gateway emits no legacy MD5 policy notice' );
 
 exit( $failures ? 1 : 0 );
