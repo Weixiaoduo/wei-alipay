@@ -1,15 +1,18 @@
 <?php
 /**
- * Weixiaoduo UpdatePulse plugin updater for Wei Alipay.
+ * Weixiaoduo plugin updater built on the shared WenPai Bridge update server
+ * infrastructure, served under the Weixiaoduo brand domain (`updates.weixiaoduo.com`).
  *
- * Uses WordPress 5.8+ Update URI (`https://updates.weixiaoduo.com`) against the
- * UpdatePulse JSON manifest at `https://updates.weixiaoduo.com/{slug}.json`.
+ * Primary protocol: WenPai Bridge REST API (`/api/v1/update-check` & `/api/v1/plugins/{slug}`),
+ * with release packages hosted on `downloads.feicode.com` or `updates.weixiaoduo.com`.
+ * Transition fallback: if `/api/v1/*` returns HTTP 404 while DNS migration is in progress,
+ * transparently falls back to `https://updates.weixiaoduo.com/{slug}.json`.
  *
  * @package  Wei_Alipay
- * @version  2.0.0
+ * @version  2.1.0
  * @requires WordPress 6.6+
  * @requires PHP 7.4+
- * @link     https://weixiaoduo.com/product/wei-alipay.html
+ * @link     https://www.weixiaoduo.com/product/wei-alipay.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,14 +30,21 @@ class Wei_Alipay_WenPai_Updater {
 	 *
 	 * @var string
 	 */
-	const VERSION = '2.0.0';
+	const VERSION = '2.1.0';
 
 	/**
-	 * Weixiaoduo UpdatePulse base URL.
+	 * Shared WenPai Bridge API endpoint under Weixiaoduo domain.
 	 *
 	 * @var string
 	 */
-	const API_URL = 'https://updates.weixiaoduo.com';
+	const API_URL = 'https://updates.weixiaoduo.com/api/v1';
+
+	/**
+	 * Legacy manifest origin used only as HTTP-404 transition fallback.
+	 *
+	 * @var string
+	 */
+	const LEGACY_MANIFEST_BASE = 'https://updates.weixiaoduo.com';
 
 	/**
 	 * Plugin basename (e.g. wei-alipay/wei-alipay.php).
@@ -86,256 +96,270 @@ class Wei_Alipay_WenPai_Updater {
 	}
 
 	/**
-	 * Check for plugin updates via UpdatePulse manifest JSON.
+	 * Check for plugin updates via WenPai Bridge `/api/v1/update-check` (with 404 fallback).
 	 *
-	 * @param array|false $update      Current update payload.
-	 * @param array       $plugin_data Plugin headers.
+	 * @param array|false $update      Existing update payload.
+	 * @param array       $plugin_data Plugin header metadata.
 	 * @param string      $plugin_file Plugin basename.
 	 * @param string[]    $locales     Installed locales.
-	 * @return object|false Update object or false.
+	 * @return array|false
 	 */
 	public function check_update( $update, array $plugin_data, string $plugin_file, array $locales ) {
 		if ( $plugin_file !== $this->plugin_file ) {
 			return $update;
 		}
 
-		$data = $this->fetch_manifest();
-		if ( is_wp_error( $data ) || empty( $data['version'] ) ) {
-			return $update;
+		$cache_key = 'wei_alipay_upd_' . md5( $this->slug . '_' . $this->version );
+		$cached    = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			return 'none' === $cached ? false : $cached;
 		}
 
-		$new_version = (string) $data['version'];
-		if ( version_compare( $this->version, $new_version, '>=' ) ) {
-			return $update;
+		$info = $this->fetch_bridge_update_check();
+		if ( 'fallback' === $info ) {
+			$info = $this->fetch_legacy_manifest();
 		}
 
-		$raw_package = $data['download_url'] ?? ( $data['package'] ?? '' );
-		$package     = is_string( $raw_package ) ? esc_url_raw( $raw_package ) : '';
-		if ( '' === $package || ! $this->is_allowed_distribution_url( $package ) ) {
-			return $update;
+		if ( ! is_array( $info ) || empty( $info['version'] ) ) {
+			set_transient( $cache_key, 'none', 15 * MINUTE_IN_SECONDS );
+			return false;
 		}
 
-		return (object) [
-			'id'           => $data['id'] ?? ( self::API_URL . '/' . $this->slug . '.json' ),
-			'slug'         => $data['slug'] ?? $this->slug,
-			'plugin'       => $this->plugin_file,
-			'version'      => $new_version,
-			'new_version'  => $new_version,
-			'url'          => $data['homepage'] ?? 'https://weixiaoduo.com/product/wei-alipay.html',
-			'package'      => $package,
-			'icons'        => is_array( $data['icons'] ?? null ) ? $data['icons'] : [],
-			'banners'      => is_array( $data['banners'] ?? null ) ? $data['banners'] : [],
-			'requires'     => $data['requires'] ?? '',
-			'tested'       => $data['tested'] ?? '',
-			'requires_php' => $data['requires_php'] ?? '',
-		];
+		$new_version = (string) $info['version'];
+		$package_url = (string) ( $info['package'] ?? ( $info['download_link'] ?? ( $info['download_url'] ?? '' ) ) );
+
+		if (
+			version_compare( $new_version, $this->version, '>' ) &&
+			$this->is_allowed_distribution_url( $package_url )
+		) {
+			$result = [
+				'id'           => 'updates.weixiaoduo.com/' . $this->slug,
+				'slug'         => $this->slug,
+				'version'      => $new_version,
+				'url'          => $this->sanitize_external_url( (string) ( $info['url'] ?? ( $info['homepage'] ?? 'https://www.weixiaoduo.com/product/wei-alipay.html' ) ) ),
+				'package'      => $package_url,
+				'tested'       => (string) ( $info['tested'] ?? '' ),
+				'requires_php' => (string) ( $info['requires_php'] ?? '7.4' ),
+				'icons'        => is_array( $info['icons'] ?? null ) ? $info['icons'] : [],
+			];
+			set_transient( $cache_key, $result, 6 * HOUR_IN_SECONDS );
+			return $result;
+		}
+
+		set_transient( $cache_key, 'none', 6 * HOUR_IN_SECONDS );
+		return false;
 	}
 
 	/**
-	 * Populate WordPress plugin details modal.
+	 * Provide plugin detail modal information via WenPai Bridge `/api/v1/plugins/{slug}` (with 404 fallback).
 	 *
-	 * @param false|object|array $result Current result.
+	 * @param false|object|array $result Existing result.
 	 * @param string             $action API action.
 	 * @param object             $args   Request arguments.
-	 * @return false|object Plugin info or false.
+	 * @return false|object|array
 	 */
 	public function plugin_info( $result, string $action, object $args ) {
 		if ( 'plugin_information' !== $action ) {
 			return $result;
 		}
-
 		if ( ! isset( $args->slug ) || $args->slug !== $this->slug ) {
 			return $result;
 		}
 
-		$response = $this->fetch_manifest();
-		if ( ! is_wp_error( $response ) && ! empty( $response['name'] ) ) {
-			$info                = new stdClass();
-			$info->name          = (string) $response['name'];
-			$info->slug          = $response['slug'] ?? $this->slug;
-			$info->version       = $response['version'] ?? $this->version;
-			$info->author        = $response['author'] ?? 'Weixiaoduo.com';
-			$info->homepage      = $response['homepage'] ?? 'https://weixiaoduo.com/product/wei-alipay.html';
-			$raw_dl              = $response['download_url'] ?? ( $response['download_link'] ?? '' );
-			$download_link       = is_string( $raw_dl ) ? esc_url_raw( $raw_dl ) : '';
-			$info->download_link = $this->is_allowed_distribution_url( $download_link ) ? $download_link : '';
-			$info->requires      = $response['requires'] ?? '';
-			$info->tested        = $response['tested'] ?? '';
-			$info->requires_php  = $response['requires_php'] ?? '';
-			$info->last_updated  = $response['last_updated'] ?? '';
-			$info->icons         = is_array( $response['icons'] ?? null ) ? $response['icons'] : [];
-			$info->banners       = is_array( $response['banners'] ?? null ) ? $response['banners'] : [];
-			$sections            = is_array( $response['sections'] ?? null ) ? $response['sections'] : [];
-			$info->sections      = array_map( [ $this, 'markdown_to_html' ], $sections );
-			$info->external      = true;
-
-			return $info;
+		$cache_key = 'wei_alipay_info_' . md5( $this->slug );
+		$cached    = get_transient( $cache_key );
+		if ( false !== $cached ) {
+			return is_object( $cached ) ? $cached : $result;
 		}
 
-		$plugin_path = WP_PLUGIN_DIR . '/' . $this->plugin_file;
-		if ( ! file_exists( $plugin_path ) ) {
+		$data = $this->fetch_bridge_plugin_info();
+		if ( 'fallback' === $data ) {
+			$data = $this->fetch_legacy_manifest();
+		}
+		if ( ! is_array( $data ) || empty( $data['version'] ) ) {
 			return $result;
 		}
 
-		if ( ! function_exists( 'get_plugin_data' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		$download_link = (string) ( $data['download_link'] ?? ( $data['download_url'] ?? '' ) );
+		if ( '' !== $download_link && ! $this->is_allowed_distribution_url( $download_link ) ) {
+			$download_link = '';
 		}
 
-		$plugin_data = get_plugin_data( $plugin_path );
+		$sections = [];
+		if ( ! empty( $data['sections'] ) && is_array( $data['sections'] ) ) {
+			foreach ( $data['sections'] as $key => $content ) {
+				$sections[ sanitize_key( (string) $key ) ] = $this->format_markdown_text( (string) $content );
+			}
+		}
 
-		$info               = new stdClass();
-		$info->name         = $plugin_data['Name'] ?? $this->slug;
-		$info->slug         = $this->slug;
-		$info->version      = $this->version;
-		$info->author       = $plugin_data['AuthorName'] ?? '';
-		$info->homepage     = $plugin_data['PluginURI'] ?? '';
-		$info->requires     = $plugin_data['RequiresWP'] ?? '';
-		$info->requires_php = $plugin_data['RequiresPHP'] ?? '';
-		$info->sections     = [
-			'description' => $plugin_data['Description'] ?? '',
-		];
-		$info->external     = true;
+		$info                = new stdClass();
+		$info->name          = sanitize_text_field( (string) ( $data['name'] ?? 'Wei Alipay Payment Gateway for WooCommerce' ) );
+		$info->slug          = $this->slug;
+		$info->version       = sanitize_text_field( (string) $data['version'] );
+		$info->author        = wp_kses_post( (string) ( $data['author'] ?? 'Weixiaoduo.com' ) );
+		$info->homepage      = $this->sanitize_external_url( (string) ( $data['homepage'] ?? 'https://www.weixiaoduo.com/product/wei-alipay.html' ) );
+		$info->requires      = sanitize_text_field( (string) ( $data['requires'] ?? '6.0' ) );
+		$info->tested        = sanitize_text_field( (string) ( $data['tested'] ?? '' ) );
+		$info->requires_php  = sanitize_text_field( (string) ( $data['requires_php'] ?? '7.4' ) );
+		$info->last_updated  = sanitize_text_field( (string) ( $data['last_updated'] ?? '' ) );
+		$info->download_link = $download_link;
+		$info->sections      = $sections;
+		$info->banners       = is_array( $data['banners'] ?? null ) ? $data['banners'] : [];
+		$info->icons         = is_array( $data['icons'] ?? null ) ? $data['icons'] : [];
 
+		set_transient( $cache_key, $info, 6 * HOUR_IN_SECONDS );
 		return $info;
 	}
 
 	/**
-	 * Fetch plugin UpdatePulse JSON manifest.
+	 * Call WenPai Bridge `POST /api/v1/update-check`.
 	 *
-	 * @return array|WP_Error Decoded JSON array or error.
+	 * @return array<string,mixed>|string|null Array payload, 'fallback' on 404, or null on failure.
 	 */
-	private function fetch_manifest() {
-		$url = self::API_URL . '/' . rawurlencode( $this->slug ) . '.json';
-
-		$response = wp_remote_get(
-			$url,
+	private function fetch_bridge_update_check() {
+		$response = wp_remote_post(
+			self::API_URL . '/update-check',
 			[
 				'timeout' => 10,
 				'headers' => [
-					'Accept' => 'application/json',
+					'Accept'       => 'application/json',
+					'Content-Type' => 'application/json',
+					'User-Agent'   => 'Wei-Alipay-Updater/' . self::VERSION . '; ' . home_url(),
+				],
+				'body'    => wp_json_encode(
+					[
+						'plugins' => [
+							$this->plugin_file => [
+								'Version' => $this->version,
+							],
+						],
+					]
+				),
+			]
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return null;
+		}
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( 404 === $code ) {
+			return 'fallback';
+		}
+		if ( 200 !== $code ) {
+			return null;
+		}
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) || empty( $body['plugins'][ $this->plugin_file ] ) || ! is_array( $body['plugins'][ $this->plugin_file ] ) ) {
+			return null;
+		}
+		return $body['plugins'][ $this->plugin_file ];
+	}
+
+	/**
+	 * Call WenPai Bridge `GET /api/v1/plugins/{slug}`.
+	 *
+	 * @return array<string,mixed>|string|null Array payload, 'fallback' on 404, or null on failure.
+	 */
+	private function fetch_bridge_plugin_info() {
+		$response = wp_remote_get(
+			self::API_URL . '/plugins/' . rawurlencode( $this->slug ),
+			[
+				'timeout' => 10,
+				'headers' => [
+					'Accept'     => 'application/json',
+					'User-Agent' => 'Wei-Alipay-Updater/' . self::VERSION . '; ' . home_url(),
 				],
 			]
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return $response;
+			return null;
 		}
-
-		$code = wp_remote_retrieve_response_code( $response );
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( 404 === $code ) {
+			return 'fallback';
+		}
 		if ( 200 !== $code ) {
-			return new WP_Error(
-				'weixiaoduo_update_error',
-				sprintf( 'Weixiaoduo UpdatePulse returned %d', $code )
-			);
+			return null;
 		}
-
-		$data = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( ! is_array( $data ) ) {
-			return new WP_Error(
-				'weixiaoduo_update_parse_error',
-				'Invalid JSON response from Weixiaoduo UpdatePulse'
-			);
-		}
-
-		return $data;
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		return is_array( $body ) ? $body : null;
 	}
 
 	/**
-	 * Only accept HTTPS packages from the Weixiaoduo distribution host.
+	 * Transition fallback: read static `https://updates.weixiaoduo.com/{slug}.json` manifest.
 	 *
-	 * @param string $url Candidate package URL.
-	 * @return bool
+	 * @return array<string,mixed>|null
 	 */
-	private function is_allowed_distribution_url( string $url ): bool {
-		if ( '' === $url || ! wp_http_validate_url( $url ) ) {
-			return false;
-		}
-
-		$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
-		$host   = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
-
-		return 'https' === $scheme && in_array( $host, [ 'updates.weixiaoduo.com' ], true );
-	}
-
-	/**
-	 * Convert a safe Markdown subset to HTML.
-	 *
-	 * @param string $text Markdown text.
-	 * @return string HTML.
-	 */
-	private function markdown_to_html( string $text ): string {
-		if ( empty( $text ) || 0 === strpos( trim( $text ), '<' ) ) {
-			return $text;
-		}
-
-		$lines = explode( "\n", $text );
-		$html  = '';
-		$in_ul = false;
-
-		foreach ( $lines as $line ) {
-			$trimmed = trim( $line );
-
-			if ( '' === $trimmed ) {
-				if ( $in_ul ) {
-					$html .= "</ul>\n";
-					$in_ul = false;
-				}
-				continue;
-			}
-
-			if ( preg_match( '/^(#{2,4})\s+(.+)$/', $trimmed, $m ) ) {
-				if ( $in_ul ) {
-					$html .= "</ul>\n";
-					$in_ul = false;
-				}
-				$level = strlen( $m[1] );
-				$html .= sprintf( "<h%d>%s</h%d>\n", $level, esc_html( $m[2] ), $level );
-				continue;
-			}
-
-			if ( preg_match( '/^[-*]\s+(.+)$/', $trimmed, $m ) ) {
-				if ( ! $in_ul ) {
-					$html .= "<ul>\n";
-					$in_ul = true;
-				}
-				$html .= '<li>' . $this->inline_markdown( $m[1] ) . "</li>\n";
-				continue;
-			}
-
-			if ( $in_ul ) {
-				$html .= "</ul>\n";
-				$in_ul = false;
-			}
-			$html .= '<p>' . $this->inline_markdown( $trimmed ) . "</p>\n";
-		}
-
-		if ( $in_ul ) {
-			$html .= "</ul>\n";
-		}
-
-		return $html;
-	}
-
-	/**
-	 * Inline Markdown conversion with strict HTTPS link sanitization.
-	 *
-	 * @param string $text Raw text.
-	 * @return string Safe HTML.
-	 */
-	private function inline_markdown( string $text ): string {
-		$text = esc_html( $text );
-		$text = preg_replace( '/\*\*(.+?)\*\*/', '<strong>$1</strong>', $text );
-		$text = preg_replace( '/\*(.+?)\*/', '<em>$1</em>', $text );
-		$text = preg_replace( '/`(.+?)`/', '<code>$1</code>', $text );
-		$text = preg_replace_callback(
-			'/\[([^\]]+)\]\(([^)]+)\)/',
-			static function( $matches ) {
-				$url = esc_url( html_entity_decode( $matches[2], ENT_QUOTES, 'UTF-8' ), [ 'https' ] );
-				return '' === $url ? $matches[1] : '<a href="' . $url . '">' . $matches[1] . '</a>';
-			},
-			$text
+	private function fetch_legacy_manifest(): ?array {
+		$url      = self::LEGACY_MANIFEST_BASE . '/' . rawurlencode( $this->slug ) . '.json';
+		$response = wp_remote_get(
+			$url,
+			[
+				'timeout' => 10,
+				'headers' => [
+					'Accept'     => 'application/json',
+					'User-Agent' => 'Wei-Alipay-Updater/' . self::VERSION . '; ' . home_url(),
+				],
+			]
 		);
 
-		return $text;
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return null;
+		}
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		return is_array( $body ) ? $body : null;
+	}
+
+	/**
+	 * Validate download package origin against exact HTTPS allowlist
+	 * (`updates.weixiaoduo.com` and shared WenPai Bridge `downloads.feicode.com`).
+	 *
+	 * @param string $url Package URL.
+	 * @return bool
+	 */
+	public function is_allowed_distribution_url( string $url ): bool {
+		$parts = wp_parse_url( $url );
+		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+			return false;
+		}
+		if ( 'https' !== strtolower( (string) $parts['scheme'] ) ) {
+			return false;
+		}
+		$allowed_hosts = [ 'updates.weixiaoduo.com', 'downloads.feicode.com' ];
+		return in_array( strtolower( (string) $parts['host'] ), $allowed_hosts, true );
+	}
+
+	/**
+	 * Sanitize external homepage URL.
+	 *
+	 * @param string $url Raw URL.
+	 * @return string
+	 */
+	private function sanitize_external_url( string $url ): string {
+		$clean = esc_url_raw( $url, [ 'http', 'https' ] );
+		return is_string( $clean ) ? $clean : '';
+	}
+
+	/**
+	 * Convert remote markdown/text safely with protocol-sanitized links.
+	 *
+	 * @param string $text Remote section text.
+	 * @return string
+	 */
+	private function format_markdown_text( string $text ): string {
+		$escaped = esc_html( $text );
+		$linked  = preg_replace_callback(
+			'/\[([^\]]+)\]\(([^)]+)\)/',
+			static function ( array $matches ): string {
+				$href = esc_url( html_entity_decode( $matches[2], ENT_QUOTES, 'UTF-8' ), [ 'http', 'https' ] );
+				if ( '' === $href ) {
+					return $matches[1];
+				}
+				return '<a href="' . $href . '" target="_blank" rel="noopener noreferrer">' . $matches[1] . '</a>';
+			},
+			$escaped
+		);
+		return wp_kses_post( nl2br( is_string( $linked ) ? $linked : $escaped ) );
 	}
 }
