@@ -22,7 +22,7 @@ $check = static function( $cond, $label ) use ( &$failures ) {
 };
 
 $main = file_get_contents( $root . '/wei-alipay.php' );
-$check( false !== strpos( $main, 'Plugin URI: https://weixiaoduo.com/product/wei-alipay.html' ), 'Plugin URI points to weixiaoduo.com' );
+$check( false !== strpos( $main, 'Plugin URI: https://www.weixiaoduo.com/product/wei-alipay.html' ), 'Plugin URI points to weixiaoduo.com' );
 $check( false !== strpos( $main, 'Update URI: https://updates.weixiaoduo.com' ), 'Update URI points to updates.weixiaoduo.com' );
 $check( false === strpos( $main, 'wenpai.org' ) && false === strpos( $main, 'updates.wenpai.net' ), 'Main plugin header removes wenpai URLs' );
 $check( ! is_dir( $root . '/inc/modules/mini-program' ), 'Legacy mini-program module directory removed' );

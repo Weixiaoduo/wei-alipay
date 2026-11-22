@@ -248,6 +248,12 @@ final class Wei_Alipay_Account_Client {
 		}
 		check_admin_referer( 'wei_alipay_disconnect_account' );
 
+		// Require explicit confirmation checkbox when submitted via the gated POST form.
+		if ( 'POST' === strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) && empty( $_POST['confirm_disconnect'] ) ) {
+			wp_safe_redirect( add_query_arg( 'wei_alipay_connect', 'confirm_required', admin_url( 'admin.php?page=wei-alipay&view=account' ) ) );
+			exit;
+		}
+
 		$token = self::decrypt_stored_token();
 		if ( '' !== $token ) {
 			wp_remote_post(

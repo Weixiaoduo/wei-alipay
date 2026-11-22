@@ -343,13 +343,23 @@ final class Wei_Alipay_Secret_Store {
 		}
 	}
 
-	private static function active_material() {
+	/**
+	 * Return all local key materials ordered by precedence (most preferred first).
+	 *
+	 * New envelopes always encrypt with the highest-precedence material, while
+	 * retaining lower-precedence materials in the decryption keyring ensures
+	 * promoting a site to WEI_ALIPAY_ENCRYPTION_KEY never bricks existing envelopes.
+	 *
+	 * @return array<int,string>
+	 */
+	private static function candidate_materials() {
+		$materials = array();
 		if ( defined( 'WEI_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WEI_ALIPAY_ENCRYPTION_KEY ) {
-			return (string) WEI_ALIPAY_ENCRYPTION_KEY;
+			$materials[] = (string) WEI_ALIPAY_ENCRYPTION_KEY;
 		}
 		// Preserve decryptability during the controlled mall.weixiaoduo.com key-name cutover.
 		if ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY ) {
-			return (string) WOO_ALIPAY_ENCRYPTION_KEY;
+			$materials[] = (string) WOO_ALIPAY_ENCRYPTION_KEY;
 		}
 		$parts = array();
 		foreach ( array( 'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY' ) as $constant ) {
@@ -357,16 +367,22 @@ final class Wei_Alipay_Secret_Store {
 				$parts[] = constant( $constant );
 			}
 		}
-		if ( empty( $parts ) ) {
+		if ( ! empty( $parts ) ) {
+			$materials[] = implode( '|', $parts );
+		}
+		return $materials;
+	}
+
+	private static function active_material() {
+		$materials = self::candidate_materials();
+		if ( empty( $materials ) ) {
 			return new WP_Error( 'secret_key_unavailable', __( 'WordPress security keys are required to protect Alipay secrets.', 'wei-alipay' ) );
 		}
-		return implode( '|', $parts );
+		return $materials[0];
 	}
 
 	private static function keyring() {
-		$active = self::active_material();
-		$keys   = is_wp_error( $active ) ? array() : array( $active );
-		return (array) apply_filters( 'woo_alipay_secret_keyring', $keys );
+		return (array) apply_filters( 'woo_alipay_secret_keyring', self::candidate_materials() );
 	}
 
 	private static function derive_key( $material ) {

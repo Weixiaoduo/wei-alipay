@@ -1,3 +1,5 @@
+> **[历史归档 · 已作废]** 本文档基于 2026-08 旧版商业授权 / 独立设计系统方案，已于 Wei Alipay 4.1 正式废止。当前实现以 Connect-Latch 站点身份认证（无商业许可证）与 `wenpai-admin-ui` 薇晓朵主题壳为准。
+
 # Wei Alipay administration design system
 
 This is the implementation contract for the feature centre, gateway settings, profit sharing, jobs, compensation, reconciliation, webhook logs and subscription administration. Checkout rendering remains governed by WooCommerce and each gateway integration.

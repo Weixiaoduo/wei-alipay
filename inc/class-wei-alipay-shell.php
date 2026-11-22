@@ -146,7 +146,7 @@ final class Wei_Alipay_Shell {
 				'help_url'           => admin_url( 'admin.php?page=wei-alipay&view=help' ),
 				'help_label'         => __( '帮助', 'wei-alipay' ),
 				'help_icon_html'     => Wenpai_Admin_Icons::svg( 'help' ),
-				'feedback_url'       => 'https://weixiaoduo.com/support',
+				'feedback_url'       => 'https://www.weixiaoduo.com/support',
 				'feedback_label'     => __( '支持', 'wei-alipay' ),
 				'feedback_icon_html' => Wenpai_Admin_Icons::svg( 'feedback' ),
 				'main_class'         => 'wenpai-measure-wide',
@@ -166,11 +166,11 @@ final class Wei_Alipay_Shell {
 				'version' => 'Wei Alipay ' . ( defined( 'WEI_ALIPAY_VERSION' ) ? WEI_ALIPAY_VERSION : '4.1.0' ),
 				'links'   => array(
 					array(
-						'url'   => 'https://weixiaoduo.com/product/wei-alipay.html',
-						'label' => __( '产品页', 'wei-alipay' ),
+						'url'   => 'https://www.weixiaoduo.com/plugins',
+						'label' => __( '插件目录', 'wei-alipay' ),
 					),
 					array(
-						'url'   => 'https://weixiaoduo.com/support',
+						'url'   => 'https://www.weixiaoduo.com/support',
 						'label' => __( '支持', 'wei-alipay' ),
 					),
 				),
@@ -742,9 +742,19 @@ final class Wei_Alipay_Shell {
 
 		if ( $connected && ! empty( $account['disconnect_url'] ) ) {
 			echo '<div class="wenpai-folds"><details class="wenpai-fold"><summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield-check' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '断开此站点连接', 'wei-alipay' ) . '</span></span><span class="wenpai-fold__side"><span class="pill bad">' . esc_html__( '危险操作', 'wei-alipay' ) . '</span>' . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary><div class="wenpai-fold__body">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icons.
-			echo '<p>' . esc_html__( '断开不会停掉已启用的支付方式，但会锁定扩展方式的开关与参数修改。', 'wei-alipay' ) . '</p>';
-			echo '<a class="btn btn-danger" href="' . esc_url( (string) $account['disconnect_url'] ) . '">' . esc_html__( '确认断开此站点连接', 'wei-alipay' ) . '</a>';
-			echo '</div></details></div>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" data-wenpai-gated-form>';
+			echo '<input type="hidden" name="action" value="wei_alipay_disconnect_account">';
+			wp_nonce_field( 'wei_alipay_disconnect_account' );
+			echo Wenpai_Admin_UI::gate_html(
+				array(
+					'name'    => 'confirm_disconnect',
+					'id'      => 'wei-alipay-confirm-disconnect',
+					'text_id' => 'wei-alipay-confirm-disconnect-text',
+					'label'   => __( '我已知晓：断开不会停掉已启用的支付方式，但会锁定扩展方式的开关与参数修改。', 'wei-alipay' ),
+				)
+			); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside Wenpai_Admin_UI::gate_html().
+			echo '<div class="wenpai-fold__foot"><button type="submit" class="btn btn-danger" aria-describedby="wei-alipay-confirm-disconnect-text">' . esc_html__( '确认断开此站点连接', 'wei-alipay' ) . '</button></div>';
+			echo '</form></div></details></div>';
 		}
 		Wenpai_Admin_UI::card_close();
 	}
@@ -776,9 +786,9 @@ final class Wei_Alipay_Shell {
 			array(
 				'start'   => true,
 				'actions' => array(
-					array( 'label' => __( 'Wei Alipay 产品文档', 'wei-alipay' ), 'href' => 'https://weixiaoduo.com/product/wei-alipay.html' ),
+					array( 'label' => __( '薇晓朵文档中心', 'wei-alipay' ), 'href' => 'https://www.weixiaoduo.com/document/' ),
 					array( 'label' => __( '支付宝开放平台文档', 'wei-alipay' ), 'href' => 'https://opendocs.alipay.com/' ),
-					array( 'label' => __( '提交薇晓朵工单', 'wei-alipay' ), 'href' => 'https://weixiaoduo.com/support' ),
+					array( 'label' => __( '提交薇晓朵工单', 'wei-alipay' ), 'href' => 'https://www.weixiaoduo.com/support' ),
 				),
 			)
 		);

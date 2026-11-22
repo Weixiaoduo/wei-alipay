@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv3.
 msgid ""
 msgstr ""
-"Project-Id-Version: Wei Alipay Payment Gateway for WooCommerce 4.1.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/4.1-release\n"
+"Project-Id-Version: Wei Alipay Payment Gateway for WooCommerce 4.1.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/4.1.1-hotfix\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-22T12:56:11+08:00\n"
+"POT-Creation-Date: 2026-11-22T14:56:31+08:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: wei-alipay\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #. Plugin URI of the plugin
 #: wei-alipay.php
-msgid "https://weixiaoduo.com/product/wei-alipay.html"
+msgid "https://www.weixiaoduo.com/product/wei-alipay.html"
 msgstr ""
 
 #. Description of the plugin
@@ -234,8 +234,8 @@ msgid "You do not have permission to view webhook logs."
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:479
-#: inc/class-wei-alipay-shell.php:374
-#: inc/class-wei-alipay-shell.php:882
+#: inc/class-wei-alipay-shell.php:378
+#: inc/class-wei-alipay-shell.php:906
 msgid "回调日志"
 msgstr ""
 
@@ -328,7 +328,7 @@ msgid "已确认"
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:543
-#: inc/class-wei-alipay-shell.php:394
+#: inc/class-wei-alipay-shell.php:398
 msgid "失败"
 msgstr ""
 
@@ -354,8 +354,8 @@ msgid "仅对并发通知锁与临时处理异常自动查单重试，日志默�
 msgstr ""
 
 #: inc/class-wc-alipay-webhook-retry.php:583
-#: inc/class-wei-alipay-shell.php:538
-#: inc/class-wei-alipay-shell.php:849
+#: inc/class-wei-alipay-shell.php:542
+#: inc/class-wei-alipay-shell.php:865
 msgid "已开启"
 msgstr ""
 
@@ -398,7 +398,7 @@ msgid "Alipay by Wei Alipay"
 msgstr ""
 
 #: inc/class-wc-alipay.php:36
-#: inc/class-wc-alipay.php:1059
+#: inc/class-wc-alipay.php:1063
 msgid "Alipay is a simple, secure and fast online payment method."
 msgstr ""
 
@@ -474,7 +474,7 @@ msgid "Checkout title"
 msgstr ""
 
 #: inc/class-wc-alipay.php:235
-#: inc/class-wei-alipay-features.php:855
+#: inc/class-wei-alipay-features.php:859
 #: inc/modules/cross-border/includes/class-wc-acbop.php:372
 #: inc/modules/cross-border/includes/form-settings-alipay.php:21
 msgid "Alipay"
@@ -886,7 +886,7 @@ msgid "Alipay refund response does not match the refund request."
 msgstr ""
 
 #: inc/class-wc-alipay.php:929
-msgid "Aliay is enabled, but the store currency is not set to Chinese Yuan."
+msgid "Alipay is enabled, but the store currency is not set to Chinese Yuan."
 msgstr ""
 
 #. translators: %1$s is the URL of the link and %2$s is the currency name
@@ -899,135 +899,151 @@ msgstr ""
 msgid "Wei Alipay Payment Gateway"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1061
-msgid "Gateway settings sections"
-msgstr ""
-
-#: inc/class-wc-alipay.php:1063
-msgid "Endpoints"
-msgstr ""
-
-#: inc/class-wc-alipay.php:1064
-msgid "Basic"
+#: inc/class-wc-alipay.php:1060
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:73
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:72
+msgid "Return to Wei Alipay"
 msgstr ""
 
 #: inc/class-wc-alipay.php:1065
-msgid "Credentials"
-msgstr ""
-
-#: inc/class-wc-alipay.php:1066
-msgid "Environment"
+msgid "Gateway settings sections"
 msgstr ""
 
 #: inc/class-wc-alipay.php:1067
-msgid "Reliability"
+msgid "Endpoints"
 msgstr ""
 
 #: inc/class-wc-alipay.php:1068
-msgid "Advanced"
+msgid "Basic"
 msgstr ""
 
 #: inc/class-wc-alipay.php:1069
+msgid "Credentials"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1070
+msgid "Environment"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1071
+msgid "Reliability"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1072
+msgid "Advanced"
+msgstr ""
+
+#: inc/class-wc-alipay.php:1073
 #: inc/class-wei-alipay-features.php:203
 #: inc/modules/subscriptions/inc/class-wc-alipay-subscriptions-admin.php:14
 msgid "Subscriptions"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1075
+#: inc/class-wc-alipay.php:1079
 #: inc/modules/cross-border/includes/class-wc-acbop.php:374
 #: inc/modules/fund-auth/inc/class-wc-alipay-fund-auth.php:113
 msgid "Gateway notifications"
 msgstr ""
 
 #. translators: %1$s: link to the official documentation
-#: inc/class-wc-alipay.php:1080
+#: inc/class-wc-alipay.php:1084
 #, php-format
 msgid "Need help configuring the gateway? See the %1$s."
 msgstr ""
 
-#: inc/class-wc-alipay.php:1081
+#: inc/class-wc-alipay.php:1085
 msgid "official documentation"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1095
+#: inc/class-wc-alipay.php:1099
 msgid "Tools and endpoints"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1096
+#: inc/class-wc-alipay.php:1100
 msgid "Payment notification URL (configure as the payment result notification URL in Alipay Open Platform)"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1098
-#: inc/class-wc-alipay.php:1109
-#: inc/class-wc-alipay.php:1110
-#: inc/class-wc-alipay.php:1111
+#: inc/class-wc-alipay.php:1102
+#: inc/class-wc-alipay.php:1113
+#: inc/class-wc-alipay.php:1114
+#: inc/class-wc-alipay.php:1115
 msgid "Copy"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1107
+#: inc/class-wc-alipay.php:1111
 msgid "Agreement endpoints for Alipay authorization and callbacks"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1109
+#: inc/class-wc-alipay.php:1113
 msgid "Signing start"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1110
+#: inc/class-wc-alipay.php:1114
 msgid "Signing notification"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1111
+#: inc/class-wc-alipay.php:1115
 msgid "Signing return"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1259
+#: inc/class-wc-alipay.php:1263
 msgid "Alipay payment completed"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1266
+#: inc/class-wc-alipay.php:1270
 msgid "Alipay closed the transaction and the order is no longer valid for payment."
 msgstr ""
 
-#: inc/class-wc-alipay.php:1291
-#: inc/class-wc-alipay.php:1421
+#: inc/class-wc-alipay.php:1295
+#: inc/class-wc-alipay.php:1425
 msgid "Update status event failed."
 msgstr ""
 
-#: inc/class-wc-alipay.php:1311
+#: inc/class-wc-alipay.php:1315
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:438
 msgid "订单不存在"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1315
+#: inc/class-wc-alipay.php:1319
 msgid "不支持的货币类型"
 msgstr ""
 
-#: inc/class-wc-alipay.php:1318
+#: inc/class-wc-alipay.php:1322
 msgid "等待支付宝支付"
 msgstr ""
 
-#: inc/class-wc-email-alipay-orphan-transaction.php:12
+#: inc/class-wc-email-alipay-orphan-transaction.php:22
 msgid "Alipay Orphan Transaction"
 msgstr ""
 
-#: inc/class-wc-email-alipay-orphan-transaction.php:13
+#: inc/class-wc-email-alipay-orphan-transaction.php:23
 msgid "Alipay Orphan Transaction emails are sent when an Alipay transaction has no counterpart in WooCommerce and could not be refunded automatically."
 msgstr ""
 
-#: inc/class-wc-email-alipay-orphan-transaction.php:39
+#: inc/class-wc-email-alipay-orphan-transaction.php:49
 msgid "[{site_title}]: Order #{order_number} was not found but an Alipay transaction was registered"
 msgstr ""
 
-#: inc/class-wc-email-alipay-orphan-transaction.php:44
+#: inc/class-wc-email-alipay-orphan-transaction.php:53
 msgid "Orphan order: #{order_number} - Alipay transaction: #{transaction_id}"
 msgstr ""
 
-#: inc/class-wc-email-alipay-orphan-transaction.php:104
+#: inc/class-wc-email-alipay-orphan-transaction.php:128
 msgid "You may need to double check the Alipay transactions in the merchant platform and take care of refunds by other means if necessary."
 msgstr ""
 
-#: inc/class-wc-email-alipay-orphan-transaction.php:121
-#: inc/class-wc-email-alipay-orphan-transaction.php:125
+#: inc/class-wc-email-alipay-orphan-transaction.php:135
+msgid "Recipient(s)"
+msgstr ""
+
+#. translators: %s: site admin email address
+#: inc/class-wc-email-alipay-orphan-transaction.php:139
+#, php-format
+msgid "Enter recipients (comma separated) for this email. Defaults to <code>%s</code>."
+msgstr ""
+
+#: inc/class-wc-email-alipay-orphan-transaction.php:149
+#: inc/class-wc-email-alipay-orphan-transaction.php:153
 msgid "Default value: "
 msgstr ""
 
@@ -1043,38 +1059,38 @@ msgstr ""
 msgid "You do not have permission to disconnect Wei Alipay."
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:275
+#: inc/class-wei-alipay-account-client.php:281
 msgid "You do not have permission to refresh Wei Alipay connection."
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:348
+#: inc/class-wei-alipay-account-client.php:355
 msgid "Connected"
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:348
-#: inc/class-wei-alipay-features.php:738
+#: inc/class-wei-alipay-account-client.php:355
+#: inc/class-wei-alipay-features.php:742
 msgid "Not connected"
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:350
-#: inc/class-wei-alipay-account-client.php:491
-#: inc/class-wei-alipay-features.php:529
-#: inc/class-wei-alipay-features.php:692
+#: inc/class-wei-alipay-account-client.php:357
+#: inc/class-wei-alipay-account-client.php:498
+#: inc/class-wei-alipay-features.php:533
+#: inc/class-wei-alipay-features.php:696
 msgid "Weixiaoduo account"
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:351
-#: inc/class-wei-alipay-features.php:741
+#: inc/class-wei-alipay-account-client.php:358
+#: inc/class-wei-alipay-features.php:745
 msgid "Created when connected"
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:352
-#: inc/class-wei-alipay-features.php:742
+#: inc/class-wei-alipay-account-client.php:359
+#: inc/class-wei-alipay-features.php:746
 msgid "Never"
 msgstr ""
 
-#: inc/class-wei-alipay-account-client.php:357
-#: inc/class-wei-alipay-features.php:747
+#: inc/class-wei-alipay-account-client.php:364
+#: inc/class-wei-alipay-features.php:751
 msgid "Weixiaoduo account avatar"
 msgstr ""
 
@@ -1208,7 +1224,7 @@ msgid "Use Alipay agreements for recurring WooCommerce Subscriptions charges."
 msgstr ""
 
 #: inc/class-wei-alipay-features.php:273
-#: inc/class-wei-alipay-features.php:358
+#: inc/class-wei-alipay-features.php:362
 #: inc/class-wei-alipay.php:374
 msgid "You do not have permission to manage Wei Alipay."
 msgstr ""
@@ -1217,133 +1233,133 @@ msgstr ""
 msgid "Invalid Wei Alipay feature group."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:340
-#: inc/class-wei-alipay-features.php:350
+#: inc/class-wei-alipay-features.php:344
+#: inc/class-wei-alipay-features.php:354
 msgid "Unsaved changes"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:373
+#: inc/class-wei-alipay-features.php:377
 msgid "支付方式与工具设置已保存。"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:377
+#: inc/class-wei-alipay-features.php:381
 msgid "后台品牌配色偏好已更新。"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:382
+#: inc/class-wei-alipay-features.php:386
 msgid "已成功连接薇晓朵账户。"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:384
+#: inc/class-wei-alipay-features.php:388
 msgid "已断开薇晓朵账户连接，已启用的支付方式仍会继续收款。"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:386
+#: inc/class-wei-alipay-features.php:390
 msgid "已取消账户连接授权。"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:388
+#: inc/class-wei-alipay-features.php:392
 msgid "账户连接未完成，请重试。"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:418
+#: inc/class-wei-alipay-features.php:422
 #: inc/class-wei-alipay.php:255
 #: inc/class-wei-alipay.php:256
 msgid "Wei Alipay"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:420
+#: inc/class-wei-alipay-features.php:424
 msgid "The main Alipay gateway works after installation. Connect a Weixiaoduo account to enable optional methods."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:428
+#: inc/class-wei-alipay-features.php:432
 msgid "Wei Alipay features saved."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:433
+#: inc/class-wei-alipay-features.php:437
 msgid "Wei Alipay notifications"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:455
+#: inc/class-wei-alipay-features.php:459
 #: inc/class-wei-alipay.php:267
 msgid "Overview"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:456
+#: inc/class-wei-alipay-features.php:460
 msgid "Payment methods"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:457
-#: inc/class-wei-alipay-features.php:844
+#: inc/class-wei-alipay-features.php:461
+#: inc/class-wei-alipay-features.php:848
 msgid "Operational tools"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:458
+#: inc/class-wei-alipay-features.php:462
 msgid "Account and authorization"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:460
+#: inc/class-wei-alipay-features.php:464
 msgid "Wei Alipay sections"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:497
+#: inc/class-wei-alipay-features.php:501
 msgid "No callback recorded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:505
+#: inc/class-wei-alipay-features.php:509
 msgid "The stored private key cannot be decrypted. Payments must remain disabled until the encryption key is restored."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:505
+#: inc/class-wei-alipay-features.php:509
 msgid "Review key health"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:508
+#: inc/class-wei-alipay-features.php:512
 msgid "Complete gateway setup before accepting live payments."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:508
-#: inc/class-wei-alipay-features.php:528
-#: inc/class-wei-alipay-features.php:549
+#: inc/class-wei-alipay-features.php:512
+#: inc/class-wei-alipay-features.php:532
+#: inc/class-wei-alipay-features.php:553
 msgid "Open gateway settings"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:511
+#: inc/class-wei-alipay-features.php:515
 msgid "Connect a Weixiaoduo account to enable optional payment methods. The main Alipay gateway works without a connection."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:511
-#: inc/class-wei-alipay-features.php:529
+#: inc/class-wei-alipay-features.php:515
+#: inc/class-wei-alipay-features.php:533
 msgid "Open account"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:514
+#: inc/class-wei-alipay-features.php:518
 msgid "Some recent payment callbacks need review."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:514
-#: inc/class-wei-alipay-features.php:559
+#: inc/class-wei-alipay-features.php:518
+#: inc/class-wei-alipay-features.php:563
 msgid "Open callback logs"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:517
+#: inc/class-wei-alipay-features.php:521
 msgid "Some payment recovery tasks are not scheduled."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:517
+#: inc/class-wei-alipay-features.php:521
 msgid "Open scheduled actions"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:520
+#: inc/class-wei-alipay-features.php:524
 msgid "A Wei Alipay update is available."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:520
+#: inc/class-wei-alipay-features.php:524
 msgid "Open plugins"
 msgstr ""
 
 #. translators: %d is the number of prioritized setup issues.
-#: inc/class-wei-alipay-features.php:525
+#: inc/class-wei-alipay-features.php:529
 #, php-format
 msgid "%d issue"
 msgid_plural "%d issues"
@@ -1351,524 +1367,524 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d is the number of prioritized setup issues.
-#: inc/class-wei-alipay-features.php:525
+#: inc/class-wei-alipay-features.php:529
 msgid "No local issues"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:528
+#: inc/class-wei-alipay-features.php:532
 msgid "Payment status"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:528
+#: inc/class-wei-alipay-features.php:532
 msgid "Ready to accept payments"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:528
-#: inc/class-wei-alipay-features.php:542
-#: inc/class-wei-alipay-features.php:852
-#: inc/class-wei-alipay-features.php:920
+#: inc/class-wei-alipay-features.php:532
+#: inc/class-wei-alipay-features.php:546
+#: inc/class-wei-alipay-features.php:856
+#: inc/class-wei-alipay-features.php:924
 msgid "Action needed"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:528
+#: inc/class-wei-alipay-features.php:532
 msgid "Gateway credentials and security checks passed."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:528
+#: inc/class-wei-alipay-features.php:532
 msgid "Complete the blocking gateway checks before accepting live payments."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:529
+#: inc/class-wei-alipay-features.php:533
 msgid "Connection identifies this site. It does not license the main gateway."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:530
 #: inc/class-wei-alipay-features.php:534
+#: inc/class-wei-alipay-features.php:538
 msgid "Needs attention"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:530
+#: inc/class-wei-alipay-features.php:534
 msgid "Up to three setup issues are listed below."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:530
+#: inc/class-wei-alipay-features.php:534
 msgid "No blocking setup issues were found."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:530
+#: inc/class-wei-alipay-features.php:534
 msgid "View issues"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:530
+#: inc/class-wei-alipay-features.php:534
 msgid "View details"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:541
+#: inc/class-wei-alipay-features.php:545
 msgid "Setup details"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:542
+#: inc/class-wei-alipay-features.php:546
 msgid "Payment environment and security"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:542
-#: inc/class-wei-alipay-features.php:884
+#: inc/class-wei-alipay-features.php:546
+#: inc/class-wei-alipay-features.php:888
 msgid "Ready"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:542
+#: inc/class-wei-alipay-features.php:546
 msgid "Local checks only. Opening this section does not contact Alipay."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:543
+#: inc/class-wei-alipay-features.php:547
 msgid "Payment environment"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:543
+#: inc/class-wei-alipay-features.php:547
 msgid "Sandbox"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:543
+#: inc/class-wei-alipay-features.php:547
 msgid "Live"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:544
+#: inc/class-wei-alipay-features.php:548
 msgid "Gateway enabled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:544
-#: inc/class-wei-alipay-features.php:902
-#: inc/class-wei-alipay-features.php:926
+#: inc/class-wei-alipay-features.php:548
+#: inc/class-wei-alipay-features.php:906
+#: inc/class-wei-alipay-features.php:930
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:176
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:182
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:208
 msgid "Enabled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:544
+#: inc/class-wei-alipay-features.php:548
 msgid "Disabled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:545
+#: inc/class-wei-alipay-features.php:549
 msgid "Merchant credentials"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:545
+#: inc/class-wei-alipay-features.php:549
 msgid "Configured"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:545
-#: inc/class-wei-alipay-features.php:884
+#: inc/class-wei-alipay-features.php:549
+#: inc/class-wei-alipay-features.php:888
 msgid "Configuration required"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:546
+#: inc/class-wei-alipay-features.php:550
 msgid "Private key protection"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:547
+#: inc/class-wei-alipay-features.php:551
 msgid "Store currency"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:547
+#: inc/class-wei-alipay-features.php:551
 #: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:266
 msgid "Unknown"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:548
+#: inc/class-wei-alipay-features.php:552
 msgid "Secure callback URL"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:548
+#: inc/class-wei-alipay-features.php:552
 msgid "HTTPS"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:548
+#: inc/class-wei-alipay-features.php:552
 msgid "HTTPS required"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:552
+#: inc/class-wei-alipay-features.php:556
 msgid "Review required"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:552
+#: inc/class-wei-alipay-features.php:556
 msgid "No issue recorded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:552
+#: inc/class-wei-alipay-features.php:556
 msgid "No callback sample"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:553
+#: inc/class-wei-alipay-features.php:557
 msgid "Callbacks and background recovery"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:553
+#: inc/class-wei-alipay-features.php:557
 msgid "No callback sample means no data yet, not that callbacks are broken."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:554
+#: inc/class-wei-alipay-features.php:558
 msgid "Last callback"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:555
+#: inc/class-wei-alipay-features.php:559
 msgid "Last callback issue"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:555
+#: inc/class-wei-alipay-features.php:559
 msgid "None recorded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:556
+#: inc/class-wei-alipay-features.php:560
 msgid "Unresolved callback failures"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:557
+#: inc/class-wei-alipay-features.php:561
 msgid "Last pending-order check"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:558
+#: inc/class-wei-alipay-features.php:562
 msgid "Last timeout check"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:561
+#: inc/class-wei-alipay-features.php:565
 msgid "Compatibility and diagnostics"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:561
-#: inc/class-wei-alipay-features.php:563
+#: inc/class-wei-alipay-features.php:565
+#: inc/class-wei-alipay-features.php:567
 msgid "Integration loaded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:561
-#: inc/class-wei-alipay-features.php:563
+#: inc/class-wei-alipay-features.php:565
+#: inc/class-wei-alipay-features.php:567
 msgid "Not loaded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:562
+#: inc/class-wei-alipay-features.php:566
 msgid "Order storage"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:562
+#: inc/class-wei-alipay-features.php:566
 msgid "HPOS enabled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:562
+#: inc/class-wei-alipay-features.php:566
 msgid "WordPress posts mode"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:563
+#: inc/class-wei-alipay-features.php:567
 msgid "Checkout Blocks"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:564
+#: inc/class-wei-alipay-features.php:568
 msgid "Software versions"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:565
+#: inc/class-wei-alipay-features.php:569
 msgid "Plugin update"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:565
+#: inc/class-wei-alipay-features.php:569
 msgid "Update available"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:565
+#: inc/class-wei-alipay-features.php:569
 msgid "No pending update"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:566
+#: inc/class-wei-alipay-features.php:570
 msgid "Open WooCommerce status"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:569
+#: inc/class-wei-alipay-features.php:573
 msgid "Payment activity in the last 7 days"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:569
-#: inc/class-wei-alipay-features.php:570
+#: inc/class-wei-alipay-features.php:573
+#: inc/class-wei-alipay-features.php:574
 msgid "Events recorded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:569
-#: inc/class-wei-alipay-features.php:570
+#: inc/class-wei-alipay-features.php:573
+#: inc/class-wei-alipay-features.php:574
 msgid "No payment sample recorded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:569
+#: inc/class-wei-alipay-features.php:573
 msgid "Counts successful, failed and refunded payments from this plugin only. Amounts and customer data are not stored."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:570
+#: inc/class-wei-alipay-features.php:574
 msgid "Activity sample"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:571
+#: inc/class-wei-alipay-features.php:575
 msgid "Successful payments"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:572
+#: inc/class-wei-alipay-features.php:576
 msgid "Failed payments"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:573
+#: inc/class-wei-alipay-features.php:577
 msgid "Refunds created"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:574
+#: inc/class-wei-alipay-features.php:578
 msgid "Payment success rate"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:574
+#: inc/class-wei-alipay-features.php:578
 msgid "Not enough data"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:575
+#: inc/class-wei-alipay-features.php:579
 msgid "Open WooCommerce orders"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:576
+#: inc/class-wei-alipay-features.php:580
 msgid "Passing local checks does not replace an Alipay sandbox acceptance test."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:606
+#: inc/class-wei-alipay-features.php:610
 msgid "Encrypted key unreadable"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:609
+#: inc/class-wei-alipay-features.php:613
 msgid "Private key missing"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:612
+#: inc/class-wei-alipay-features.php:616
 msgid "External secret provider"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:613
+#: inc/class-wei-alipay-features.php:617
 msgid "Dedicated encryption key"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:614
+#: inc/class-wei-alipay-features.php:618
 msgid "Protected by WordPress salts"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:615
+#: inc/class-wei-alipay-features.php:619
 msgid "Plaintext migration required"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:617
+#: inc/class-wei-alipay-features.php:621
 msgid "Protection state unknown"
 msgstr ""
 
 #. translators: %s is a human-readable time difference such as "5 minutes".
-#: inc/class-wei-alipay-features.php:632
+#: inc/class-wei-alipay-features.php:636
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:642
+#: inc/class-wei-alipay-features.php:646
 msgid "Scheduled; no run recorded"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:642
+#: inc/class-wei-alipay-features.php:646
 msgid "Not scheduled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:650
-#: inc/class-wei-alipay-features.php:656
+#: inc/class-wei-alipay-features.php:654
+#: inc/class-wei-alipay-features.php:660
 msgid "unknown"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:696
+#: inc/class-wei-alipay-features.php:700
 msgid "Connect this site to a Weixiaoduo account. The main Alipay gateway works after installation. Optional methods such as Face-to-Face Pay can be turned on after you connect."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:700
+#: inc/class-wei-alipay-features.php:704
 msgid "Manage on Weixiaoduo.com"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:703
+#: inc/class-wei-alipay-features.php:707
 msgid "Connect account"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:707
+#: inc/class-wei-alipay-features.php:711
 msgid "What connection is for"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:708
+#: inc/class-wei-alipay-features.php:712
 msgid "Main Alipay gateway"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:708
+#: inc/class-wei-alipay-features.php:712
 msgid "Available after install"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:709
+#: inc/class-wei-alipay-features.php:713
 msgid "Face-to-Face, Huabei and barcode"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:709
+#: inc/class-wei-alipay-features.php:713
 msgid "Can be enabled"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:709
-#: inc/class-wei-alipay-features.php:914
+#: inc/class-wei-alipay-features.php:713
+#: inc/class-wei-alipay-features.php:918
 msgid "Connect to enable"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:710
+#: inc/class-wei-alipay-features.php:714
 msgid "Cross-border, fund authorization, subscriptions and profit sharing"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:710
-#: inc/class-wei-alipay-features.php:905
+#: inc/class-wei-alipay-features.php:714
+#: inc/class-wei-alipay-features.php:909
 msgid "Not available yet"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:710
-#: inc/class-wei-alipay-features.php:908
+#: inc/class-wei-alipay-features.php:714
+#: inc/class-wei-alipay-features.php:912
 msgid "Connect to see status"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:713
+#: inc/class-wei-alipay-features.php:717
 msgid "Data shared when connected"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:713
+#: inc/class-wei-alipay-features.php:717
 msgid "Required connection data is limited to the site host, installation identifier, software versions, locale, store currency and connection timestamps."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:713
+#: inc/class-wei-alipay-features.php:717
 msgid "Never sent:"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:713
+#: inc/class-wei-alipay-features.php:717
 msgid "orders, payment amounts, customer details, Alipay private keys, certificates or notification payloads."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:713
+#: inc/class-wei-alipay-features.php:717
 msgid "Read the data and privacy notice"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:715
+#: inc/class-wei-alipay-features.php:719
 msgid "Connection details"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:715
+#: inc/class-wei-alipay-features.php:719
 msgid "Site"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:715
+#: inc/class-wei-alipay-features.php:719
 msgid "Installation ID"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:715
+#: inc/class-wei-alipay-features.php:719
 msgid "Last successful sync"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:718
+#: inc/class-wei-alipay-features.php:722
 msgid "Disconnect this site"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:718
+#: inc/class-wei-alipay-features.php:722
 msgid "Disconnecting does not stop methods that are already enabled. You will not be able to change their options until you connect again."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:718
+#: inc/class-wei-alipay-features.php:722
 msgid "Review disconnection"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:832
+#: inc/class-wei-alipay-features.php:836
 msgid "How activation works"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:832
+#: inc/class-wei-alipay-features.php:836
 msgid "The main Alipay gateway works after installation. Face-to-Face Pay, Huabei and barcode can be turned on after you connect a Weixiaoduo account. After they are enabled, disconnecting keeps them running but locks their options."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:842
+#: inc/class-wei-alipay-features.php:846
 msgid "Optional payment methods"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:842
+#: inc/class-wei-alipay-features.php:846
 msgid "Enabled methods appear in WooCommerce → Settings → Payments."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:844
+#: inc/class-wei-alipay-features.php:848
 msgid "Disabled tools hide their admin pages and stop background jobs."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:847
+#: inc/class-wei-alipay-features.php:851
 msgid "Save feature settings"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:852
+#: inc/class-wei-alipay-features.php:856
 msgid "Active"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:854
+#: inc/class-wei-alipay-features.php:858
 msgid "Main payment gateway"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:854
+#: inc/class-wei-alipay-features.php:858
 msgid "Standard Alipay checkout. Configure credentials in WooCommerce gateway settings."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:855
+#: inc/class-wei-alipay-features.php:859
 msgid "Standard Alipay checkout for CNY stores."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:855
+#: inc/class-wei-alipay-features.php:859
 msgid "Required"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:881
+#: inc/class-wei-alipay-features.php:885
 msgid "Enabled payment services"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:881
+#: inc/class-wei-alipay-features.php:885
 msgid "Quick readiness check. Turn methods on or off in the list below."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:902
-#: inc/class-wei-alipay-features.php:926
+#: inc/class-wei-alipay-features.php:906
+#: inc/class-wei-alipay-features.php:930
 #: inc/modules/profitsharing/inc/class-wei-alipay-ps-admin.php:182
 msgid "Inactive"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:911
+#: inc/class-wei-alipay-features.php:915
 msgid "Dependency missing"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:917
+#: inc/class-wei-alipay-features.php:921
 msgid "Enabled, options locked"
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:928
+#: inc/class-wei-alipay-features.php:932
 msgid "Install and activate WooCommerce Subscriptions before enabling this feature."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:930
+#: inc/class-wei-alipay-features.php:934
 msgid "This method is not open yet."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:932
+#: inc/class-wei-alipay-features.php:936
 msgid "Connect a Weixiaoduo account to see whether this method can be enabled."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:934
+#: inc/class-wei-alipay-features.php:938
 msgid "Connect a Weixiaoduo account to turn this method on."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:936
+#: inc/class-wei-alipay-features.php:940
 msgid "This method stays on. Connect again to change its options."
 msgstr ""
 
-#: inc/class-wei-alipay-features.php:941
+#: inc/class-wei-alipay-features.php:945
 msgid "Configure"
 msgstr ""
 
 #. translators: %s is the optional Wei Alipay feature name.
-#: inc/class-wei-alipay-features.php:945
+#: inc/class-wei-alipay-features.php:949
 #, php-format
 msgid "Enable %s"
 msgstr ""
@@ -1906,7 +1922,7 @@ msgstr ""
 msgid "Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site."
 msgstr ""
 
-#: inc/class-wei-alipay-secret-store.php:361
+#: inc/class-wei-alipay-secret-store.php:379
 msgid "WordPress security keys are required to protect Alipay secrets."
 msgstr ""
 
@@ -1915,7 +1931,7 @@ msgid "You do not have permission to update Wei Alipay preferences."
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:147
-#: inc/class-wei-alipay-shell.php:746
+#: inc/class-wei-alipay-shell.php:767
 msgid "帮助"
 msgstr ""
 
@@ -1925,7 +1941,7 @@ msgid "支持"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:170
-msgid "产品页"
+msgid "插件目录"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:242
@@ -1937,17 +1953,17 @@ msgid "当面付"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:244
-#: inc/class-wei-alipay-shell.php:452
+#: inc/class-wei-alipay-shell.php:456
 msgid "花呗分期"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:244
-#: inc/class-wei-alipay-shell.php:453
+#: inc/class-wei-alipay-shell.php:457
 msgid "条码付"
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:251
-#: inc/class-wei-alipay-shell.php:864
+#: inc/class-wei-alipay-shell.php:888
 msgid "概览"
 msgstr ""
 
@@ -1968,8 +1984,8 @@ msgid "前往 WooCommerce 付款设置填入 AppID、应用私钥与支付宝公
 msgstr ""
 
 #: inc/class-wei-alipay-shell.php:265
-#: inc/class-wei-alipay-shell.php:314
-#: inc/class-wei-alipay-shell.php:526
+#: inc/class-wei-alipay-shell.php:316
+#: inc/class-wei-alipay-shell.php:530
 msgid "配置主网关"
 msgstr ""
 
@@ -1987,490 +2003,490 @@ msgstr ""
 msgid "尚未收到回调样本"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:284
+#: inc/class-wei-alipay-shell.php:285
 msgid "主网关状态"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:285
+#: inc/class-wei-alipay-shell.php:286
 msgid "已就绪"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:285
-#: inc/class-wei-alipay-shell.php:327
+#: inc/class-wei-alipay-shell.php:286
+#: inc/class-wei-alipay-shell.php:330
 msgid "待配置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:286
+#: inc/class-wei-alipay-shell.php:287
 msgid "电脑网站与手机网站正常"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:286
+#: inc/class-wei-alipay-shell.php:287
 msgid "缺少 AppID 或私钥"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:289
+#: inc/class-wei-alipay-shell.php:290
 msgid "已启用方式"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:291
+#: inc/class-wei-alipay-shell.php:292
 msgid "尚未开启支付方式"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:294
+#: inc/class-wei-alipay-shell.php:295
 msgid "近期回调成功率"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:299
-#: inc/class-wei-alipay-shell.php:455
-#: inc/class-wei-alipay-shell.php:664
-#: inc/class-wei-alipay-shell.php:681
+#: inc/class-wei-alipay-shell.php:300
+#: inc/class-wei-alipay-shell.php:459
+#: inc/class-wei-alipay-shell.php:675
+#: inc/class-wei-alipay-shell.php:692
 msgid "薇晓朵账户"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:300
-#: inc/class-wei-alipay-shell.php:690
+#: inc/class-wei-alipay-shell.php:301
+#: inc/class-wei-alipay-shell.php:701
 msgid "已连接"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:300
+#: inc/class-wei-alipay-shell.php:301
 msgid "未连接"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:301
+#: inc/class-wei-alipay-shell.php:302
 msgid "主网关可直接使用"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:311
+#: inc/class-wei-alipay-shell.php:313
 msgid "收款通道自检"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:325
+#: inc/class-wei-alipay-shell.php:328
 msgid "私钥加密状态"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:327
-#: inc/class-wei-alipay-shell.php:341
+#: inc/class-wei-alipay-shell.php:330
+#: inc/class-wei-alipay-shell.php:344
 msgid "正常"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:328
+#: inc/class-wei-alipay-shell.php:331
 msgid "已加密存储，不回显明文"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:328
+#: inc/class-wei-alipay-shell.php:331
 msgid "前往主网关填入密钥"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:332
+#: inc/class-wei-alipay-shell.php:335
 msgid "异步回调入口"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:334
+#: inc/class-wei-alipay-shell.php:337
 msgid "HTTPS 就绪"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:334
+#: inc/class-wei-alipay-shell.php:337
 msgid "非 HTTPS"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:335
+#: inc/class-wei-alipay-shell.php:338
 msgid "先验签后查单，未验签不写库"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:339
+#: inc/class-wei-alipay-shell.php:342
 msgid "单号解析范围"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:340
+#: inc/class-wei-alipay-shell.php:343
 #, php-format
 msgid "博客 #%d"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:340
+#: inc/class-wei-alipay-shell.php:343
 msgid "单站点"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:346
+#: inc/class-wei-alipay-shell.php:349
 msgid "内置 SDK 体积"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:348
+#: inc/class-wei-alipay-shell.php:351
 #, php-format
 msgid "%d 个文件"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:349
+#: inc/class-wei-alipay-shell.php:352
 msgid "无测试文件残留"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:349
+#: inc/class-wei-alipay-shell.php:352
 msgid "含测试目录"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:357
+#: inc/class-wei-alipay-shell.php:361
 msgid "本地自检不代替支付宝沙箱实付验收"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:360
+#: inc/class-wei-alipay-shell.php:364
 msgid "管理支付方式"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:371
+#: inc/class-wei-alipay-shell.php:375
 msgid "近 7 日本地活动"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:388
+#: inc/class-wei-alipay-shell.php:392
 msgid "收款"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:390
+#: inc/class-wei-alipay-shell.php:394
 #, php-format
 msgid "近 7 日已付款订单：%d 笔"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:391
-#: inc/class-wei-alipay-shell.php:397
-#: inc/class-wei-alipay-shell.php:403
+#: inc/class-wei-alipay-shell.php:395
+#: inc/class-wei-alipay-shell.php:401
+#: inc/class-wei-alipay-shell.php:407
 msgid "7 日内"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:396
+#: inc/class-wei-alipay-shell.php:400
 #, php-format
 msgid "近 7 日失败订单：%d 笔"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:400
+#: inc/class-wei-alipay-shell.php:404
 msgid "退款"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:402
+#: inc/class-wei-alipay-shell.php:406
 #, php-format
 msgid "近 7 日退款操作：%d 笔"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:411
+#: inc/class-wei-alipay-shell.php:415
 msgid "仅记录本地匿名计数，不存金额与买家资料"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:414
-#: inc/class-wei-alipay-shell.php:620
+#: inc/class-wei-alipay-shell.php:418
+#: inc/class-wei-alipay-shell.php:631
 msgid "进入对账"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:428
+#: inc/class-wei-alipay-shell.php:432
 msgid "环境与界面偏好"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:432
+#: inc/class-wei-alipay-shell.php:436
 msgid "环境信息与品牌配色切换"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:443
+#: inc/class-wei-alipay-shell.php:447
 msgid "常用入口"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:450
+#: inc/class-wei-alipay-shell.php:454
 msgid "主网关设置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:451
+#: inc/class-wei-alipay-shell.php:455
 msgid "当面付配置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:454
+#: inc/class-wei-alipay-shell.php:458
 msgid "拉取对账单"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:481
-#: inc/class-wei-alipay-shell.php:870
+#: inc/class-wei-alipay-shell.php:485
+#: inc/class-wei-alipay-shell.php:894
 msgid "支付方式"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:483
+#: inc/class-wei-alipay-shell.php:487
 msgid "已连接薇晓朵账户，可按需开启或调整可用支付方式。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:485
+#: inc/class-wei-alipay-shell.php:489
 msgid "账户已断开：已开启的扩展继续收款，重连后可修改选项。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:486
+#: inc/class-wei-alipay-shell.php:490
 msgid "主网关安装即用；当面付、花呗与条码付连上账户后可启用。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:494
+#: inc/class-wei-alipay-shell.php:498
 msgid "账户已断开：已开启的扩展继续收款，选项已锁定"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:495
+#: inc/class-wei-alipay-shell.php:499
 msgid "连接薇晓朵账户以启用扩展支付方式"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:497
+#: inc/class-wei-alipay-shell.php:501
 msgid "已开启的支付方式仍在正常收款、处理回调与退款；重新连接账户后可继续调整开关与参数。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:498
+#: inc/class-wei-alipay-shell.php:502
 msgid "连接只用于站点身份认证，不是许可证。已启用的方式即便断开也照常收款。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:501
+#: inc/class-wei-alipay-shell.php:505
 msgid "重新连接账户"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:501
-#: inc/class-wei-alipay-shell.php:698
+#: inc/class-wei-alipay-shell.php:505
+#: inc/class-wei-alipay-shell.php:709
 msgid "连接薇晓朵账户"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:519
+#: inc/class-wei-alipay-shell.php:523
 msgid "支付宝主网关"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:520
+#: inc/class-wei-alipay-shell.php:524
 msgid "电脑网站与手机网站收银台，支持退款与查单，安装即可直接使用。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:523
-#: inc/class-wei-alipay-shell.php:710
+#: inc/class-wei-alipay-shell.php:527
+#: inc/class-wei-alipay-shell.php:721
 msgid "安装即用"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:524
+#: inc/class-wei-alipay-shell.php:528
 msgid "已就绪 · 不受连接影响"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:538
+#: inc/class-wei-alipay-shell.php:542
 msgid "运行中 · 选项已锁定"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:539
-#: inc/class-wei-alipay-shell.php:850
+#: inc/class-wei-alipay-shell.php:543
+#: inc/class-wei-alipay-shell.php:866
 msgid "未开启"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:539
-#: inc/class-wei-alipay-shell.php:585
-#: inc/class-wei-alipay-shell.php:711
+#: inc/class-wei-alipay-shell.php:543
+#: inc/class-wei-alipay-shell.php:596
+#: inc/class-wei-alipay-shell.php:722
 msgid "连接后可启用"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:541
-#: inc/class-wei-alipay-shell.php:580
+#: inc/class-wei-alipay-shell.php:545
+#: inc/class-wei-alipay-shell.php:591
 msgid "前往配置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:541
+#: inc/class-wei-alipay-shell.php:545
 msgid "重连后修改"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:541
+#: inc/class-wei-alipay-shell.php:545
 msgid "去连接"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:559
+#: inc/class-wei-alipay-shell.php:563
 msgid "更多支付方式"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:575
-#: inc/class-wei-alipay-shell.php:712
+#: inc/class-wei-alipay-shell.php:586
+#: inc/class-wei-alipay-shell.php:723
 msgid "暂不开放"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:575
-#: inc/class-wei-alipay-shell.php:712
+#: inc/class-wei-alipay-shell.php:586
+#: inc/class-wei-alipay-shell.php:723
 msgid "连接后查看"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:594
+#: inc/class-wei-alipay-shell.php:605
 msgid "关闭扩展不会删除已保存的参数配置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:597
+#: inc/class-wei-alipay-shell.php:608
 msgid "保存支付方式设置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:617
+#: inc/class-wei-alipay-shell.php:628
 msgid "本地运营工具"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:620
+#: inc/class-wei-alipay-shell.php:631
 msgid "查看日志"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:640
+#: inc/class-wei-alipay-shell.php:651
 msgid "本地工具无需连接薇晓朵账户，随时可用"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:643
+#: inc/class-wei-alipay-shell.php:654
 msgid "保存本地工具设置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:665
+#: inc/class-wei-alipay-shell.php:676
 msgid "连接用于确认本站归属身份，开启扩展支付方式后即便断开也照常收款。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:671
+#: inc/class-wei-alipay-shell.php:682
 msgid "已连接站点"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:671
+#: inc/class-wei-alipay-shell.php:682
 msgid "站点连接认证"
 msgstr ""
 
 #. translators: 1: site host, 2: last sync time
-#: inc/class-wei-alipay-shell.php:685
+#: inc/class-wei-alipay-shell.php:696
 #, php-format
 msgid "已连接站点 %1$s · 最近同步 %2$s"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:687
+#: inc/class-wei-alipay-shell.php:698
 msgid "刚刚"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:692
+#: inc/class-wei-alipay-shell.php:703
 msgid "在 Weixiaoduo.com 中管理"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:696
+#: inc/class-wei-alipay-shell.php:707
 msgid "尚未连接薇晓朵账户"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:697
+#: inc/class-wei-alipay-shell.php:708
 msgid "前往 account.weixiaoduo.com 登录确认即可完成本站认证，无需手动复制密钥。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:706
+#: inc/class-wei-alipay-shell.php:717
 msgid "连接与功能对照"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:710
+#: inc/class-wei-alipay-shell.php:721
 msgid "支付宝主网关（电脑网站 / 手机网站）"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:710
+#: inc/class-wei-alipay-shell.php:721
 msgid "安装并填写支付宝密钥后即可直接收款，不依赖账户连接。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:711
+#: inc/class-wei-alipay-shell.php:722
 msgid "当面付、花呗分期、条码付"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:711
+#: inc/class-wei-alipay-shell.php:722
 msgid "连上账户后即可首次启用；启用后断开仍照常收款，只锁定选项修改。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:711
+#: inc/class-wei-alipay-shell.php:722
 msgid "可启用与配置"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:712
+#: inc/class-wei-alipay-shell.php:723
 msgid "跨境支付、资金授权、自动续费订阅、多商户分账"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:712
+#: inc/class-wei-alipay-shell.php:723
 msgid "涉及额外接口完善与支付宝商户资质审核，当前不提供开启开关。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:722
+#: inc/class-wei-alipay-shell.php:733
 msgid "详情与显示偏好"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:725
+#: inc/class-wei-alipay-shell.php:736
 msgid "连接详情与传输数据说明"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:726
+#: inc/class-wei-alipay-shell.php:737
 msgid "仅同步站点域名、安装标识、插件与环境版本，绝不传订单、金额、买家信息或支付宝私钥。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:727
+#: inc/class-wei-alipay-shell.php:738
 #, php-format
 msgid "安装标识：%s"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:733
+#: inc/class-wei-alipay-shell.php:744
 msgid "断开此站点连接"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:733
+#: inc/class-wei-alipay-shell.php:744
 msgid "危险操作"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:734
-msgid "断开不会停掉已启用的支付方式，但会锁定扩展方式的开关与参数修改。"
+#: inc/class-wei-alipay-shell.php:753
+msgid "我已知晓：断开不会停掉已启用的支付方式，但会锁定扩展方式的开关与参数修改。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:735
+#: inc/class-wei-alipay-shell.php:756
 msgid "确认断开此站点连接"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:747
+#: inc/class-wei-alipay-shell.php:768
 msgid "查看支付宝密钥配置、回调校验与常见问题处理步骤。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:753
+#: inc/class-wei-alipay-shell.php:774
 msgid "首次配置主网关（3 步）"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:757
+#: inc/class-wei-alipay-shell.php:778
 msgid "准备支付宝应用密钥（RSA2）"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:757
+#: inc/class-wei-alipay-shell.php:778
 msgid "在支付宝开放平台创建网页/移动应用，生成 RSA2 密钥对并上传应用公钥，获取对应的支付宝公钥。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:758
+#: inc/class-wei-alipay-shell.php:779
 msgid "在 WooCommerce 付款设置填入凭据"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:758
+#: inc/class-wei-alipay-shell.php:779
 msgid "打开「WooCommerce → 设置 → 付款 → 支付宝」，填入 AppID、应用私钥与支付宝公钥。插件会自动以 AES-256-GCM 加密保存私钥。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:759
+#: inc/class-wei-alipay-shell.php:780
 msgid "确认回调地址与币种"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:759
+#: inc/class-wei-alipay-shell.php:780
 msgid "确认站点已启用 HTTPS 且异步回调地址可被公网 POST 访问，商店币种为人民币（CNY）或已配置固定汇率。"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:768
-msgid "Wei Alipay 产品文档"
+#: inc/class-wei-alipay-shell.php:789
+msgid "薇晓朵文档中心"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:769
+#: inc/class-wei-alipay-shell.php:790
 msgid "支付宝开放平台文档"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:770
+#: inc/class-wei-alipay-shell.php:791
 msgid "提交薇晓朵工单"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:802
+#: inc/class-wei-alipay-shell.php:823
 msgid "后台品牌配色"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:804
+#: inc/class-wei-alipay-shell.php:825
 msgid "薇晓朵默认"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:805
+#: inc/class-wei-alipay-shell.php:826
 msgid "支付宝蓝"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:807
+#: inc/class-wei-alipay-shell.php:828
 msgid "应用配色"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:876
+#: inc/class-wei-alipay-shell.php:900
 #: inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php:118
 msgid "对账"
 msgstr ""
 
-#: inc/class-wei-alipay-shell.php:888
+#: inc/class-wei-alipay-shell.php:912
 msgid "账户"
 msgstr ""
 
@@ -2581,7 +2597,7 @@ msgid "分期：%s期"
 msgstr ""
 
 #: inc/class-wei-alipay.php:491
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:327
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:331
 #: inc/modules/huabei/js/frontend/blocks-installment.js:132
 msgid "免息"
 msgstr ""
@@ -2650,8 +2666,8 @@ msgid "此网关使用 Wei Alipay 核心插件的凭据（应用ID/密钥/公钥
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:66
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:99
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:101
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:103
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:105
 msgid "启用/禁用"
 msgstr ""
 
@@ -2692,14 +2708,14 @@ msgid "在订单编辑页显示“条码收款”模块"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:97
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:176
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:228
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:180
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:232
 msgid "调试日志"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:99
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:178
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:230
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:182
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:234
 msgid "启用日志记录"
 msgstr ""
 
@@ -2718,9 +2734,9 @@ msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:204
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:359
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:630
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:440
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:661
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:634
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:444
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:665
 msgid "创建支付宝服务失败"
 msgstr ""
 
@@ -2753,50 +2769,50 @@ msgid "当前订单币种需要先配置人民币汇率，已阻止发送错误�
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:310
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:584
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:615
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:588
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:619
 msgid "退款失败：订单或支付方式不匹配。"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:319
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:592
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:623
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:596
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:627
 msgid "退款金额必须大于零且不能超过订单总额。"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:322
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:595
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:626
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:599
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:630
 msgid "订单退款"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:326
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:599
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:630
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:603
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:634
 msgid "退款失败：缺少原始支付宝订单号或交易号。"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:342
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:615
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:646
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:619
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:650
 msgid "相同退款请求正在处理中。"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:373
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:644
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:675
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:648
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:679
 msgid "退款失败"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:373
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:644
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:675
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:648
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:679
 msgid "退款失败：支付宝返回为空。"
 msgstr ""
 
 #: inc/modules/barcode/inc/class-wc-alipay-barcode.php:380
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:651
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:682
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:655
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:686
 msgid "支付宝退款响应与原退款请求不匹配。"
 msgstr ""
 
@@ -3007,158 +3023,158 @@ msgid "支持当面付扫码支付，商家展示二维码供用户扫描。适�
 msgstr ""
 
 #: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:44
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:108
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:112
 #: inc/modules/f2f/js/frontend/blocks-facetopay.js:8
 msgid "支付宝扫码支付"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:72
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:76
 msgid "用于线下扫码场景的当面付支付方式。"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:101
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:105
 msgid "启用支付宝当面付"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:105
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:107
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:109
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:111
 msgid "标题"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:107
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:109
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:111
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:113
 msgid "用户在结账时看到的支付方式名称"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:112
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:114
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:116
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:118
 msgid "描述"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:114
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:118
 msgid "支付方式描述"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:115
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:119
 #: inc/modules/f2f/js/frontend/blocks-facetopay.js:9
 msgid "使用支付宝扫描二维码完成支付"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:120
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:124
 msgid "二维码设置"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:124
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:128
 msgid "二维码尺寸"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:126
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:130
 msgid "二维码显示尺寸（像素）"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:136
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:140
 msgid "二维码有效期"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:138
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:142
 msgid "二维码的有效时间"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:141
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:145
 msgid "1分钟"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:142
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:146
 msgid "2分钟"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:143
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:147
 msgid "3分钟"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:144
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:148
 msgid "5分钟"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:145
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:149
 msgid "10分钟"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:151
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:155
 msgid "轮询设置"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:155
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:159
 msgid "轮询间隔"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:157
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:161
 msgid "查询支付状态的间隔时间（秒）"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:168
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:220
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:172
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:224
 msgid "订单号前缀"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:170
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:174
 msgid "当面付订单号的前缀"
 msgstr ""
 
 #. translators: %s: log file path
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:182
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:186
 #, php-format
 msgid "记录当面付相关日志到 %s"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:190
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:243
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:194
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:247
 msgid "汇率"
 msgstr ""
 
 #. translators: %s: store currency code
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:194
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:247
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:198
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:251
 #, php-format
 msgid "设置 %s 与人民币的汇率"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:250
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:254
 msgid "等待扫码支付"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:279
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:283
 msgid "支付初始化失败"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:324
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:328
 msgid "生成支付二维码失败"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:329
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:333
 msgid "支付请求失败"
 msgstr ""
 
 #. translators: %s: Alipay transaction number
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:463
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:556
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:467
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:560
 #, php-format
 msgid "当面付支付完成 - 交易号: %s"
 msgstr ""
 
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:560
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:564
 msgid "支付宝已关闭当面付交易。"
 msgstr ""
 
 #. translators: %s: refunded amount
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:657
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:661
 #, php-format
 msgid "支付宝当面付退款成功，金额：¥%s"
 msgstr ""
 
 #. translators: %s: order ID
-#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:700
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:747
+#: inc/modules/f2f/inc/class-wc-alipay-facetopay.php:704
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:751
 #, php-format
 msgid "订单 #%s"
 msgstr ""
@@ -3409,7 +3425,7 @@ msgstr ""
 #: inc/modules/huabei/inc/class-wc-alipay-installment.php:28
 #: inc/modules/huabei/inc/class-wc-alipay-installment.php:44
 #: inc/modules/huabei/inc/class-wc-alipay-installment.php:70
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:110
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:114
 #: inc/modules/huabei/js/frontend/blocks-installment.js:8
 msgid "支付宝花呗分期"
 msgstr ""
@@ -3418,197 +3434,197 @@ msgstr ""
 msgid "支持花呗分期付款，用户可选择3期、6期、12期分期。需要在支付宝商户后台开通花呗分期功能。"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:71
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:75
 msgid "为支付宝花呗分期提供优化的结账体验。"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:103
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:107
 msgid "启用支付宝花呗分期"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:116
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:120
 msgid "支付方式描述，显示在结账页面"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:117
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:121
 #: inc/modules/huabei/js/frontend/blocks-installment.js:9
 msgid "使用支付宝花呗分期付款，支持3期、6期、12期免息或低息分期。"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:122
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:126
 msgid "支付宝配置"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:124
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:128
 msgid "使用主支付宝网关的配置（App ID、公钥、私钥等）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:128
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:132
 msgid "分期设置"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:132
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:136
 msgid "显示“免息”标识"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:134
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:138
 msgid "在分期选项后显示“免息”标识（当商家承担手续费时）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:139
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:143
 msgid "分期手续费承担方"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:141
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:145
 msgid "选择分期手续费由谁承担。用户承担将会在支付宝端向用户收取手续费；商家承担则由商家承担。"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:144
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:148
 msgid "用户承担"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:145
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:149
 msgid "商家承担"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:150
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:154
 msgid "6期最小金额"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:152
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:156
 msgid "达到此金额才显示6期选项（留空或0表示不限制）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:161
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:165
 msgid "12期最小金额"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:163
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:167
 msgid "达到此金额才显示12期选项（留空或0表示不限制）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:172
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:176
 msgid "最小分期金额"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:174
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:178
 msgid "订单金额低于此值时不显示分期选项（人民币）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:183
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:187
 msgid "可用分期期数"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:185
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:189
 msgid "选择允许的分期期数"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:188
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:201
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:192
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:205
 msgid "3期"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:189
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:202
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:193
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:206
 msgid "6期"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:190
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:203
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:194
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:207
 msgid "12期"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:196
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:200
 msgid "默认分期期数"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:198
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:202
 msgid "用户未选择时的默认分期期数"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:208
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:212
 msgid "结账区块金额不足行为"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:210
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:214
 msgid "当订单金额低于最小分期金额时，在结账区块中隐藏支付方式或显示提示。"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:213
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:217
 msgid "隐藏（推荐）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:214
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:218
 msgid "显示提示"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:222
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:226
 msgid "花呗分期订单号的前缀，便于区分"
 msgstr ""
 
 #. translators: %s: log file path
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:234
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:238
 #, php-format
 msgid "记录花呗分期相关日志到 %s"
 msgstr ""
 
 #. translators: %s: minimum order amount required
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:282
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:286
 #, php-format
 msgid "订单金额需满 ¥%s 才能使用花呗分期"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:303
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:307
 #: inc/modules/huabei/js/frontend/blocks-installment.js:104
 msgid "选择分期期数："
 msgstr ""
 
 #. translators: %s: number of installment periods
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:315
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:319
 #, php-format
 msgid "%s期"
 msgstr ""
 
 #. translators: %s: monthly installment amount
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:322
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:326
 #, php-format
 msgid "每期 ¥%s"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:338
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:342
 #: inc/modules/huabei/js/frontend/blocks-installment.js:85
 msgid "免息分期（手续费由商家承担）"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:339
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:343
 #: inc/modules/huabei/js/frontend/blocks-installment.js:85
 msgid "可能产生分期手续费，以支付宝支付页面为准"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:402
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:406
 msgid "等待花呗分期支付"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:441
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:445
 msgid "支付初始化失败，请稍后重试"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:494
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:498
 msgid "支付请求失败，请稍后重试"
 msgstr ""
 
 #. translators: %s: Alipay transaction number
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:584
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:588
 #, php-format
 msgid "花呗分期支付完成 - 交易号: %s"
 msgstr ""
 
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:588
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:592
 msgid "支付宝已关闭花呗分期交易。"
 msgstr ""
 
 #. translators: %s: refunded amount
-#: inc/modules/huabei/inc/class-wc-alipay-installment.php:688
+#: inc/modules/huabei/inc/class-wc-alipay-installment.php:692
 #, php-format
 msgid "支付宝花呗分期退款成功，金额：¥%s"
 msgstr ""

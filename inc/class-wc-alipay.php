@@ -926,11 +926,11 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function missing_exchange_rate_notice()
     {
-        $message = __('Aliay is enabled, but the store currency is not set to Chinese Yuan.', 'wei-alipay');
+        $message = __('Alipay is enabled, but the store currency is not set to Chinese Yuan.', 'wei-alipay');
         // translators: %1$s is the URL of the link and %2$s is the currency name
         $message .= __(' Please <a href="%1$s">set the %2$s against the Chinese Yuan exchange rate</a>.', 'wei-alipay');
 
-        $page = 'admin.php?page=wc-settings&tab=checkout&section=wc_alipay#woocommerce_alipay_exchange_rate';
+        $page = 'admin.php?page=wc-settings&tab=checkout&section=alipay#woocommerce_alipay_exchange_rate';
         $url = admin_url($page);
 
         $currency = $this->multi_currency_enabled ? get_woocommerce_currency() : $this->current_currency;
@@ -1055,7 +1055,11 @@ class WC_Alipay extends WC_Payment_Gateway
 
     public function admin_options()
     {
-        echo '<h3>' . esc_html(__('Wei Alipay Payment Gateway', 'wei-alipay')) . '</h3>';
+        echo '<h3>' . esc_html(__('Wei Alipay Payment Gateway', 'wei-alipay'));
+        if ( function_exists( 'wc_back_link' ) ) {
+            wc_back_link( __( 'Return to Wei Alipay', 'wei-alipay' ), admin_url( 'admin.php?page=wei-alipay&view=payments' ) );
+        }
+        echo '</h3>';
         echo '<p>' . esc_html(__('Alipay is a simple, secure and fast online payment method.', 'wei-alipay')) . '</p>';
         
 		echo '<nav class="nav-tab-wrapper wei-alipay-settings-tabs" aria-label="' . esc_attr__( 'Gateway settings sections', 'wei-alipay' ) . '">';
@@ -1078,7 +1082,7 @@ class WC_Alipay extends WC_Payment_Gateway
 			sprintf(
 				/* translators: %1$s: link to the official documentation */
 				__( 'Need help configuring the gateway? See the %1$s.', 'wei-alipay' ),
-				'<a href="https://weixiaoduo.com/document/wei-alipay" target="_blank" rel="noopener noreferrer">' . esc_html__( 'official documentation', 'wei-alipay' ) . '</a>'
+				'<a href="https://www.weixiaoduo.com/document/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'official documentation', 'wei-alipay' ) . '</a>'
 			)
 		);
 		echo '</p></div>';
