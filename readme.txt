@@ -3,7 +3,7 @@ Contributors: weixiaoduo
 Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 4.2.0
+Stable tag: 4.3.0
 Requires PHP: 7.4
 WC requires at least: 8.3
 WC tested up to: 10.9.4
@@ -69,6 +69,14 @@ They must not be. Sensitive settings are encrypted where supported and logging i
 No. Availability depends on the merchant agreement, store configuration, and module-specific acceptance evidence.
 
 == Changelog ==
+
+= 4.3.0 =
+* 自动更新器：改走共用文派更新服务器（`wenpai-bridge`）`/api/v1/update-check` 与 `/api/v1/plugins/{slug}` 协议，域名继续使用 `updates.weixiaoduo.com`，放行 `updates.weixiaoduo.com` 与 `downloads.feicode.com` 下载源，并在过渡期对 `/api/v1` 返回 404 自动回退读取 `/{slug}.json`
+* 跨境支付（cross-border）：补齐幂等 `process_refund()`（锁 + 确定性 `out_request_no` + 金额/订单号核对 + 已处理表）并恢复 `refunds` 能力声明，补加 `wc_back_link()` 与公钥证书模式兼容
+* 资金预授权（fund-auth）：移除沙箱本地 `SIM-AUTH-*` 假模拟，预授权转扣改用 `AlipayTradePayRequest`（`alipay.trade.pay`），新增先验签后查单的 `woocommerce_api_wc_alipay_fund_auth` 异步通知处理
+* 分账（profitsharing）：修复商品规则与默认规则叠加超 100% 重复分账缺陷（P1-6），加入严格总额上限与折后按比例缩放，补齐 `AlipayTradeRoyaltyRelationBindRequest` / `UnbindRequest` 分账关系绑定与解绑接口
+* 订阅自动代扣（subscriptions）：改用 `AlipayTradePayRequest`（`alipay.trade.pay`）并按实际支付状态区分已支付/处理中/需查询确认（P1-5），改走 `Alipay_SDK_Helper::create_alipay_service()` 消除 PHP 8.4 动态属性告警，并在订阅模块启用时避免核心网关重复挂载续费钩子
+* 安全门控：上述四个高阶模块在完成真实支付宝沙箱验收前继续保持功能中心不可启用态
 
 = 4.2.0 =
 * Added Alipay Public Key Certificate Mode (`appCert` / `alipayCert` / `alipayRootCert` via `AopCertClient`) across main gateway, F2F, Huabei, Barcode, Reconcile, and notification verification, with Overview certificate expiry warnings (30-day warn / 7-day critical) and zero migration impact for existing public-key sites.

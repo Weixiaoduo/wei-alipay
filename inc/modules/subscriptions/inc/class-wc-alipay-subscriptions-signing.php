@@ -204,7 +204,9 @@ class WC_Alipay_Subscriptions_Signing {
                         $amount = (float) $order->get_total();
                         $product_code = get_option( 'woo_alipay_subscriptions_product_code', 'GENERAL_WITHHOLDING' );
                         $charge = WC_Alipay_Subscriptions_Charge::charge_with_agreement( $order, $amount, $agreement_no, $product_code );
-                        if ( ! is_wp_error( $charge ) ) {
+                        if ( ! is_wp_error( $charge ) && ! empty( $charge['pending'] ) ) {
+                            $order->update_status( 'on-hold', __( '首单签约完成，代扣处理中，等待异步通知确认结果。', 'wei-alipay' ) );
+                        } elseif ( ! is_wp_error( $charge ) ) {
                             $order->update_meta_data( '_alipay_agreement_initial_charge_done', (string) $charge['trade_no'] );
                             $order->save();
                             $order->payment_complete( $charge['trade_no'] );

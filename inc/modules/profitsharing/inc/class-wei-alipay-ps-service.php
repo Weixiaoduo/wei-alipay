@@ -44,10 +44,14 @@ class Wei_Alipay_PS_Service {
         require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeOrderSettleQueryRequest.php';
 
         $core   = wp_parse_args( get_option( 'woocommerce_alipay_settings', array() ), array(
-            'appid'       => '',
-            'private_key' => '',
-            'public_key'  => '',
-            'sandbox'     => 'no',
+            'appid'                => '',
+            'private_key'          => '',
+            'public_key'           => '',
+            'sandbox'              => 'no',
+            'sign_credential_mode' => 'public_key',
+            'app_public_cert'      => '',
+            'alipay_public_cert'   => '',
+            'alipay_root_cert'     => '',
         ) );
 
         $missing = array();
@@ -61,12 +65,7 @@ class Wei_Alipay_PS_Service {
             return null;
         }
 
-        $config = Alipay_SDK_Helper::get_alipay_config( array(
-            'appid'       => $core['appid'] ?? '',
-            'private_key' => $core['private_key'] ?? '',
-            'public_key'  => $core['public_key'] ?? '',
-            'sandbox'     => $core['sandbox'] ?? 'no',
-        ) );
+        $config = Alipay_SDK_Helper::get_alipay_config( $core );
         $aop = Alipay_SDK_Helper::create_alipay_service( $config );
         if ( ! $aop ) {
             self::log( 'error', 'Failed to create AOP client; check credentials.', array( 'appid' => ! empty( $core['appid'] ) ? 'set' : 'empty' ) );
@@ -131,13 +130,13 @@ class Wei_Alipay_PS_Service {
         $desc = str_replace( array( '{order_id}', '{order_number}' ), array( (string) $order->get_id(), (string) $order->get_order_number() ), $tpl );
 
         // Distribute base_amount proportionally by item subtotals (incl. tax)
-        // Priority: product rules > category rules > default
+        // Priority: product rules > category rules > default (strictly partitioned so total never exceeds base_amount)
         $items = $order->get_items( 'line_item' );
         $items_sum = 0.0;
+        $prd_sums  = array(); // product_id => sum for items matched by product rules
         $cat_sums  = array(); // cat_id => sum for items without product rules
         $cat_keys_with_rules = array_map( 'strval', array_keys( $cat_rules ) );
         $alloc = array(); // receiver_id => amount
-        $used_by_product = 0.0;
 
         foreach ( $items as $item ) {
             $line_amount = (float) $item->get_subtotal() + (float) $item->get_subtotal_tax();
@@ -150,74 +149,74 @@ class Wei_Alipay_PS_Service {
             if ( $product && method_exists( $product, 'get_id' ) ) {
                 $pid_str = (string) $product->get_id();
             }
-            if ( $pid_str && isset( $prd_rules[ $pid_str ] ) && is_array( $prd_rules[ $pid_str ] ) ) {
-                foreach ( $prd_rules[ $pid_str ] as $rule ) {
-                    $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
-                    $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
-                    if ( $pct <= 0 || empty( $rid ) || empty( $receivers[ $rid ] ) ) { continue; }
-                    if ( ! isset( $alloc[ $rid ] ) ) { $alloc[ $rid ] = 0.0; }
-                    $alloc[ $rid ] += $line_amount * $pct / 100;
-                }
-                $used_by_product += $line_amount;
+            if ( $pid_str && isset( $prd_rules[ $pid_str ] ) && is_array( $prd_rules[ $pid_str ] ) && ! empty( $prd_rules[ $pid_str ] ) ) {
+                if ( ! isset( $prd_sums[ $pid_str ] ) ) { $prd_sums[ $pid_str ] = 0.0; }
+                $prd_sums[ $pid_str ] += $line_amount;
                 continue; // skip category/default for this item
             }
 
             // Otherwise consider category rules
-            $assigned = false;
             if ( $product && method_exists( $product, 'get_category_ids' ) ) {
                 $cids = $product->get_category_ids();
                 if ( is_array( $cids ) && ! empty( $cids ) ) {
-                    // Pick the first category that has rules
                     foreach ( $cids as $cid ) {
                         $cid_str = (string) $cid;
                         if ( in_array( $cid_str, $cat_keys_with_rules, true ) ) {
                             if ( ! isset( $cat_sums[ $cid_str ] ) ) { $cat_sums[ $cid_str ] = 0.0; }
                             $cat_sums[ $cid_str ] += $line_amount;
-                            $assigned = true;
                             break;
                         }
                     }
                 }
             }
-            // Unassigned lines will fall back to default later
+            // Unassigned lines fall back to default on the unallocated portion of base_amount
         }
 
-        if ( $items_sum > 0 && ! empty( $cat_sums ) ) {
-            $scale = $base_amount / $items_sum;
-            $used  = 0.0;
+        $scale           = ( $items_sum > 0 ) ? ( $base_amount / $items_sum ) : 0.0;
+        $used_by_product = 0.0;
+        $used_by_cat     = 0.0;
+
+        if ( $items_sum > 0 ) {
+            foreach ( $prd_sums as $pid_str => $sum ) {
+                $prd_base = $sum * $scale;
+                $used_by_product += $prd_base;
+                foreach ( $prd_rules[ $pid_str ] as $rule ) {
+                    $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
+                    $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
+                    if ( $pct <= 0 || empty( $rid ) || empty( $receivers[ $rid ] ) ) { continue; }
+                    if ( ! isset( $alloc[ $rid ] ) ) { $alloc[ $rid ] = 0.0; }
+                    $alloc[ $rid ] += $prd_base * $pct / 100;
+                }
+            }
+
             foreach ( $cat_sums as $cid => $sum ) {
                 $cat_base = $sum * $scale;
-                $used += $cat_base;
+                $used_by_cat += $cat_base;
                 $rules_for_cat = isset( $cat_rules[ $cid ] ) && is_array( $cat_rules[ $cid ] ) ? $cat_rules[ $cid ] : array();
                 foreach ( $rules_for_cat as $rule ) {
                     $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
                     $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
                     if ( $pct <= 0 || empty( $rid ) || empty( $receivers[ $rid ] ) ) { continue; }
-                    $amount = $cat_base * $pct / 100;
                     if ( ! isset( $alloc[ $rid ] ) ) { $alloc[ $rid ] = 0.0; }
-                    $alloc[ $rid ] += $amount;
+                    $alloc[ $rid ] += $cat_base * $pct / 100;
                 }
             }
-            $remaining = max( 0.0, $base_amount - $used );
-            if ( $remaining > 0 && ! empty( $default ) ) {
-                foreach ( $default as $rule ) {
-                    $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
-                    $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
-                    if ( $pct <= 0 || empty( $rid ) || empty( $receivers[ $rid ] ) ) { continue; }
-                    if ( ! isset( $alloc[ $rid ] ) ) { $alloc[ $rid ] = 0.0; }
-                    $alloc[ $rid ] += $remaining * $pct / 100;
-                }
-            }
-        } else {
-            // No category rules or no item sums => apply default to whole base
+        }
+
+        // Default rules apply ONLY to the portion of base_amount not claimed by product or category rules.
+        $remaining = max( 0.0, $base_amount - $used_by_product - $used_by_cat );
+        if ( $remaining > 0 && ! empty( $default ) ) {
             foreach ( $default as $rule ) {
                 $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
                 $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
                 if ( $pct <= 0 || empty( $rid ) || empty( $receivers[ $rid ] ) ) { continue; }
                 if ( ! isset( $alloc[ $rid ] ) ) { $alloc[ $rid ] = 0.0; }
-                $alloc[ $rid ] += $base_amount * $pct / 100;
+                $alloc[ $rid ] += $remaining * $pct / 100;
             }
         }
+
+        // Hard invariant: combined profit-sharing allocation must never exceed 100% of base_amount.
+        $alloc = self::cap_allocations_to_base( $alloc, $base_amount );
 
         // Apply threshold filter first, then round and allocate tail difference
         $kept = array(); // rid => unrounded amount
@@ -262,6 +261,7 @@ class Wei_Alipay_PS_Service {
                 $rounded[ $assign_rid ] = round( $rounded[ $assign_rid ] + $residual, $round );
             }
         }
+        $rounded = self::clamp_rounded_to_base( $rounded, $base_amount, $round );
 
         $jobs = array();
         foreach ( $rounded as $rid => $amt ) {
@@ -299,6 +299,8 @@ class Wei_Alipay_PS_Service {
         $items_sum = 0.0;
         $cat_sums  = array();
         $alloc     = array();
+        $used_by_product = 0.0;
+        $used_by_cat     = 0.0;
         $cat_keys_with_rules = array_map( 'strval', array_keys( $cat_rules ) );
 
         foreach ( $items as $item ) {
@@ -309,7 +311,8 @@ class Wei_Alipay_PS_Service {
 
             $pid_str = '';
             if ( $product && method_exists( $product, 'get_id' ) ) { $pid_str = (string) $product->get_id(); }
-            if ( $pid_str && isset( $prd_rules[ $pid_str ] ) && is_array( $prd_rules[ $pid_str ] ) ) {
+            if ( $pid_str && isset( $prd_rules[ $pid_str ] ) && is_array( $prd_rules[ $pid_str ] ) && ! empty( $prd_rules[ $pid_str ] ) ) {
+                $used_by_product += $line_amount;
                 foreach ( $prd_rules[ $pid_str ] as $rule ) {
                     $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
                     $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
@@ -320,7 +323,6 @@ class Wei_Alipay_PS_Service {
                 continue;
             }
 
-            $assigned = false;
             if ( $product && method_exists( $product, 'get_category_ids' ) ) {
                 $cids = $product->get_category_ids();
                 if ( is_array( $cids ) && ! empty( $cids ) ) {
@@ -329,34 +331,29 @@ class Wei_Alipay_PS_Service {
                         if ( in_array( $cid_str, $cat_keys_with_rules, true ) ) {
                             if ( ! isset( $cat_sums[ $cid_str ] ) ) { $cat_sums[ $cid_str ] = 0.0; }
                             $cat_sums[ $cid_str ] += $line_amount;
-                            $assigned = true;
                             break;
                         }
                     }
                 }
             }
-            // Unassigned lines fall back to default later
         }
 
         if ( $items_sum > 0 && ! empty( $cat_sums ) ) {
-            $scale = 1.0; // already items-only base
             foreach ( $cat_sums as $cid => $sum ) {
-                $cat_base = $sum * $scale;
+                $used_by_cat += $sum;
                 $rules_for_cat = isset( $cat_rules[ $cid ] ) && is_array( $cat_rules[ $cid ] ) ? $cat_rules[ $cid ] : array();
                 foreach ( $rules_for_cat as $rule ) {
                     $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
                     $pct = isset( $rule['percent'] ) ? (float) $rule['percent'] : 0;
                     if ( $pct <= 0 || empty( $rid ) || empty( $receivers[ $rid ] ) ) { continue; }
-                    $amount = $cat_base * $pct / 100;
                     if ( ! isset( $alloc[ $rid ] ) ) { $alloc[ $rid ] = 0.0; }
-                    $alloc[ $rid ] += $amount;
+                    $alloc[ $rid ] += $sum * $pct / 100;
                 }
             }
         }
 
-        // Default share for remaining amount if default rules exist and alloc total < items_sum
-        $allocated_sum = 0.0; foreach ( $alloc as $v ) { $allocated_sum += (float) $v; }
-        $remaining = max( 0.0, $items_sum - $allocated_sum );
+        // Default share applies only to unassigned line items, never double-splitting product/category lines
+        $remaining = max( 0.0, $items_sum - $used_by_product - $used_by_cat );
         if ( $remaining > 0 && ! empty( $default ) ) {
             foreach ( $default as $rule ) {
                 $rid = isset( $rule['receiver_id'] ) ? (string) $rule['receiver_id'] : '';
@@ -366,6 +363,8 @@ class Wei_Alipay_PS_Service {
                 $alloc[ $rid ] += $remaining * $pct / 100;
             }
         }
+
+        $alloc = self::cap_allocations_to_base( $alloc, $items_sum );
 
         // Threshold and rounding similar to order compute
         $kept = array(); foreach ( $alloc as $rid => $amount ) {
@@ -385,6 +384,7 @@ class Wei_Alipay_PS_Service {
             elseif ( 'largest' === $strat ) { $maxv = null; $maxrid = ''; foreach ( $rounded as $rid => $v ) { if ( null === $maxv || $v > $maxv ) { $maxv = $v; $maxrid = (string) $rid; } } $assign_rid = $maxrid; }
             if ( $assign_rid && isset( $rounded[ $assign_rid ] ) ) { $rounded[ $assign_rid ] = round( $rounded[ $assign_rid ] + $residual, $round ); }
         }
+        $rounded = self::clamp_rounded_to_base( $rounded, $items_sum, $round );
 
         $jobs = array();
         foreach ( $rounded as $rid => $amt ) {
@@ -839,5 +839,180 @@ class Wei_Alipay_PS_Service {
             update_option( self::JOBS_OPTION, $all, false );
         }
         return 'scheduled_confirm';
+    }
+
+    /**
+     * Proportionally cap unrounded allocations so total split never exceeds base_amount (100%).
+     *
+     * @param array<string,float> $alloc       Receiver allocations.
+     * @param float               $base_amount Maximum splittable amount.
+     * @return array<string,float>
+     */
+    public static function cap_allocations_to_base( array $alloc, $base_amount ) {
+        $base_amount = max( 0.0, (float) $base_amount );
+        if ( $base_amount <= 0.0 || empty( $alloc ) ) {
+            return array();
+        }
+        $total = 0.0;
+        foreach ( $alloc as $amount ) {
+            $total += max( 0.0, (float) $amount );
+        }
+        if ( $total <= $base_amount + 1e-8 ) {
+            return $alloc;
+        }
+        $ratio = $base_amount / $total;
+        foreach ( $alloc as $rid => $amount ) {
+            $alloc[ $rid ] = max( 0.0, (float) $amount ) * $ratio;
+        }
+        return $alloc;
+    }
+
+    /**
+     * Clamp rounded receiver amounts so their sum never exceeds round($base_amount, $precision).
+     *
+     * @param array<string,float> $rounded     Rounded receiver amounts.
+     * @param float               $base_amount Maximum splittable amount.
+     * @param int                 $precision   Decimal places.
+     * @return array<string,float>
+     */
+    public static function clamp_rounded_to_base( array $rounded, $base_amount, $precision = 2 ) {
+        $cap = round( max( 0.0, (float) $base_amount ), $precision );
+        $sum = 0.0;
+        foreach ( $rounded as $v ) {
+            $sum += (float) $v;
+        }
+        $excess = round( $sum - $cap, $precision );
+        if ( $excess <= 0.0 || empty( $rounded ) ) {
+            return $rounded;
+        }
+        arsort( $rounded, SORT_NUMERIC );
+        foreach ( $rounded as $rid => $v ) {
+            if ( $excess <= 0.0 ) {
+                break;
+            }
+            $deduct          = min( (float) $v, $excess );
+            $rounded[ $rid ] = round( (float) $v - $deduct, $precision );
+            $excess          = round( $excess - $deduct, $precision );
+        }
+        return $rounded;
+    }
+
+    /**
+     * Map plugin identity_type to Alipay royalty receiver type.
+     *
+     * @param string $identity_type Receiver identity type.
+     * @return string
+     */
+    public static function map_royalty_receiver_type( $identity_type ) {
+        $type = strtoupper( trim( (string) $identity_type ) );
+        if ( 'ALIPAY_USER_ID' === $type || 'USERID' === $type ) {
+            return 'userId';
+        }
+        if ( 'ALIPAY_OPEN_ID' === $type || 'OPENID' === $type ) {
+            return 'openId';
+        }
+        return 'loginName';
+    }
+
+    /**
+     * Bind a profit-sharing receiver relation via alipay.trade.royalty.relation.bind.
+     *
+     * @param array<string,mixed> $receiver       Receiver definition (identity, identity_type, label/name).
+     * @param string              $out_request_no Optional idempotent request number.
+     * @param object|null         $aop_override   Optional pre-built AOP client (for testing).
+     * @return array<string,mixed>
+     */
+    public static function bind_relation( array $receiver, $out_request_no = '', $aop_override = null ) {
+        return self::call_royalty_relation_api( 'bind', $receiver, $out_request_no, $aop_override );
+    }
+
+    /**
+     * Unbind a profit-sharing receiver relation via alipay.trade.royalty.relation.unbind.
+     *
+     * @param array<string,mixed> $receiver       Receiver definition (identity, identity_type, label/name).
+     * @param string              $out_request_no Optional idempotent request number.
+     * @param object|null         $aop_override   Optional pre-built AOP client (for testing).
+     * @return array<string,mixed>
+     */
+    public static function unbind_relation( array $receiver, $out_request_no = '', $aop_override = null ) {
+        return self::call_royalty_relation_api( 'unbind', $receiver, $out_request_no, $aop_override );
+    }
+
+    /**
+     * Shared executor for royalty relation bind/unbind.
+     *
+     * @param string              $action         'bind' or 'unbind'.
+     * @param array<string,mixed> $receiver       Receiver payload.
+     * @param string              $out_request_no Optional request id.
+     * @param object|null         $aop_override   Optional AOP client override.
+     * @return array<string,mixed>
+     */
+    protected static function call_royalty_relation_api( $action, array $receiver, $out_request_no = '', $aop_override = null ) {
+        $account = trim( (string) ( $receiver['identity'] ?? '' ) );
+        if ( '' === $account ) {
+            return array( 'error' => __( '分账接收方账号不能为空。', 'wei-alipay' ) );
+        }
+
+        $aop = $aop_override ? $aop_override : self::get_aop();
+        if ( ! $aop ) {
+            return array( 'error' => __( '无法创建支付宝客户端，请检查凭据。', 'wei-alipay' ) );
+        }
+
+        $is_unbind = ( 'unbind' === $action );
+        if ( defined( 'WEI_ALIPAY_PLUGIN_PATH' ) ) {
+            $req_file = $is_unbind
+                ? WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeRoyaltyRelationUnbindRequest.php'
+                : WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeRoyaltyRelationBindRequest.php';
+            if ( file_exists( $req_file ) ) {
+                require_once $req_file;
+            }
+        }
+
+        $type = self::map_royalty_receiver_type( (string) ( $receiver['identity_type'] ?? 'ALIPAY_LOGON_ID' ) );
+        $entry = array(
+            'type'    => $type,
+            'account' => $account,
+        );
+        $name = trim( (string) ( $receiver['name'] ?? ( $receiver['label'] ?? '' ) ) );
+        if ( ! $is_unbind && '' !== $name ) {
+            $entry['name'] = $name;
+        }
+        $memo = trim( (string) ( $receiver['memo'] ?? '' ) );
+        if ( '' !== $memo ) {
+            $entry['memo'] = $memo;
+        }
+
+        $req_no = trim( (string) $out_request_no );
+        if ( '' === $req_no ) {
+            $req_no = ( $is_unbind ? 'PSU-' : 'PSB-' ) . substr( hash( 'sha256', $type . '|' . $account . '|' . (string) time() ), 0, 20 );
+        }
+
+        $biz = array(
+            'receiver_list'  => array( $entry ),
+            'out_request_no' => $req_no,
+        );
+
+        try {
+            $req  = $is_unbind ? new AlipayTradeRoyaltyRelationUnbindRequest() : new AlipayTradeRoyaltyRelationBindRequest();
+            $req->setBizContent( wp_json_encode( $biz, JSON_UNESCAPED_UNICODE ) );
+            $resp = $aop->execute( $req );
+            $node = $is_unbind ? 'alipay_trade_royalty_relation_unbind_response' : 'alipay_trade_royalty_relation_bind_response';
+            $res  = $resp->$node ?? null;
+            if ( is_object( $res ) && isset( $res->code ) && '10000' === (string) $res->code && ( ! isset( $res->result_code ) || 'SUCCESS' === strtoupper( (string) $res->result_code ) ) ) {
+                self::log( 'info', 'Royalty relation ' . $action . ' success', array( 'out_request_no' => $req_no, 'account' => $account ) );
+                return array(
+                    'success'        => true,
+                    'action'         => $action,
+                    'out_request_no' => $req_no,
+                    'result_code'    => isset( $res->result_code ) ? (string) $res->result_code : 'SUCCESS',
+                );
+            }
+            $err = is_object( $res ) ? (string) ( $res->sub_msg ?? $res->msg ?? 'Royalty relation error' ) : __( '支付宝返回为空。', 'wei-alipay' );
+            self::log( 'error', 'Royalty relation ' . $action . ' failed', array( 'out_request_no' => $req_no, 'error' => $err ) );
+            return array( 'error' => $err, 'out_request_no' => $req_no );
+        } catch ( Exception $e ) {
+            self::log( 'error', 'Royalty relation ' . $action . ' exception', array( 'error' => $e->getMessage() ) );
+            return array( 'error' => $e->getMessage(), 'out_request_no' => $req_no );
+        }
     }
 }

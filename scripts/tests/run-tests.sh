@@ -43,6 +43,7 @@ run_contracts() {
   php "$ROOT_DIR/tests/w411-hotfix-contracts.php"
   php "$ROOT_DIR/tests/w42-cert-mode-contracts.php"
   php "$ROOT_DIR/tests/w42-reconcile-scheduler-contracts.php"
+  php "$ROOT_DIR/tests/w43-advanced-modules-contracts.php"
   php "$ROOT_DIR/tests/sdk-signing-contracts.php"
   php "$ROOT_DIR/tests/reconcile-details-contracts.php"
   php "$ROOT_DIR/tests/reconcile-runtime-contracts.php"

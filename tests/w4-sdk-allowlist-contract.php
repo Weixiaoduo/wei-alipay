@@ -49,6 +49,8 @@ $request_classes = array(
 	'AlipayFundAuthOrderVoucherCreateRequest',
 	'AlipayTradeOrderSettleRequest',
 	'AlipayTradeOrderSettleQueryRequest',
+	'AlipayTradeRoyaltyRelationBindRequest',
+	'AlipayTradeRoyaltyRelationUnbindRequest',
 	'AlipayUserAgreementPageSignRequest',
 	'AlipayUserAgreementUnsignRequest',
 );

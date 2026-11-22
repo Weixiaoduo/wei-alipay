@@ -39,7 +39,7 @@ $check( false !== strpos( $cb_form, "'password'" ), 'Cross-border secure_key use
 
 $acbop = file_get_contents( $root . '/inc/modules/cross-border/includes/class-wc-acbop.php' );
 $check( false !== strpos( $acbop, 'woocommerce_api_wei_alipay_cross_border_gateway' ), 'Cross-border callback matches Wei_Alipay_Cross_Border_Gateway notify_url (P1-3)' );
-$check( false === strpos( $acbop, "'refunds'" ), 'Cross-border removes unimplemented refunds capability (P1-3)' );
+$check( false !== strpos( $acbop, "'refunds'" ) && false !== strpos( $acbop, 'function process_refund(' ) && false !== strpos( $acbop, 'AlipayTradeRefundRequest' ), 'Cross-border declares refunds capability backed by idempotent process_refund() (P1-3 / 4.3)' );
 
 $core = file_get_contents( $root . '/inc/class-wc-alipay.php' );
 $check( false !== strpos( $core, "Wei_Alipay_Features::is_enabled( 'subscriptions' )" ), 'Core gateway gates subscriptions/tokenization behind feature flag (P1-4)' );

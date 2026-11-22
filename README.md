@@ -2,7 +2,7 @@
 
 Wei Alipay Payment Gateway for WooCommerce 是由 [Weixiaoduo.com](https://weixiaoduo.com/) 维护的 WooCommerce 支付宝网关。项目面向中国大陆支付宝商户，主网关支持电脑网站支付、手机网站支付、退款、异步通知和人民币换算，并提供若干按商户签约能力启用的扩展模块。
 
-> 当前稳定发布版本为 **4.2.0**（已合并主分支并部署至 `mall.weixiaoduo.com`）。FeiCode `Weixiaoduo/wei-alipay` 为开发上游，GitHub `Weixiaoduo/wei-alipay` 为公开下游镜像，插件自动更新走 `updates.weixiaoduo.com`（与 `updates.wenpai.net` 共用更新基础设施）。旧仓名 `woo-alipay` 仅保留在历史证据与稳定运行兼容标识中。
+> 当前版本为 **4.3.0**（已合并主分支并部署至 `mall.weixiaoduo.com`）。FeiCode `Weixiaoduo/wei-alipay` 为开发上游，GitHub `Weixiaoduo/wei-alipay` 为公开下游镜像，插件自动更新走 `updates.weixiaoduo.com/api/v1`（与 `updates.wenpai.net` 共用 `wenpai-bridge` 更新服务器基础设施）。旧仓名 `woo-alipay` 仅保留在历史证据与稳定运行兼容标识中。
 
 ## 运行要求
 
