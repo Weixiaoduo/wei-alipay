@@ -84,8 +84,9 @@ class WC_Alipay extends WC_Payment_Gateway
         self::$log_enabled            = ('yes' === $this->get_option('debug', 'no'));
 
 
-        // Register subscription scheduled payment hook
-        if ( class_exists('WC_Subscriptions') || function_exists('wcs_order_contains_subscription') || function_exists('wcs_is_subscription') ) {
+        // Register legacy subscription scheduled payment hook only when the dedicated subscriptions module is inactive.
+        $dedicated_subs_active = class_exists( 'Wei_Alipay_Features' ) && Wei_Alipay_Features::is_enabled( 'subscriptions' );
+        if ( ! $dedicated_subs_active && ( class_exists('WC_Subscriptions') || function_exists('wcs_order_contains_subscription') || function_exists('wcs_is_subscription') ) ) {
             add_action('woocommerce_scheduled_subscription_payment_' . $this->id, array($this, 'scheduled_subscription_payment'), 10, 2);
         }
 

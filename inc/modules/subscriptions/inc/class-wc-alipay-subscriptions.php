@@ -99,7 +99,13 @@ class WC_Alipay_Subscriptions {
             return;
         }
 
-        // Payment created successfully; mark as paid
+        if ( ! empty( $result['pending'] ) ) {
+            $renewal_order->update_status( 'on-hold', __( '支付宝代扣处理中，等待异步通知确认支付结果。', 'wei-alipay' ) );
+            $logger->log( 'info', 'Auto debit pending confirmation for order #' . $renewal_order->get_id(), array_merge( $context, array( 'order_id' => $renewal_order->get_id(), 'trade_no' => $result['trade_no'] ?? '' ) ) );
+            return;
+        }
+
+        // Payment settled; mark as paid
         $renewal_order->payment_complete( $result['trade_no'] );
         /* translators: %s: Alipay transaction number */
         $renewal_order->add_order_note( sprintf( __( '自动代扣成功 - 交易号: %s', 'wei-alipay' ), $result['trade_no'] ) );
@@ -167,6 +173,10 @@ class WC_Alipay_Subscriptions {
             $order->add_order_note( sprintf( __( '自动代扣重试失败：%s', 'wei-alipay' ), $result->get_error_message() ) );
             wc_get_logger()->log( 'warning', 'Auto debit retry failed', array( 'source' => 'alipay-subscriptions', 'order_id' => $order->get_id(), 'error' => $result->get_error_message() ) );
             $this->maybe_schedule_retry( $order );
+            return;
+        }
+        if ( ! empty( $result['pending'] ) ) {
+            $order->update_status( 'on-hold', __( '支付宝代扣（重试）处理中，等待异步通知确认支付结果。', 'wei-alipay' ) );
             return;
         }
         $order->payment_complete( $result['trade_no'] );

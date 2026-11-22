@@ -80,7 +80,8 @@ check_contract( false !== strpos( $secrets, 'Configure WEI_ALIPAY_ENCRYPTION_KEY
 
 $updater = source_file( $root, 'includes/class-wenpai-updater.php' );
 check_contract( false !== strpos( $updater, 'is_allowed_distribution_url' ), 'private updater validates package origin' );
-check_contract( false !== strpos( $updater, "[ 'updates.weixiaoduo.com' ]" ), 'private updater has an exact Weixiaoduo host allowlist' );
+check_contract( false !== strpos( $updater, "[ 'updates.weixiaoduo.com', 'downloads.feicode.com' ]" ), 'private updater has an exact shared WenPai Bridge + Weixiaoduo host allowlist' );
+check_contract( false !== strpos( $updater, "https://updates.weixiaoduo.com/api/v1" ), 'private updater uses WenPai Bridge /api/v1 protocol under updates.weixiaoduo.com' );
 check_contract( false === strpos( $updater, 'updates.wenpai.net' ), 'private updater no longer references updates.wenpai.net' );
 check_contract( false !== strpos( $updater, "esc_url( html_entity_decode" ), 'remote markdown links are protocol-sanitized' );
 

@@ -44,3 +44,5 @@ class AlipayTradePagePayContentBuilder extends AlipayTradeWapPayContentBuilder {
 class AlipayTradeRefundContentBuilder {
     public function setOutTradeNo($value) {} public function setTradeNo($value) {} public function setRefundAmount($value) {} public function setOutRequestNo($value) {} public function setRefundReason($value) {}
 }
+class AlipayTradeRoyaltyRelationBindRequest { public function setBizContent($value) {} }
+class AlipayTradeRoyaltyRelationUnbindRequest { public function setBizContent($value) {} }
