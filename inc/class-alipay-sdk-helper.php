@@ -15,41 +15,322 @@ class Alipay_SDK_Helper
      * @param array $settings 网关设置
      * @return array
      */
+    /**
+     * Resolve signing credential mode ('public_key' or 'cert') from settings.
+     *
+     * @param array<string,mixed> $settings Gateway settings.
+     * @return string
+     */
+    public static function credential_mode($settings = array())
+    {
+        $mode = isset($settings['sign_credential_mode']) ? (string) $settings['sign_credential_mode'] : '';
+        if ('' === $mode && function_exists('get_option')) {
+            $core = get_option('woocommerce_alipay_settings', array());
+            if (is_array($core) && isset($core['sign_credential_mode'])) {
+                $mode = (string) $core['sign_credential_mode'];
+            }
+        }
+        return 'cert' === $mode ? 'cert' : 'public_key';
+    }
+
+    /**
+     * Extract base64 RSA public key body from an X.509 PEM certificate string.
+     *
+     * @param string $pem PEM certificate content.
+     * @return string Base64 public key body or empty string on invalid PEM.
+     */
+    public static function extract_cert_public_key($pem)
+    {
+        $pem = trim((string) $pem);
+        if ('' === $pem || false === strpos($pem, 'BEGIN CERTIFICATE') || !function_exists('openssl_pkey_get_public')) {
+            return '';
+        }
+        $pkey = @openssl_pkey_get_public($pem);
+        if (false === $pkey) {
+            return '';
+        }
+        $details = openssl_pkey_get_details($pkey);
+        if (!is_array($details) || empty($details['key'])) {
+            return '';
+        }
+        $key = str_replace(array('-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "", "
+"), '', (string) $details['key']);
+        return trim($key);
+    }
+
+    /**
+     * Parse an X.509 PEM certificate (or bundle) and return validity & earliest expiry.
+     *
+     * @param string $pem PEM certificate content.
+     * @param int|null $now Optional timestamp override for tests.
+     * @return array{valid:bool,expires_at:int,days_left:int,cert_count:int}
+     */
+    public static function inspect_certificate_pem($pem, $now = null)
+    {
+        $pem = trim((string) $pem);
+        if ('' === $pem || false === strpos($pem, 'BEGIN CERTIFICATE') || !function_exists('openssl_x509_parse')) {
+            return array('valid' => false, 'expires_at' => 0, 'days_left' => -1, 'cert_count' => 0);
+        }
+        $now_ts = null === $now ? time() : (int) $now;
+        $blocks = preg_split('/(?=-----BEGIN CERTIFICATE-----)/', $pem, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($blocks) || empty($blocks)) {
+            return array('valid' => false, 'expires_at' => 0, 'days_left' => -1, 'cert_count' => 0);
+        }
+        $earliest = 0;
+        $count = 0;
+        foreach ($blocks as $block) {
+            if (false === strpos($block, '-----END CERTIFICATE-----')) {
+                continue;
+            }
+            $parsed = @openssl_x509_parse(trim($block));
+            if (!is_array($parsed) || empty($parsed['validTo_time_t'])) {
+                return array('valid' => false, 'expires_at' => 0, 'days_left' => -1, 'cert_count' => 0);
+            }
+            $exp = (int) $parsed['validTo_time_t'];
+            if (0 === $earliest || $exp < $earliest) {
+                $earliest = $exp;
+            }
+            ++$count;
+        }
+        if (0 === $count || 0 === $earliest) {
+            return array('valid' => false, 'expires_at' => 0, 'days_left' => -1, 'cert_count' => 0);
+        }
+        $days_left = (int) floor(($earliest - $now_ts) / 86400);
+        return array(
+            'valid' => true,
+            'expires_at' => $earliest,
+            'days_left' => $days_left,
+            'cert_count' => $count,
+        );
+    }
+
+    /**
+     * Summarize credential & certificate expiry health for Overview diagnostics.
+     *
+     * @param array<string,mixed>|null $settings Optional core settings override.
+     * @param int|null                 $now      Optional timestamp override for tests.
+     * @return array{mode:string,status:string,min_days_left:int|null,label:string,detail:string}
+     */
+    public static function cert_health($settings = null, $now = null)
+    {
+        if (!is_array($settings)) {
+            $settings = function_exists('get_option') ? (array) get_option('woocommerce_alipay_settings', array()) : array();
+        }
+        $mode = self::credential_mode($settings);
+        if ('cert' !== $mode) {
+            return array(
+                'mode' => 'public_key',
+                'status' => 'ok',
+                'min_days_left' => null,
+                'label' => 'RSA2',
+                'detail' => '',
+            );
+        }
+
+        $certs = array(
+            'app_public_cert' => (string) ($settings['app_public_cert'] ?? ''),
+            'alipay_public_cert' => (string) ($settings['alipay_public_cert'] ?? ''),
+            'alipay_root_cert' => (string) ($settings['alipay_root_cert'] ?? ''),
+        );
+        $min_days = null;
+        foreach ($certs as $pem) {
+            if ('' === trim($pem)) {
+                return array(
+                    'mode' => 'cert',
+                    'status' => 'missing',
+                    'min_days_left' => null,
+                    'label' => 'CERT · RSA2',
+                    'detail' => function_exists('__') ? __('缺少公钥证书，请补全 3 份 PEM 证书', 'wei-alipay') : 'Missing PEM certificates',
+                );
+            }
+            $info = self::inspect_certificate_pem($pem, $now);
+            if (!$info['valid']) {
+                return array(
+                    'mode' => 'cert',
+                    'status' => 'bad',
+                    'min_days_left' => null,
+                    'label' => 'CERT · RSA2',
+                    'detail' => function_exists('__') ? __('证书 PEM 格式无效，请重新粘贴完整证书', 'wei-alipay') : 'Invalid PEM certificate',
+                );
+            }
+            if (null === $min_days || $info['days_left'] < $min_days) {
+                $min_days = $info['days_left'];
+            }
+        }
+
+        if (null !== $min_days && $min_days <= 0) {
+            return array(
+                'mode' => 'cert',
+                'status' => 'bad',
+                'min_days_left' => $min_days,
+                'label' => 'CERT · RSA2',
+                'detail' => function_exists('__') ? __('证书已过期，请立即更新支付宝证书', 'wei-alipay') : 'Certificate expired',
+            );
+        }
+        if (null !== $min_days && $min_days <= 7) {
+            return array(
+                'mode' => 'cert',
+                'status' => 'bad',
+                'min_days_left' => $min_days,
+                'label' => 'CERT · RSA2',
+                'detail' => function_exists('__') ? sprintf(__('证书将于 %d 天内到期，请尽快轮换', 'wei-alipay'), $min_days) : sprintf('Expires in %d days', $min_days),
+            );
+        }
+        if (null !== $min_days && $min_days <= 30) {
+            return array(
+                'mode' => 'cert',
+                'status' => 'warn',
+                'min_days_left' => $min_days,
+                'label' => 'CERT · RSA2',
+                'detail' => function_exists('__') ? sprintf(__('证书剩余 %d 天到期，建议提前轮换', 'wei-alipay'), $min_days) : sprintf('Expires in %d days', $min_days),
+            );
+        }
+        return array(
+            'mode' => 'cert',
+            'status' => 'ok',
+            'min_days_left' => $min_days,
+            'label' => 'CERT · RSA2',
+            'detail' => function_exists('__') ? sprintf(__('证书有效（剩余 %d 天）', 'wei-alipay'), (int) $min_days) : sprintf('Valid (%d days left)', (int) $min_days),
+        );
+    }
+
+    /**
+     * Whether core Alipay settings have complete signing credentials for the active mode.
+     *
+     * @param array<string,mixed>|null $settings Optional core settings.
+     * @return bool
+     */
+    public static function has_valid_credentials($settings = null)
+    {
+        if (!is_array($settings)) {
+            $settings = function_exists('get_option') ? (array) get_option('woocommerce_alipay_settings', array()) : array();
+        }
+        if (empty($settings['appid']) || empty($settings['private_key'])) {
+            return false;
+        }
+        if ('cert' === self::credential_mode($settings)) {
+            return '' !== trim((string) ($settings['app_public_cert'] ?? ''))
+                && '' !== trim((string) ($settings['alipay_public_cert'] ?? ''))
+                && '' !== trim((string) ($settings['alipay_root_cert'] ?? ''));
+        }
+        return !empty($settings['public_key']);
+    }
+
+    /**
+     * Resolve the Alipay public key string used to verify asynchronous notifications.
+     *
+     * @param array<string,mixed>|null $settings Optional core settings.
+     * @return string
+     */
+    public static function resolve_verify_key($settings = null)
+    {
+        if (!is_array($settings)) {
+            $settings = function_exists('get_option') ? (array) get_option('woocommerce_alipay_settings', array()) : array();
+        }
+        if ('cert' === self::credential_mode($settings)) {
+            $from_cert = self::extract_cert_public_key((string) ($settings['alipay_public_cert'] ?? ''));
+            if ('' !== $from_cert) {
+                return $from_cert;
+            }
+        }
+        return (string) ($settings['public_key'] ?? '');
+    }
+
+    /**
+     * 获取支付宝配置（自动兼容普通公钥模式与公钥证书模式）
+     *
+     * @param array<string,mixed> $settings 网关设置
+     * @return array<string,mixed>
+     */
     public static function get_alipay_config($settings)
     {
+        $settings = is_array($settings) ? $settings : array();
+        $core = function_exists('get_option') ? (array) get_option('woocommerce_alipay_settings', array()) : array();
+        $mode = self::credential_mode($settings);
         $is_sandbox = isset($settings['sandbox']) && 'yes' === $settings['sandbox'];
-        
+
+        $app_cert = (string) ($settings['app_public_cert'] ?? ($core['app_public_cert'] ?? ''));
+        $alipay_cert = (string) ($settings['alipay_public_cert'] ?? ($core['alipay_public_cert'] ?? ''));
+        $root_cert = (string) ($settings['alipay_root_cert'] ?? ($core['alipay_root_cert'] ?? ''));
+
+        $public_key = (string) ($settings['public_key'] ?? '');
+        if ('cert' === $mode && '' !== trim($alipay_cert)) {
+            $extracted = self::extract_cert_public_key($alipay_cert);
+            if ('' !== $extracted) {
+                $public_key = $extracted;
+            }
+        }
+
         return array(
             'app_id' => $settings['appid'] ?? '',
             'merchant_private_key' => $settings['private_key'] ?? '',
-            'alipay_public_key' => $settings['public_key'] ?? '',
+            'alipay_public_key' => $public_key,
+            'sign_credential_mode' => $mode,
+            'app_public_cert' => $app_cert,
+            'alipay_public_cert' => $alipay_cert,
+            'alipay_root_cert' => $root_cert,
             'charset' => 'UTF-8',
             'sign_type' => 'RSA2',
-            'gatewayUrl' => $is_sandbox ? 
-                'https://openapi.alipaydev.com/gateway.do' : 
+            'gatewayUrl' => $is_sandbox ?
+                'https://openapi.alipaydev.com/gateway.do' :
                 'https://openapi.alipay.com/gateway.do',
         );
     }
 
     /**
-     * 创建支付宝服务对象
-     * 
-     * @param array $config 支付宝配置
-     * @return AlipayTradeService|null
+     * 创建支付宝服务对象（公钥模式返回 AopClient，证书模式返回 AopCertClient）
+     *
+     * @param array<string,mixed> $config 支付宝配置
+     * @return AopClient|AopCertClient|null
      */
     public static function create_alipay_service($config)
     {
         try {
+            $mode = isset($config['sign_credential_mode']) && 'cert' === $config['sign_credential_mode'] ? 'cert' : 'public_key';
+            if ('cert' === $mode) {
+                $app_cert = trim((string) ($config['app_public_cert'] ?? ''));
+                $alipay_cert = trim((string) ($config['alipay_public_cert'] ?? ''));
+                $root_cert = trim((string) ($config['alipay_root_cert'] ?? ''));
+                if ('' === $app_cert || '' === $alipay_cert || '' === $root_cert) {
+                    self::log('证书模式缺少必要的 PEM 证书内容', 'error');
+                    return null;
+                }
+                if (
+                    !self::inspect_certificate_pem($app_cert)['valid']
+                    || !self::inspect_certificate_pem($alipay_cert)['valid']
+                    || !self::inspect_certificate_pem($root_cert)['valid']
+                ) {
+                    self::log('证书模式 PEM 证书解析失败', 'error');
+                    return null;
+                }
+                require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopCertClient.php';
+                $aop = new AopCertClient();
+                $aop->gatewayUrl = $config['gatewayUrl'];
+                $aop->appId = $config['app_id'];
+                $aop->rsaPrivateKey = $config['merchant_private_key'];
+                $aop->postCharset = $config['charset'];
+                $aop->signType = $config['sign_type'];
+                $aop->isCheckAlipayPublicCert = true;
+                $aop->appCertSN = (string) $aop->getCertSNFromContent($app_cert);
+                $aop->alipayRootCertSN = (string) $aop->getRootCertSNFromContent($root_cert);
+                $aop->alipayrsaPublicKey = (string) $aop->getPublicKeyFromContent($alipay_cert);
+                if ('' === $aop->appCertSN || '' === $aop->alipayRootCertSN || '' === $aop->alipayrsaPublicKey) {
+                    self::log('证书序列号或公钥提取失败', 'error');
+                    return null;
+                }
+                return $aop;
+            }
+
             require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-            
+
             $aop = new AopClient();
             $aop->gatewayUrl = $config['gatewayUrl'];
             $aop->appId = $config['app_id'];
             $aop->rsaPrivateKey = $config['merchant_private_key'];
             $aop->alipayrsaPublicKey = $config['alipay_public_key'];
-            $aop->charset = $config['charset'];
+            $aop->postCharset = $config['charset'];
             $aop->signType = $config['sign_type'];
-            
+
             return $aop;
         } catch (Exception $e) {
             self::log('创建支付宝服务失败: ' . $e->getMessage(), 'error');
@@ -58,10 +339,10 @@ class Alipay_SDK_Helper
     }
 
     /**
-     * 验证支付宝通知签名
-     * 
-     * @param array $params 通知参数
-     * @param string $alipay_public_key 支付宝公钥
+     * 验证支付宝通知签名（兼容裸公钥与 X.509 PEM 证书）
+     *
+     * @param array<string,mixed> $params            通知参数
+     * @param string              $alipay_public_key 支付宝公钥或 PEM 证书
      * @return bool
      */
     public static function verify_notify($params, $alipay_public_key)
@@ -70,13 +351,23 @@ class Alipay_SDK_Helper
             return false;
         }
 
+        $key = trim((string) $alipay_public_key);
+        if ('' !== $key && false !== strpos($key, 'BEGIN CERTIFICATE')) {
+            $key = self::extract_cert_public_key($key);
+        } elseif ('' === $key) {
+            $key = self::resolve_verify_key();
+        }
+        if ('' === $key) {
+            return false;
+        }
+
         try {
             require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
-            
+
             $aop = new AopClient();
-            $aop->alipayrsaPublicKey = $alipay_public_key;
-            
-            return $aop->rsaCheckV1($params, null, 'RSA2');
+            $aop->alipayrsaPublicKey = $key;
+
+            return (bool) $aop->rsaCheckV1($params, null, 'RSA2');
         } catch (Exception $e) {
             self::log('验证签名失败: ' . $e->getMessage(), 'error');
             return false;

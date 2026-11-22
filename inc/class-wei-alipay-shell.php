@@ -320,16 +320,21 @@ final class Wei_Alipay_Shell {
 				),
 			)
 		);
-		$secret_ok = 'ready' === ( $secret['status'] ?? '' );
+		$secret_ok   = 'ready' === ( $secret['status'] ?? '' );
+		$cert_health = class_exists( 'Alipay_SDK_Helper' ) ? Alipay_SDK_Helper::cert_health() : array( 'mode' => 'public_key', 'status' => 'ok', 'label' => 'RSA2', 'detail' => '' );
+		$is_cert     = 'cert' === ( $cert_health['mode'] ?? 'public_key' );
+		$cred_tone   = ! $secret_ok ? 'warn' : ( $is_cert && 'ok' !== ( $cert_health['status'] ?? 'ok' ) ? ( 'bad' === $cert_health['status'] ? 'bad' : 'warn' ) : '' );
+		$cred_val    = ! $secret_ok ? __( '待配置', 'wei-alipay' ) : ( $is_cert && 'bad' === ( $cert_health['status'] ?? '' ) ? __( '证书异常', 'wei-alipay' ) : ( $is_cert && 'missing' === ( $cert_health['status'] ?? '' ) ? __( '待补证书', 'wei-alipay' ) : __( '正常', 'wei-alipay' ) ) );
+		$cred_sub    = ! $secret_ok ? __( '前往主网关填入密钥', 'wei-alipay' ) : ( $is_cert && '' !== (string) ( $cert_health['detail'] ?? '' ) ? (string) $cert_health['detail'] : __( '已加密存储，不回显明文', 'wei-alipay' ) );
 		Wenpai_Admin_UI::metric_tiles(
 			array(
 				'items' => array(
 					array(
-						'label' => __( '私钥加密状态', 'wei-alipay' ),
-						'badge' => 'RSA2',
-						'value' => $secret_ok ? __( '正常', 'wei-alipay' ) : __( '待配置', 'wei-alipay' ),
-						'sub'   => $secret_ok ? __( '已加密存储，不回显明文', 'wei-alipay' ) : __( '前往主网关填入密钥', 'wei-alipay' ),
-						'tone'  => $secret_ok ? '' : 'warn',
+						'label' => $is_cert ? __( '私钥与证书状态', 'wei-alipay' ) : __( '私钥加密状态', 'wei-alipay' ),
+						'badge' => (string) ( $cert_health['label'] ?? 'RSA2' ),
+						'value' => $cred_val,
+						'sub'   => $cred_sub,
+						'tone'  => $cred_tone,
 					),
 					array(
 						'label' => __( '异步回调入口', 'wei-alipay' ),

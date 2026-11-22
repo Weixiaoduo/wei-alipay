@@ -8,11 +8,19 @@ class AopClient {
     public $appId;
     public $rsaPrivateKey;
     public $alipayrsaPublicKey;
-    public $charset;
+    public $postCharset;
     public $signType;
     public function execute($request) {}
     public function pageExecute($request, $httpmethod = "POST") {}
     public function rsaCheckV1($params, $key, $signType = "RSA") {}
+}
+class AopCertClient extends AopClient {
+    public $appCertSN;
+    public $alipayRootCertSN;
+    public $isCheckAlipayPublicCert;
+    public function getCertSNFromContent($certContent) {}
+    public function getRootCertSNFromContent($certContent) {}
+    public function getPublicKeyFromContent($content) {}
 }
 class AlipayTradeService {
     public function __construct($config) {}

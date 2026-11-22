@@ -148,7 +148,11 @@ class WC_Alipay extends WC_Payment_Gateway
             $config = Alipay_SDK_Helper::get_alipay_config( array(
                 'appid'       => $this->get_option('appid'),
                 'private_key' => $this->get_option('private_key'),
-                'public_key'  => $this->get_option('public_key'),
+                'public_key'           => $this->get_option('public_key'),
+                'sign_credential_mode' => $this->get_option('sign_credential_mode', 'public_key'),
+                'app_public_cert'      => $this->get_option('app_public_cert'),
+                'alipay_public_cert'   => $this->get_option('alipay_public_cert'),
+                'alipay_root_cert'     => $this->get_option('alipay_root_cert'),
                 'sandbox'     => $this->get_option('sandbox'),
             ) );
 
@@ -265,13 +269,24 @@ class WC_Alipay extends WC_Payment_Gateway
                 'placeholder' => '2088xxxxxxxxxxxx',
                 'desc_tip' => false,
             ),
+            'sign_credential_mode' => array(
+                'title' => __( 'Signing credential mode', 'wei-alipay'),
+                'type' => 'select',
+                'default' => 'public_key',
+                'options' => array(
+                    'public_key' => __( 'Public key mode (default)', 'wei-alipay'),
+                    'cert' => __( 'Public key certificate mode (recommended for advanced fund APIs)', 'wei-alipay'),
+                ),
+                'description' => __( 'Existing sites stay on public key mode by default. Switch to certificate mode if your Alipay application uses appCert / alipayCert / alipayRootCert PEM certificates.', 'wei-alipay'),
+                'desc_tip' => false,
+            ),
             'public_key' => array(
                 'title' => __( 'Alipay public key', 'wei-alipay'),
                 'type' => 'textarea',
                 'description' => sprintf(
                     /* translators: %s: link to the configuration tutorial */
-                    __( 'Alipay public key from the application details in Alipay Open Platform. %s', 'wei-alipay'),
-                    '<a href="https://weixiaoduo.com/product/wei-alipay.html" target="_blank" rel="noopener noreferrer">' . __( 'View configuration guide', 'wei-alipay') . '</a>'
+                    __( 'Alipay public key from the application details in Alipay Open Platform (used in public key mode). %s', 'wei-alipay'),
+                    '<a href="https://www.weixiaoduo.com/document/" target="_blank" rel="noopener noreferrer">' . __( 'View configuration guide', 'wei-alipay') . '</a>'
                 ),
                 'css' => 'min-height: 120px;',
                 'placeholder' => 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMI...',
@@ -283,10 +298,34 @@ class WC_Alipay extends WC_Payment_Gateway
                 'description' => sprintf(
                     /* translators: %s: link to the key generation tutorial */
                     __( 'Application private key generated with the Alipay key tool or OpenSSL.<br/><strong>This key is confidential. Do not disclose it.</strong> %s', 'wei-alipay'),
-                    '<a href="https://weixiaoduo.com/product/wei-alipay.html" target="_blank" rel="noopener noreferrer">' . __( 'View key generation guide', 'wei-alipay') . '</a>'
+                    '<a href="https://www.weixiaoduo.com/document/" target="_blank" rel="noopener noreferrer">' . __( 'View key generation guide', 'wei-alipay') . '</a>'
                 ),
                 'css' => 'min-height: 120px;',
                 'placeholder' => 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...',
+                'desc_tip' => false,
+            ),
+            'app_public_cert' => array(
+                'title' => __( 'Application public key certificate (PEM)', 'wei-alipay'),
+                'type' => 'textarea',
+                'description' => __( 'Certificate mode only: paste full PEM content of appCertPublicKey_*.crt.', 'wei-alipay'),
+                'css' => 'min-height: 100px;',
+                'placeholder' => '-----BEGIN CERTIFICATE-----',
+                'desc_tip' => false,
+            ),
+            'alipay_public_cert' => array(
+                'title' => __( 'Alipay public key certificate (PEM)', 'wei-alipay'),
+                'type' => 'textarea',
+                'description' => __( 'Certificate mode only: paste full PEM content of alipayCertPublicKey_RSA2.crt.', 'wei-alipay'),
+                'css' => 'min-height: 100px;',
+                'placeholder' => '-----BEGIN CERTIFICATE-----',
+                'desc_tip' => false,
+            ),
+            'alipay_root_cert' => array(
+                'title' => __( 'Alipay root certificate (PEM)', 'wei-alipay'),
+                'type' => 'textarea',
+                'description' => __( 'Certificate mode only: paste full PEM content of alipayRootCert.crt.', 'wei-alipay'),
+                'css' => 'min-height: 100px;',
+                'placeholder' => '-----BEGIN CERTIFICATE-----',
                 'desc_tip' => false,
             ),
             
@@ -883,7 +922,11 @@ class WC_Alipay extends WC_Payment_Gateway
             'charset' => $this->charset,
             'sign_type' => 'RSA2',
             'gatewayUrl' => ('yes' === $this->get_option('sandbox')) ? self::GATEWAY_SANDBOX_URL : self::GATEWAY_URL,
-            'alipay_public_key' => $this->get_option('public_key'),
+            'alipay_public_key' => Alipay_SDK_Helper::resolve_verify_key($this->settings),
+            'sign_credential_mode' => Alipay_SDK_Helper::credential_mode($this->settings),
+            'app_public_cert' => $this->get_option('app_public_cert'),
+            'alipay_public_cert' => $this->get_option('alipay_public_cert'),
+            'alipay_root_cert' => $this->get_option('alipay_root_cert'),
         );
 
         return $config;
@@ -1125,7 +1168,7 @@ class WC_Alipay extends WC_Payment_Gateway
 
     // Provider state methods for WooCommerce Payments list badges
     public function is_account_connected() {
-        return (bool) ( $this->get_option('appid') && $this->get_option('private_key') && $this->get_option('public_key') );
+        return Alipay_SDK_Helper::has_valid_credentials( array( 'appid' => $this->get_option('appid'), 'private_key' => $this->get_option('private_key'), 'public_key' => $this->get_option('public_key'), 'sign_credential_mode' => $this->get_option('sign_credential_mode', 'public_key'), 'app_public_cert' => $this->get_option('app_public_cert'), 'alipay_public_cert' => $this->get_option('alipay_public_cert'), 'alipay_root_cert' => $this->get_option('alipay_root_cert') ) );
     }
 
     public function needs_setup() {
