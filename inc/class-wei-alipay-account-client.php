@@ -310,7 +310,8 @@ final class Wei_Alipay_Account_Client {
 		}
 
 		$code = (int) wp_remote_retrieve_response_code( $response );
-		if ( 401 === $code || 403 === $code ) {
+		// Only HTTP 401 from wei-account indicates token revocation; 403 may come from WAF/CDN and must keep last state.
+		if ( 401 === $code ) {
 			self::clear_local_connection();
 			return false;
 		}
