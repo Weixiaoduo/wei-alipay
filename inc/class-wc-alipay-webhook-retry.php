@@ -580,7 +580,7 @@ class WC_Alipay_Webhook_Retry {
 		if ( $use_shell ) {
 			Wenpai_Admin_UI::card_close();
 			Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '重试与保留策略', 'wei-alipay' ) ) );
-			echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield' ) . '</span><div><div class="t">' . esc_html__( '自动重试范围与日志清理规则', 'wei-alipay' ) . '</div><div class="d">' . esc_html( sprintf( __( '仅对并发通知锁与临时处理异常自动查单重试，日志默认保留 %d 天并每日自动清理，绝不保存签名与私钥。', 'wei-alipay' ), $retention_days ) ) . '</div></div><div class="r"><span class="pill ok">' . esc_html__( '已开启', 'wei-alipay' ) . '</span></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
+			echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield-check' ) . '</span><div><div class="t">' . esc_html__( '自动重试范围与日志清理规则', 'wei-alipay' ) . '</div><div class="d">' . esc_html( sprintf( __( '仅对并发通知锁与临时处理异常自动查单重试，日志默认保留 %d 天并每日自动清理，绝不保存签名与私钥。', 'wei-alipay' ), $retention_days ) ) . '</div></div><div class="r"><span class="pill ok">' . esc_html__( '已开启', 'wei-alipay' ) . '</span></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
 			Wenpai_Admin_UI::card_close();
 		} else {
 			echo '</div>';

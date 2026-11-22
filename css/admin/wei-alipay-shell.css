@@ -7,6 +7,7 @@
 body.wei-alipay-admin.wenpai-ui-page {
   --wenpai-bg: #f7f7f5;
   background: var(--wenpai-bg);
+  max-width: none;
 }
 
 body.wei-alipay-admin .wenpai-app,
@@ -113,7 +114,8 @@ body.wei-alipay-admin :is(.wenpai-native .notice, .notice.wenpai-native).info {
 }
 
 /* Product-scoped utilities (strictly --wenpai-* tokens). */
-.wei-alipay-avatar {
+.wei-alipay-avatar-wrap {
+  position: relative;
   width: var(--wenpai-size-logo);
   height: var(--wenpai-size-logo);
   border-radius: 50%;
@@ -123,8 +125,16 @@ body.wei-alipay-admin :is(.wenpai-native .notice, .notice.wenpai-native).info {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--wenpai-text-body);
   flex: none;
+  overflow: hidden;
+}
+
+.wei-alipay-avatar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
   object-fit: cover;
 }
 

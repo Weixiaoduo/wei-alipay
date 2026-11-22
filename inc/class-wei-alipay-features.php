@@ -329,6 +329,10 @@ class Wei_Alipay_Features {
 		if ( ! $is_feature_page && ! $is_tool_page ) {
 			return;
 		}
+		// 4.1 shell pages are styled exclusively by vendored wenpai-admin-ui + wei-alipay-shell.css.
+		if ( class_exists( 'Wei_Alipay_Shell' ) && Wei_Alipay_Shell::is_kit_ready() ) {
+			return;
+		}
 		$design_css = WEI_ALIPAY_PLUGIN_PATH . 'css/admin/design-system.css';
 		$design_js = WEI_ALIPAY_PLUGIN_PATH . 'js/admin/design-system.js';
 		wp_enqueue_style( 'wei-alipay-design-system', WEI_ALIPAY_PLUGIN_URL . 'css/admin/design-system.css', array(), filemtime( $design_css ) );

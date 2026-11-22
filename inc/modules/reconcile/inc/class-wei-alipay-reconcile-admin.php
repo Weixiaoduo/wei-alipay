@@ -156,7 +156,7 @@ class Wei_Alipay_Reconcile_Admin {
                 );
                 Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '对账说明', 'wei-alipay' ) ) );
                 echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'search' ) . '</span><div><div class="t">' . esc_html__( '支持全通道单号前缀识别', 'wei-alipay' ) . '</div><div class="d">' . esc_html__( '覆盖主网关（WooA）、当面付（F2F）、花呗分期（HBFQ）与条码付（WooB），多站点会自动隔离博客号。', 'wei-alipay' ) . '</div></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
-                echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield' ) . '</span><div><div class="t">' . esc_html__( '账单生成时间与隐私边界', 'wei-alipay' ) . '</div><div class="d">' . esc_html__( '支付宝通常在次日 10:00 后生成前一日账单；核对明细仅对当前管理员保留 10 分钟，不公开账单文件地址。', 'wei-alipay' ) . '</div></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
+                echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield-check' ) . '</span><div><div class="t">' . esc_html__( '账单生成时间与隐私边界', 'wei-alipay' ) . '</div><div class="d">' . esc_html__( '支付宝通常在次日 10:00 后生成前一日账单；核对明细仅对当前管理员保留 10 分钟，不公开账单文件地址。', 'wei-alipay' ) . '</div></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
                 Wenpai_Admin_UI::card_close();
             }
 

@@ -257,15 +257,15 @@ final class Wei_Alipay_Shell {
 		if ( ! $main_ready ) {
 			Wenpai_Admin_UI::next(
 				array(
-					'icon_html' => Wenpai_Admin_Icons::svg( 'shield' ),
+					'icon_html' => Wenpai_Admin_Icons::svg( 'shield-check' ),
 					'title'     => __( '完成主网关密钥配置即可开始收款', 'wei-alipay' ),
 					'desc'      => __( '前往 WooCommerce 付款设置填入 AppID、应用私钥与支付宝公钥，私钥将自动以 AES-256-GCM 加密保存。', 'wei-alipay' ),
-					'action'    => Wenpai_Admin_UI::button_html(
+					'actions'   => array(
 						array(
 							'label'   => __( '配置主网关', 'wei-alipay' ),
 							'href'    => $main_url,
 							'variant' => 'primary',
-						)
+						),
 					),
 				)
 			);
@@ -280,8 +280,9 @@ final class Wei_Alipay_Shell {
 
 		Wenpai_Admin_UI::statbar(
 			array(
-				array(
-					'label' => __( '主网关状态', 'wei-alipay' ),
+				'items' => array(
+					array(
+						'label' => __( '主网关状态', 'wei-alipay' ),
 					'value' => $main_ready ? __( '已就绪', 'wei-alipay' ) : __( '待配置', 'wei-alipay' ),
 					'desc'  => $main_ready ? __( '电脑网站与手机网站正常', 'wei-alipay' ) : __( '缺少 AppID 或私钥', 'wei-alipay' ),
 				),
@@ -295,10 +296,11 @@ final class Wei_Alipay_Shell {
 					'value' => $cb_rate,
 					'desc'  => $cb_sub,
 				),
-				array(
-					'label' => __( '薇晓朵账户', 'wei-alipay' ),
-					'value' => $connected ? __( '已连接', 'wei-alipay' ) : __( '未连接', 'wei-alipay' ),
-					'desc'  => $connected ? (string) ( $account['account_label'] ?? '' ) : __( '主网关可直接使用', 'wei-alipay' ),
+					array(
+						'label' => __( '薇晓朵账户', 'wei-alipay' ),
+						'value' => $connected ? __( '已连接', 'wei-alipay' ) : __( '未连接', 'wei-alipay' ),
+						'desc'  => $connected ? (string) ( $account['account_label'] ?? '' ) : __( '主网关可直接使用', 'wei-alipay' ),
+					),
 				),
 			)
 		);
@@ -321,33 +323,35 @@ final class Wei_Alipay_Shell {
 		$secret_ok = 'ready' === ( $secret['status'] ?? '' );
 		Wenpai_Admin_UI::metric_tiles(
 			array(
-				array(
-					'label' => __( '私钥加密状态', 'wei-alipay' ),
-					'meta'  => 'RSA2',
-					'value' => $secret_ok ? __( '正常', 'wei-alipay' ) : __( '待配置', 'wei-alipay' ),
-					'sub'   => $secret_ok ? __( '已加密存储，不回显明文', 'wei-alipay' ) : __( '前往主网关填入密钥', 'wei-alipay' ),
-					'tone'  => $secret_ok ? 'ok' : 'warn',
-				),
-				array(
-					'label' => __( '异步回调入口', 'wei-alipay' ),
-					'meta'  => 'POST',
-					'value' => is_ssl() ? __( 'HTTPS 就绪', 'wei-alipay' ) : __( '非 HTTPS', 'wei-alipay' ),
-					'sub'   => __( '先验签后查单，未验签不写库', 'wei-alipay' ),
-					'tone'  => is_ssl() ? 'ok' : 'warn',
-				),
-				array(
-					'label' => __( '单号解析范围', 'wei-alipay' ),
-					'meta'  => is_multisite() ? sprintf( __( '博客 #%d', 'wei-alipay' ), get_current_blog_id() ) : __( '单站点', 'wei-alipay' ),
-					'value' => __( '正常', 'wei-alipay' ),
-					'sub'   => 'WooA / F2F / HBFQ / WooB',
-					'tone'  => 'ok',
-				),
-				array(
-					'label' => __( '内置 SDK 体积', 'wei-alipay' ),
-					'meta'  => 'allowlist',
-					'value' => sprintf( __( '%d 个文件', 'wei-alipay' ), $sdk_count ),
-					'sub'   => ! is_dir( WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/test' ) ? __( '无测试文件残留', 'wei-alipay' ) : __( '含测试目录', 'wei-alipay' ),
-					'tone'  => $sdk_count <= 45 ? 'ok' : 'warn',
+				'items' => array(
+					array(
+						'label' => __( '私钥加密状态', 'wei-alipay' ),
+						'badge' => 'RSA2',
+						'value' => $secret_ok ? __( '正常', 'wei-alipay' ) : __( '待配置', 'wei-alipay' ),
+						'sub'   => $secret_ok ? __( '已加密存储，不回显明文', 'wei-alipay' ) : __( '前往主网关填入密钥', 'wei-alipay' ),
+						'tone'  => $secret_ok ? '' : 'warn',
+					),
+					array(
+						'label' => __( '异步回调入口', 'wei-alipay' ),
+						'badge' => 'POST',
+						'value' => is_ssl() ? __( 'HTTPS 就绪', 'wei-alipay' ) : __( '非 HTTPS', 'wei-alipay' ),
+						'sub'   => __( '先验签后查单，未验签不写库', 'wei-alipay' ),
+						'tone'  => is_ssl() ? '' : 'warn',
+					),
+					array(
+						'label' => __( '单号解析范围', 'wei-alipay' ),
+						'badge' => is_multisite() ? sprintf( __( '博客 #%d', 'wei-alipay' ), get_current_blog_id() ) : __( '单站点', 'wei-alipay' ),
+						'value' => __( '正常', 'wei-alipay' ),
+						'sub'   => 'WooA / F2F / HBFQ / WooB',
+						'tone'  => '',
+					),
+					array(
+						'label' => __( '内置 SDK 体积', 'wei-alipay' ),
+						'badge' => 'allowlist',
+						'value' => sprintf( __( '%d 个文件', 'wei-alipay' ), $sdk_count ),
+						'sub'   => ! is_dir( WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/test' ) ? __( '无测试文件残留', 'wei-alipay' ) : __( '含测试目录', 'wei-alipay' ),
+						'tone'  => $sdk_count <= 45 ? '' : 'warn',
+					),
 				),
 			)
 		);
@@ -428,12 +432,12 @@ final class Wei_Alipay_Shell {
 				'title' => __( '环境与界面偏好', 'wei-alipay' ),
 			)
 		);
-		echo '<details class="wenpai-fold">';
-		echo '<summary class="wenpai-fold__sum"><span>' . esc_html__( '环境信息与品牌配色切换', 'wei-alipay' ) . '</span></summary>';
+		echo '<div class="wenpai-folds"><details class="wenpai-fold">';
+		echo '<summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'tools' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '环境信息与品牌配色切换', 'wei-alipay' ) . '</span><span class="wenpai-fold__desc">' . esc_html( (string) ( $ctx['runtime_summary'] ?? '' ) ) . '</span></span><span class="wenpai-fold__side">' . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icons.
 		echo '<div class="wenpai-fold__body">';
 		echo '<p>' . esc_html( (string) ( $ctx['runtime_summary'] ?? '' ) ) . '</p>';
 		self::render_palette_toggle_form( 'overview' );
-		echo '</div></details>';
+		echo '</div></details></div>';
 		Wenpai_Admin_UI::card_close();
 
 		// Quick actions grid
@@ -447,12 +451,12 @@ final class Wei_Alipay_Shell {
 			array(
 				'columns' => 6,
 				'items'   => array(
-					array( 'label' => __( '主网关设置', 'wei-alipay' ), 'href' => $main_url, 'icon_html' => Wenpai_Admin_Icons::svg( 'sliders' ), 'state' => $main_ready ? 'on' : '' ),
-					array( 'label' => __( '当面付配置', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay_facetopay' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'flash' ), 'state' => 'yes' === ( $enabled_map['f2f'] ?? 'no' ) ? 'on' : '' ),
-					array( 'label' => __( '花呗分期', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay_installment' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'spark' ), 'state' => 'yes' === ( $enabled_map['huabei'] ?? 'no' ) ? 'on' : '' ),
-					array( 'label' => __( '条码付', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay_barcode' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'search' ), 'state' => 'yes' === ( $enabled_map['barcode'] ?? 'no' ) ? 'on' : '' ),
+					array( 'label' => __( '主网关设置', 'wei-alipay' ), 'href' => $main_url, 'icon_html' => Wenpai_Admin_Icons::svg( 'settings' ), 'state' => $main_ready ? 'ok' : '' ),
+					array( 'label' => __( '当面付配置', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay_facetopay' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'flash' ), 'state' => 'yes' === ( $enabled_map['f2f'] ?? 'no' ) ? 'ok' : '' ),
+					array( 'label' => __( '花呗分期', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay_installment' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'sparkle' ), 'state' => 'yes' === ( $enabled_map['huabei'] ?? 'no' ) ? 'ok' : '' ),
+					array( 'label' => __( '条码付', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay_barcode' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'search' ), 'state' => 'yes' === ( $enabled_map['barcode'] ?? 'no' ) ? 'ok' : '' ),
 					array( 'label' => __( '拉取对账单', 'wei-alipay' ), 'href' => admin_url( 'admin.php?page=wei-alipay-reconcile-pro' ), 'icon_html' => Wenpai_Admin_Icons::svg( 'download' ) ),
-					array( 'label' => __( '薇晓朵账户', 'wei-alipay' ), 'href' => $account_url, 'icon_html' => Wenpai_Admin_Icons::svg( 'user' ), 'state' => $connected ? 'on' : '' ),
+					array( 'label' => __( '薇晓朵账户', 'wei-alipay' ), 'href' => $account_url, 'icon_html' => Wenpai_Admin_Icons::svg( 'user' ), 'state' => $connected ? 'ok' : '' ),
 				),
 			)
 		);
@@ -489,19 +493,19 @@ final class Wei_Alipay_Shell {
 		if ( ! $connected ) {
 			Wenpai_Admin_UI::next(
 				array(
-					'icon_html' => Wenpai_Admin_Icons::svg( $has_latched ? 'shield' : 'user' ),
+					'icon_html' => Wenpai_Admin_Icons::svg( $has_latched ? 'shield-check' : 'user' ),
 					'title'     => $has_latched
 						? __( '账户已断开：已开启的扩展继续收款，选项已锁定', 'wei-alipay' )
 						: __( '连接薇晓朵账户以启用扩展支付方式', 'wei-alipay' ),
 					'desc'      => $has_latched
 						? __( '已开启的支付方式仍在正常收款、处理回调与退款；重新连接账户后可继续调整开关与参数。', 'wei-alipay' )
 						: __( '连接只用于站点身份认证，不是许可证。已启用的方式即便断开也照常收款。', 'wei-alipay' ),
-					'action'    => Wenpai_Admin_UI::button_html(
+					'actions'   => array(
 						array(
 							'label'   => $has_latched ? __( '重新连接账户', 'wei-alipay' ) : __( '连接薇晓朵账户', 'wei-alipay' ),
 							'href'    => $account_url,
 							'variant' => 'primary',
-						)
+						),
 					),
 				)
 			);
@@ -518,7 +522,7 @@ final class Wei_Alipay_Shell {
 		self::render_payment_card(
 			__( '支付宝主网关', 'wei-alipay' ),
 			__( '电脑网站与手机网站收银台，支持退款与查单，安装即可直接使用。', 'wei-alipay' ),
-			Wenpai_Admin_Icons::svg( 'shield' ),
+			Wenpai_Admin_Icons::svg( 'shield-check' ),
 			'ok',
 			'<span class="pill ok">' . esc_html__( '安装即用', 'wei-alipay' ) . '</span>',
 			__( '已就绪 · 不受连接影响', 'wei-alipay' ),
@@ -526,7 +530,7 @@ final class Wei_Alipay_Shell {
 			__( '配置主网关', 'wei-alipay' )
 		);
 
-		foreach ( array( 'f2f' => 'flash', 'huabei' => 'spark' ) as $key => $icon_name ) {
+		foreach ( array( 'f2f' => 'flash', 'huabei' => 'sparkle' ) as $key => $icon_name ) {
 			if ( ! isset( $registry[ $key ] ) ) {
 				continue;
 			}
@@ -544,7 +548,7 @@ final class Wei_Alipay_Shell {
 				(string) $feat['description'],
 				Wenpai_Admin_Icons::svg( $icon_name ),
 				$is_on ? 'accent' : '',
-				self::switch_html( 'features[]', $key, (string) $feat['name'], $is_on, ! $can_toggle ),
+				self::switch_html( 'features[]', $key, (string) $feat['name'], $is_on, ! $can_toggle, false ),
 				$foot_meta,
 				$foot_href,
 				$foot_label
@@ -567,7 +571,14 @@ final class Wei_Alipay_Shell {
 			$gate = (string) ( $feat['gate'] ?? 'unavailable' );
 			$is_on = 'yes' === ( $enabled[ $key ] ?? 'no' ) && 'unavailable' !== $gate;
 			echo '<div class="simple-row">';
-			echo '<span class="tile">' . Wenpai_Admin_Icons::svg( 'barcode' === $key ? 'search' : 'shield' ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icon from kit.
+			$row_icons = array(
+				'barcode'       => 'search',
+				'cross_border'  => 'cloud',
+				'fund_auth'     => 'shield-check',
+				'subscriptions' => 'refresh',
+				'profitsharing' => 'equalizer',
+			);
+			echo '<span class="tile">' . Wenpai_Admin_Icons::svg( $row_icons[ $key ] ?? 'shield-check' ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icon from kit.
 			echo '<div><div class="t">' . esc_html( (string) $feat['name'] ) . '</div><div class="d">' . esc_html( (string) $feat['description'] ) . '</div></div>';
 			echo '<div class="r">';
 			if ( 'unavailable' === $gate ) {
@@ -673,7 +684,7 @@ final class Wei_Alipay_Shell {
 		);
 		echo '<div class="simple-row">';
 		if ( $connected && ! empty( $account['avatar_url'] ) ) {
-			echo '<img class="wei-alipay-avatar" src="' . esc_url( (string) $account['avatar_url'] ) . '" alt="' . esc_attr( (string) ( $account['avatar_alt'] ?? '' ) ) . '" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer">';
+			echo '<span class="wei-alipay-avatar-wrap">' . Wenpai_Admin_Icons::svg( 'user' ) . '<img class="wei-alipay-avatar" src="' . esc_url( (string) $account['avatar_url'] ) . '" alt="" aria-hidden="true" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer"></span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icon.
 		} else {
 			echo '<span class="tile">' . Wenpai_Admin_Icons::svg( 'user' ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icon from kit.
 		}
@@ -707,12 +718,12 @@ final class Wei_Alipay_Shell {
 			)
 		);
 		$rows = array(
-			array( __( '支付宝主网关（电脑网站 / 手机网站）', 'wei-alipay' ), __( '安装并填写支付宝密钥后即可直接收款，不依赖账户连接。', 'wei-alipay' ), 'pill ok', __( '安装即用', 'wei-alipay' ) ),
-			array( __( '当面付、花呗分期、条码付', 'wei-alipay' ), __( '连上账户后即可首次启用；启用后断开仍照常收款，只锁定选项修改。', 'wei-alipay' ), $connected ? 'pill ok' : 'pill warn', $connected ? __( '可启用与配置', 'wei-alipay' ) : __( '连接后可启用', 'wei-alipay' ) ),
-			array( __( '跨境支付、资金授权、自动续费订阅、多商户分账', 'wei-alipay' ), __( '涉及额外接口完善与支付宝商户资质审核，当前不提供开启开关。', 'wei-alipay' ), $connected ? 'pill warn' : 'pill mute', $connected ? __( '暂不开放', 'wei-alipay' ) : __( '连接后查看', 'wei-alipay' ) ),
+			array( 'shield-check', __( '支付宝主网关（电脑网站 / 手机网站）', 'wei-alipay' ), __( '安装并填写支付宝密钥后即可直接收款，不依赖账户连接。', 'wei-alipay' ), 'pill ok', __( '安装即用', 'wei-alipay' ) ),
+			array( 'link', __( '当面付、花呗分期、条码付', 'wei-alipay' ), __( '连上账户后即可首次启用；启用后断开仍照常收款，只锁定选项修改。', 'wei-alipay' ), $connected ? 'pill ok' : 'pill warn', $connected ? __( '可启用与配置', 'wei-alipay' ) : __( '连接后可启用', 'wei-alipay' ) ),
+			array( 'tools', __( '跨境支付、资金授权、自动续费订阅、多商户分账', 'wei-alipay' ), __( '涉及额外接口完善与支付宝商户资质审核，当前不提供开启开关。', 'wei-alipay' ), $connected ? 'pill warn' : 'pill mute', $connected ? __( '暂不开放', 'wei-alipay' ) : __( '连接后查看', 'wei-alipay' ) ),
 		);
 		foreach ( $rows as $r ) {
-			echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield' ) . '</span><div><div class="t">' . esc_html( $r[0] ) . '</div><div class="d">' . esc_html( $r[1] ) . '</div></div><div class="r"><span class="' . esc_attr( $r[2] ) . '">' . esc_html( $r[3] ) . '</span></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icon.
+			echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( $r[0] ) . '</span><div><div class="t">' . esc_html( $r[1] ) . '</div><div class="d">' . esc_html( $r[2] ) . '</div></div><div class="r"><span class="' . esc_attr( $r[3] ) . '">' . esc_html( $r[4] ) . '</span></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icon.
 		}
 		Wenpai_Admin_UI::card_close();
 
@@ -722,18 +733,18 @@ final class Wei_Alipay_Shell {
 				'title' => __( '详情与显示偏好', 'wei-alipay' ),
 			)
 		);
-		echo '<details class="wenpai-fold"><summary class="wenpai-fold__sum"><span>' . esc_html__( '连接详情与传输数据说明', 'wei-alipay' ) . '</span></summary><div class="wenpai-fold__body">';
+		echo '<div class="wenpai-folds"><details class="wenpai-fold"><summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'info' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '连接详情与传输数据说明', 'wei-alipay' ) . '</span></span><span class="wenpai-fold__side">' . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary><div class="wenpai-fold__body">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icons.
 		echo '<p>' . esc_html__( '仅同步站点域名、安装标识、插件与环境版本，绝不传订单、金额、买家信息或支付宝私钥。', 'wei-alipay' ) . '</p>';
 		echo '<p>' . esc_html( sprintf( __( '安装标识：%s', 'wei-alipay' ), (string) ( $account['installation_label'] ?? '' ) ) ) . '</p>';
-		echo '</div></details>';
+		echo '</div></details></div>';
 
 		self::render_palette_toggle_form( 'account' );
 
 		if ( $connected && ! empty( $account['disconnect_url'] ) ) {
-			echo '<details class="wenpai-fold"><summary class="wenpai-fold__sum"><span>' . esc_html__( '断开此站点连接', 'wei-alipay' ) . '</span><span class="pill bad">' . esc_html__( '危险操作', 'wei-alipay' ) . '</span></summary><div class="wenpai-fold__body">';
+			echo '<div class="wenpai-folds"><details class="wenpai-fold"><summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield-check' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '断开此站点连接', 'wei-alipay' ) . '</span></span><span class="wenpai-fold__side"><span class="pill bad">' . esc_html__( '危险操作', 'wei-alipay' ) . '</span>' . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary><div class="wenpai-fold__body">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG icons.
 			echo '<p>' . esc_html__( '断开不会停掉已启用的支付方式，但会锁定扩展方式的开关与参数修改。', 'wei-alipay' ) . '</p>';
 			echo '<a class="btn btn-danger" href="' . esc_url( (string) $account['disconnect_url'] ) . '">' . esc_html__( '确认断开此站点连接', 'wei-alipay' ) . '</a>';
-			echo '</div></details>';
+			echo '</div></details></div>';
 		}
 		Wenpai_Admin_UI::card_close();
 	}
@@ -838,17 +849,20 @@ final class Wei_Alipay_Shell {
 	 *
 	 * @return string
 	 */
-	private static function switch_html( $name, $value, $label, $checked, $disabled ) {
+	private static function switch_html( $name, $value, $label, $checked, $disabled, $show_state = true ) {
+		$state_html = $show_state
+			? '<span class="wenpai-switch__state" aria-hidden="true">'
+				. '<span class="wenpai-switch__on">' . esc_html__( '已开启', 'wei-alipay' ) . '</span>'
+				. '<span class="wenpai-switch__off">' . esc_html__( '未开启', 'wei-alipay' ) . '</span>'
+				. '</span>'
+			: '';
 		return '<label class="wenpai-switch">'
 			. '<input type="checkbox" role="switch" class="wenpai-switch__input" name="' . esc_attr( $name ) . '" value="' . esc_attr( $value ) . '"'
 			. ( $checked ? ' checked="checked"' : '' )
 			. ( $disabled ? ' disabled="disabled"' : '' )
 			. ' aria-label="' . esc_attr( $label ) . '">'
 			. '<span class="wenpai-switch__track" aria-hidden="true"></span>'
-			. '<span class="wenpai-switch__state" aria-hidden="true">'
-			. '<span class="wenpai-switch__on">' . esc_html__( '已开启', 'wei-alipay' ) . '</span>'
-			. '<span class="wenpai-switch__off">' . esc_html__( '未开启', 'wei-alipay' ) . '</span>'
-			. '</span>'
+			. $state_html
 			. '</label>';
 	}
 
