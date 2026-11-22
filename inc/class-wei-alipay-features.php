@@ -13,7 +13,7 @@ class Wei_Alipay_Features {
 
 	const OPTION_KEY = 'wei_alipay_features';
 	const VERSION_KEY = 'wei_alipay_features_version';
-	const VERSION = '2';
+	const VERSION = '3';
 
 	/**
 	 * Register feature-centre hooks.
@@ -23,6 +23,62 @@ class Wei_Alipay_Features {
 		add_action( 'admin_post_wei_alipay_save_features', array( __CLASS__, 'save' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_filter( 'admin_title', array( __CLASS__, 'filter_admin_title' ), 10, 2 );
+		foreach ( self::registry() as $key => $feature ) {
+			if ( 'connect_to_enable' === self::feature_gate( $feature ) && ! empty( $feature['settings_option'] ) ) {
+				$option_name = (string) $feature['settings_option'];
+				add_filter(
+					'pre_update_option_' . $option_name,
+					static function( $value, $old_value ) use ( $key ) {
+						return self::guard_locked_option_update( $key, $value, $old_value );
+					},
+					5,
+					2
+				);
+			}
+		}
+	}
+
+	/**
+	 * Whether a connect_to_enable feature is currently enabled but locked for option edits
+	 * because the site is disconnected from Weixiaoduo Account.
+	 *
+	 * @param string $feature_key Registry feature key.
+	 * @return bool
+	 */
+	public static function is_feature_locked_for_edit( $feature_key ) {
+		$registry = self::registry();
+		if ( ! isset( $registry[ $feature_key ] ) ) {
+			return false;
+		}
+		if ( 'connect_to_enable' !== self::feature_gate( $registry[ $feature_key ] ) ) {
+			return false;
+		}
+		return self::is_enabled( $feature_key ) && ! self::is_connected();
+	}
+
+	/**
+	 * Enforce the disconnect save-lock at the WordPress option persistence layer.
+	 * Already-enabled methods keep processing payments, callbacks and refunds,
+	 * while option changes are refused until the site reconnects.
+	 *
+	 * @param string $feature_key Registry feature key.
+	 * @param mixed  $value       Proposed option value.
+	 * @param mixed  $old_value   Existing option value.
+	 * @return mixed
+	 */
+	public static function guard_locked_option_update( $feature_key, $value, $old_value ) {
+		if ( ! self::is_feature_locked_for_edit( $feature_key ) ) {
+			return $value;
+		}
+		if ( $value === $old_value ) {
+			return $value;
+		}
+		if ( class_exists( 'WC_Admin_Settings' ) ) {
+			WC_Admin_Settings::add_error(
+				__( 'Wei Alipay options for this payment method are locked while the site is disconnected. Active payments continue normally; reconnect your Weixiaoduo account to save changes.', 'wei-alipay' )
+			);
+		}
+		return $old_value;
 	}
 
 	/**
@@ -59,94 +115,69 @@ class Wei_Alipay_Features {
 		return array(
 			'f2f' => array(
 				'group' => 'payment',
-				'tier' => 'free-connected',
-				'required_scope' => 'f2f',
-				'provider_requirement' => 'alipay-product',
+				'gate' => 'connect_to_enable',
+				'visibility' => 'always',
 				'name' => __( 'Alipay Face-to-Face Pay', 'wei-alipay' ),
 				'description' => __( 'Accept merchant-presented QR code payments for counters and physical stores.', 'wei-alipay' ),
 				'icon' => 'dashicons-store',
 				'settings_option' => 'woocommerce_alipay_facetopay_settings',
 				'settings_section' => 'alipay_facetopay',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires the corresponding Alipay merchant product and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://opendocs.alipay.com/open/194/105072',
 			),
 			'huabei' => array(
 				'group' => 'payment',
-				'tier' => 'free-connected',
-				'required_scope' => 'huabei',
-				'provider_requirement' => 'alipay-product',
+				'gate' => 'connect_to_enable',
+				'visibility' => 'always',
 				'name' => __( 'Alipay Huabei Installments', 'wei-alipay' ),
 				'description' => __( 'Offer eligible customers 3, 6 or 12-installment Huabei payments.', 'wei-alipay' ),
 				'icon' => 'dashicons-money-alt',
 				'settings_option' => 'woocommerce_alipay_installment_settings',
 				'settings_section' => 'alipay_installment',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires Huabei admission, an eligible acquiring product and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://opendocs.alipay.com/open/repo-00phph',
 			),
 			'barcode' => array(
 				'group' => 'payment',
-				'tier' => 'free-connected',
-				'required_scope' => 'barcode',
-				'provider_requirement' => 'alipay-product',
+				'gate' => 'connect_to_enable',
+				'visibility' => 'always',
 				'name' => __( 'Alipay Barcode Pay', 'wei-alipay' ),
 				'description' => __( 'Accept customer-presented Alipay barcode or QR code payments.', 'wei-alipay' ),
 				'icon' => 'dashicons-screenoptions',
 				'settings_option' => 'woocommerce_alipay_barcode_settings',
 				'settings_section' => 'alipay_barcode',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires an eligible in-person Alipay product and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://opendocs.alipay.com/open/194/105072',
 			),
 			'fund_auth' => array(
 				'group' => 'payment',
-				'tier' => 'specialist',
-				'required_scope' => 'fund-auth',
-				'provider_requirement' => 'alipay-review',
+				'gate' => 'unavailable',
+				'visibility' => 'always',
 				'name' => __( 'Alipay Fund Authorization', 'wei-alipay' ),
 				'description' => __( 'Freeze customer funds and capture or release them later.', 'wei-alipay' ),
 				'icon' => 'dashicons-lock',
 				'settings_option' => 'woocommerce_alipay_fund_auth_settings',
 				'settings_section' => 'alipay_fund_auth',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires Alipay fund-authorization admission and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://opendocs.alipay.com/open/repo-0243e2',
 			),
 			'cross_border' => array(
 				'group' => 'payment',
-				'tier' => 'specialist',
-				'required_scope' => 'cross-border',
-				'provider_requirement' => 'alipay-plus-review',
+				'gate' => 'unavailable',
+				'visibility' => 'always',
 				'name' => __( 'Alipay Cross-Border', 'wei-alipay' ),
 				'description' => __( 'Accept supported non-CNY cross-border Alipay payments.', 'wei-alipay' ),
 				'icon' => 'dashicons-airplane',
 				'settings_option' => 'woocommerce_acbop_settings',
 				'settings_section' => 'acbop',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires separate Alipay+ cross-border onboarding and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://global.alipay.com/developer/helpcenter',
 			),
 			'profitsharing' => array(
 				'group' => 'operations',
 				'ui_group' => 'payment',
-				'tier' => 'commercial',
-				'required_scope' => 'profit-sharing',
-				'provider_requirement' => 'alipay-review',
+				'gate' => 'unavailable',
+				'visibility' => 'always',
 				'name' => __( 'Profit Sharing', 'wei-alipay' ),
 				'description' => __( 'Manage receivers, settlement rules and profit-sharing jobs.', 'wei-alipay' ),
 				'icon' => 'dashicons-networking',
 				'settings_option' => 'woo_alipay_ps_settings',
 				'page' => 'wei-alipay-profitsharing',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires the Alipay profit-sharing product, the required merchant relationships and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://opendocs.alipay.com/open/009yja',
 			),
 			'reconcile' => array(
 				'group' => 'operations',
-				'tier' => 'local',
-				'required_scope' => '',
-				'provider_requirement' => 'configured-gateway',
+				'gate' => 'local',
+				'visibility' => 'always',
 				'name' => __( 'Reconciliation', 'wei-alipay' ),
 				'description' => __( 'Review Alipay transactions and reconciliation results.', 'wei-alipay' ),
 				'icon' => 'dashicons-chart-area',
@@ -155,9 +186,8 @@ class Wei_Alipay_Features {
 			),
 			'webhook_retry' => array(
 				'group' => 'operations',
-				'tier' => 'local',
-				'required_scope' => '',
-				'provider_requirement' => 'configured-gateway',
+				'gate' => 'local',
+				'visibility' => 'always',
 				'name' => __( 'Webhook Logs and Retry', 'wei-alipay' ),
 				'description' => __( 'Inspect asynchronous notification delivery and retry failed processing.', 'wei-alipay' ),
 				'icon' => 'dashicons-update',
@@ -168,18 +198,14 @@ class Wei_Alipay_Features {
 			'subscriptions' => array(
 				'group' => 'operations',
 				'ui_group' => 'payment',
-				'tier' => 'commercial',
-				'required_scope' => 'subscriptions',
-				'provider_requirement' => 'alipay-review',
+				'gate' => 'unavailable',
+				'visibility' => 'always',
 				'name' => __( 'Subscriptions', 'wei-alipay' ),
 				'description' => __( 'Use Alipay agreements for recurring WooCommerce Subscriptions charges.', 'wei-alipay' ),
 				'icon' => 'dashicons-controls-repeat',
 				'settings_option' => 'woo_alipay_subscriptions_settings',
 				'page' => 'wei-alipay-subscriptions',
 				'dependency' => 'woocommerce-subscriptions',
-				'access' => 'restricted',
-				'requirement' => __( 'Requires an eligible enterprise Alipay account, an approved recurring-debit product and Wei Alipay authorization.', 'wei-alipay' ),
-				'requirements_url' => 'https://opendocs.alipay.com/open/repo-0243dw',
 			),
 		);
 	}
@@ -191,7 +217,11 @@ class Wei_Alipay_Features {
 	 * @return bool
 	 */
 	public static function is_enabled( $feature ) {
-		if ( ! self::access_available( $feature ) ) {
+		$registry = self::registry();
+		if ( ! isset( $registry[ $feature ] ) ) {
+			return false;
+		}
+		if ( 'unavailable' === self::feature_gate( $registry[ $feature ] ) ) {
 			return false;
 		}
 		$values = get_option( self::OPTION_KEY, array() );
@@ -227,7 +257,7 @@ class Wei_Alipay_Features {
 		}
 
 		foreach ( self::registry() as $key => $feature ) {
-			if ( ! self::feature_access_available( $feature ) ) {
+			if ( 'unavailable' === self::feature_gate( $feature ) ) {
 				$current[ $key ] = 'no';
 			}
 		}
@@ -261,12 +291,17 @@ class Wei_Alipay_Features {
 			}
 		}
 		$new = $old;
+		$connected = self::is_connected();
 		foreach ( self::registry() as $key => $feature ) {
 			if ( $group !== self::feature_ui_group( $feature ) ) {
 				continue;
 			}
-			if ( ! self::feature_access_available( $feature ) ) {
+			if ( 'unavailable' === self::feature_gate( $feature ) ) {
 				$new[ $key ] = 'no';
+				continue;
+			}
+			if ( ! self::feature_can_change( $feature, $connected ) ) {
+				$new[ $key ] = isset( $old[ $key ] ) ? $old[ $key ] : 'no';
 				continue;
 			}
 			if ( ! self::dependency_available( $feature ) ) {
@@ -337,7 +372,7 @@ class Wei_Alipay_Features {
 		echo '<img class="wei-alipay-header-logo" src="' . esc_url( WEI_ALIPAY_PLUGIN_URL . 'assets/images/wei-alipay-placeholder.svg' ) . '" alt="" width="32" height="32">';
 		echo '<h1>' . esc_html__( 'Wei Alipay', 'wei-alipay' ) . '</h1>' . wp_kses_post( self::status_chip( $account['status_label'], $account['status_class'] ) );
 		self::render_header_account_avatar( $account );
-		echo '</div><p>' . esc_html__( 'Manage Alipay checkout, optional payment methods, operational tools and your Weixiaoduo account.', 'wei-alipay' ) . '</p></div>';
+		echo '</div><p>' . esc_html__( 'The main Alipay gateway works after installation. Connect a Weixiaoduo account to enable optional methods.', 'wei-alipay' ) . '</p></div>';
 		echo '</div>';
 		Wei_Alipay_Admin_UI::wp_header_end();
 		self::render_tabs( $view );
@@ -427,8 +462,8 @@ class Wei_Alipay_Features {
 		if ( ! $payment_ready ) {
 			$attention[] = array( __( 'Complete gateway setup before accepting live payments.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Open gateway settings', 'wei-alipay' ) );
 		}
-		if ( 'connected' !== $account['status'] || 'warning' === $account['authorization_class'] ) {
-			$attention[] = array( __( 'Check your Weixiaoduo.com connection and cached feature authorization.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Open account', 'wei-alipay' ) );
+		if ( 'connected' !== $account['status'] ) {
+			$attention[] = array( __( 'Connect a Weixiaoduo account to enable optional payment methods. The main Alipay gateway works without a connection.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Open account', 'wei-alipay' ) );
 		}
 		if ( $failed_webhooks || false === $last_webhook_success ) {
 			$attention[] = array( __( 'Some recent payment callbacks need review.', 'wei-alipay' ), admin_url( 'admin.php?page=wei-alipay-webhooks&status=failed' ), __( 'Open callback logs', 'wei-alipay' ) );
@@ -446,7 +481,7 @@ class Wei_Alipay_Features {
 
 		echo '<div class="wei-alipay-summary-grid">';
 		self::summary_card( __( 'Payment status', 'wei-alipay' ), $payment_ready ? __( 'Ready to accept payments', 'wei-alipay' ) : __( 'Action needed', 'wei-alipay' ), $payment_ready ? 'success' : 'warning', $payment_ready ? __( 'Gateway credentials and security checks passed.', 'wei-alipay' ) : __( 'Complete the blocking gateway checks before accepting live payments.', 'wei-alipay' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=alipay' ), __( 'Open gateway settings', 'wei-alipay' ) );
-		self::summary_card( __( 'Account authorization', 'wei-alipay' ), $account['status_label'], $account['status_class'], __( 'Weixiaoduo account connection is separate from Alipay payment processing.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Open account', 'wei-alipay' ) );
+		self::summary_card( __( 'Weixiaoduo account', 'wei-alipay' ), $account['status_label'], $account['status_class'], __( 'Connection identifies this site. It does not license the main gateway.', 'wei-alipay' ), add_query_arg( array( 'page' => 'wei-alipay', 'view' => 'account' ), admin_url( 'admin.php' ) ), __( 'Open account', 'wei-alipay' ) );
 		self::summary_card( __( 'Needs attention', 'wei-alipay' ), $attention_status, $attention_count ? 'warning' : 'success', $attention_count ? __( 'Up to three setup issues are listed below.', 'wei-alipay' ) : __( 'No blocking setup issues were found.', 'wei-alipay' ), $attention_count ? '#wei-alipay-attention' : '#wei-alipay-diagnostics', $attention_count ? __( 'View issues', 'wei-alipay' ) : __( 'View details', 'wei-alipay' ) );
 		echo '</div>';
 
@@ -613,27 +648,29 @@ class Wei_Alipay_Features {
 		if ( 'connected' === $account['status'] ) {
 			echo '<p>' . esc_html( $account['account_label'] ) . '</p>';
 		} else {
-			echo '<p>' . esc_html__( 'Connect your Weixiaoduo account to unlock free features, commercial authorization and updates.', 'wei-alipay' ) . '</p>';
+			echo '<p>' . esc_html__( 'Connect this site to a Weixiaoduo account. The main Alipay gateway works after installation. Optional methods such as Face-to-Face Pay can be turned on after you connect.', 'wei-alipay' ) . '</p>';
 		}
 		echo '</div></div><div class="wei-alipay-account__actions">';
 		if ( 'connected' === $account['status'] && $account['manage_url'] ) {
 			echo '<a class="button button-primary" href="' . esc_url( $account['manage_url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Manage on Weixiaoduo.com', 'wei-alipay' ) . '</a>';
 		} else {
-			echo '<button type="button" class="button button-primary" disabled aria-describedby="wei-alipay-connect-help">' . esc_html__( 'Connect account', 'wei-alipay' ) . '</button><span id="wei-alipay-connect-help" class="description">' . esc_html__( 'Secure account connection is not available in this candidate yet. Production features remain locked.', 'wei-alipay' ) . '</span>';
+			$connect_url = ! empty( $account['connect_url'] ) ? $account['connect_url'] : ( class_exists( 'Wei_Alipay_Account_Client' ) ? Wei_Alipay_Account_Client::connect_action_url() : '' );
+			echo '<a class="button button-primary" href="' . esc_url( $connect_url ) . '">' . esc_html__( 'Connect account', 'wei-alipay' ) . '</a>';
 		}
 		echo '</div></section>';
 
-		echo '<section class="wei-alipay-account__entitlements"><h2>' . esc_html__( 'Feature access', 'wei-alipay' ) . '</h2><div class="wei-alipay-account__status-list">';
-		self::account_status_row( __( 'Standard store features', 'wei-alipay' ), 'connected' === $account['status'] ? __( 'Free authorization', 'wei-alipay' ) : __( 'Free after connection', 'wei-alipay' ), 'connected' === $account['status'] ? 'success' : 'light' );
-		self::account_status_row( __( 'Subscriptions and profit sharing', 'wei-alipay' ), __( 'Commercial authorization required', 'wei-alipay' ), 'warning' );
+		echo '<section class="wei-alipay-account__entitlements"><h2>' . esc_html__( 'What connection is for', 'wei-alipay' ) . '</h2><div class="wei-alipay-account__status-list">';
+		self::account_status_row( __( 'Main Alipay gateway', 'wei-alipay' ), __( 'Available after install', 'wei-alipay' ), 'success' );
+		self::account_status_row( __( 'Face-to-Face, Huabei and barcode', 'wei-alipay' ), 'connected' === $account['status'] ? __( 'Can be enabled', 'wei-alipay' ) : __( 'Connect to enable', 'wei-alipay' ), 'connected' === $account['status'] ? 'success' : 'light' );
+		self::account_status_row( __( 'Cross-border, fund authorization, subscriptions and profit sharing', 'wei-alipay' ), 'connected' === $account['status'] ? __( 'Not available yet', 'wei-alipay' ) : __( 'Connect to see status', 'wei-alipay' ), 'connected' === $account['status'] ? 'warning' : 'light' );
 		echo '</div></section>';
 
-		echo '<details class="wei-alipay-disclosure"><summary>' . esc_html__( 'Data shared when connected', 'wei-alipay' ) . '</summary><div><p>' . esc_html__( 'Required connection data is limited to the site host, installation identifier, software versions, locale, store currency, enabled feature scopes and connection timestamps.', 'wei-alipay' ) . '</p><p><strong>' . esc_html__( 'Never sent:', 'wei-alipay' ) . '</strong> ' . esc_html__( 'orders, payment amounts, customer details, Alipay private keys, certificates or notification payloads.', 'wei-alipay' ) . '</p><a href="' . esc_url( 'https://weixiaoduo.com/product/wei-alipay.html#privacy' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Read the data and privacy notice', 'wei-alipay' ) . '</a></div></details>';
+		echo '<details class="wei-alipay-disclosure"><summary>' . esc_html__( 'Data shared when connected', 'wei-alipay' ) . '</summary><div><p>' . esc_html__( 'Required connection data is limited to the site host, installation identifier, software versions, locale, store currency and connection timestamps.', 'wei-alipay' ) . '</p><p><strong>' . esc_html__( 'Never sent:', 'wei-alipay' ) . '</strong> ' . esc_html__( 'orders, payment amounts, customer details, Alipay private keys, certificates or notification payloads.', 'wei-alipay' ) . '</p><a href="' . esc_url( 'https://weixiaoduo.com/product/wei-alipay.html#privacy' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Read the data and privacy notice', 'wei-alipay' ) . '</a></div></details>';
 
-		echo '<details class="wei-alipay-disclosure"><summary>' . esc_html__( 'Connection details', 'wei-alipay' ) . '</summary><div class="wei-alipay-account__facts"><dl><dt>' . esc_html__( 'Site', 'wei-alipay' ) . '</dt><dd>' . esc_html( wp_parse_url( home_url( '/' ), PHP_URL_HOST ) ) . '</dd><dt>' . esc_html__( 'Installation ID', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['installation_label'] ) . '</dd><dt>' . esc_html__( 'Authorized features', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['scope_summary'] ) . '</dd><dt>' . esc_html__( 'Authorization expires', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['expires_label'] ) . '</dd><dt>' . esc_html__( 'Offline grace', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['offline_grace_label'] ) . '</dd><dt>' . esc_html__( 'Last successful sync', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['last_sync_label'] ) . '</dd></dl></div></details>';
+		echo '<details class="wei-alipay-disclosure"><summary>' . esc_html__( 'Connection details', 'wei-alipay' ) . '</summary><div class="wei-alipay-account__facts"><dl><dt>' . esc_html__( 'Site', 'wei-alipay' ) . '</dt><dd>' . esc_html( wp_parse_url( home_url( '/' ), PHP_URL_HOST ) ) . '</dd><dt>' . esc_html__( 'Installation ID', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['installation_label'] ) . '</dd><dt>' . esc_html__( 'Last successful sync', 'wei-alipay' ) . '</dt><dd>' . esc_html( $account['last_sync_label'] ) . '</dd></dl></div></details>';
 
 		if ( 'connected' === $account['status'] && $account['disconnect_url'] ) {
-			echo '<details class="wei-alipay-disclosure is-danger"><summary>' . esc_html__( 'Disconnect this site', 'wei-alipay' ) . '</summary><div><p>' . esc_html__( 'Disconnecting revokes new feature authorization. Existing payment callbacks and recovery operations must remain available.', 'wei-alipay' ) . '</p><a class="button" href="' . esc_url( $account['disconnect_url'] ) . '">' . esc_html__( 'Review disconnection', 'wei-alipay' ) . '</a></div></details>';
+			echo '<details class="wei-alipay-disclosure is-danger"><summary>' . esc_html__( 'Disconnect this site', 'wei-alipay' ) . '</summary><div><p>' . esc_html__( 'Disconnecting does not stop methods that are already enabled. You will not be able to change their options until you connect again.', 'wei-alipay' ) . '</p><a class="button" href="' . esc_url( $account['disconnect_url'] ) . '">' . esc_html__( 'Review disconnection', 'wei-alipay' ) . '</a></div></details>';
 		}
 		echo '</div>';
 	}
@@ -648,6 +685,9 @@ class Wei_Alipay_Features {
 	 * @return array<string,mixed>
 	 */
 	private static function account_state() {
+		if ( class_exists( 'Wei_Alipay_Account_Client' ) ) {
+			return Wei_Alipay_Account_Client::account_state();
+		}
 		$defaults = array(
 			'status' => 'not-connected',
 			'status_label' => __( 'Not connected', 'wei-alipay' ),
@@ -655,14 +695,11 @@ class Wei_Alipay_Features {
 			'account_label' => '',
 			'installation_label' => __( 'Created when connected', 'wei-alipay' ),
 			'last_sync_label' => __( 'Never', 'wei-alipay' ),
+			'connect_url' => '',
 			'manage_url' => '',
 			'disconnect_url' => '',
 			'avatar_url' => '',
 			'avatar_alt' => __( 'Weixiaoduo account avatar', 'wei-alipay' ),
-			'authorization_class' => 'light',
-			'scope_summary' => __( 'No authorized features cached', 'wei-alipay' ),
-			'expires_label' => __( 'Not available', 'wei-alipay' ),
-			'offline_grace_label' => __( 'Not available', 'wei-alipay' ),
 		);
 		$state = apply_filters( 'wei_alipay_account_state', $defaults );
 		if ( ! is_array( $state ) ) {
@@ -731,7 +768,7 @@ class Wei_Alipay_Features {
 		if ( ! is_array( $parts ) || ! isset( $parts['scheme'], $parts['host'] ) || 'https' !== strtolower( $parts['scheme'] ) ) {
 			return '';
 		}
-		$allowed_hosts = apply_filters( 'wei_alipay_cravatar_hosts', array( 'cravatar.com', 'www.cravatar.com', 'cravatar.cn', 'cn.cravatar.com' ) );
+		$allowed_hosts = apply_filters( 'wei_alipay_cravatar_hosts', array( 'cravatar.com', 'www.cravatar.com', 'cn.cravatar.com' ) );
 		$allowed_hosts = is_array( $allowed_hosts ) ? array_map( 'strtolower', array_map( 'strval', $allowed_hosts ) ) : array();
 		if ( ! in_array( strtolower( $parts['host'] ), $allowed_hosts, true ) ) {
 			return '';
@@ -747,7 +784,7 @@ class Wei_Alipay_Features {
 	 * Render one feature group. Saving this form leaves the other group intact.
 	 */
 	private static function render_feature_form( $group, $enabled, $main_active ) {
-		echo '<div class="notice notice-info inline" role="status"><p><strong>' . esc_html__( 'How activation works', 'wei-alipay' ) . '</strong> ' . esc_html__( 'Features stay off until dependencies, Alipay product approval and Wei Alipay authorization are all satisfied.', 'wei-alipay' ) . '</p></div>';
+		echo '<div class="notice notice-info inline" role="status"><p><strong>' . esc_html__( 'How activation works', 'wei-alipay' ) . '</strong> ' . esc_html__( 'The main Alipay gateway works after installation. Face-to-Face Pay, Huabei and barcode can be turned on after you connect a Weixiaoduo account. After they are enabled, disconnecting keeps them running but locks their options.', 'wei-alipay' ) . '</p></div>';
 		if ( 'payment' === $group ) {
 			self::render_enabled_payment_summary( $enabled );
 		}
@@ -787,7 +824,7 @@ class Wei_Alipay_Features {
 			if ( 'payment' !== self::feature_ui_group( $feature ) || 'yes' !== ( $enabled[ $key ] ?? 'no' ) ) {
 				continue;
 			}
-			if ( ! self::dependency_available( $feature ) || ! self::feature_access_available( $feature ) ) {
+			if ( ! self::dependency_available( $feature ) || 'unavailable' === self::feature_gate( $feature ) ) {
 				continue;
 			}
 			$active[] = $feature;
@@ -805,39 +842,55 @@ class Wei_Alipay_Features {
 	}
 
 	private static function render_group( $group, $title, $description, $enabled ) {
+		$connected = self::is_connected();
 		echo '<section class="wei-alipay-features__section"><div class="wei-alipay-features__section-copy"><h2>' . esc_html( $title ) . '</h2><p>' . esc_html( $description ) . '</p></div><div class="wei-alipay-features__card">';
 		foreach ( self::registry() as $key => $feature ) {
-			if ( $group !== self::feature_ui_group( $feature ) ) {
+			if ( $group !== self::feature_ui_group( $feature ) || ! self::feature_is_visible( $feature, $connected ) ) {
 				continue;
 			}
+			$gate = self::feature_gate( $feature );
 			$is_enabled = isset( $enabled[ $key ] ) && 'yes' === $enabled[ $key ];
 			$dependency_available = self::dependency_available( $feature );
-			$access_available = self::feature_access_available( $feature );
-			$available = $dependency_available && $access_available;
-			$effective_enabled = $is_enabled && $available;
+			$can_change = self::feature_can_change( $feature, $connected ) && $dependency_available;
+			$effective_enabled = $is_enabled && 'unavailable' !== $gate;
 			$configured = self::is_configured( $feature );
 			$status = $effective_enabled ? __( 'Enabled', 'wei-alipay' ) : __( 'Inactive', 'wei-alipay' );
 			$status_class = $effective_enabled ? 'success' : 'light';
-			if ( $effective_enabled && ! $configured ) {
+			if ( 'unavailable' === $gate && $connected ) {
+				$status = __( 'Not available yet', 'wei-alipay' );
+				$status_class = 'warning';
+			} elseif ( 'unavailable' === $gate ) {
+				$status = __( 'Connect to see status', 'wei-alipay' );
+				$status_class = 'light';
+			} elseif ( ! $dependency_available ) {
+				$status = __( 'Dependency missing', 'wei-alipay' );
+				$status_class = 'warning';
+			} elseif ( 'connect_to_enable' === $gate && ! $connected && ! $effective_enabled ) {
+				$status = __( 'Connect to enable', 'wei-alipay' );
+				$status_class = 'warning';
+			} elseif ( 'connect_to_enable' === $gate && ! $connected && $effective_enabled ) {
+				$status = __( 'Enabled, options locked', 'wei-alipay' );
+				$status_class = 'success';
+			} elseif ( $effective_enabled && ! $configured ) {
 				$status = __( 'Action needed', 'wei-alipay' );
 				$status_class = 'warning';
 			}
-			if ( ! $dependency_available ) {
-				$status = __( 'Dependency missing', 'wei-alipay' );
-				$status_class = 'warning';
-			} elseif ( ! $access_available ) {
-				$status = self::locked_status_label( $feature );
-				$status_class = 'warning';
-			}
-			$dependency_id = 'wei-alipay-feature-' . sanitize_html_class( $key ) . '-dependency';
-			echo '<div class="wei-alipay-features__row' . ( $available ? '' : ' is-unavailable' ) . '"' . ( $available ? '' : ' aria-disabled="true"' ) . '>';
+			$help_id = 'wei-alipay-feature-' . sanitize_html_class( $key ) . '-help';
+			$show_toggle = 'unavailable' !== $gate;
+			echo '<div class="wei-alipay-features__row' . ( $can_change ? '' : ' is-unavailable' ) . '"' . ( $can_change ? '' : ' aria-disabled="true"' ) . '>';
 			echo '<span class="dashicons ' . esc_attr( $feature['icon'] ) . '" aria-hidden="true"></span><div class="wei-alipay-features__row-copy"><div class="wei-alipay-features__title">' . esc_html( $feature['name'] ) . ' <span class="wei-alipay-chip is-' . esc_attr( $status_class ) . '" data-feature-status data-on="' . esc_attr__( 'Enabled', 'wei-alipay' ) . '" data-off="' . esc_attr__( 'Inactive', 'wei-alipay' ) . '">' . esc_html( $status ) . '</span></div><p>' . esc_html( $feature['description'] ) . '</p>';
 			if ( ! $dependency_available ) {
-				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $dependency_id ) . '"><span class="dashicons dashicons-warning" aria-hidden="true"></span>' . esc_html__( 'Install and activate WooCommerce Subscriptions before enabling this feature.', 'wei-alipay' ) . '</p>';
-			} elseif ( ! $access_available ) {
-				echo '<details class="wei-alipay-feature-disclosure" id="' . esc_attr( $dependency_id ) . '"><summary>' . esc_html__( 'View requirements', 'wei-alipay' ) . '</summary><div><p>' . esc_html( $feature['requirement'] ) . '</p><p><a href="' . esc_url( $feature['requirements_url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Alipay product requirements', 'wei-alipay' ) . '</a><span aria-hidden="true"> · </span><a href="' . esc_url( self::application_url( $key ) ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Request access from Weixiaoduo.com', 'wei-alipay' ) . '</a></p></div></details>';
+				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $help_id ) . '"><span class="dashicons dashicons-warning" aria-hidden="true"></span>' . esc_html__( 'Install and activate WooCommerce Subscriptions before enabling this feature.', 'wei-alipay' ) . '</p>';
+			} elseif ( 'unavailable' === $gate && $connected ) {
+				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $help_id ) . '">' . esc_html__( 'This method is not open yet.', 'wei-alipay' ) . '</p>';
+			} elseif ( 'unavailable' === $gate ) {
+				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $help_id ) . '">' . esc_html__( 'Connect a Weixiaoduo account to see whether this method can be enabled.', 'wei-alipay' ) . '</p>';
+			} elseif ( 'connect_to_enable' === $gate && ! $connected && ! $effective_enabled ) {
+				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $help_id ) . '">' . esc_html__( 'Connect a Weixiaoduo account to turn this method on.', 'wei-alipay' ) . '</p>';
+			} elseif ( 'connect_to_enable' === $gate && ! $connected && $effective_enabled ) {
+				echo '<p class="wei-alipay-features__dependency" id="' . esc_attr( $help_id ) . '">' . esc_html__( 'This method stays on. Connect again to change its options.', 'wei-alipay' ) . '</p>';
 			}
-			if ( $effective_enabled ) {
+			if ( $effective_enabled && ( $connected || 'local' === $gate ) ) {
 				$url = self::configuration_url( $feature );
 				if ( $url ) {
 					echo '<p class="wei-alipay-features__configure"><a href="' . esc_url( $url ) . '">' . esc_html__( 'Configure', 'wei-alipay' ) . '</a></p>';
@@ -845,25 +898,13 @@ class Wei_Alipay_Features {
 			}
 			/* translators: %s is the optional Wei Alipay feature name. */
 			$toggle_label = sprintf( __( 'Enable %s', 'wei-alipay' ), $feature['name'] );
-			echo '</div><label class="wei-alipay-switch"><span class="screen-reader-text">' . esc_html( $toggle_label ) . '</span><input type="checkbox" name="features[]" value="' . esc_attr( $key ) . '" ' . checked( $effective_enabled, true, false ) . ' ' . disabled( $available, false, false ) . ( $available ? '' : ' aria-describedby="' . esc_attr( $dependency_id ) . '"' ) . '><span aria-hidden="true"></span></label></div>';
+			echo '</div>';
+			if ( $show_toggle ) {
+				echo '<label class="wei-alipay-switch"><span class="screen-reader-text">' . esc_html( $toggle_label ) . '</span><input type="checkbox" name="features[]" value="' . esc_attr( $key ) . '" ' . checked( $effective_enabled, true, false ) . ' ' . disabled( $can_change, false, false ) . ( $can_change ? '' : ' aria-describedby="' . esc_attr( $help_id ) . '"' ) . '><span aria-hidden="true"></span></label>';
+			}
+			echo '</div>';
 		}
-		 echo '</div></section>';
-	}
-
-	/**
-	 * Return a stable, merchant-facing state for a locked feature.
-	 *
-	 * @param array<string,mixed> $feature Feature registry row.
-	 * @return string
-	 */
-	private static function locked_status_label( $feature ) {
-		if ( isset( $feature['tier'] ) && 'commercial' === $feature['tier'] ) {
-			return __( 'Commercial authorization required', 'wei-alipay' );
-		}
-		if ( isset( $feature['tier'] ) && 'specialist' === $feature['tier'] ) {
-			return __( 'Provider review required', 'wei-alipay' );
-		}
-		return __( 'Free after connection', 'wei-alipay' );
+		echo '</div></section>';
 	}
 
 	/**
@@ -876,6 +917,53 @@ class Wei_Alipay_Features {
 		return isset( $feature['ui_group'] ) ? (string) $feature['ui_group'] : (string) $feature['group'];
 	}
 
+	/**
+	 * @param array<string,mixed> $feature Registry entry.
+	 * @return string
+	 */
+	private static function feature_gate( $feature ) {
+		return isset( $feature['gate'] ) ? (string) $feature['gate'] : 'local';
+	}
+
+	/**
+	 * @param array<string,mixed> $feature   Registry entry.
+	 * @param bool                $connected Whether the site is connected.
+	 * @return bool
+	 */
+	private static function feature_is_visible( $feature, $connected ) {
+		$visibility = isset( $feature['visibility'] ) ? (string) $feature['visibility'] : 'always';
+		if ( 'hidden' === $visibility ) {
+			return false;
+		}
+		if ( 'connected' === $visibility ) {
+			return $connected;
+		}
+		return true;
+	}
+
+	/**
+	 * @param array<string,mixed> $feature   Registry entry.
+	 * @param bool                $connected Whether the site is connected.
+	 * @return bool
+	 */
+	private static function feature_can_change( $feature, $connected ) {
+		$gate = self::feature_gate( $feature );
+		if ( 'unavailable' === $gate ) {
+			return false;
+		}
+		if ( 'connect_to_enable' === $gate ) {
+			return $connected;
+		}
+		return true;
+	}
+
+	/**
+	 * @return bool
+	 */
+	private static function is_connected() {
+		return self::account_connected( self::account_state() );
+	}
+
 	private static function dependency_available( $feature ) {
 		if ( empty( $feature['dependency'] ) ) {
 			return true;
@@ -884,41 +972,6 @@ class Wei_Alipay_Features {
 			return function_exists( 'wcs_is_subscription' ) || class_exists( 'WC_Subscriptions' ) || class_exists( 'WC_Subscription' ) || class_exists( 'WC_Subscriptions_Core_Plugin' );
 		}
 		return false;
-	}
-
-	/**
-	 * Whether the current release permits a feature to boot.
-	 *
-	 * Restricted products remain fail-closed until a separately reviewed
-	 * entitlement implementation is available. This is a runtime boundary,
-	 * not merely a disabled control in the admin interface.
-	 *
-	 * @param string $feature Feature key.
-	 * @return bool
-	 */
-	private static function access_available( $feature ) {
-		$registry = self::registry();
-		return isset( $registry[ $feature ] ) && self::feature_access_available( $registry[ $feature ] );
-	}
-
-	/**
-	 * Whether a registry entry is locally available in this release.
-	 *
-	 * @param array<string,mixed> $feature Registry entry.
-	 * @return bool
-	 */
-	private static function feature_access_available( $feature ) {
-		return ! isset( $feature['access'] ) || 'restricted' !== $feature['access'];
-	}
-
-	/**
-	 * Return the platform application URL for a restricted feature.
-	 *
-	 * @param string $feature Feature key.
-	 * @return string
-	 */
-	private static function application_url( $feature ) {
-		return (string) apply_filters( 'wei_alipay_feature_application_url', 'https://weixiaoduo.com/product/wei-alipay.html#features', $feature );
 	}
 
 	private static function is_configured( $feature ) {

@@ -34,5 +34,5 @@ $expect( false !== strpos( $features, 'Wei_Alipay_Health::snapshot()' ), 'the ov
 $expect( false !== strpos( $features, 'Wei_Alipay_Health::activity_summary()' ), 'the overview reads bounded seven-day counters' );
 $expect( false !== strpos( $features, "array_slice( \$attention, 0, 3 )" ), 'the needs-attention list is capped at three items' );
 $expect( false !== strpos( $features, "get_site_transient( 'update_plugins' )" ), 'update state comes from the local WordPress cache' );
-$expect( false !== strpos( $features, "'scope_summary' =>" ) && false !== strpos( $features, "'offline_grace_label' =>" ), 'account state supports scopes, expiry and offline grace' );
+$expect( false === strpos( $features, 'offline_grace_label' ) && false !== strpos( $features, 'Wei_Alipay_Account_Client::account_state()' ), 'account state uses Connect-Latch model without commercial expiry or offline grace' );
 $expect( false !== stripos( $features, 'amounts and customer data are not stored' ), 'the seven-day module states its local privacy boundary' );
