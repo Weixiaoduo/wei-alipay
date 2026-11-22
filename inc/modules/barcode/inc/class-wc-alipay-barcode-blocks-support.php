@@ -47,7 +47,7 @@ final class WC_Alipay_Barcode_Blocks_Support extends AbstractPaymentMethodType {
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-barcode-payments-blocks', 'wei-alipay', WEI_ALIPAY_BARCODE_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-barcode-payments-blocks', 'wei-alipay', WEI_ALIPAY_PLUGIN_PATH . 'languages' );
         }
 
         return array( 'wc-alipay-barcode-payments-blocks' );

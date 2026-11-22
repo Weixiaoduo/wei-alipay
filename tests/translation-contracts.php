@@ -41,11 +41,12 @@ $expect( false === strpos( $catalog, '#, fuzzy' ), 'Simplified Chinese catalog h
 $required = array(
 	'msgid "Account and authorization"' => 'msgstr "账户与授权"',
 	'msgid "Data shared when connected"' => 'msgstr "连接时会发送哪些数据"',
-	'msgid "Commercial authorization required"' => 'msgstr "需要商业授权"',
+	'msgid "Connect to enable"' => 'msgstr "连接后可启用"',
+	'msgid "Not available yet"' => 'msgstr "暂不开放"',
+	'msgid "Enabled, options locked"' => 'msgstr "已开启，选项已锁定"',
 	'msgid "Payment status"' => 'msgstr "收款状态"',
 	'msgid "Weixiaoduo account avatar"' => 'msgstr "薇晓朵账户头像"',
 	'msgid "Manage on Weixiaoduo.com"' => 'msgstr "在 Weixiaoduo.com 中管理"',
-	'msgid "Account authorization"' => 'msgstr "账户授权"',
 	'msgid "Callbacks and background recovery"' => 'msgstr "回调与后台任务"',
 	'msgid "Payment activity in the last 7 days"' => 'msgstr "近 7 天收款情况"',
 	'msgid "Compatibility and diagnostics"' => 'msgstr "兼容性与诊断"',
@@ -54,8 +55,10 @@ $required = array(
 	'msgid "No payment sample recorded"' => 'msgstr "近 7 天暂无收款记录"',
 	'msgid "No callback sample"' => 'msgstr "尚无回调记录"',
 	'msgid "Alipay notification amount does not match the order."' => 'msgstr "支付宝通知金额与订单不匹配。"',
-	'"Legacy MD5 requires both an explicit site acknowledgement and an operator "' => 'msgstr "旧版 MD5 需要站点明确确认，并同时满足运维策略。"',
 );
 foreach ( $required as $msgid => $msgstr ) {
 	$expect( false !== strpos( $catalog, $msgid ) && false !== strpos( $catalog, $msgstr ), "zh_CN includes {$msgid}" );
 }
+
+$js_json = glob( $root . '/languages/wei-alipay-zh_CN-*.json' );
+$expect( is_array( $js_json ) && count( $js_json ) >= 3, 'compiled JS JSON translation files present (' . count( (array) $js_json ) . ' files)' );
