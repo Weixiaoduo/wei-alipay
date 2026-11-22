@@ -160,6 +160,55 @@ class Wei_Alipay_Reconcile_Admin {
                 Wenpai_Admin_UI::card_close();
             }
 
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only confirmation flag.
+            if ( isset( $_GET['schedule-updated'] ) && '1' === (string) wp_unslash( $_GET['schedule-updated'] ) ) {
+                Wenpai_Admin_UI::notice( array( 'level' => 'ok', 'text' => __( '自动日对账计划已保存。', 'wei-alipay' ) ) );
+            }
+
+            if ( class_exists( 'Wei_Alipay_Reconcile_Scheduler' ) ) {
+                $sched   = Wei_Alipay_Reconcile_Scheduler::get_settings();
+                $next_ts = Wei_Alipay_Reconcile_Scheduler::next_run_timestamp();
+                $is_on   = 'yes' === $sched['enabled'];
+                $pill    = $is_on
+                    ? '<span class="pill ok">' . esc_html( sprintf( __( '每日 %s', 'wei-alipay' ), $sched['run_time'] ) ) . '</span>'
+                    : '<span class="pill mute">' . esc_html__( '未开启', 'wei-alipay' ) . '</span>';
+
+                Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '自动日对账', 'wei-alipay' ) ) );
+                echo '<div class="wenpai-folds"><details class="wenpai-fold"' . ( $is_on ? ' open' : '' ) . '>';
+                echo '<summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'refresh' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '每日自动拉取前一日账单与差异邮件提醒', 'wei-alipay' ) . '</span><span class="wenpai-fold__desc">' . esc_html( $next_ts > 0 ? sprintf( __( '下次执行：%s（优先复用 WooCommerce Action Scheduler）', 'wei-alipay' ), wp_date( 'Y-m-d H:i', $next_ts ) ) : __( '支付宝通常在次日 10:00 后出账，建议将定时设在 10:30 之后。', 'wei-alipay' ) ) . '</span></span><span class="wenpai-fold__side">' . $pill . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG + escaped pill.
+                echo '<div class="wenpai-fold__body">';
+                echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wei-alipay-reconcile-form">';
+                wp_nonce_field( 'wei_alipay_save_reconcile_schedule', 'wei_alipay_reconcile_schedule_nonce' );
+                echo '<input type="hidden" name="action" value="wei_alipay_save_reconcile_schedule" />';
+                echo '<div class="wei-alipay-reconcile-form__field"><label for="wei-reconcile-sched-on">' . esc_html__( '启用自动日对账', 'wei-alipay' ) . '</label><label class="wenpai-switch"><input id="wei-reconcile-sched-on" type="checkbox" role="switch" class="wenpai-switch__input" name="schedule_enabled" value="yes"' . checked( $is_on, true, false ) . '><span class="wenpai-switch__track" aria-hidden="true"></span><span class="wenpai-switch__state" aria-hidden="true"><span class="wenpai-switch__on">' . esc_html__( '已开启', 'wei-alipay' ) . '</span><span class="wenpai-switch__off">' . esc_html__( '未开启', 'wei-alipay' ) . '</span></span></label></div>';
+                echo '<div class="wei-alipay-reconcile-form__field"><label for="wei-reconcile-sched-time">' . esc_html__( '每日执行时间', 'wei-alipay' ) . '</label><input type="time" id="wei-reconcile-sched-time" name="schedule_run_time" value="' . esc_attr( $sched['run_time'] ) . '" required /></div>';
+                echo '<div class="wei-alipay-reconcile-form__field"><label for="wei-reconcile-sched-type">' . esc_html__( '账单类型', 'wei-alipay' ) . '</label><select id="wei-reconcile-sched-type" name="schedule_bill_type"><option value="trade"' . selected( $sched['bill_type'], 'trade', false ) . '>' . esc_html__( '业务明细 (trade)', 'wei-alipay' ) . '</option><option value="signcustomer"' . selected( $sched['bill_type'], 'signcustomer', false ) . '>' . esc_html__( '资金流水 (signcustomer)', 'wei-alipay' ) . '</option></select></div>';
+                echo '<div class="wei-alipay-reconcile-form__field"><label for="wei-reconcile-sched-email">' . esc_html__( '差异提醒邮箱（留空用站点管理员）', 'wei-alipay' ) . '</label><input type="email" id="wei-reconcile-sched-email" name="schedule_notify_email" value="' . esc_attr( $sched['notify_email'] ) . '" placeholder="' . esc_attr( (string) get_option( 'admin_email', '' ) ) . '" /></div>';
+                echo '<input type="hidden" name="schedule_notify_diff_only" value="yes" />';
+                echo '<button type="submit" class="btn btn-secondary">' . esc_html__( '保存定时计划', 'wei-alipay' ) . '</button>';
+                echo '</form></div></details></div>';
+                Wenpai_Admin_UI::card_close();
+
+                $history = Wei_Alipay_Reconcile_Scheduler::get_history();
+                if ( ! empty( $history ) ) {
+                    Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '最近自动对账摘要', 'wei-alipay' ) ) );
+                    echo '<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped"><thead><tr>';
+                    echo '<th>' . esc_html__( '账单日期', 'wei-alipay' ) . '</th><th>' . esc_html__( '类型', 'wei-alipay' ) . '</th><th>' . esc_html__( '总行数', 'wei-alipay' ) . '</th><th>' . esc_html__( '匹配', 'wei-alipay' ) . '</th><th>' . esc_html__( '金额差 / 未匹配', 'wei-alipay' ) . '</th><th>' . esc_html__( '结果', 'wei-alipay' ) . '</th>';
+                    echo '</tr></thead><tbody>';
+                    foreach ( array_slice( $history, 0, 10 ) as $row ) {
+                        $st = (string) ( $row['status'] ?? 'ok' );
+                        $st_pill = 'ok' === $st
+                            ? '<span class="pill ok">' . esc_html__( '无差异', 'wei-alipay' ) . '</span>'
+                            : ( 'diff' === $st
+                                ? '<span class="pill warn">' . esc_html__( '有差异', 'wei-alipay' ) . '</span>'
+                                : '<span class="pill bad">' . esc_html__( '失败', 'wei-alipay' ) . '</span>' );
+                        echo '<tr><td>' . esc_html( (string) ( $row['date'] ?? '' ) ) . '</td><td>' . esc_html( (string) ( $row['bill_type'] ?? 'trade' ) ) . '</td><td>' . esc_html( (string) (int) ( $row['total_rows'] ?? 0 ) ) . '</td><td>' . esc_html( (string) (int) ( $row['matched'] ?? 0 ) ) . '</td><td>' . esc_html( (int) ( $row['mismatched'] ?? 0 ) . ' / ' . (int) ( $row['unmatched'] ?? 0 ) ) . '</td><td>' . $st_pill . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped pill.
+                    }
+                    echo '</tbody></table></div>';
+                    Wenpai_Admin_UI::card_close();
+                }
+            }
+
             Wei_Alipay_Shell::close();
             return;
         }

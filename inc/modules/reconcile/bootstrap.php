@@ -22,6 +22,11 @@ add_action( 'plugins_loaded', function(){
         if ( file_exists( $runner ) ) {
             require_once $runner;
         }
+        $scheduler = WEI_ALIPAY_RECONCILE_PLUGIN_PATH . 'inc/class-wei-alipay-reconcile-scheduler.php';
+        if ( file_exists( $scheduler ) ) {
+            require_once $scheduler;
+            Wei_Alipay_Reconcile_Scheduler::register();
+        }
     }
 }, 15 );
 

@@ -53,7 +53,8 @@ class Alipay_SDK_Helper
         if (!is_array($details) || empty($details['key'])) {
             return '';
         }
-        $key = str_replace(array('-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "", "
+        $key = str_replace(array('-----BEGIN PUBLIC KEY-----', '-----END PUBLIC KEY-----', "
+", "
 "), '', (string) $details['key']);
         return trim($key);
     }
@@ -73,7 +74,7 @@ class Alipay_SDK_Helper
         }
         $now_ts = null === $now ? time() : (int) $now;
         $blocks = preg_split('/(?=-----BEGIN CERTIFICATE-----)/', $pem, -1, PREG_SPLIT_NO_EMPTY);
-        if (!is_array($blocks) || empty($blocks)) {
+        if (!is_array($blocks) || 0 === count($blocks)) {
             return array('valid' => false, 'expires_at' => 0, 'days_left' => -1, 'cert_count' => 0);
         }
         $earliest = 0;
@@ -303,6 +304,7 @@ class Alipay_SDK_Helper
                     self::log('证书模式 PEM 证书解析失败', 'error');
                     return null;
                 }
+                /** @phpstan-ignore requireOnce.fileNotFound */
                 require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopCertClient.php';
                 $aop = new AopCertClient();
                 $aop->gatewayUrl = $config['gatewayUrl'];

@@ -411,6 +411,7 @@ final class Wei_Alipay_Shell {
 						'title' => sprintf( __( '近 7 日退款操作：%d 笔', 'wei-alipay' ), $refund_7d ),
 						'when'  => __( '7 日内', 'wei-alipay' ),
 					),
+					self::reconcile_activity_item(),
 				),
 			)
 		);
@@ -466,6 +467,43 @@ final class Wei_Alipay_Shell {
 			)
 		);
 		Wenpai_Admin_UI::card_close();
+	}
+
+	/**
+	 * Build the 4th Overview activity row summarizing recent scheduled reconciliation runs.
+	 *
+	 * @return array<string,string>
+	 */
+	private static function reconcile_activity_item() {
+		if ( ! class_exists( 'Wei_Alipay_Reconcile_Scheduler' ) ) {
+			return array(
+				'tag'   => __( '对账', 'wei-alipay' ),
+				'tone'  => 'mute',
+				'title' => __( '近 7 日自动对账：未启用', 'wei-alipay' ),
+				'when'  => __( '7 日内', 'wei-alipay' ),
+			);
+		}
+		$sum = Wei_Alipay_Reconcile_Scheduler::recent_diff_summary( 7 );
+		if ( 0 === (int) $sum['runs'] ) {
+			$cfg = Wei_Alipay_Reconcile_Scheduler::get_settings();
+			return array(
+				'tag'   => __( '对账', 'wei-alipay' ),
+				'tone'  => 'mute',
+				'title' => 'yes' === $cfg['enabled']
+					? sprintf( __( '自动对账已排期（每日 %s），尚无运行记录', 'wei-alipay' ), $cfg['run_time'] )
+					: __( '近 7 日自动对账：未启用', 'wei-alipay' ),
+				'when'  => __( '7 日内', 'wei-alipay' ),
+			);
+		}
+		$has_issue = (int) $sum['diffs'] > 0 || (int) $sum['errors'] > 0;
+		return array(
+			'tag'   => __( '对账', 'wei-alipay' ),
+			'tone'  => $has_issue ? 'warn' : 'ok',
+			'title' => $has_issue
+				? sprintf( __( '近 7 日自动对账 %1$d 次：待复核差异 %2$d 笔', 'wei-alipay' ), (int) $sum['runs'], (int) $sum['diffs'] )
+				: sprintf( __( '近 7 日自动对账 %d 次：全部无差异', 'wei-alipay' ), (int) $sum['runs'] ),
+			'when'  => (string) ( $sum['latest_date'] ?: __( '7 日内', 'wei-alipay' ) ),
+		);
 	}
 
 	/**
