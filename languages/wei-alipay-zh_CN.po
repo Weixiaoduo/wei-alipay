@@ -254,7 +254,7 @@ msgstr "Wei Alipay Webhook 日志"
 
 #: inc/class-wc-alipay-webhook-retry.php:404
 msgid "Webhook Logs"
-msgstr "Webhook 日志"
+msgstr "回调日志"
 
 #: inc/class-wc-alipay-webhook-retry.php:416
 msgid "You do not have permission to view webhook logs."
@@ -5332,3 +5332,9 @@ msgstr "通过支付宝付款（中国大陆，包括香港和澳门）。"
 
 #~ msgid "Wei Alipay 产品文档"
 #~ msgstr "Wei Alipay 产品文档"
+
+msgid "Expand advanced reliability options"
+msgstr "展开可靠性高级设置"
+
+msgid "Collapse advanced reliability options"
+msgstr "收起可靠性高级设置"

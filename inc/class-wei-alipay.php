@@ -238,6 +238,8 @@ class Wei_Alipay {
             'connection_network_error' => __( 'Connection test failed because the request could not be completed.', 'wei-alipay' ),
             'copied'                   => __( 'Copied', 'wei-alipay' ),
             'copy_failed'              => __( 'Could not copy automatically. Select and copy the URL manually.', 'wei-alipay' ),
+            'expand_reliability'       => __( 'Expand advanced reliability options', 'wei-alipay' ),
+            'collapse_reliability'     => __( 'Collapse advanced reliability options', 'wei-alipay' ),
         );
 
         wp_enqueue_script(

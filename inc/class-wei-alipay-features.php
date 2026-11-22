@@ -275,7 +275,7 @@ class Wei_Alipay_Features {
 		check_admin_referer( 'wei_alipay_save_features' );
 
 		$group = isset( $_POST['feature_group'] ) ? sanitize_key( wp_unslash( $_POST['feature_group'] ) ) : '';
-		if ( ! in_array( $group, array( 'payment', 'operations' ), true ) ) {
+		if ( ! in_array( $group, array( 'payment', 'operations', 'all' ), true ) ) {
 			wp_die( esc_html__( 'Invalid Wei Alipay feature group.', 'wei-alipay' ) );
 		}
 
@@ -293,8 +293,10 @@ class Wei_Alipay_Features {
 		$new = $old;
 		$connected = self::is_connected();
 		foreach ( self::registry() as $key => $feature ) {
-			if ( $group !== self::feature_ui_group( $feature ) ) {
-				continue;
+			if ( 'all' !== $group ) {
+				if ( $group !== self::feature_ui_group( $feature ) ) {
+					continue;
+				}
 			}
 			if ( 'unavailable' === self::feature_gate( $feature ) ) {
 				$new[ $key ] = 'no';
@@ -313,7 +315,7 @@ class Wei_Alipay_Features {
 		update_option( self::OPTION_KEY, $new, false );
 		self::clear_disabled_schedules( $old, $new );
 
-		$view = 'payment' === $group ? 'payments' : 'operations';
+		$view = ( 'payment' === $group || 'all' === $group || ( class_exists( 'Wei_Alipay_Shell' ) && Wei_Alipay_Shell::is_kit_ready() ) ) ? 'payments' : 'operations';
 		wp_safe_redirect( add_query_arg( array( 'page' => 'wei-alipay', 'view' => $view, 'features-updated' => '1' ), admin_url( 'admin.php' ) ) );
 		exit;
 	}

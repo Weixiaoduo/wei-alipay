@@ -125,6 +125,12 @@ class Wei_Alipay_Reconcile_Admin {
             echo '<div class="wei-alipay-reconcile-form__field"><label for="woo-ali-bill-type">' . esc_html__( '账单类型', 'wei-alipay' ) . '</label><select id="woo-ali-bill-type" name="bill_type"><option value="trade">' . esc_html__( '业务明细 (trade)', 'wei-alipay' ) . '</option><option value="signcustomer">' . esc_html__( '资金流水 (signcustomer)', 'wei-alipay' ) . '</option></select></div>';
             echo '<button type="submit" class="btn btn-primary" data-wei-confirm="' . esc_attr__( 'Download and reconcile this Alipay statement now?', 'wei-alipay' ) . '">' . esc_html__( '拉取并核对', 'wei-alipay' ) . '</button>';
             echo '</form>';
+            Wenpai_Admin_UI::card_foot(
+                array(
+                    'start' => true,
+                    'meta'  => __( '支付宝通常在次日 10:00 后出账；核对明细仅对当前管理员保留 10 分钟。', 'wei-alipay' ),
+                )
+            );
             Wenpai_Admin_UI::card_close();
 
             if ( $last ) {
@@ -147,17 +153,6 @@ class Wei_Alipay_Reconcile_Admin {
                     $this->render_result_details( $last );
                     Wenpai_Admin_UI::card_close();
                 }
-            } else {
-                Wenpai_Admin_UI::notice(
-                    array(
-                        'level' => 'info',
-                        'text'  => __( '手动对账会向当前配置的支付宝环境请求下载日账单，仅用于核对差异，不会发起扣款、关单或退款。', 'wei-alipay' ),
-                    )
-                );
-                Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '对账说明', 'wei-alipay' ) ) );
-                echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'search' ) . '</span><div><div class="t">' . esc_html__( '支持全通道单号前缀识别', 'wei-alipay' ) . '</div><div class="d">' . esc_html__( '覆盖主网关（WooA）、当面付（F2F）、花呗分期（HBFQ）与条码付（WooB），多站点会自动隔离博客号。', 'wei-alipay' ) . '</div></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
-                echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield-check' ) . '</span><div><div class="t">' . esc_html__( '账单生成时间与隐私边界', 'wei-alipay' ) . '</div><div class="d">' . esc_html__( '支付宝通常在次日 10:00 后生成前一日账单；核对明细仅对当前管理员保留 10 分钟，不公开账单文件地址。', 'wei-alipay' ) . '</div></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
-                Wenpai_Admin_UI::card_close();
             }
 
             // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only confirmation flag.
@@ -175,7 +170,7 @@ class Wei_Alipay_Reconcile_Admin {
 
                 Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '自动日对账', 'wei-alipay' ) ) );
                 echo '<div class="wenpai-folds"><details class="wenpai-fold"' . ( $is_on ? ' open' : '' ) . '>';
-                echo '<summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'refresh' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '每日自动拉取前一日账单与差异邮件提醒', 'wei-alipay' ) . '</span><span class="wenpai-fold__desc">' . esc_html( $next_ts > 0 ? sprintf( __( '下次执行：%s（优先复用 WooCommerce Action Scheduler）', 'wei-alipay' ), wp_date( 'Y-m-d H:i', $next_ts ) ) : __( '支付宝通常在次日 10:00 后出账，建议将定时设在 10:30 之后。', 'wei-alipay' ) ) . '</span></span><span class="wenpai-fold__side">' . $pill . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG + escaped pill.
+                echo '<summary><span class="tile">' . Wenpai_Admin_Icons::svg( 'refresh' ) . '</span><span class="wenpai-fold__text"><span class="wenpai-fold__title">' . esc_html__( '每日自动拉取前一日账单与差异邮件提醒', 'wei-alipay' ) . '</span><span class="wenpai-fold__desc">' . esc_html( $next_ts > 0 ? sprintf( __( '下次执行：%s（优先复用 WooCommerce Action Scheduler）', 'wei-alipay' ), wp_date( 'Y-m-d H:i', $next_ts ) ) : __( '开启后每日自动核对前一日账单，仅在发现差异时发邮件提醒。', 'wei-alipay' ) ) . '</span></span><span class="wenpai-fold__side">' . $pill . Wenpai_Admin_Icons::svg( 'chevron-down', 'wenpai-fold__chevron' ) . '</span></summary>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG + escaped pill.
                 echo '<div class="wenpai-fold__body">';
                 echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="wei-alipay-reconcile-form">';
                 wp_nonce_field( 'wei_alipay_save_reconcile_schedule', 'wei_alipay_reconcile_schedule_nonce' );

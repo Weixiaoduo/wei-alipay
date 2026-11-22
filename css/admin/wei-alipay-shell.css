@@ -1,4 +1,4 @@
-/* Wei Alipay 4.1 — Weixiaoduo brand token overlay for wenpai-admin-ui v0.13.8.
+/* Wei Alipay 4.3.1 — Weixiaoduo brand token overlay for wenpai-admin-ui v0.13.8.
  * Brand source: weixiaoduo-brand-tokens.json v1.4.
  * Scoped strictly to .wenpai-app[data-wenpai-product="wei-alipay"] (strictly product-scoped).
  * Supports 2-mode brand palette via [data-wei-palette="weixiaoduo"|"platform"].
@@ -72,6 +72,32 @@ body.wei-alipay-admin.wei-palette-platform .wenpai-app[data-wenpai-product="wei-
   --wenpai-focus-halo: #f0f7ff;
 }
 
+/* Equal-height 2-col and 3-col cards with bottom-aligned footers. */
+.wenpai-app[data-wenpai-product="wei-alipay"] .wenpai-grid-2,
+.wenpai-app[data-wenpai-product="wei-alipay"] .wenpai-grid-3 {
+  align-items: stretch;
+}
+
+.wenpai-app[data-wenpai-product="wei-alipay"] .wenpai-grid-2 > .card,
+.wenpai-app[data-wenpai-product="wei-alipay"] .wenpai-grid-3 > .card {
+  display: flex;
+  flex-direction: column;
+}
+
+.wenpai-app[data-wenpai-product="wei-alipay"] .wenpai-grid-2 > .card > .card-foot,
+.wenpai-app[data-wenpai-product="wei-alipay"] .wenpai-grid-3 > .card > .card-foot {
+  margin-top: auto;
+}
+
+/* Keep ghost actions calm neutral gray instead of bright red next to green switches. */
+.wenpai-app[data-wenpai-product="wei-alipay"] .btn-ghost {
+  color: var(--wenpai-ink-2);
+}
+
+.wenpai-app[data-wenpai-product="wei-alipay"] .btn-ghost:hover {
+  color: var(--wenpai-ink);
+}
+
 /* Switches use Weixiaoduo green in default mode so butterfly red stays < 5%. */
 body.wei-alipay-admin .wenpai-switch__input:checked + .wenpai-switch__track {
   background: var(--wenpai-ok);
@@ -138,19 +164,16 @@ body.wei-alipay-admin :is(.wenpai-native .notice, .notice.wenpai-native).info {
   object-fit: cover;
 }
 
-.wei-alipay-palette-form {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--wenpai-space-3);
-  padding-top: var(--wenpai-space-3);
-  border-top: 1px solid var(--wenpai-line-soft);
+.wei-alipay-avatar.is-broken {
+  display: none;
 }
 
-.wei-alipay-palette-form__label {
-  font-size: var(--wenpai-text-meta);
-  color: var(--wenpai-ink-2);
+.wei-alipay-palette-form {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--wenpai-space-2);
+  margin: 0;
 }
 
 .wei-alipay-table-wrap {
@@ -222,8 +245,42 @@ body.wei-alipay-admin :is(.wenpai-native .notice, .notice.wenpai-native).info {
   vertical-align: middle;
 }
 
+.wei-alipay-shell-root .wp-list-table tbody tr:last-child td,
+.wei-alipay-shell-root .wp-list-table tbody tr:last-child th {
+  border-bottom: 0;
+}
+
 .wei-alipay-shell-root .wp-list-table.striped > tbody > :nth-child(odd) {
   background: transparent;
+}
+
+/* Balanced fixed-table column widths for Webhook Logs. */
+.wei-alipay-shell-root .wei-alipay-webhooks-table .check-column {
+  width: 2.5rem;
+}
+
+.wei-alipay-shell-root .wei-alipay-webhooks-table thead th:nth-child(2) {
+  width: 5.5rem;
+}
+
+.wei-alipay-shell-root .wei-alipay-webhooks-table thead th:nth-child(3) {
+  width: 22%;
+}
+
+.wei-alipay-shell-root .wei-alipay-webhooks-table thead th:nth-child(4) {
+  width: 20%;
+}
+
+.wei-alipay-shell-root .wei-alipay-webhooks-table thead th:nth-child(5) {
+  width: 6rem;
+}
+
+.wei-alipay-shell-root .wei-alipay-webhooks-table thead th:nth-child(6) {
+  width: 5rem;
+}
+
+.wei-alipay-shell-root .wei-alipay-webhooks-table thead th:nth-child(7) {
+  width: 10.5rem;
 }
 
 .wei-alipay-shell-root .wei-alipay-reconcile-results summary {

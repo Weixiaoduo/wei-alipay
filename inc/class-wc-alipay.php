@@ -260,7 +260,7 @@ class WC_Alipay extends WC_Payment_Gateway
                     __( 'App ID from Alipay Open Platform. %s', 'wei-alipay'),
                     '<a href="https://openhome.alipay.com/platform/developerIndex.htm" target="_blank" rel="noopener noreferrer">' . __( 'Open Alipay Open Platform', 'wei-alipay') . '</a>'
                 ),
-                'placeholder' => '2016043001352080',
+                'placeholder' => '2021000000000000',
                 'desc_tip' => false,
             ),
             'seller_id' => array(
@@ -365,7 +365,7 @@ class WC_Alipay extends WC_Payment_Gateway
         // 将“支付增强功能”分组提前到“环境与调试”之后
         $this->add_payment_enhancement_settings();
 
-        // 后续是“高级设置”和“订阅与自动续费（实验性）”
+        // 高级设置（汇率 + 连接测试，确保分组永不为空）
         $this->form_fields = array_merge(
             $this->form_fields,
             array(
@@ -376,45 +376,6 @@ class WC_Alipay extends WC_Payment_Gateway
                 ),
             )
         );
-
-            // Subscriptions & Auto-renew (Experimental)
-
-        // 订阅与自动续费（实验性）分组与字段
-        $this->form_fields['subscriptions_title'] = array(
-            'title' => __( 'Subscriptions and automatic renewal (experimental)', 'wei-alipay'),
-            'type'  => 'title',
-            'description' => __( 'Supports automatic renewal for WooCommerce Subscriptions after an Alipay agreement debit product is active.', 'wei-alipay'),
-        );
-        $this->form_fields['enable_auto_renew'] = array(
-            'title' => __( 'Enable automatic renewal', 'wei-alipay'),
-            'type'  => 'checkbox',
-            'label' => __( 'Renew subscriptions using Alipay agreement debit', 'wei-alipay'),
-            'default' => 'no',
-        );
-        $this->form_fields['agreement_product_code'] = array(
-            'title' => __( 'Agreement debit product code', 'wei-alipay'),
-            'type'  => 'text',
-            'default' => 'CYCLE_PAY_AUTH',
-            'description' => __( 'Product code used for signing and agreement debit. Enabled products vary by merchant and may be overridden with a filter.', 'wei-alipay'),
-            'desc_tip' => true,
-        );
-        $this->form_fields['auto_renew_subject_prefix'] = array(
-            'title' => __( 'Renewal order title prefix', 'wei-alipay'),
-            'type'  => 'text',
-            'default' => __( 'Subscription renewal', 'wei-alipay'),
-        );
-        
-        // 仅当安装并启用了 WooCommerce Subscriptions 时，展示自动续费设置
-        if ( ! ( class_exists('WC_Subscriptions') || function_exists('wcs_order_contains_subscription') || function_exists('wcs_is_subscription') ) ) {
-            unset(
-                $this->form_fields['enable_auto_renew'],
-                $this->form_fields['agreement_product_code'],
-                $this->form_fields['auto_renew_subject_prefix']
-            );
-            if ( isset( $this->form_fields['subscriptions_title'] ) ) {
-                $this->form_fields['subscriptions_title']['description'] = __( 'WooCommerce Subscriptions must be installed and enabled to set up auto-renewal.', 'wei-alipay' );
-            }
-        }
 
         if (!in_array($this->current_currency, $this->supported_currencies, true)) {
             $current_rate = $this->get_option('exchange_rate', '7.0');
@@ -438,13 +399,40 @@ class WC_Alipay extends WC_Payment_Gateway
                 'desc_tip' => $description,
             );
         }
-        
+
         $this->form_fields['test_connection'] = array(
             'title' => __( 'Test connection', 'wei-alipay'),
             'type' => 'test_connection',
             'description' => __( 'Send a test query to the configured Alipay environment.', 'wei-alipay'),
             'desc_tip' => false,
         );
+
+        // 仅当安装并启用了 WooCommerce Subscriptions 时，展示自动续费设置，避免出现空分组标题
+        if ( class_exists('WC_Subscriptions') || function_exists('wcs_order_contains_subscription') || function_exists('wcs_is_subscription') ) {
+            $this->form_fields['subscriptions_title'] = array(
+                'title' => __( 'Subscriptions and automatic renewal (experimental)', 'wei-alipay'),
+                'type'  => 'title',
+                'description' => __( 'Supports automatic renewal for WooCommerce Subscriptions after an Alipay agreement debit product is active.', 'wei-alipay'),
+            );
+            $this->form_fields['enable_auto_renew'] = array(
+                'title' => __( 'Enable automatic renewal', 'wei-alipay'),
+                'type'  => 'checkbox',
+                'label' => __( 'Renew subscriptions using Alipay agreement debit', 'wei-alipay'),
+                'default' => 'no',
+            );
+            $this->form_fields['agreement_product_code'] = array(
+                'title' => __( 'Agreement debit product code', 'wei-alipay'),
+                'type'  => 'text',
+                'default' => 'CYCLE_PAY_AUTH',
+                'description' => __( 'Product code used for signing and agreement debit. Enabled products vary by merchant and may be overridden with a filter.', 'wei-alipay'),
+                'desc_tip' => true,
+            );
+            $this->form_fields['auto_renew_subject_prefix'] = array(
+                'title' => __( 'Renewal order title prefix', 'wei-alipay'),
+                'type'  => 'text',
+                'default' => __( 'Subscription renewal', 'wei-alipay'),
+            );
+        }
     }
 
     /**
@@ -1104,32 +1092,35 @@ class WC_Alipay extends WC_Payment_Gateway
             wc_back_link( __( 'Return to Wei Alipay', 'wei-alipay' ), admin_url( 'admin.php?page=wei-alipay&view=payments' ) );
         }
         echo '</h3>';
-        echo '<p>' . esc_html(__('Alipay is a simple, secure and fast online payment method.', 'wei-alipay')) . '</p>';
+        $subs_available = ( class_exists('WC_Subscriptions') || function_exists('wcs_order_contains_subscription') || function_exists('wcs_is_subscription') );
+        echo '<p>' . esc_html(__('Alipay is a simple, secure and fast online payment method.', 'wei-alipay')) . ' ';
+        echo wp_kses_post(
+            sprintf(
+                /* translators: %1$s: link to the official documentation */
+                __( 'Need help configuring the gateway? See the %1$s.', 'wei-alipay' ),
+                '<a href="https://www.weixiaoduo.com/document/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'official documentation', 'wei-alipay' ) . '</a>'
+            )
+        );
+        echo '</p>';
         
-		echo '<nav class="nav-tab-wrapper wei-alipay-settings-tabs" aria-label="' . esc_attr__( 'Gateway settings sections', 'wei-alipay' ) . '">';
-		foreach ( array(
+		$section_tabs = array(
 			'wei-alipay-section-tools'                     => __( 'Endpoints', 'wei-alipay' ),
 			'woocommerce_alipay_basic_settings_title'      => __( 'Basic', 'wei-alipay' ),
 			'woocommerce_alipay_alipay_config_title'       => __( 'Credentials', 'wei-alipay' ),
 			'woocommerce_alipay_environment_title'         => __( 'Environment', 'wei-alipay' ),
 			'woocommerce_alipay_payment_enhancement_title' => __( 'Reliability', 'wei-alipay' ),
 			'woocommerce_alipay_advanced_settings_title'   => __( 'Advanced', 'wei-alipay' ),
-			'woocommerce_alipay_subscriptions_title'       => __( 'Subscriptions', 'wei-alipay' ),
-		) as $section_id => $section_label ) {
+		);
+		if ( $subs_available ) {
+			$section_tabs['woocommerce_alipay_subscriptions_title'] = __( 'Subscriptions', 'wei-alipay' );
+		}
+		echo '<nav class="nav-tab-wrapper wei-alipay-settings-tabs" aria-label="' . esc_attr__( 'Gateway settings sections', 'wei-alipay' ) . '">';
+		foreach ( $section_tabs as $section_id => $section_label ) {
 			echo '<a class="nav-tab" href="#' . esc_attr( $section_id ) . '">' . esc_html( $section_label ) . '</a>';
 		}
 		echo '</nav>';
 
 		echo '<section class="wei-alipay-settings-notices" aria-label="' . esc_attr__( 'Gateway notifications', 'wei-alipay' ) . '">';
-		echo '<div class="notice notice-info inline wei-alipay-settings-notice" role="status"><p>';
-		echo wp_kses_post(
-			sprintf(
-				/* translators: %1$s: link to the official documentation */
-				__( 'Need help configuring the gateway? See the %1$s.', 'wei-alipay' ),
-				'<a href="https://www.weixiaoduo.com/document/" target="_blank" rel="noopener noreferrer">' . esc_html__( 'official documentation', 'wei-alipay' ) . '</a>'
-			)
-		);
-		echo '</p></div>';
 		Wei_Alipay_Secret_Store::render_health_notice();
 		if ( $this->requires_exchange_rate() && ! $this->exchange_rate ) {
 			$this->missing_exchange_rate_notice();
@@ -1146,7 +1137,6 @@ class WC_Alipay extends WC_Payment_Gateway
         echo '<button type="button" class="button" data-wei-copy="#wei-alipay-notify-url">' . esc_html__( 'Copy', 'wei-alipay' ) . '</button></p>';
 
         // 若支持订阅，展示签约相关端点
-        $subs_available = ( class_exists('WC_Subscriptions') || function_exists('wcs_order_contains_subscription') || function_exists('wcs_is_subscription') );
         if ( $subs_available ) {
             $start_url   = WC()->api_request_url( 'WC_Alipay_Agreement_Start' );
             $notify_agre = WC()->api_request_url( 'WC_Alipay_Agreement_Notify' );

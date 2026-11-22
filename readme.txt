@@ -3,7 +3,7 @@ Contributors: weixiaoduo
 Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 4.3.0
+Stable tag: 4.3.1
 Requires PHP: 7.4
 WC requires at least: 8.3
 WC tested up to: 10.9.4
@@ -69,6 +69,11 @@ They must not be. Sensitive settings are encrypted where supported and logging i
 No. Availability depends on the merchant agreement, store configuration, and module-specific acceptance evidence.
 
 == Changelog ==
+
+= 4.3.1 =
+* Refined standalone admin UI across Overview, Payment Methods, Reconciliation, Webhook Logs, Account, and Help: equal-height 2/3-column cards, removed developer jargon and duplicated panels, unified payment/local-tools save action, fixed avatar fallback and webhook column widths.
+* Decluttered WooCommerce Alipay gateway settings: conditional public-key vs certificate textarea visibility, collapsible reliability parameters, removed empty sections and hardcoded sample AppID.
+* Updated WooCommerce Checkout Blocks asset versions to 4.3.1.
 
 = 4.3.0 =
 * 自动更新器：改走共用文派更新服务器（`wenpai-bridge`）`/api/v1/update-check` 与 `/api/v1/plugins/{slug}` 协议，域名继续使用 `updates.weixiaoduo.com`，放行 `updates.weixiaoduo.com` 与 `downloads.feicode.com` 下载源，并在过渡期对 `/api/v1` 返回 404 自动回退读取 `/{slug}.json`

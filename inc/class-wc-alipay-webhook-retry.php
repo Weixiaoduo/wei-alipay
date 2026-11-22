@@ -502,7 +502,7 @@ class WC_Alipay_Webhook_Retry {
 				<button type="submit" class="btn btn-secondary" data-wei-confirm="<?php echo esc_attr__( 'Retry the selected webhook records now?', 'wei-alipay' ); ?>"><?php esc_html_e( '重试所选', 'wei-alipay' ); ?></button>
 			</div>
 
-			<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped">
+			<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped wei-alipay-webhooks-table">
 				<thead>
 					<tr>
 						<td class="check-column"><input type="checkbox" id="wei-alipay-select-all" aria-label="<?php echo esc_attr__( 'Select all webhook records', 'wei-alipay' ); ?>" /></td>
@@ -578,9 +578,16 @@ class WC_Alipay_Webhook_Retry {
 		</form>
 		<?php
 		if ( $use_shell ) {
-			Wenpai_Admin_UI::card_close();
-			Wenpai_Admin_UI::card_open( array( 'tile' => false, 'title' => __( '重试与保留策略', 'wei-alipay' ) ) );
-			echo '<div class="simple-row"><span class="tile">' . Wenpai_Admin_Icons::svg( 'shield-check' ) . '</span><div><div class="t">' . esc_html__( '自动重试范围与日志清理规则', 'wei-alipay' ) . '</div><div class="d">' . esc_html( sprintf( __( '仅对并发通知锁与临时处理异常自动查单重试，日志默认保留 %d 天并每日自动清理，绝不保存签名与私钥。', 'wei-alipay' ), $retention_days ) ) . '</div></div><div class="r"><span class="pill ok">' . esc_html__( '已开启', 'wei-alipay' ) . '</span></div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static SVG.
+			Wenpai_Admin_UI::card_foot(
+				array(
+					'start' => true,
+					'meta'  => sprintf(
+						/* translators: %d: log retention days */
+						__( '异常通知自动查单重试，日志保留 %d 天自动清理，绝不保存签名与私钥。', 'wei-alipay' ),
+						$retention_days
+					),
+				)
+			);
 			Wenpai_Admin_UI::card_close();
 		} else {
 			echo '</div>';

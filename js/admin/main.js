@@ -21,7 +21,11 @@ jQuery( function ( $ ) {
 	} );
 
 	$( '.wei-alipay-settings-tabs' ).on( 'click', '.nav-tab', function () {
-		var target = document.querySelector( $( this ).attr( 'href' ) );
+		var href = $( this ).attr( 'href' );
+		if ( '#woocommerce_alipay_payment_enhancement_title' === href ) {
+			setReliabilityOpen( true );
+		}
+		var target = document.querySelector( href );
 		if ( target ) {
 			window.setTimeout( function () {
 				target.focus( { preventScroll: true } );
@@ -30,6 +34,101 @@ jQuery( function ( $ ) {
 	} );
 	$( window ).on( 'hashchange', updateSettingsSectionState );
 	updateSettingsSectionState();
+
+	function fieldRow( fieldId ) {
+		return $( '#' + fieldId ).closest( 'tr' );
+	}
+
+	function syncCredentialModeRows() {
+		var $mode = $( '#woocommerce_alipay_sign_credential_mode' );
+		if ( ! $mode.length ) {
+			return;
+		}
+		var isCert = 'cert' === $mode.val();
+		fieldRow( 'woocommerce_alipay_public_key' ).toggle( ! isCert );
+		fieldRow( 'woocommerce_alipay_app_public_cert' ).toggle( isCert );
+		fieldRow( 'woocommerce_alipay_alipay_public_cert' ).toggle( isCert );
+		fieldRow( 'woocommerce_alipay_alipay_root_cert' ).toggle( isCert );
+	}
+
+	var dependentFieldGroups = [
+		{
+			toggle: 'woocommerce_alipay_enable_order_query',
+			fields: [ 'woocommerce_alipay_order_query_interval', 'woocommerce_alipay_order_query_time_range' ]
+		},
+		{
+			toggle: 'woocommerce_alipay_enable_order_timeout',
+			fields: [ 'woocommerce_alipay_order_timeout' ]
+		},
+		{
+			toggle: 'woocommerce_alipay_enable_payment_polling',
+			fields: [ 'woocommerce_alipay_polling_interval', 'woocommerce_alipay_polling_max_attempts' ]
+		},
+		{
+			toggle: 'woocommerce_alipay_enable_webhook_retry',
+			fields: [ 'woocommerce_alipay_webhook_max_retries', 'woocommerce_alipay_webhook_retry_interval', 'woocommerce_alipay_webhook_log_retention' ]
+		}
+	];
+
+	function syncDependentRows() {
+		$.each( dependentFieldGroups, function ( _, group ) {
+			var $toggle = $( '#' + group.toggle );
+			if ( ! $toggle.length ) {
+				return;
+			}
+			var enabled = $toggle.is( ':checked' );
+			$.each( group.fields, function ( __, fid ) {
+				fieldRow( fid ).toggle( enabled );
+			} );
+		} );
+	}
+
+	var $reliabilityHeading = $( '#woocommerce_alipay_payment_enhancement_title' );
+	var $reliabilityTable = $reliabilityHeading.length ? $reliabilityHeading.nextAll( 'table.form-table' ).first() : $();
+	var $reliabilityToggleBtn = $();
+
+	function setReliabilityOpen( open ) {
+		if ( ! $reliabilityTable.length ) {
+			return;
+		}
+		$reliabilityTable.toggle( open );
+		if ( $reliabilityToggleBtn.length ) {
+			$reliabilityToggleBtn
+				.attr( 'aria-expanded', open ? 'true' : 'false' )
+				.text( open ? ( WooAlipay.collapse_reliability || 'Collapse advanced reliability options' ) : ( WooAlipay.expand_reliability || 'Expand advanced reliability options' ) );
+		}
+		if ( open ) {
+			syncDependentRows();
+		}
+	}
+
+	function initReliabilityDisclosure() {
+		if ( ! $reliabilityHeading.length || ! $reliabilityTable.length ) {
+			return;
+		}
+		var $desc = $reliabilityHeading.next( 'p' );
+		$reliabilityToggleBtn = $( '<button type="button" class="button button-secondary wei-alipay-disclosure-btn" aria-expanded="false"></button>' );
+		$reliabilityToggleBtn.on( 'click', function () {
+			var isOpen = 'true' === $( this ).attr( 'aria-expanded' );
+			setReliabilityOpen( ! isOpen );
+		} );
+		var $wrap = $( '<p class="wei-alipay-disclosure-wrap"></p>' ).append( $reliabilityToggleBtn );
+		if ( $desc.length ) {
+			$desc.after( $wrap );
+		} else {
+			$reliabilityHeading.after( $wrap );
+		}
+		var startOpen = '#woocommerce_alipay_payment_enhancement_title' === window.location.hash;
+		setReliabilityOpen( startOpen );
+	}
+
+	$( '#woocommerce_alipay_sign_credential_mode' ).on( 'change', syncCredentialModeRows );
+	$.each( dependentFieldGroups, function ( _, group ) {
+		$( '#' + group.toggle ).on( 'change', syncDependentRows );
+	} );
+	syncCredentialModeRows();
+	syncDependentRows();
+	initReliabilityDisclosure();
 
 	function showResult( type, message ) {
 		$( '#wei-alipay-test-result' )

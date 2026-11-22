@@ -96,3 +96,12 @@
 		font-size: var(--wei-font-size-section, 15px);
 	}
 }
+
+.wei-alipay-settings-notices:empty {
+	display: none;
+	margin: 0;
+}
+
+.wei-alipay-disclosure-wrap {
+	margin: var(--wei-space-2, 8px) 0 var(--wei-space-4, 16px);
+}

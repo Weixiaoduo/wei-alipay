@@ -5,5 +5,5 @@
 		'wp-html-entities',
 		'wp-i18n',
 	),
-	'version' => '3.1.0',
+	'version' => '4.3.1',
 );
