@@ -23,7 +23,16 @@ final class WC_Alipay_Installment_Blocks_Support extends AbstractPaymentMethodTy
 
     public function is_active() {
         $enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'no';
-        return 'yes' === $enabled;
+        if ( 'yes' !== $enabled ) {
+            return false;
+        }
+        if ( function_exists( 'WC' ) && WC() && WC()->payment_gateways() ) {
+            $gateways = WC()->payment_gateways()->payment_gateways();
+            if ( isset( $gateways['alipay_installment'] ) && method_exists( $gateways['alipay_installment'], 'is_available' ) ) {
+                return (bool) $gateways['alipay_installment']->is_available();
+            }
+        }
+        return true;
     }
 
     public function get_payment_method_script_handles() {

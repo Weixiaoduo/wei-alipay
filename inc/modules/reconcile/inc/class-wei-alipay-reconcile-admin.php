@@ -104,37 +104,12 @@ class Wei_Alipay_Reconcile_Admin {
 
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) { return; }
-        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view selection.
-        $view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'schedule';
-        $view = in_array( $view, array( 'schedule', 'manual' ), true ) ? $view : 'schedule';
+        $view = 'manual';
         echo '<div class="wrap wei-alipay-admin">';
         Wei_Alipay_Admin_UI::page_header(
             __( 'Wei Alipay Reconciliation', 'wei-alipay' ),
-            __( 'Schedule statement reconciliation or request one statement manually.', 'wei-alipay' )
+            __( 'Download a daily Alipay statement and compare it against local WooCommerce orders.', 'wei-alipay' )
         );
-        Wei_Alipay_Admin_UI::tabs(
-            array(
-                'schedule' => array(
-                    'label' => __( 'Schedule and retention', 'wei-alipay' ),
-                    'url'   => add_query_arg( array( 'page' => 'wei-alipay-reconcile-pro', 'view' => 'schedule' ), admin_url( 'admin.php' ) ),
-                ),
-                'manual'   => array(
-                    'label' => __( 'Manual reconciliation', 'wei-alipay' ),
-                    'url'   => add_query_arg( array( 'page' => 'wei-alipay-reconcile-pro', 'view' => 'manual' ), admin_url( 'admin.php' ) ),
-                ),
-            ),
-            $view,
-            __( 'Reconciliation sections', 'wei-alipay' )
-        );
-        if ( 'schedule' === $view ) {
-        echo '<form class="card wei-alipay-card-wide" action="options.php" method="post" data-wei-dirty>';
-        settings_fields( 'woo_alipay_reconcile_group' );
-        do_settings_sections( 'woo_alipay_reconcile' );
-        submit_button();
-        echo '<span data-wei-dirty-message aria-live="polite"></span>';
-        echo '</form>';
-        }
-
         if ( 'manual' === $view ) {
         echo '<h2>' . esc_html__( 'Manual reconciliation', 'wei-alipay' ) . '</h2>';
         echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Manual reconciliation downloads a statement from Alipay. It does not send a payment or refund, but it does contact the configured provider environment.', 'wei-alipay' ) . '</p></div>';

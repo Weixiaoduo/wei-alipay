@@ -357,7 +357,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order', function() {
         }
     }
 
-    wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) );
+    $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) );
     exit;
 } );
 
@@ -470,7 +470,7 @@ add_action( 'admin_post_woo_alipay_ps_compensate_from_suggestion', function() {
     if ( ! $order || $key < 0 ) { wp_safe_redirect( admin_url( 'edit.php?post_type=shop_order' ) ); exit; }
 
     $sugs = (array) $order->get_meta( '_alipay_ps_suggestions', true );
-    if ( ! isset( $sugs[ $key ] ) ) { wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) ); exit; }
+    if ( ! isset( $sugs[ $key ] ) ) { $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) ); exit; }
     $s = $sugs[ $key ];
 
     if ( ! class_exists( 'Wei_Alipay_PS_Service' ) ) {
@@ -499,7 +499,7 @@ add_action( 'admin_post_woo_alipay_ps_compensate_from_suggestion', function() {
             Wei_Alipay_PS_Service::schedule_as_job( $order_id, 'confirm', max( 30, (int) ( Wei_Alipay_PS_Service::settings()['confirm_interval'] ?? 60 ) ) );
         }
     }
-    wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) );
+    $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) );
     exit;
 } );
 
@@ -656,7 +656,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order_new_round', function() {
         }
     }
 
-    wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) );
+    $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) );
     exit;
 } );
 

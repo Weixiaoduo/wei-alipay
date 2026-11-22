@@ -20,6 +20,11 @@ $purge_current_site = static function() {
 		'woo_alipay_plugin_version',
 		'woo_alipay_schema_version',
 		'woo_alipay_secret_rollback_v1',
+		'wei_alipay_features',
+		'wei_alipay_features_version',
+		'wei_alipay_account_link',
+		'woo_alipay_webhook_schema_version',
+		'woo_alipay_reconcile_options',
 	) as $option ) {
 		delete_option( $option );
 	}
@@ -27,9 +32,15 @@ $purge_current_site = static function() {
 		'woo_alipay_check_pending_orders',
 		'woo_alipay_check_timeout_orders',
 		'woo_alipay_retry_failed_webhooks',
+		'woo_alipay_cleanup_webhook_logs',
 		'woo_alipay_ps_process_jobs',
 	) as $hook ) {
 		wp_clear_scheduled_hook( $hook );
+	}
+	global $wpdb;
+	if ( isset( $wpdb ) && is_object( $wpdb ) && isset( $wpdb->prefix ) && method_exists( $wpdb, 'query' ) ) {
+		$table = $wpdb->prefix . 'woo_alipay_webhook_logs';
+		$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- explicit uninstall purge of plugin-owned log table.
 	}
 };
 

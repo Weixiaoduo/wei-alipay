@@ -36,6 +36,7 @@ run_contracts() {
   php "$ROOT_DIR/tests/legacy-callback-hotfix-contract.php"
   php "$ROOT_DIR/tests/prod-recovery-contract.php"
   php "$ROOT_DIR/tests/w2-core-fixes-contract.php"
+  php "$ROOT_DIR/tests/w2-a2-contracts.php"
   php "$ROOT_DIR/tests/sdk-signing-contracts.php"
   php "$ROOT_DIR/tests/reconcile-details-contracts.php"
   php "$ROOT_DIR/tests/reconcile-runtime-contracts.php"

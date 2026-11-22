@@ -97,7 +97,7 @@ design_expect( false === strpos( $subscriptions_bootstrap, "add_action( 'admin_n
 
 $reconcile = design_source( $root, 'inc/modules/reconcile/inc/class-wei-alipay-reconcile-admin.php' );
 design_expect( false !== strpos( $reconcile, "'woo_alipay_reconcile_run_nonce'" ), 'manual reconciliation uses a unique nonce field name' );
-design_expect( false !== strpos( $reconcile, "array( 'schedule', 'manual' )" ), 'reconciliation separates schedule and manual tasks into URL-addressable views' );
+design_expect( false !== strpos( $reconcile, "\$view = 'manual';" ), 'reconciliation 4.1 focuses on manual statement checks without an empty schedule tab' );
 
 $gateway = design_source( $root, 'inc/class-wc-alipay.php' );
 $gateway_js = design_source( $root, 'js/admin/main.js' );

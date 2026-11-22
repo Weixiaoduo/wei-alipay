@@ -45,12 +45,10 @@ class WC_Alipay_Webhook_Retry {
 		register_activation_hook( WEI_ALIPAY_PLUGIN_FILE, array( $this, 'create_table' ) );
 		add_action( 'admin_init', array( $this, 'maybe_create_table' ) );
 		
-		// Log webhook attempts
-		add_action( 'woocommerce_api_wc_alipay', array( $this, 'log_webhook_attempt' ), 5 );
-		
-		// Schedule retry cron
+		// Schedule retry & daily retention cleanup cron (logging happens only after signature verification).
 		add_action( 'wp', array( $this, 'schedule_retry_cron' ) );
 		add_action( 'woo_alipay_retry_failed_webhooks', array( $this, 'retry_failed_webhooks' ) );
+		add_action( 'woo_alipay_cleanup_webhook_logs', array( $this, 'cleanup_old_webhook_logs' ) );
 		add_action( 'woo_alipay_webhook_processed', array( $this, 'record_processing_result' ), 10, 3 );
 		
 		// Add admin menu for webhook logs
@@ -226,12 +224,37 @@ class WC_Alipay_Webhook_Retry {
 
 	/**
 	 * Persist the outcome emitted by the main callback processor.
+	 * Unauthenticated / invalid-signature requests are never written to the database.
 	 */
 	public function record_processing_result( $out_trade_no, $success, $error = '' ) {
-		if ( !$out_trade_no ) {
+		if ( ! $out_trade_no ) {
 			return;
 		}
+		if ( ! $success && in_array( (string) $error, array( 'invalid_request', 'invalid_response_signature' ), true ) ) {
+			return;
+		}
+		$this->log_webhook_attempt();
 		$this->update_webhook_status( $out_trade_no, $success ? 'success' : 'failed', $error );
+	}
+
+	/**
+	 * Delete webhook log rows older than the configured retention period.
+	 */
+	public function cleanup_old_webhook_logs() {
+		global $wpdb;
+		$gateway        = $this->get_gateway();
+		$retention_days = $gateway ? absint( $gateway->get_option( 'webhook_log_retention', '30' ) ) : 30;
+		if ( $retention_days < 1 ) {
+			$retention_days = 30;
+		}
+		$table_name = $wpdb->prefix . self::TABLE_NAME;
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- plugin-owned operational log retention cleanup.
+			$wpdb->prepare(
+				"DELETE FROM %i WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
+				$table_name,
+				$retention_days
+			)
+		);
 	}
 
 	/**
@@ -253,6 +276,9 @@ class WC_Alipay_Webhook_Retry {
 		if ( ! wp_next_scheduled( 'woo_alipay_retry_failed_webhooks' ) ) {
 			// Retry every hour
 			wp_schedule_event( time(), 'hourly', 'woo_alipay_retry_failed_webhooks' );
+		}
+		if ( ! wp_next_scheduled( 'woo_alipay_cleanup_webhook_logs' ) ) {
+			wp_schedule_event( time(), 'daily', 'woo_alipay_cleanup_webhook_logs' );
 		}
 	}
 
@@ -350,8 +376,8 @@ class WC_Alipay_Webhook_Retry {
 		$out_trade_no = is_string( $out_trade_no ) ? trim( $out_trade_no ) : '';
 		$blog_id = preg_quote( (string) get_current_blog_id(), '/' );
 		$patterns = array(
-			'/^WooA' . $blog_id . '-(\d+)-\d+$/',
-			'/^WooA(\d+)-\d+$/',
+			'/^(?:WooA|F2F|HBFQ|WooB)' . $blog_id . '-(\d+)-\d+$/',
+			'/^(?:WooA|F2F|HBFQ|WooB)(\d+)-\d+$/',
 			'/^SubR(\d+)-\d+$/',
 		);
 		foreach ( $patterns as $pattern ) {
@@ -495,9 +521,17 @@ class WC_Alipay_Webhook_Retry {
 										<input type="checkbox" name="webhook_ids[]" value="<?php echo esc_attr( $webhook->id ); ?>" />
 									</th>
 									<td>
-										<a href="<?php echo esc_url( admin_url( 'post.php?post=' . $webhook->order_id . '&action=edit' ) ); ?>">
+										<?php
+										$linked_order = $webhook->order_id ? wc_get_order( absint( $webhook->order_id ) ) : false;
+										$edit_url     = $linked_order instanceof WC_Order ? $linked_order->get_edit_order_url() : '';
+										if ( $edit_url ) :
+											?>
+											<a href="<?php echo esc_url( $edit_url ); ?>">
+												#<?php echo esc_html( $webhook->order_id ); ?>
+											</a>
+										<?php else : ?>
 											#<?php echo esc_html( $webhook->order_id ); ?>
-										</a>
+										<?php endif; ?>
 									</td>
 									<td><?php echo esc_html( $webhook->trade_no ? $webhook->trade_no : '-' ); ?></td>
 									<td>

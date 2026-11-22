@@ -131,7 +131,8 @@ class Wei_Alipay_PS_Jobs_Admin {
             echo '<th>' . esc_html__( 'Actions', 'wei-alipay' ) . '</th>';
             echo '</tr></thead><tbody>';
             foreach ( $jobs as $job ) {
-                $edit_link = $job['order_id'] ? get_edit_post_link( (int) $job['order_id'], '' ) : '';
+                $job_order = $job['order_id'] ? wc_get_order( (int) $job['order_id'] ) : false;
+                $edit_link = $job_order instanceof WC_Order ? $job_order->get_edit_order_url() : '';
                 echo '<tr>';
                 echo '<td>' . esc_html( (string) $job['id'] ) . '</td>';
                 echo '<td>' . ( $edit_link ? '<a href=\'' . esc_url( $edit_link ) . '\'>#' . (int) $job['order_id'] . '</a>' : (int) $job['order_id'] ) . '</td>';

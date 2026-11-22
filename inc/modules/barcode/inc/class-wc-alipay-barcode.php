@@ -20,11 +20,17 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
      */
     public $debug = 'no';
 
+    /**
+     * @var string
+     */
+    private static $refund_request_id = '';
+
     public function __construct( $init_hooks = true ) {
         $this->id                 = self::GATEWAY_ID;
         $this->method_title       = __( 'Alipay Barcode Pay', 'wei-alipay' );
         $this->method_description = __( '使用支付宝条码/二维码完成当面收款（商户扫码枪或顾客出示付款码）。此网关复用 Wei Alipay 核心插件中的凭据。', 'wei-alipay' );
         $this->has_fields         = true; // 前台显示 auth_code 输入
+        $this->supports           = array( 'products', 'refunds' );
         $this->icon               = apply_filters( 'woo_alipay_barcode_icon', WEI_ALIPAY_PLUGIN_URL . 'assets/images/alipay-barcode-icon.svg' );
 
         // 配置字段与设置加载
@@ -157,7 +163,15 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
             return array( 'result' => 'failure', 'messages' => __( '请输入支付宝付款码。', 'wei-alipay' ) );
         }
 
-        $result = $this->attempt_barcode_charge( $order, $auth_code );
+        try {
+            $result = $this->attempt_barcode_charge( $order, $auth_code );
+        } finally {
+            // Erase one-time buyer payment barcode immediately after charge attempt.
+            if ( '' !== (string) $order->get_meta( '_alipay_auth_code', true ) ) {
+                $order->delete_meta_data( '_alipay_auth_code' );
+                $order->save();
+            }
+        }
         if ( is_wp_error( $result ) ) {
             wc_add_notice( $result->get_error_message(), 'error' );
             return array( 'result' => 'failure', 'messages' => $result->get_error_message() );
@@ -282,20 +296,126 @@ class WC_Alipay_Barcode_Pay extends WC_Payment_Gateway {
         return $title;
     }
 
-    // 后台 POS 元框
-    public function add_pos_metabox() {
-        add_meta_box(
-            'wc-alipay-barcode-pos',
-            __( '支付宝条码收款', 'wei-alipay' ),
-            array( $this, 'render_pos_metabox' ),
-            'shop_order',
-            'side',
-            'high'
-        );
+    /**
+     * Process an idempotent refund for a Barcode Pay order.
+     *
+     * @param int        $order_id Order ID.
+     * @param float|null $amount   Refund amount.
+     * @param string     $reason   Refund reason.
+     * @return bool|WP_Error
+     */
+    public function process_refund( $order_id, $amount = null, $reason = '' ) {
+        $order = wc_get_order( $order_id );
+        if ( ! $order || self::GATEWAY_ID !== $order->get_payment_method() ) {
+            return new WP_Error( 'invalid_order', __( '退款失败：订单或支付方式不匹配。', 'wei-alipay' ) );
+        }
+
+        /** @phpstan-ignore requireOnce.fileNotFound */
+        require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-alipay-sdk-helper.php';
+        $refund_amount = null === $amount ? $order->get_total() : $amount;
+        $amount_minor  = Alipay_SDK_Helper::amount_to_minor_units( $refund_amount );
+        $total_minor   = Alipay_SDK_Helper::amount_to_minor_units( $order->get_total() );
+        if ( false === $amount_minor || false === $total_minor || $amount_minor <= 0 || $amount_minor > $total_minor ) {
+            return new WP_Error( 'invalid_refund_amount', __( '退款金额必须大于零且不能超过订单总额。', 'wei-alipay' ) );
+        }
+        $refund_amount = Alipay_SDK_Helper::format_amount( $refund_amount );
+        $refund_reason = $reason ? sanitize_text_field( $reason ) : __( '订单退款', 'wei-alipay' );
+        $out_trade_no  = (string) $order->get_meta( '_alipay_out_trade_no' );
+        $trade_no      = (string) $order->get_transaction_id();
+        if ( '' === $out_trade_no || '' === $trade_no ) {
+            return new WP_Error( 'missing_transaction_context', __( '退款失败：缺少原始支付宝订单号或交易号。', 'wei-alipay' ) );
+        }
+
+        if ( '' === self::$refund_request_id ) {
+            $blog                    = is_multisite() ? get_current_blog_id() . '-' : '';
+            self::$refund_request_id = 'BARR-' . $blog . $order_id . '-' . current_time( 'timestamp' );
+        }
+        $request_id = self::$refund_request_id;
+        $processed  = array_values( array_filter( (array) $order->get_meta( '_alipay_processed_refund_requests', true ), 'is_string' ) );
+        if ( in_array( $request_id, $processed, true ) ) {
+            self::$refund_request_id = '';
+            return true;
+        }
+        $lock = Alipay_SDK_Helper::acquire_lock( 'refund', $request_id, 60 );
+        if ( false === $lock ) {
+            self::$refund_request_id = '';
+            return new WP_Error( 'refund_in_progress', __( '相同退款请求正在处理中。', 'wei-alipay' ) );
+        }
+
+        try {
+            /** @phpstan-ignore requireOnce.fileNotFound */
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/AopClient.php';
+            /** @phpstan-ignore requireOnce.fileNotFound */
+            require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/alipay/aop/request/AlipayTradeRefundRequest.php';
+            $core   = $this->get_core_settings();
+            $config = Alipay_SDK_Helper::get_alipay_config( array(
+                'appid'       => $core['appid'],
+                'private_key' => $core['private_key'],
+                'public_key'  => $core['public_key'],
+                'sandbox'     => $core['sandbox'],
+            ) );
+            $aop = Alipay_SDK_Helper::create_alipay_service( $config );
+            if ( ! $aop ) {
+                return new WP_Error( 'sdk_error', __( '创建支付宝服务失败', 'wei-alipay' ) );
+            }
+            $request = new AlipayTradeRefundRequest();
+            $request->setBizContent( wp_json_encode( array(
+                'out_trade_no'   => $out_trade_no,
+                'trade_no'       => $trade_no,
+                'refund_amount'  => $refund_amount,
+                'refund_reason'  => $refund_reason,
+                'out_request_no' => $request_id,
+            ) ) );
+            $response = $aop->execute( $request );
+            $node     = 'alipay_trade_refund_response';
+            $result   = isset( $response->$node ) ? $response->$node : null;
+            if ( ! is_object( $result ) || ! isset( $result->code ) || '10000' !== (string) $result->code ) {
+                $message = is_object( $result ) ? ( $result->sub_msg ?? $result->msg ?? __( '退款失败', 'wei-alipay' ) ) : __( '退款失败：支付宝返回为空。', 'wei-alipay' );
+                return new WP_Error( 'refund_failed', (string) $message );
+            }
+            if ( ! isset( $result->out_trade_no, $result->trade_no, $result->refund_fee )
+                || ! hash_equals( $out_trade_no, (string) $result->out_trade_no )
+                || ! hash_equals( $trade_no, (string) $result->trade_no )
+                || ! Alipay_SDK_Helper::amounts_equal( $refund_amount, $result->refund_fee ) ) {
+                return new WP_Error( 'refund_context_mismatch', __( '支付宝退款响应与原退款请求不匹配。', 'wei-alipay' ) );
+            }
+            $processed[] = $request_id;
+            $order->update_meta_data( '_alipay_processed_refund_requests', array_values( array_unique( $processed ) ) );
+            $order->save();
+            /* translators: %s: refunded amount */
+            $order->add_order_note( sprintf( __( '支付宝条码支付退款成功，金额：¥%s', 'wei-alipay' ), $refund_amount ) );
+            return true;
+        } catch ( Exception $e ) {
+            return new WP_Error( 'refund_exception', $e->getMessage() );
+        } finally {
+            Alipay_SDK_Helper::release_lock( 'refund', $request_id, $lock );
+            self::$refund_request_id = '';
+        }
     }
 
-    public function render_pos_metabox( $post ) {
-        $order = wc_get_order( $post->ID );
+    // 后台 POS 元框（兼容 HPOS 与传统订单屏）
+    public function add_pos_metabox() {
+        $screens = array( 'shop_order' );
+        if ( function_exists( 'wc_get_page_screen_id' ) ) {
+            $hpos_screen = wc_get_page_screen_id( 'shop-order' );
+            if ( $hpos_screen && ! in_array( $hpos_screen, $screens, true ) ) {
+                $screens[] = $hpos_screen;
+            }
+        }
+        foreach ( $screens as $screen ) {
+            add_meta_box(
+                'wc-alipay-barcode-pos',
+                __( '支付宝条码收款', 'wei-alipay' ),
+                array( $this, 'render_pos_metabox' ),
+                $screen,
+                'side',
+                'high'
+            );
+        }
+    }
+
+    public function render_pos_metabox( $post_or_order ) {
+        $order = $post_or_order instanceof WC_Order ? $post_or_order : ( is_object( $post_or_order ) && isset( $post_or_order->ID ) ? wc_get_order( $post_or_order->ID ) : false );
         if ( ! $order ) { return; }
         if ( ! current_user_can( 'manage_woocommerce' ) ) { return; }
         wp_nonce_field( 'woo_alipay_barcode_pos', 'woo_alipay_barcode_nonce' );

@@ -406,8 +406,8 @@ class Wei_Alipay_Reconcile_Runner {
         }
         $quoted_blog = preg_quote( (string) get_current_blog_id(), '/' );
         $patterns = array(
-            '/^WooA' . $quoted_blog . '-(\d+)-\d+$/',
-            '/^WooA(\d+)-\d+$/',
+            '/^(?:WooA|F2F|HBFQ|WooB)' . $quoted_blog . '-(\d+)-\d+$/',
+            '/^(?:WooA|F2F|HBFQ|WooB)(\d+)-\d+$/',
             '/^SubR(\d+)-\d+$/',
             '/^WOOAS' . $quoted_blog . '-(\d+)-\d+$/',
         );
@@ -419,7 +419,7 @@ class Wei_Alipay_Reconcile_Runner {
             }
         }
         if ( ! $order_id ) {
-            if ( preg_match( '/^WooA(\d+)-(\d+)-\d+$/', (string) $out_trade_no, $site_matches ) && (int) $site_matches[1] !== (int) get_current_blog_id() ) {
+            if ( preg_match( '/^(?:WooA|F2F|HBFQ|WooB)(\d+)-(\d+)-\d+$/', (string) $out_trade_no, $site_matches ) && (int) $site_matches[1] !== (int) get_current_blog_id() ) {
                 return array( 'order' => null, 'reason' => 'different_site' );
             }
             return array( 'order' => null, 'reason' => 'unrecognized_merchant_order_number' );

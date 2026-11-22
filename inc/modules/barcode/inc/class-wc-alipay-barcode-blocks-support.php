@@ -17,7 +17,16 @@ final class WC_Alipay_Barcode_Blocks_Support extends AbstractPaymentMethodType {
 
     public function is_active() {
         $enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'no';
-        return 'yes' === $enabled;
+        if ( 'yes' !== $enabled ) {
+            return false;
+        }
+        if ( function_exists( 'WC' ) && WC() && WC()->payment_gateways() ) {
+            $gateways = WC()->payment_gateways()->payment_gateways();
+            if ( isset( $gateways['alipay_barcode'] ) && method_exists( $gateways['alipay_barcode'], 'is_available' ) ) {
+                return (bool) $gateways['alipay_barcode']->is_available();
+            }
+        }
+        return true;
     }
 
     public function get_payment_method_script_handles() {
