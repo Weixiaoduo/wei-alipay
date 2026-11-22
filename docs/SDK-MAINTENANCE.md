@@ -86,3 +86,29 @@ licenseConcluded: NOASSERTION
 - 不未经依赖分析删除未显式 `require_once` 的 domain/model；
 - 不用真实商城私钥或真实交易验证升级；
 - 不因官方仓库公开就推定许可证允许再分发。
+
+## 生产切换事故后的新增门禁
+
+2026-08-20 的旧基线 `d135d67` 与 4.0.0 候选 `6698292` 的 `lib/alipay` tree 均为 `360df6e71c509eeeb872cdaf1f1855dd6b422c1f`。因此，该次切换不能描述为“随 4.0.0 更新了 SDK”；实际变化包括插件入口、密钥存储与运行时解密、支付模块、回调与输出过滤。历史 SDK 更新必须与本次切换分开归因。
+
+“密钥已迁移且可解密”只证明密文容器能够还原字节，不证明这些字节：
+
+- 是当前支付宝应用对应的私钥；
+- 符合当前 SDK 所接受的 PKCS#1/PKCS#8 或证书模式格式；
+- 能生成非空 RSA2 `sign`；
+- 与支付宝开放平台当前登记的应用公钥组成同一密钥对；
+- 能通过支付宝网关的应用、商户和证书绑定。
+
+以后涉及 SDK、密钥存储、插件目录或主网关切换时，必须分别记录并验证：
+
+1. SDK tree hash、来源提交、补丁和依赖清单；
+2. 密钥容器版本、解密状态、格式识别和仅指纹化的密钥对一致性；
+3. 使用临时密钥执行离线 `生成参数 → 非空 sign → RSA2 验签`；
+4. 使用受限生产预检执行“当前私钥对应公钥指纹”比对，不打印密钥；
+5. 生成支付表单后断言 `app_id`、`out_trade_no`、`total_amount`、`sign_type` 和 `sign` 非空；
+6. 无生产密钥的支付宝沙箱验收；
+7. 经单独审批的小额生产 canary。没有该审批时写 `BLOCKED`，不得以后台 HTTP 200 替代。
+
+当前内置 `AopClient` 会把配置值包装为 `RSA PRIVATE KEY`。后续 SDK 适配器应明确支持的密钥格式、规范化输入，并用可处理的错误对象失败关闭；不得用 `die()` 终止整个结账请求。该适配器变更需独立评审，不能在事故文档提交中顺手修改。
+
+执行门见 `docs/governance/payment-gateway-production-cutover-sop.md`；事故证据、边界和纠正措施见 `docs/audits/wei-alipay-production-cutover-incident-2026-08-21.md`。离线签名契约由 `tests/sdk-signing-contracts.php` 固化。

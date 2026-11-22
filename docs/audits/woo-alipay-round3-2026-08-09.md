@@ -1,5 +1,7 @@
 # Woo Alipay PR #1 third-round closure
 
+> Historical naming note (2026-09-03): the current product and repository name is `Wei Alipay` / `Weixiaoduo/wei-alipay`. Old names below identify the original PR, paths and packages and are not current canonical identifiers.
+
 Status: `[CX]` candidate only. Do not merge, deploy, release, or connect it to a real Alipay endpoint.
 
 ## Mini-program legacy MD5 migration

@@ -9,7 +9,7 @@ class Wei_Alipay_PS_Order_Admin {
     public function add_metabox() {
         add_meta_box(
             'woo_alipay_ps_box',
-            __( 'Alipay Profit Sharing', 'wei-alipay' ),
+            __( 'Wei Alipay Profit Sharing', 'wei-alipay' ),
             array( $this, 'render_box' ),
             'shop_order',
             'side',

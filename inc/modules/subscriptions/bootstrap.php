@@ -17,20 +17,14 @@ add_action( 'init', function() {
     }
 
     if ( ! function_exists( 'wcs_is_subscription' ) && ! class_exists( 'WC_Subscriptions' ) && ! class_exists( 'WC_Subscription' ) ) {
-        if ( is_admin() ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay Subscriptions 需要 WooCommerce Subscriptions 插件支持。', 'wei-alipay' ) . '</p></div>';
-            } );
-        }
+        // The feature centre renders the dependency beside the disabled control.
+        // A global admin notice duplicates that state and obscures unrelated pages.
         return;
     }
 
     if ( ! class_exists( 'WC_Alipay' ) ) {
-        if ( is_admin() ) {
-            add_action( 'admin_notices', function() {
-                echo '<div class="notice notice-warning"><p>' . esc_html__( '请先安装并启用 Wei Alipay 核心插件。', 'wei-alipay' ) . '</p></div>';
-            } );
-        }
+        // The bundled module never owns a global notice. Its parent plugin or
+        // feature screen is responsible for presenting dependency state.
         return;
     }
 

@@ -25,7 +25,6 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         self::$log_enabled = ( 'yes' === $this->get_option( 'debug', 'no' ) );
 
         add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-        add_action( 'admin_notices', array( $this, 'requirement_checks' ) );
 
         if ( is_admin() ) {
             add_action( 'add_meta_boxes', array( $this, 'add_authorization_metabox' ) );
@@ -104,8 +103,19 @@ class WC_Alipay_Fund_Auth extends WC_Payment_Gateway {
         $missing = $this->get_missing_core_fields();
         if ( ! empty( $missing ) ) {
             /* translators: %s: comma-separated list of missing configuration field names */
-            echo '<div class="error"><p>' . esc_html( sprintf( __( 'Alipay fund auth requires core credentials. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing ) ) ) . '</p></div>';
+            echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html( sprintf( __( 'Alipay fund auth requires core credentials. Missing fields: %s', 'wei-alipay' ), implode( ', ', $missing ) ) ) . '</p></div>';
         }
+    }
+
+    public function admin_options() {
+        echo '<h3>' . esc_html( $this->method_title ) . '</h3>';
+        echo '<p>' . esc_html( $this->method_description ) . '</p>';
+        echo '<section class="wei-alipay-settings-notices" aria-label="' . esc_attr__( 'Gateway notifications', 'wei-alipay' ) . '">';
+        $this->requirement_checks();
+        echo '</section>';
+        echo '<table class="form-table">';
+        $this->generate_settings_html();
+        echo '</table>';
     }
 
     private function get_core_settings() {

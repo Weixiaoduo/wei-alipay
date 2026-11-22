@@ -34,7 +34,7 @@ return array(
     ),
     'secure_key' => array(
         'title'       => __('Alipay Security Code/Key', 'wei-alipay'),
-        'type'        => 'text',
+        'type'        => 'password',
         'description' => __('Please enter the 32 characters Security Code(Or Security Key) assigned by Alipay when you opened your Alipay account. <br />This security code is also known as "Security Key for the MD5 signature mechanism"', 'wei-alipay'),
         'css'         => 'width:400px'
     ),

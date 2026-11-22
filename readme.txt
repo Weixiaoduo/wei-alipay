@@ -3,7 +3,7 @@ Contributors: weixiaoduo
 Tags: alipay, payments, payment gateway, woocommerce, china
 Requires at least: 6.6
 Tested up to: 7.0
-Stable tag: 4.0.1
+Stable tag: 4.1.0
 Requires PHP: 7.4
 WC requires at least: 8.3
 WC tested up to: 10.9.4
@@ -18,7 +18,7 @@ Wei Alipay Payment Gateway for WooCommerce integrates Mainland China Alipay paym
 
 The primary gateway supports desktop and mobile web payments, RSA2 signing and notification verification, replay-safe callbacks, WooCommerce refunds, CNY conversion, High-Performance Order Storage (HPOS), and Checkout Blocks.
 
-Optional modules for face-to-face QR, Huabei instalments, barcode/POS, mini-program, cross-border, subscriptions, fund authorization, profit sharing, and reconciliation are bundled. Enable an optional module only when the merchant account is entitled to that product and the flow has been tested in an isolated sandbox or offline fixture.
+Optional modules for face-to-face QR, Huabei instalments, barcode/POS, mini-program, cross-border, subscriptions, fund authorization, profit sharing, webhook retry, and reconciliation are bundled. Select them explicitly under Wei Alipay > Features. Disabled modules do not register their payment method, administration pages, or normal background processing, and their retained settings and transaction history are not deleted. Enable an optional module only when the merchant account is entitled to that product and the flow has been tested in an isolated sandbox or offline fixture.
 
 = Security and operational notes =
 
@@ -36,7 +36,7 @@ Requires PHP 7.4+, WordPress 6.6+, and WooCommerce 8.3+. The 4.0.1 candidate was
 
 = Source and support =
 
-Wei Alipay is developed by Weixiaoduo.com. FeiCode is the canonical development upstream. The current `Weixiaoduo/woo-alipay` GitHub repository is a downstream mirror. After an approved remote rename, its target name is `Weixiaoduo/wei-alipay`; only approved FeiCode commits may be synchronized.
+Wei Alipay is developed by Weixiaoduo.com. FeiCode `Weixiaoduo/wei-alipay` is the canonical development upstream, and GitHub `Weixiaoduo/wei-alipay` is a downstream mirror. The former `woo-alipay` name is retained only in historical references and stable runtime compatibility identifiers; only approved FeiCode commits may be synchronized.
 
 The project preserves applicable upstream copyright and license notices. Third-party component provenance and license status are recorded in the package SBOM.
 
@@ -44,8 +44,8 @@ The project preserves applicable upstream copyright and license notices. Third-p
 
 1. Install the release ZIP from the WordPress Plugins screen.
 2. Activate WooCommerce, then activate Wei Alipay.
-3. Open WooCommerce > Settings > Payments > Alipay.
-4. Enter the Alipay application ID, Alipay public key, and merchant application private key.
+3. Open Wei Alipay > Features and select only the optional products the merchant is entitled to use.
+4. Open WooCommerce > Settings > Payments > Alipay and enter the Alipay application ID, Alipay public key, and merchant application private key. Optional payment methods require a second configuration and enablement step in WooCommerce.
 5. Use Alipay sandbox for the first integration test.
 6. Configure the asynchronous notification URL as `https://example.com/wc-api/WC_Alipay/`.
 7. Verify order creation, signed notification handling, exact replay, amount mismatch rejection, and an offline or sandbox refund before production approval.

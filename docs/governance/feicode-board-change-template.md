@@ -1,16 +1,15 @@
-# [CX] Wei Alipay 4.0.0 rename candidate change
+# [CX] Wei Alipay candidate change template
 
 ## Requested writes
 
 Each write requires a Board record bound to the exact reviewed SHA.
 
-1. Push the exact local HEAD from cx/wei-alipay-4.0.0 to a new FeiCode review branch in the existing canonical repository Weixiaoduo/woo-alipay.
+1. Push the exact local HEAD from an isolated `wei-alipay` worktree to a new FeiCode review branch in the canonical repository `Weixiaoduo/wei-alipay`.
 2. Run candidate CI for that exact SHA and review the resulting pull request.
-3. After candidate acceptance, rename the FeiCode repository to Weixiaoduo/wei-alipay.
-4. Rename the GitHub repository to Weixiaoduo/wei-alipay and configure a repository-scoped deploy key.
-5. Only after an approved merge to FeiCode master, manually run sync-github-downstream with the approved master SHA and Board change ID.
+3. Only after an approved merge to FeiCode master, manually run `sync-github-downstream` to GitHub `Weixiaoduo/wei-alipay` with the approved master SHA and Board change ID.
+4. Keep repository rename, branch push, CI approval, merge, tag, release, public mirror synchronization, and mall deployment as separate writes. Approval of one does not authorize another.
 
-Repository rename, branch push, CI approval, merge, tag, release, public mirror synchronization, and mall deployment are separate writes. Approval of one does not authorize another.
+The former repository name `Weixiaoduo/woo-alipay` is historical evidence only. Do not recreate it as a second repository or use it as a current release target.
 
 ## Prohibited operations
 

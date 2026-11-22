@@ -1,62 +1,87 @@
 /* global WooAlipay */
-jQuery( document ).ready( function( $ ) {
+jQuery( function ( $ ) {
+	'use strict';
 
+	function updateSettingsSectionState() {
+		var hash = window.location.hash || '#wei-alipay-section-tools';
+		$( '.wei-alipay-settings-tabs .nav-tab' ).each( function () {
+			var isCurrent = $( this ).attr( 'href' ) === hash;
+			if ( isCurrent ) {
+				$( this ).attr( 'aria-current', 'location' );
+			} else {
+				$( this ).removeAttr( 'aria-current' );
+			}
+		} );
+	}
+	$( '.wei-alipay-settings-tabs .nav-tab' ).each( function () {
+		var target = document.querySelector( $( this ).attr( 'href' ) );
+		if ( target && ! target.hasAttribute( 'tabindex' ) ) {
+			target.setAttribute( 'tabindex', '-1' );
+		}
+	} );
 
-	$( '#wei-alipay-test-connection, #woo_alipay_test_connection' ).on( 'click', function( e ) {
-		e.preventDefault();
+	$( '.wei-alipay-settings-tabs' ).on( 'click', '.nav-tab', function () {
+		var target = document.querySelector( $( this ).attr( 'href' ) );
+		if ( target ) {
+			window.setTimeout( function () {
+				target.focus( { preventScroll: true } );
+			}, 0 );
+		}
+	} );
+	$( window ).on( 'hashchange', updateSettingsSectionState );
+	updateSettingsSectionState();
 
-		var spinner      = $('.wei-alipay-settings .spinner'),
-			failure      = $('.wei-alipay-settings .test-status .failure, .wei-alipay-settings .test-status-message.failure'),
-			error        = $('.wei-alipay-settings .test-status .error, .wei-alipay-settings .test-status-message.error'),
-			success      = $('.wei-alipay-settings .test-status .success, .wei-alipay-settings .test-status-message.success'),
-			help         = $('.wei-alipay-settings .description.help'),
-			testResult   = $('#wei-alipay-test-result'),
-			data         = {
-			nonce : $('#woo_alipay_nonce').val(),
-			action: 'woo_alipay_test_connection'
-		};
+	function showResult( type, message ) {
+		$( '#wei-alipay-test-result' )
+			.removeAttr( 'hidden' )
+			.removeClass( 'notice-success notice-error' )
+			.addClass( 'success' === type ? 'notice-success' : 'notice-error' )
+			.empty()
+			.append( $( '<p>' ).text( message ) );
+	}
 
-		spinner.addClass('is-active');
-		failure.removeClass('is-active');
-		error.removeClass('is-active');
-		success.removeClass('is-active');
-		testResult.hide().removeClass('success error');
+	$( '#wei-alipay-test-connection' ).on( 'click', function () {
+		var button = $( this );
+		var spinner = $( '.wei-alipay-settings .spinner' );
+		button.prop( 'disabled', true );
+		spinner.addClass( 'is-active' );
+		$( '#wei-alipay-test-result' ).attr( 'hidden', true );
 
 		$.ajax( {
 			url: WooAlipay.ajax_url,
 			type: 'POST',
-			data: data
-		} ).done( function( response ) {
-			spinner.removeClass('is-active');
-			window.console.log( response );
-
-			if ( response.success ) {
-				success.addClass('is-active');
-				help.removeClass('is-active');
-				testResult.addClass('success').html('连接测试成功！支付宝网关配置正确。').show();
-			} else {
-				if ( response.data ) {
-					error.addClass('is-active');
-					help.removeClass('is-active');
-					var errorMessage = typeof response.data === 'string' ? response.data : 
-						(response.data.message || '配置错误或网络问题');
-					testResult.addClass('error').html('连接测试失败：' + errorMessage).show();
-				} else {
-					failure.addClass('is-active');
-					help.removeClass('is-active');
-					testResult.addClass('error').html('连接测试失败：网络错误或配置问题。').show();
-				}
+			data: {
+				nonce: $( '#woo_alipay_nonce' ).val(),
+				action: 'woo_alipay_test_connection'
 			}
-		} ).fail( function( qXHR, textStatus ) {
-			WooAlipay.debug && window.console.log( textStatus );
-			spinner.removeClass('is-active');
-			success.removeClass('is-active');
-			help.removeClass('is-active');
-			failure.addClass('is-active');
-			testResult.addClass('error').html('连接测试失败：网络请求失败。').show();
+		} ).done( function ( response ) {
+			if ( response.success ) {
+				showResult( 'success', WooAlipay.connection_success );
+				return;
+			}
+			var serverMessage = response.data && 'string' === typeof response.data ? response.data : '';
+			showResult( 'error', serverMessage ? WooAlipay.connection_failed + ': ' + serverMessage : WooAlipay.connection_failed );
+		} ).fail( function () {
+			showResult( 'error', WooAlipay.connection_network_error );
+		} ).always( function () {
+			spinner.removeClass( 'is-active' );
+			button.prop( 'disabled', false );
 		} );
 	} );
 
-
-
+	$( document ).on( 'click', '[data-wei-copy]', function () {
+		var button = this;
+		var target = document.querySelector( button.dataset.weiCopy );
+		if ( ! target || ! navigator.clipboard ) {
+			window.alert( WooAlipay.copy_failed ); // eslint-disable-line no-alert
+			return;
+		}
+		navigator.clipboard.writeText( target.textContent ).then( function () {
+			var original = button.textContent;
+			button.textContent = WooAlipay.copied;
+			window.setTimeout( function () { button.textContent = original; }, 1500 );
+		} ).catch( function () {
+			window.alert( WooAlipay.copy_failed ); // eslint-disable-line no-alert
+		} );
+	} );
 } );

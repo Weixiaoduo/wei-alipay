@@ -1,5 +1,7 @@
 # [CX] Woo Alipay 3.2.0 release-closure audit
 
+> Historical naming note (2026-09-03): the current product and repository name is `Wei Alipay` / `Weixiaoduo/wei-alipay`. Old names below identify the original candidate, paths and CI evidence and are not current canonical identifiers.
+
 ## Supported candidate matrix
 
 | Surface | Minimum / mode | Candidate claim |

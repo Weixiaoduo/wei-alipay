@@ -12,6 +12,8 @@
 
 不得从 Mac 临时副本、目录名、组织名或公开镜像推断当前上游、发布或生产状态。
 
+涉及后台页面、通知、表单或响应式布局时，还必须读取 `DESIGN.md` 与 `docs/ADMIN-UI-ENGINEERING.md`。不能只凭单张桌面截图写样式，也不能通过全局 CSS 或全局 notice hook 修补局部页面。
+
 ## 启动清单
 
 ```bash
@@ -47,8 +49,8 @@ developer: Weixiaoduo.com
 candidate_version: 4.0.1
 package_slug: wei-alipay
 text_domain: wei-alipay
-canonical_upstream: FeiCode Weixiaoduo organization
-public_downstream: GitHub Weixiaoduo/woo-alipay (planned rename to Weixiaoduo/wei-alipay)
+canonical_upstream: FeiCode Weixiaoduo/wei-alipay
+public_downstream: GitHub Weixiaoduo/wei-alipay
 minimum:
   php: "7.4"
   wordpress: "6.6"
@@ -59,9 +61,16 @@ stable_financial_identities:
   order_meta: _alipay_*
   callback: wc-api/WC_Alipay/
   schedules_hooks: woo_alipay_*
+feature_center:
+  route: admin.php?page=wei-alipay
+  allowlist_option: wei_alipay_features
+  default: explicit_existing_enablement_only
+  disable_policy: preserve_settings_orders_and_history
 ```
 
-产品名和包名可以整理；稳定财务身份不能在没有迁移、克隆站验收和回滚时更改。
+产品名、包名、仓名和当前路径统一使用 `wei-alipay`；历史文档可保留旧仓名作为证据。稳定财务身份不能在没有迁移、克隆站验收和回滚时更改。
+
+主 `alipay` 网关始终注册。可选支付方式和运营工具只有进入功能白名单后才允许加载；不得绕过功能中心批量启用。功能开关只决定模块注册，支付方式仍需在 WooCommerce 完成配置和第二步启用。后台设计依据及可复现 token 清单见 `docs/design/woopayments-admin-design-reference.md` 和 `docs/design/woopayments-admin-tokens.json`。
 
 ## 代码所有权边界
 
@@ -96,6 +105,19 @@ composer validate --strict
 每项结果使用 `PASS`、`FAIL`、`SKIP` 或 `BLOCKED`，并写样本数、版本、命令和退出码。零样本不能写 PASS；HTTP 200、候选 ZIP、旧 CI 或 PR 存在都不能替代业务验收。
 
 最小支付测试集包括：签名有效/无效、RSA 降级、异常编码、过期/未来通知、金额精度、`app_id`/卖家/订单/交易绑定、跨订单伪造、精确/并发重放、成功/关闭乱序、退款幂等、HPOS on/off、Blocks、Multisite 生命周期。
+
+## 支付切换与事故任务
+
+任务命中“生产切换、SDK、密钥迁移、签名、missing-signature、回调、订单误改、退款”任一关键词时，先读：
+
+1. `docs/governance/payment-gateway-production-cutover-sop.md`；
+2. `docs/audits/wei-alipay-production-cutover-incident-2026-08-21.md`；
+3. `docs/SDK-MAINTENANCE.md`；
+4. 当前精确 SHA 的密钥存储、签名生成、回调和订单状态实现。
+
+必须把“SDK 文件是否变化”“密钥能否解密”“密钥格式是否受支持”“密钥对是否匹配”“是否生成非空签名”“支付宝是否接受”“订单是否正确落账”分开取证。不得因其中一项通过推断其余项通过。用户报告的错误可以作为事故症状，但没有请求字段快照、OpenSSL 错误、活动 SHA 和支付宝响应证据时，不能写成已确认代码根因。
+
+禁止输出或复制生产私钥。需要比对时只使用本地计算的公钥指纹；需要离线回归时使用临时密钥；需要真实生产 canary 时必须停在授权门前。回调缺少签名、`app_id`、订单号、交易号或金额时只应记录并返回失败，不能改变订单状态。
 
 ## SDK 决策
 

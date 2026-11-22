@@ -30,7 +30,6 @@ final class Wei_Alipay_Secret_Store {
 			add_filter( 'pre_update_option_' . $option, array( __CLASS__, 'encrypt_option' ), 10, 3 );
 		}
 		add_action( 'woo_alipay_secret_error', array( __CLASS__, 'remember_error' ), 10, 3 );
-		add_action( 'admin_notices', array( __CLASS__, 'render_health_notice' ) );
 	}
 
 	public static function encrypt_value( $plaintext, $material ) {
@@ -273,20 +272,50 @@ final class Wei_Alipay_Secret_Store {
 		);
 	}
 
+	/**
+	 * Return a presentation-safe health summary for the main private key.
+	 *
+	 * The method reports presence, decryptability and storage mode only. It never
+	 * returns, logs or persists secret material.
+	 *
+	 * @return array{status:string,protection:string}
+	 */
+	public static function main_secret_health() {
+		$external = apply_filters( 'woo_alipay_secret_value', null, 'woocommerce_alipay_settings', 'private_key' );
+		if ( is_string( $external ) && '' !== $external ) {
+			return array( 'status' => 'ready', 'protection' => 'external' );
+		}
+		$settings = self::raw_option( 'woocommerce_alipay_settings' );
+		if ( ! is_array( $settings ) || empty( $settings['private_key'] ) ) {
+			return array( 'status' => 'missing', 'protection' => 'none' );
+		}
+		$stored = (string) $settings['private_key'];
+		if ( ! self::is_envelope( $stored ) ) {
+			return array( 'status' => 'ready', 'protection' => 'plaintext' );
+		}
+		$plaintext = self::decrypt_value( $stored, self::keyring() );
+		if ( is_wp_error( $plaintext ) || '' === (string) $plaintext ) {
+			return array( 'status' => 'unreadable', 'protection' => 'encrypted' );
+		}
+		$dedicated = ( defined( 'WEI_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WEI_ALIPAY_ENCRYPTION_KEY )
+			|| ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY );
+		return array( 'status' => 'ready', 'protection' => $dedicated ? 'dedicated' : 'salts' );
+	}
+
 	public static function render_health_notice() {
 		if ( ! current_user_can( 'manage_woocommerce' ) || ! self::is_settings_screen() ) {
 			return;
 		}
 		self::audit_stored_secrets();
 		if ( ! empty( self::$errors ) ) {
-			echo '<div class="notice notice-error"><p>' . esc_html__( 'Wei Alipay cannot decrypt one or more stored payment secrets. Payment is disabled until the configured encryption key is restored.', 'wei-alipay' ) . '</p></div>';
+			echo '<div class="notice notice-error inline wei-alipay-settings-notice" role="alert"><p>' . esc_html__( 'Wei Alipay cannot decrypt one or more stored payment secrets. Payment is disabled until the configured encryption key is restored.', 'wei-alipay' ) . '</p></div>';
 			return;
 		}
 		$has_dedicated_key = ( defined( 'WEI_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WEI_ALIPAY_ENCRYPTION_KEY )
 			|| ( defined( 'WOO_ALIPAY_ENCRYPTION_KEY' ) && '' !== (string) WOO_ALIPAY_ENCRYPTION_KEY );
 		$settings = get_option( 'woocommerce_alipay_settings', array() );
 		if ( ! $has_dedicated_key && is_array( $settings ) && 'yes' === ( $settings['enabled'] ?? 'no' ) ) {
-			echo '<div class="notice notice-warning"><p>' . esc_html__( 'Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site.', 'wei-alipay' ) . '</p></div>';
+			echo '<div class="notice notice-warning inline wei-alipay-settings-notice" role="alert"><p>' . esc_html__( 'Wei Alipay is using WordPress salts to protect payment secrets. Configure WEI_ALIPAY_ENCRYPTION_KEY before cloning, restoring, or moving this site.', 'wei-alipay' ) . '</p></div>';
 		}
 	}
 
@@ -354,7 +383,7 @@ final class Wei_Alipay_Secret_Store {
 		}
 		$page    = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
 		$section = isset( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only screen detection.
-		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'wei-alipay', 'woo-alipay' ), true );
+		return 'wc-settings' === $page && in_array( $section, array( 'alipay', 'alipay_wap', 'acbop', 'wei-alipay', 'woo-alipay' ), true );
 	}
 
 	private static function raw_option( $option ) {

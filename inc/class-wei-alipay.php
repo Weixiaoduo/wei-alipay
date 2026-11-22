@@ -20,7 +20,7 @@ class Wei_Alipay {
             // Add admin scripts
             add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 99, 1 );
             // Admin tools
-            add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
+            add_action( 'admin_menu', array( $this, 'add_admin_pages' ), 5 );
 			// Add custom cron intervals
 			add_filter( 'cron_schedules', array( $this, 'add_cron_intervals' ), 10, 1 );
 
@@ -75,6 +75,9 @@ class Wei_Alipay {
 		}
 		if ( class_exists( 'Wei_Alipay_Secret_Store' ) ) {
 			Wei_Alipay_Secret_Store::migrate_current_site();
+		}
+		if ( class_exists( 'Wei_Alipay_Features' ) ) {
+			Wei_Alipay_Features::maybe_migrate();
 		}
 		update_option( 'woo_alipay_plugin_version', WEI_ALIPAY_VERSION, false );
 		update_option( 'woo_alipay_schema_version', '3.2.0-r3', false );
@@ -215,15 +218,26 @@ class Wei_Alipay {
         $version_js  = filemtime( WEI_ALIPAY_PLUGIN_PATH . 'js/admin/main' . $js_ext );
 
         wp_enqueue_style(
+            'wei-alipay-design-system',
+            WEI_ALIPAY_PLUGIN_URL . 'css/admin/design-system.css',
+            array(),
+            filemtime( WEI_ALIPAY_PLUGIN_PATH . 'css/admin/design-system.css' )
+        );
+
+        wp_enqueue_style(
             'wei-alipay',
             WEI_ALIPAY_PLUGIN_URL . 'css/admin/main' . $css_ext,
-            array(),
+            array( 'wei-alipay-design-system' ),
             $version_css
         );
 
         $parameters = array(
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'debug'    => $debug,
+            'ajax_url'                 => admin_url( 'admin-ajax.php' ),
+            'connection_success'       => __( 'Connection test succeeded. The Alipay gateway configuration is valid.', 'wei-alipay' ),
+            'connection_failed'        => __( 'Connection test failed', 'wei-alipay' ),
+            'connection_network_error' => __( 'Connection test failed because the request could not be completed.', 'wei-alipay' ),
+            'copied'                   => __( 'Copied', 'wei-alipay' ),
+            'copy_failed'              => __( 'Could not copy automatically. Select and copy the URL manually.', 'wei-alipay' ),
         );
 
         wp_enqueue_script(
@@ -237,18 +251,40 @@ class Wei_Alipay {
     }
 
     public function add_admin_pages() {
-        // If the dedicated Reconcile Pro extension is active, avoid adding a duplicate menu.
-        if ( class_exists( 'Wei_Alipay_Reconcile_Admin' ) ) {
-            return;
-        }
-        add_submenu_page(
-            'woocommerce',
-            __( '支付宝对账工具', 'wei-alipay' ),
-            __( '支付宝对账', 'wei-alipay' ),
+        add_menu_page(
+            __( 'Wei Alipay', 'wei-alipay' ),
+            __( 'Wei Alipay', 'wei-alipay' ),
             'manage_woocommerce',
             'wei-alipay',
-            array( $this, 'render_admin_reconcile_page' )
+            array( $this, 'render_admin_overview_page' ),
+            'dashicons-money-alt',
+            56
         );
+
+        add_submenu_page(
+            'wei-alipay',
+            __( 'Wei Alipay Overview', 'wei-alipay' ),
+            __( 'Overview', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay',
+            array( $this, 'render_admin_overview_page' )
+        );
+
+        // Keep the basic reconciliation tool available only when the merchant enables reconciliation.
+        if ( Wei_Alipay_Features::is_enabled( 'reconcile' ) && ! class_exists( 'Wei_Alipay_Reconcile_Admin' ) ) {
+            add_submenu_page(
+                'wei-alipay',
+                __( 'Wei Alipay Reconciliation', 'wei-alipay' ),
+                __( 'Reconciliation', 'wei-alipay' ),
+                'manage_woocommerce',
+                'wei-alipay-reconcile',
+                array( $this, 'render_admin_reconcile_page' )
+            );
+        }
+    }
+
+    public function render_admin_overview_page() {
+        Wei_Alipay_Features::render();
     }
 
     /**
@@ -335,7 +371,7 @@ class Wei_Alipay {
 
     public function render_admin_reconcile_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( '权限不足', 'wei-alipay' ) );
+			wp_die( esc_html__( 'You do not have permission to manage Wei Alipay.', 'wei-alipay' ) );
         }
         $result = null; $error = '';
 		$nonce = isset( $_POST['woo_alipay_reconcile_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['woo_alipay_reconcile_nonce'] ) ) : '';
@@ -371,29 +407,34 @@ class Wei_Alipay {
                         );
                         $transaction_matches = ! $order->get_transaction_id() || hash_equals( (string) $order->get_transaction_id(), (string) $result['trade_no'] );
                         if ( 'alipay' !== $order->get_payment_method() || ! $amount_matches || ! $transaction_matches ) {
-                            $error = __( '查询结果与订单支付方式、金额或交易号不一致，已拒绝同步。', 'wei-alipay' );
+                            $error = __( 'The query result did not match the order payment method, amount or transaction number. Synchronization was refused.', 'wei-alipay' );
                         } elseif ( ! $order->is_paid() ) {
                             $order->payment_complete( $result['trade_no'] );
                             /* translators: %s: Alipay transaction number */
-                            $order->add_order_note( sprintf( __( '对账同步：标记为已支付，交易号: %s', 'wei-alipay' ), $result['trade_no'] ) );
+                            $order->add_order_note( sprintf( __( 'Reconciliation sync: marked paid with transaction number %s.', 'wei-alipay' ), $result['trade_no'] ) );
                         }
                     }
                 }
             }
         }
-        echo '<div class="wrap"><h1>' . esc_html__( '支付宝对账工具', 'wei-alipay' ) . '</h1>';
-        echo '<form method="post">';
+        echo '<div class="wrap wei-alipay-admin">';
+        Wei_Alipay_Admin_UI::page_header(
+            __( 'Single-order Reconciliation', 'wei-alipay' ),
+            __( 'Query one transaction from the configured Alipay environment and optionally synchronize a matching WooCommerce order.', 'wei-alipay' )
+        );
+        echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Querying contacts Alipay. Synchronization is offered only after the payment method, amount and transaction number match the order.', 'wei-alipay' ) . '</p></div>';
+        echo '<form class="card wei-alipay-card-wide" method="post">';
         wp_nonce_field( 'woo_alipay_reconcile', 'woo_alipay_reconcile_nonce' );
         echo '<table class="form-table"><tbody>';
-        echo '<tr><th><label for="out_trade_no">' . esc_html__( '商户订单号(out_trade_no)', 'wei-alipay' ) . '</label></th><td><input type="text" name="out_trade_no" id="out_trade_no" class="regular-text" /></td></tr>';
-        echo '<tr><th><label for="trade_no">' . esc_html__( '支付宝交易号(trade_no)', 'wei-alipay' ) . '</label></th><td><input type="text" name="trade_no" id="trade_no" class="regular-text" /></td></tr>';
+        echo '<tr><th><label for="out_trade_no">' . esc_html__( 'Merchant order number (out_trade_no)', 'wei-alipay' ) . '</label></th><td><input type="text" name="out_trade_no" id="out_trade_no" class="regular-text" /></td></tr>';
+        echo '<tr><th><label for="trade_no">' . esc_html__( 'Alipay transaction number (trade_no)', 'wei-alipay' ) . '</label></th><td><input type="text" name="trade_no" id="trade_no" class="regular-text" /></td></tr>';
         echo '</tbody></table>';
-        submit_button( __( '查询', 'wei-alipay' ) );
+        echo '<p class="submit"><button type="submit" class="button button-primary" data-wei-confirm="' . esc_attr__( 'Query this transaction in the configured Alipay environment?', 'wei-alipay' ) . '">' . esc_html__( 'Query transaction', 'wei-alipay' ) . '</button></p>';
         if ( $result ) {
-            echo '<h2>' . esc_html__( '查询结果', 'wei-alipay' ) . '</h2>';
-            echo '<pre>' . esc_html( wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</pre>';
-            echo '<p><label><input type="checkbox" name="sync_order" value="1" /> ' . esc_html__( '若支付成功，尝试同步 Woo 订单为已支付', 'wei-alipay' ) . '</label></p>';
-            submit_button( __( '同步订单状态', 'wei-alipay' ) );
+            echo '<h2>' . esc_html__( 'Query result', 'wei-alipay' ) . '</h2>';
+            echo '<pre class="wei-alipay-code">' . esc_html( wp_json_encode( $result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</pre>';
+            echo '<p><label><input type="checkbox" name="sync_order" value="1" /> ' . esc_html__( 'If the payment succeeded, synchronize the matching WooCommerce order as paid', 'wei-alipay' ) . '</label></p>';
+            echo '<p class="submit"><button type="submit" class="button" data-wei-confirm="' . esc_attr__( 'Re-query Alipay and synchronize the matching order if every binding check passes?', 'wei-alipay' ) . '">' . esc_html__( 'Synchronize order status', 'wei-alipay' ) . '</button></p>';
         }
         if ( $error ) {
             echo '<div class="notice notice-error"><p>' . esc_html( $error ) . '</p></div>';

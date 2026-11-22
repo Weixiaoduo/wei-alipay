@@ -114,7 +114,7 @@ add_action( 'admin_post_woo_alipay_ps_receivers_upsert', function() {
 
     if ( empty( $identity ) || empty( $label ) ) {
         set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写标签与账号。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=receivers' ) );
         exit;
     }
 
@@ -134,7 +134,7 @@ add_action( 'admin_post_woo_alipay_ps_receivers_upsert', function() {
 
     update_option( 'woo_alipay_ps_receivers', $list, false );
     set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '收款方已保存。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=receivers' ) );
     exit;
 } );
 
@@ -149,7 +149,7 @@ add_action( 'admin_post_woo_alipay_ps_receivers_delete', function() {
     if ( isset( $list[ $id ] ) ) { unset( $list[ $id ] ); }
     update_option( 'woo_alipay_ps_receivers', $list, false );
     set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '收款方已删除。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=receivers' ) );
     exit;
 } );
 
@@ -178,7 +178,7 @@ add_action( 'admin_post_woo_alipay_ps_rules_save', function() {
         update_option( 'woo_alipay_ps_rules', $rules, false );
         set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '规则已保存。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
     }
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
     exit;
 } );
 
@@ -195,7 +195,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
 
     if ( empty( $cat_id ) || empty( $receiver_id ) || $percent <= 0 ) {
         set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写类目、收款方与比例。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
         exit;
     }
 
@@ -211,7 +211,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
     }
     if ( $sum + $percent > 100.0001 ) {
         set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '该类目下的分账比例累计超过 100%，请调整。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
         exit;
     }
 
@@ -219,7 +219,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_add', function() {
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
     set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '类目规则已添加。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
     exit;
 } );
 
@@ -241,7 +241,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
 
     if ( empty( $product_id ) || empty( $receiver_id ) || $percent <= 0 ) {
         set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '请填写商品、收款方与比例。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
         exit;
     }
 
@@ -254,7 +254,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
     foreach ( $rules['product'][ $product_id ] as $r ) { $sum += (float) ( $r['percent'] ?? 0 ); }
     if ( $sum + $percent > 100.0001 ) {
         set_transient( 'woo_alipay_ps_notice', array( 'error' => __( '该商品下的分账比例累计超过 100%，请调整。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+        wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
         exit;
     }
 
@@ -262,7 +262,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_add', function() {
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
     set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '商品规则已添加。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
     exit;
 } );
 
@@ -286,7 +286,7 @@ add_action( 'admin_post_woo_alipay_ps_product_rule_delete', function() {
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
     set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '商品规则已删除。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
     exit;
 } );
 
@@ -310,7 +310,7 @@ add_action( 'admin_post_woo_alipay_ps_category_rule_delete', function() {
     update_option( 'woo_alipay_ps_rules', $rules, false );
 
     set_transient( 'woo_alipay_ps_notice', array( 'success' => __( '类目规则已删除。', 'wei-alipay' ) ), 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=rules' ) );
     exit;
 } );
 
@@ -357,7 +357,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order', function() {
         }
     }
 
-    wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) );
+    $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) );
     exit;
 } );
 
@@ -470,7 +470,7 @@ add_action( 'admin_post_woo_alipay_ps_compensate_from_suggestion', function() {
     if ( ! $order || $key < 0 ) { wp_safe_redirect( admin_url( 'edit.php?post_type=shop_order' ) ); exit; }
 
     $sugs = (array) $order->get_meta( '_alipay_ps_suggestions', true );
-    if ( ! isset( $sugs[ $key ] ) ) { wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) ); exit; }
+    if ( ! isset( $sugs[ $key ] ) ) { $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) ); exit; }
     $s = $sugs[ $key ];
 
     if ( ! class_exists( 'Wei_Alipay_PS_Service' ) ) {
@@ -499,7 +499,7 @@ add_action( 'admin_post_woo_alipay_ps_compensate_from_suggestion', function() {
             Wei_Alipay_PS_Service::schedule_as_job( $order_id, 'confirm', max( 30, (int) ( Wei_Alipay_PS_Service::settings()['confirm_interval'] ?? 60 ) ) );
         }
     }
-    wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) );
+    $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) );
     exit;
 } );
 
@@ -529,7 +529,7 @@ add_action( 'admin_post_woo_alipay_ps_jobs_clear', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
         wp_die( esc_html__( 'You are not allowed to do this.', 'wei-alipay' ) );
     }
-    check_admin_referer( 'woo_alipay_ps_jobs_clear' );
+    check_admin_referer( 'woo_alipay_ps_jobs_clear', 'wei_alipay_clear_nonce' );
     $jobs = get_option( 'woo_alipay_ps_jobs', array() );
     if ( ! empty( $jobs ) && is_array( $jobs ) ) {
         foreach ( $jobs as $id => $j ) {
@@ -548,7 +548,7 @@ add_action( 'admin_post_woo_alipay_ps_jobs_clear_old_failed', function() {
     if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) {
         wp_die( esc_html__( 'You are not allowed to do this.', 'wei-alipay' ) );
     }
-    check_admin_referer( 'woo_alipay_ps_jobs_clear_old_failed' );
+    check_admin_referer( 'woo_alipay_ps_jobs_clear_old_failed', 'wei_alipay_clear_old_nonce' );
     $days = isset( $_POST['days'] ) ? max( 1, (int) $_POST['days'] ) : 7;
     $cut  = time() - $days * DAY_IN_SECONDS;
     $jobs = get_option( 'woo_alipay_ps_jobs', array() );
@@ -656,7 +656,7 @@ add_action( 'admin_post_woo_alipay_ps_settle_order_new_round', function() {
         }
     }
 
-    wp_safe_redirect( get_edit_post_link( $order_id, 'raw' ) );
+    $redirect_order = wc_get_order( $order_id ); wp_safe_redirect( $redirect_order instanceof WC_Order ? $redirect_order->get_edit_order_url() : admin_url( 'admin.php?page=wc-orders' ) );
     exit;
 } );
 
@@ -681,6 +681,6 @@ add_action( 'admin_post_woo_alipay_ps_query', function() {
         set_transient( 'woo_alipay_ps_query_result', $res, 10 * MINUTE_IN_SECONDS );
     }
 
-    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing' ) );
+    wp_safe_redirect( admin_url( 'admin.php?page=wei-alipay-profitsharing&view=query' ) );
     exit;
 } );

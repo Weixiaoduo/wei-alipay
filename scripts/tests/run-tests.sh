@@ -9,8 +9,8 @@ fail() { printf '[FAIL] %s\n' "$1" >&2; exit 1; }
 run_static() {
   info 'PHP syntax checks (first-party PHP; bundled SDK excluded)'
   local count
-  count="$(find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print | wc -l | tr -d ' ')"
-  if ! find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/mini-program/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l >/tmp/wei-alipay-php-lint.txt; then
+  count="$(find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print | wc -l | tr -d ' ')"
+  if ! find "$ROOT_DIR" -path "$ROOT_DIR/.git" -prune -o -path "$ROOT_DIR/vendor" -prune -o -path "$ROOT_DIR/lib" -prune -o -path "$ROOT_DIR/inc/modules/cross-border/lib" -prune -o -type f -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l >/tmp/wei-alipay-php-lint.txt; then
     grep -v '^No syntax errors detected' /tmp/wei-alipay-php-lint.txt >&2 || true
     fail "one or more of $count PHP files failed syntax checks"
   fi
@@ -27,7 +27,22 @@ run_static() {
 
 run_contracts() {
   php "$ROOT_DIR/tests/rename-contracts.php"
+  php "$ROOT_DIR/tests/admin-menu-contracts.php"
+  php "$ROOT_DIR/tests/feature-center-contracts.php"
+  php "$ROOT_DIR/tests/health-snapshot-contracts.php"
+  php "$ROOT_DIR/tests/admin-design-contracts.php"
+  php "$ROOT_DIR/tests/translation-contracts.php"
   php "$ROOT_DIR/tests/security-contracts.php"
+  php "$ROOT_DIR/tests/legacy-callback-hotfix-contract.php"
+  php "$ROOT_DIR/tests/prod-recovery-contract.php"
+  php "$ROOT_DIR/tests/w2-core-fixes-contract.php"
+  php "$ROOT_DIR/tests/w2-a2-contracts.php"
+  php "$ROOT_DIR/tests/w2-a3-latch-contracts.php"
+  php "$ROOT_DIR/tests/w4-sdk-allowlist-contract.php"
+  php "$ROOT_DIR/tests/w2-b-shell-contracts.php"
+  php "$ROOT_DIR/tests/sdk-signing-contracts.php"
+  php "$ROOT_DIR/tests/reconcile-details-contracts.php"
+  php "$ROOT_DIR/tests/reconcile-runtime-contracts.php"
   php "$ROOT_DIR/tests/cross-border-availability-contracts.php"
   php "$ROOT_DIR/tests/release-security-contracts.php"
   php "$ROOT_DIR/tests/multisite-lifecycle-contracts.php"

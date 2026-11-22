@@ -1,10 +1,10 @@
 <?php
 /*
 * Plugin Name: Wei Alipay Payment Gateway for WooCommerce
-* Plugin URI: https://wenpai.org/plugins/wei-alipay
-* Update URI: https://updates.wenpai.net
+* Plugin URI: https://weixiaoduo.com/product/wei-alipay.html
+* Update URI: https://updates.weixiaoduo.com
 * Description: Integrate Woocommerce with Alipay (Mainland China). Supports WooCommerce Blocks and HPOS.
-* Version: 4.0.1
+* Version: 4.1.0
 * Author: Weixiaoduo.com
 * Author URI: https://weixiaoduo.com/
 * Text Domain: wei-alipay
@@ -35,12 +35,24 @@ if ( ! defined( 'WEI_ALIPAY_PLUGIN_URL' ) ) {
 }
 
 if ( ! defined( 'WEI_ALIPAY_VERSION' ) ) {
-	define( 'WEI_ALIPAY_VERSION', '4.0.1' );
+	define( 'WEI_ALIPAY_VERSION', '4.1.0' );
 }
 
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay.php';
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-secret-store.php';
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-health.php';
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-account-client.php';
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-features.php';
+if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'lib/wenpai-admin-ui/php/load.php' ) ) {
+	require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/wenpai-admin-ui/php/load.php';
+}
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-admin-ui.php';
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-shell.php';
 Wei_Alipay_Secret_Store::register();
+Wei_Alipay_Health::register();
+Wei_Alipay_Account_Client::register();
+Wei_Alipay_Shell::register();
+Wei_Alipay_Features::register();
 
 if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php' ) ) {
 	require_once WEI_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php';
@@ -106,14 +118,6 @@ if ( ! defined( 'WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_URL' ) ) {
 	define( 'WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_URL', WEI_ALIPAY_PLUGIN_URL . 'inc/modules/subscriptions/' );
 }
 
-if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH' ) ) {
-	define( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH', WEI_ALIPAY_PLUGIN_PATH . 'inc/modules/mini-program/' );
-}
-
-if ( ! defined( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_URL' ) ) {
-	define( 'WEI_ALIPAY_MINIPROGRAM_PLUGIN_URL', WEI_ALIPAY_PLUGIN_URL . 'inc/modules/mini-program/' );
-}
-
 if ( ! defined( 'WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH' ) ) {
 	define( 'WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH', WEI_ALIPAY_PLUGIN_PATH . 'inc/modules/cross-border/' );
 }
@@ -122,53 +126,44 @@ if ( ! defined( 'WEI_ALIPAY_CROSS_BORDER_PLUGIN_URL' ) ) {
 	define( 'WEI_ALIPAY_CROSS_BORDER_PLUGIN_URL', WEI_ALIPAY_PLUGIN_URL . 'inc/modules/cross-border/' );
 }
 
-if ( file_exists( WEI_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'profitsharing' ) && file_exists( WEI_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_PS_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'fund_auth' ) && file_exists( WEI_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_RECONCILE_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'reconcile' ) && file_exists( WEI_ALIPAY_RECONCILE_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_RECONCILE_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_BARCODE_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'barcode' ) && file_exists( WEI_ALIPAY_BARCODE_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_BARCODE_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_F2F_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'f2f' ) && file_exists( WEI_ALIPAY_F2F_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_F2F_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'huabei' ) && file_exists( WEI_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_HUABEI_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'subscriptions' ) && file_exists( WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_SUBSCRIPTIONS_PLUGIN_PATH . 'bootstrap.php';
 }
 
-if ( file_exists( WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php' ) ) {
-	require_once WEI_ALIPAY_MINIPROGRAM_PLUGIN_PATH . 'bootstrap.php';
-}
-
-if ( file_exists( WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH . 'bootstrap.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'cross_border' ) && file_exists( WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH . 'bootstrap.php' ) ) {
 	require_once WEI_ALIPAY_CROSS_BORDER_PLUGIN_PATH . 'bootstrap.php';
 }
 
-// Load enable gateways helper
-if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'enable-gateways.php' ) ) {
-	require_once WEI_ALIPAY_PLUGIN_PATH . 'enable-gateways.php';
-}
-
 // Load agreement manager (subscriptions auto-renew support)
-if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-agreement.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'subscriptions' ) && file_exists( WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-agreement.php' ) ) {
 	require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-agreement.php';
 }
 // Load subscription UI helpers
-if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-subscription-ui.php' ) ) {
+if ( Wei_Alipay_Features::is_enabled( 'subscriptions' ) && file_exists( WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-subscription-ui.php' ) ) {
 	require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-subscription-ui.php';
 }
 
@@ -208,7 +203,7 @@ function woo_alipay_run() {
 		require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-order-timeout.php';
 	}
 
-	if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-webhook-retry.php' ) ) {
+	if ( Wei_Alipay_Features::is_enabled( 'webhook_retry' ) && file_exists( WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-webhook-retry.php' ) ) {
 		require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wc-alipay-webhook-retry.php';
 	}
 

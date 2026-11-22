@@ -34,8 +34,9 @@ class WC_Alipay_Order_Timeout {
 		add_action( 'wp', array( $this, 'schedule_timeout_check' ) );
 		add_action( 'woo_alipay_check_timeout_orders', array( $this, 'check_timeout_orders' ) );
 
-		// Add timeout info to order
+		// Add timeout info to order (classic + Blocks Store API checkout)
 		add_action( 'woocommerce_checkout_order_processed', array( $this, 'add_timeout_meta' ), 10, 3 );
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'add_timeout_meta_blocks' ), 10, 1 );
 	}
 
 	/**
@@ -192,6 +193,17 @@ class WC_Alipay_Order_Timeout {
 		$order->update_meta_data( '_alipay_timeout_time', $timeout_time );
 		$order->update_meta_data( '_alipay_timeout_duration', $timeout );
 		$order->save();
+	}
+
+	/**
+	 * Add timeout meta to orders created via WooCommerce Blocks Store API.
+	 *
+	 * @param WC_Order $order Order object.
+	 */
+	public function add_timeout_meta_blocks( $order ) {
+		if ( $order instanceof WC_Order ) {
+			$this->add_timeout_meta( $order->get_id(), array(), $order );
+		}
 	}
 
 	/**

@@ -18,6 +18,10 @@ parameters:
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
         - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
         - tests/phpstan/alipay-sdk-stubs.php
+        - lib/wenpai-admin-ui/php/class-wenpai-admin-icons.php
+        - lib/wenpai-admin-ui/php/class-wenpai-admin-loader.php
+        - lib/wenpai-admin-ui/php/class-wenpai-admin-shell.php
+        - lib/wenpai-admin-ui/php/class-wenpai-admin-ui.php
     tmpDir: /tmp/wei-alipay-phpstan
     reportUnmatchedIgnoredErrors: false
     ignoreErrors:

@@ -17,7 +17,16 @@ final class WC_Alipay_Fund_Auth_Blocks_Support extends AbstractPaymentMethodType
 
     public function is_active() {
         $enabled = isset( $this->settings['enabled'] ) ? $this->settings['enabled'] : 'no';
-        return 'yes' === $enabled;
+        if ( 'yes' !== $enabled ) {
+            return false;
+        }
+        if ( function_exists( 'WC' ) && WC() && WC()->payment_gateways() ) {
+            $gateways = WC()->payment_gateways()->payment_gateways();
+            if ( isset( $gateways['alipay_fund_auth'] ) && method_exists( $gateways['alipay_fund_auth'], 'is_available' ) ) {
+                return (bool) $gateways['alipay_fund_auth']->is_available();
+            }
+        }
+        return true;
     }
 
     public function get_payment_method_script_handles() {
@@ -37,7 +46,7 @@ final class WC_Alipay_Fund_Auth_Blocks_Support extends AbstractPaymentMethodType
         );
 
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'wc-alipay-fund-auth-blocks', 'wei-alipay', WEI_ALIPAY_FUNDAUTH_PLUGIN_PATH . 'languages' );
+            wp_set_script_translations( 'wc-alipay-fund-auth-blocks', 'wei-alipay', WEI_ALIPAY_PLUGIN_PATH . 'languages' );
         }
 
         return array( 'wc-alipay-fund-auth-blocks' );

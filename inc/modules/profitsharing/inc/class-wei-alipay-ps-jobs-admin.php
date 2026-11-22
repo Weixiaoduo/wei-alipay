@@ -9,11 +9,11 @@ class Wei_Alipay_PS_Jobs_Admin {
 
     public function add_menu() {
         add_submenu_page(
-            'woocommerce',
-            __( 'Alipay PS Jobs', 'wei-alipay' ),
-            __( 'Alipay PS Jobs', 'wei-alipay' ),
-            'manage_woocommerce',
             'wei-alipay',
+            __( 'Wei Alipay Profit Sharing Jobs', 'wei-alipay' ),
+            __( 'Profit Sharing Jobs', 'wei-alipay' ),
+            'manage_woocommerce',
+            'wei-alipay-ps-jobs',
             array( $this, 'render_page' )
         );
     }
@@ -33,7 +33,7 @@ class Wei_Alipay_PS_Jobs_Admin {
             update_option( Wei_Alipay_PS_Service::JOBS_OPTION, $jobs, false );
             if ( function_exists( 'as_enqueue_async_action' ) ) {
                 as_enqueue_async_action( 'woo_alipay_ps_process_jobs_async' );
-            } else if ( function_exists( 'wp_schedule_single_event' ) ) {
+            } elseif ( function_exists( 'wp_schedule_single_event' ) ) {
                 wp_schedule_single_event( time() + 5, 'woo_alipay_ps_process_jobs' );
             }
         }
@@ -44,41 +44,35 @@ class Wei_Alipay_PS_Jobs_Admin {
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) && ! current_user_can( 'manage_alipay_profitsharing' ) ) { return; }
         $jobs = get_option( Wei_Alipay_PS_Service::JOBS_OPTION, array() );
-        echo '<div class="wrap">';
-        echo '<h1>' . esc_html__( 'Alipay Profit Sharing Jobs', 'wei-alipay' ) . '</h1>';
-        echo '<p class="description">' . esc_html__( 'Queued settlement jobs processed in background. Use Retry to requeue failed jobs.', 'wei-alipay' ) . '</p>';
+        echo '<div class="wrap wei-alipay-admin">';
+        Wei_Alipay_Admin_UI::page_header(
+            __( 'Wei Alipay Profit Sharing', 'wei-alipay' ),
+            __( 'Inspect queued settlement work, retry failed jobs and manage queue retention.', 'wei-alipay' )
+        );
+        Wei_Alipay_Admin_UI::profit_sharing_tabs( 'jobs' );
 
         // Filters
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter.
-        $filter_status = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_GET['status'] ) ) : '';
+        $filter_status = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : '';
+        $filter_status = in_array( $filter_status, array( 'pending', 'processing', 'succeeded', 'failed' ), true ) ? $filter_status : '';
+        $status_labels = array(
+            'pending'    => __( 'Pending', 'wei-alipay' ),
+            'processing' => __( 'Processing', 'wei-alipay' ),
+            'succeeded'  => __( 'Succeeded', 'wei-alipay' ),
+            'failed'     => __( 'Failed', 'wei-alipay' ),
+        );
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only list filter.
         $filter_error  = isset( $_GET['error_only'] ) ? ( '1' === $_GET['error_only'] ) : false;
-        echo '<form method="get" style="margin:10px 0">';
-        echo '<input type="hidden" name="page" value="wei-alipay" />';
+        echo '<div class="wei-alipay-toolbar"><form method="get">';
+        echo '<input type="hidden" name="page" value="wei-alipay-ps-jobs" />';
         echo '<label>' . esc_html__( 'Status', 'wei-alipay' ) . ': <select name="status"><option value="">' . esc_html__( 'All', 'wei-alipay' ) . '</option>';
-        foreach ( array( 'pending', 'processing', 'succeeded' ) as $s ) {
-            echo '<option value="' . esc_attr( $s ) . '"' . selected( $filter_status, $s, false ) . '>' . esc_html( ucfirst( $s ) ) . '</option>';
+        foreach ( $status_labels as $s => $status_label ) {
+            echo '<option value="' . esc_attr( $s ) . '"' . selected( $filter_status, $s, false ) . '>' . esc_html( $status_label ) . '</option>';
         }
         echo '</select></label> ';
         echo '<label><input type="checkbox" name="error_only" value="1"' . checked( $filter_error, true, false ) . ' /> ' . esc_html__( 'Only with error', 'wei-alipay' ) . '</label> ';
         submit_button( esc_html__( 'Filter', 'wei-alipay' ), 'secondary', '', false );
         echo '</form>';
-
-        // Clear succeeded
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:10px 10px 10px 0; display:inline-block">';
-        wp_nonce_field( 'woo_alipay_ps_jobs_clear' );
-        echo '<input type="hidden" name="action" value="woo_alipay_ps_jobs_clear" />';
-        submit_button( esc_html__( 'Clear succeeded jobs', 'wei-alipay' ), 'delete', '', false );
-        echo '</form>';
-
-// Clear failed older than N days
-        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:10px 10px 10px 0; display:inline-block">';
-        wp_nonce_field( 'woo_alipay_ps_jobs_clear_old_failed' );
-        echo '<input type="hidden" name="action" value="woo_alipay_ps_jobs_clear_old_failed" />';
-        echo '<input type="number" min="1" name="days" value="7" style="width:80px" /> ' . esc_html__( 'days', 'wei-alipay' ) . ' ';
-        submit_button( esc_html__( 'Clear failed older than N days', 'wei-alipay' ), 'delete', '', false );
-        echo '</form>';
-
         // Export CSV
         $export_url = add_query_arg( array(
             'action' => 'woo_alipay_ps_jobs_export',
@@ -87,6 +81,25 @@ class Wei_Alipay_PS_Jobs_Admin {
         ), admin_url( 'admin-post.php' ) );
         $export_url = wp_nonce_url( $export_url, 'woo_alipay_ps_jobs_export' );
         echo '<a class="button" href="' . esc_url( $export_url ) . '">' . esc_html__( 'Export CSV', 'wei-alipay' ) . '</a>';
+        echo '</div>';
+
+        echo '<section class="wei-alipay-danger-zone" aria-labelledby="wei-alipay-jobs-cleanup-title">';
+        echo '<h2 id="wei-alipay-jobs-cleanup-title">' . esc_html__( 'Queue cleanup', 'wei-alipay' ) . '</h2>';
+        echo '<p>' . esc_html__( 'Cleanup permanently removes queue records. Order data and settlement history stored on orders are retained.', 'wei-alipay' ) . '</p>';
+        echo '<div class="wei-alipay-actions">';
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        echo '<input type="hidden" name="wei_alipay_clear_nonce" value="' . esc_attr( wp_create_nonce( 'woo_alipay_ps_jobs_clear' ) ) . '" />';
+        echo '<input type="hidden" name="action" value="woo_alipay_ps_jobs_clear" />';
+        echo '<button type="submit" class="button button-link-delete" data-wei-confirm="' . esc_attr__( 'Permanently clear all succeeded job records?', 'wei-alipay' ) . '">' . esc_html__( 'Clear succeeded jobs', 'wei-alipay' ) . '</button>';
+        echo '</form>';
+
+        echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+        echo '<input type="hidden" name="wei_alipay_clear_old_nonce" value="' . esc_attr( wp_create_nonce( 'woo_alipay_ps_jobs_clear_old_failed' ) ) . '" />';
+        echo '<input type="hidden" name="action" value="woo_alipay_ps_jobs_clear_old_failed" />';
+        echo '<label><span class="screen-reader-text">' . esc_html__( 'Age in days', 'wei-alipay' ) . '</span><input type="number" min="1" name="days" value="7" class="small-text" /> ' . esc_html__( 'days', 'wei-alipay' ) . '</label> ';
+        echo '<button type="submit" class="button button-link-delete" data-wei-confirm="' . esc_attr__( 'Permanently clear failed job records older than this age?', 'wei-alipay' ) . '">' . esc_html__( 'Clear old failed jobs', 'wei-alipay' ) . '</button>';
+        echo '</form>';
+        echo '</div></section>';
 
         // Apply filters
         if ( ! empty( $jobs ) && $filter_status ) {
@@ -101,9 +114,9 @@ class Wei_Alipay_PS_Jobs_Admin {
         }
 
         if ( empty( $jobs ) ) {
-            echo '<p>' . esc_html__( 'No jobs yet.', 'wei-alipay' ) . '</p>';
+            echo '<div class="card wei-alipay-card-wide wei-alipay-empty"><span class="dashicons dashicons-list-view" aria-hidden="true"></span><h2>' . esc_html__( 'No matching jobs', 'wei-alipay' ) . '</h2><p>' . esc_html__( 'No jobs match the current filter.', 'wei-alipay' ) . '</p></div>';
         } else {
-            echo '<table class="widefat fixed striped" style="max-width:1100px">';
+            echo '<div class="wei-alipay-table-wrap"><table class="wp-list-table widefat fixed striped">';
             echo '<thead><tr>';
             echo '<th>' . esc_html__( 'Job ID', 'wei-alipay' ) . '</th>';
             echo '<th>' . esc_html__( 'Order', 'wei-alipay' ) . '</th>';
@@ -118,12 +131,15 @@ class Wei_Alipay_PS_Jobs_Admin {
             echo '<th>' . esc_html__( 'Actions', 'wei-alipay' ) . '</th>';
             echo '</tr></thead><tbody>';
             foreach ( $jobs as $job ) {
-                $edit_link = $job['order_id'] ? get_edit_post_link( (int) $job['order_id'], '' ) : '';
+                $job_order = $job['order_id'] ? wc_get_order( (int) $job['order_id'] ) : false;
+                $edit_link = $job_order instanceof WC_Order ? $job_order->get_edit_order_url() : '';
                 echo '<tr>';
                 echo '<td>' . esc_html( (string) $job['id'] ) . '</td>';
                 echo '<td>' . ( $edit_link ? '<a href=\'' . esc_url( $edit_link ) . '\'>#' . (int) $job['order_id'] . '</a>' : (int) $job['order_id'] ) . '</td>';
                 echo '<td>' . esc_html( (string) ( $job['phase'] ?? 'settle' ) ) . '</td>';
-                echo '<td>' . esc_html( (string) $job['status'] ) . '</td>';
+                $status = (string) $job['status'];
+                $status_class = 'succeeded' === $status ? ' is-success' : ( 'failed' === $status ? ' is-error' : ( 'processing' === $status ? ' is-warning' : '' ) );
+                echo '<td><span class="wei-alipay-status' . esc_attr( $status_class ) . '">' . esc_html( $status_labels[ $status ] ?? $status ) . '</span></td>';
                 echo '<td>' . esc_html( (string) ( $job['attempts'] ?? 0 ) ) . '</td>';
                 echo '<td>' . esc_html( (string) ( $job['confirm_checks'] ?? 0 ) ) . '</td>';
                 echo '<td>' . esc_html( date_i18n( 'Y-m-d H:i:s', (int) ( $job['next_at'] ?? 0 ) ) ) . '</td>';
@@ -131,8 +147,8 @@ class Wei_Alipay_PS_Jobs_Admin {
                 echo '<td>' . esc_html( (string) ( $job['reason'] ?? '' ) ) . '</td>';
                 echo '<td>' . esc_html( (string) ( $job['last_error'] ?? '' ) ) . '</td>';
                 echo '<td>';
-                echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline">';
-                wp_nonce_field( 'woo_alipay_ps_job_retry' );
+                echo '<form class="wei-alipay-inline-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+                echo '<input type="hidden" name="_wpnonce" value="' . esc_attr( wp_create_nonce( 'woo_alipay_ps_job_retry' ) ) . '" />';
                 echo '<input type="hidden" name="action" value="woo_alipay_ps_job_retry" />';
                 echo '<input type="hidden" name="job_id" value="' . esc_attr( (string) $job['id'] ) . '" />';
                 submit_button( esc_html__( 'Retry', 'wei-alipay' ), 'secondary small', '', false );
@@ -140,7 +156,7 @@ class Wei_Alipay_PS_Jobs_Admin {
                 echo '</td>';
                 echo '</tr>';
             }
-            echo '</tbody></table>';
+            echo '</tbody></table></div>';
         }
 
         echo '</div>';
