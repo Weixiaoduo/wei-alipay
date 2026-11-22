@@ -43,10 +43,15 @@ require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-secret-store.php';
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-health.php';
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-account-client.php';
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-features.php';
+if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'lib/wenpai-admin-ui/php/load.php' ) ) {
+	require_once WEI_ALIPAY_PLUGIN_PATH . 'lib/wenpai-admin-ui/php/load.php';
+}
 require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-admin-ui.php';
+require_once WEI_ALIPAY_PLUGIN_PATH . 'inc/class-wei-alipay-shell.php';
 Wei_Alipay_Secret_Store::register();
 Wei_Alipay_Health::register();
 Wei_Alipay_Account_Client::register();
+Wei_Alipay_Shell::register();
 Wei_Alipay_Features::register();
 
 if ( file_exists( WEI_ALIPAY_PLUGIN_PATH . 'includes/class-wenpai-updater.php' ) ) {

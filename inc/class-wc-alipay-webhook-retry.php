@@ -467,6 +467,10 @@ class WC_Alipay_Webhook_Retry {
 		}
 		$total_pages = ceil( $total_items / $per_page );
 
+		$use_shell = class_exists( 'Wei_Alipay_Shell' ) && Wei_Alipay_Shell::is_kit_ready();
+		if ( $use_shell ) {
+			Wei_Alipay_Shell::open( 'webhooks' );
+		}
 		?>
 		<div class="wrap wei-alipay-admin">
 			<?php
@@ -610,6 +614,9 @@ class WC_Alipay_Webhook_Retry {
 		</script>
 
 		<?php
+		if ( $use_shell ) {
+			Wei_Alipay_Shell::close();
+		}
 	}
 
 	/**

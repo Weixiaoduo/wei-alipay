@@ -105,6 +105,10 @@ class Wei_Alipay_Reconcile_Admin {
     public function render_page() {
         if ( ! current_user_can( 'manage_woocommerce' ) ) { return; }
         $view = 'manual';
+        $use_shell = class_exists( 'Wei_Alipay_Shell' ) && Wei_Alipay_Shell::is_kit_ready();
+        if ( $use_shell ) {
+            Wei_Alipay_Shell::open( 'reconcile' );
+        }
         echo '<div class="wrap wei-alipay-admin">';
         Wei_Alipay_Admin_UI::page_header(
             __( 'Wei Alipay Reconciliation', 'wei-alipay' ),
@@ -158,6 +162,9 @@ class Wei_Alipay_Reconcile_Admin {
         }
 
         echo '</div>';
+        if ( $use_shell ) {
+            Wei_Alipay_Shell::close();
+        }
     }
 
     private function render_result_details( $result ) {

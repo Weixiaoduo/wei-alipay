@@ -1,0 +1,149 @@
+/* Wei Alipay 4.1 — Weixiaoduo brand token overlay for wenpai-admin-ui v0.13.8.
+ * Brand source: weixiaoduo-brand-tokens.json v1.4.
+ * Scoped strictly to .wenpai-app[data-wenpai-product="wei-alipay"] (strictly product-scoped).
+ * Supports 2-mode brand palette via [data-wei-palette="weixiaoduo"|"platform"].
+ */
+
+body.wei-alipay-admin.wenpai-ui-page {
+  --wenpai-bg: #f7f7f5;
+  background: var(--wenpai-bg);
+}
+
+body.wei-alipay-admin .wenpai-app,
+body.wei-alipay-admin .wenpai-native,
+.wenpai-app[data-wenpai-product="wei-alipay"],
+.wenpai-native[data-wenpai-product="wei-alipay"] {
+  /* Default mode: Weixiaoduo butterfly red (< 5% area) */
+  --wenpai-accent: #d93d2e;
+  --wenpai-accent-hover: #b8281a;
+  --wenpai-accent-soft: #fdf2f0;
+  --wenpai-accent-line: #f9ded9;
+  --wenpai-on-accent: #ffffff;
+
+  /* Weixiaoduo warm gray surface & ink */
+  --wenpai-bg: #f7f7f5;
+  --wenpai-card: #ffffff;
+  --wenpai-surface-soft: #f2f2f0;
+  --wenpai-ad-soft: #fdf2f0;
+  --wenpai-ink: #333333;
+  --wenpai-ink-2: #666666;
+  --wenpai-ink-3: #82807a;
+  --wenpai-line: #ebebeb;
+  --wenpai-line-soft: #f2f2f0;
+  --wenpai-line-card: #ebebeb;
+  --wenpai-line-strong: #bfbdb8;
+  --wenpai-line-hover: #82807a;
+  --wenpai-control-line: #bfbdb8;
+  --wenpai-control-line-hover: #666666;
+  --wenpai-track-off: #bfbdb8;
+  --wenpai-track-locked: #e4e2dd;
+  --wenpai-mute: #82807a;
+  --wenpai-mute-soft: #f2f2f0;
+
+  /* Semantic status: Weixiaoduo green / warm amber / deep red */
+  --wenpai-ok: #5a9e2e;
+  --wenpai-ok-soft: #f6faf1;
+  --wenpai-ok-ink: #3c6e1c;
+  --wenpai-warn: #e8b93f;
+  --wenpai-warn-soft: #fffdf4;
+  --wenpai-warn-tint: #fffdf4;
+  --wenpai-warn-line: #f3e6bb;
+  --wenpai-warn-ink: #8a6419;
+  --wenpai-bad: #b8281a;
+  --wenpai-bad-soft: #fdf2f0;
+  --wenpai-bad-ink: #941f14;
+  --wenpai-bad-ink-strong: #7a180f;
+
+  --wenpai-focus-color: var(--wenpai-accent);
+  --wenpai-focus-halo: var(--wenpai-accent-soft);
+}
+
+/* Optional 2-mode platform brand palette: Alipay Blue #1677ff. */
+[data-wei-palette="platform"] .wenpai-app[data-wenpai-product="wei-alipay"],
+[data-wei-palette="platform"] .wenpai-native[data-wenpai-product="wei-alipay"],
+body.wei-alipay-admin.wei-palette-platform .wenpai-app[data-wenpai-product="wei-alipay"] {
+  --wenpai-accent: #1677ff;
+  --wenpai-accent-hover: #0958d9;
+  --wenpai-accent-soft: #f0f7ff;
+  --wenpai-accent-line: #bae0ff;
+  --wenpai-ad-soft: #f0f7ff;
+  --wenpai-focus-color: #1677ff;
+  --wenpai-focus-halo: #f0f7ff;
+}
+
+/* Switches use Weixiaoduo green in default mode so butterfly red stays < 5%. */
+body.wei-alipay-admin .wenpai-switch__input:checked + .wenpai-switch__track {
+  background: var(--wenpai-ok);
+}
+
+body.wei-alipay-admin .wenpai-switch__input:checked:hover:not(:disabled) + .wenpai-switch__track {
+  background: var(--wenpai-ok-ink);
+}
+
+body.wei-alipay-admin .wenpai-switch__input:disabled:checked + .wenpai-switch__track {
+  background: var(--wenpai-ok-soft);
+  box-shadow: inset 0 0 0 1px var(--wenpai-ok);
+}
+
+body.wei-alipay-admin .wenpai-switch__input:disabled:checked + .wenpai-switch__track::after {
+  background: var(--wenpai-ok);
+}
+
+/* Platform mode switches follow Alipay blue when ON. */
+[data-wei-palette="platform"] .wenpai-switch__input:checked + .wenpai-switch__track,
+body.wei-alipay-admin.wei-palette-platform .wenpai-switch__input:checked + .wenpai-switch__track {
+  background: var(--wenpai-accent);
+}
+
+[data-wei-palette="platform"] .wenpai-switch__input:checked:hover:not(:disabled) + .wenpai-switch__track,
+body.wei-alipay-admin.wei-palette-platform .wenpai-switch__input:checked:hover:not(:disabled) + .wenpai-switch__track {
+  background: var(--wenpai-accent-hover);
+}
+
+/* Healthy diagnostic metric-tile dots use green, not red. */
+body.wei-alipay-admin .wenpai-metric-tile:not(.is-warn):not(.is-bad) .wenpai-metric-tile__sub i {
+  background: var(--wenpai-ok);
+}
+
+/* Info notices use neutral warm gray in default red-brand mode so info is never mistaken for an error. */
+body.wei-alipay-admin .wenpai-app .notice.info,
+body.wei-alipay-admin :is(.wenpai-native .notice, .notice.wenpai-native).info {
+  background: var(--wenpai-mute-soft);
+  color: var(--wenpai-ink-2);
+}
+
+/* Product-scoped utilities (strictly --wenpai-* tokens). */
+.wei-alipay-avatar {
+  width: var(--wenpai-size-logo);
+  height: var(--wenpai-size-logo);
+  border-radius: 50%;
+  background: var(--wenpai-accent-soft);
+  border: 1px solid var(--wenpai-accent-line);
+  color: var(--wenpai-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--wenpai-text-body);
+  flex: none;
+  object-fit: cover;
+}
+
+.wei-alipay-palette-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wenpai-space-3);
+  padding-top: var(--wenpai-space-3);
+  border-top: 1px solid var(--wenpai-line-soft);
+}
+
+.wei-alipay-palette-form__label {
+  font-size: var(--wenpai-text-meta);
+  color: var(--wenpai-ink-2);
+}
+
+.wei-alipay-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}

@@ -358,6 +358,51 @@ class Wei_Alipay_Features {
 			wp_die( esc_html__( 'You do not have permission to manage Wei Alipay.', 'wei-alipay' ) );
 		}
 		$account = self::account_state();
+		if ( class_exists( 'Wei_Alipay_Shell' ) && Wei_Alipay_Shell::is_kit_ready() ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab routing.
+			$raw_view    = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'overview';
+			$shell_view  = 'operations' === $raw_view ? 'payments' : ( in_array( $raw_view, array( 'overview', 'payments', 'account', 'help' ), true ) ? $raw_view : 'overview' );
+			$enabled_opt = get_option( self::OPTION_KEY, array() );
+			$main_opt    = get_option( 'woocommerce_alipay_settings', array() );
+			$main_active = is_array( $main_opt ) && 'yes' === ( $main_opt['enabled'] ?? 'no' );
+			$secret_h    = class_exists( 'Wei_Alipay_Secret_Store' ) ? Wei_Alipay_Secret_Store::main_secret_health() : array( 'status' => 'missing' );
+			$main_ready  = $main_active && ! empty( $main_opt['appid'] ) && 'ready' === ( $secret_h['status'] ?? '' );
+			$notices     = array();
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag.
+			if ( ! empty( $_GET['features-updated'] ) ) {
+				$notices[] = array( 'type' => 'success', 'message' => __( '支付方式与工具设置已保存。', 'wei-alipay' ) );
+			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag.
+			if ( ! empty( $_GET['palette-updated'] ) ) {
+				$notices[] = array( 'type' => 'success', 'message' => __( '后台品牌配色偏好已更新。', 'wei-alipay' ) );
+			}
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag.
+			$conn_flag = isset( $_GET['wei_alipay_connect'] ) ? sanitize_key( wp_unslash( $_GET['wei_alipay_connect'] ) ) : '';
+			if ( 'connected' === $conn_flag ) {
+				$notices[] = array( 'type' => 'success', 'message' => __( '已成功连接薇晓朵账户。', 'wei-alipay' ) );
+			} elseif ( 'disconnected' === $conn_flag ) {
+				$notices[] = array( 'type' => 'warning', 'message' => __( '已断开薇晓朵账户连接，已启用的支付方式仍会继续收款。', 'wei-alipay' ) );
+			} elseif ( 'cancelled' === $conn_flag ) {
+				$notices[] = array( 'type' => 'info', 'message' => __( '已取消账户连接授权。', 'wei-alipay' ) );
+			} elseif ( in_array( $conn_flag, array( 'invalid_state', 'failed', 'exchange_failed' ), true ) ) {
+				$notices[] = array( 'type' => 'error', 'message' => __( '账户连接未完成，请重试。', 'wei-alipay' ) );
+			}
+			Wei_Alipay_Shell::render_primary_page(
+				array(
+					'view'            => $shell_view,
+					'account'         => $account,
+					'enabled'         => is_array( $enabled_opt ) ? $enabled_opt : array(),
+					'main_active'     => $main_active,
+					'main_ready'      => $main_ready,
+					'secret_health'   => $secret_h,
+					'health'          => class_exists( 'Wei_Alipay_Health' ) ? Wei_Alipay_Health::snapshot() : array(),
+					'activity'        => class_exists( 'Wei_Alipay_Health' ) ? Wei_Alipay_Health::activity_summary() : array(),
+					'runtime_summary' => self::version_summary(),
+					'notices'         => $notices,
+				)
+			);
+			return;
+		}
 		$view = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : 'overview'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation state.
 		if ( ! in_array( $view, array( 'overview', 'payments', 'operations', 'account' ), true ) ) {
 			$view = 'overview';

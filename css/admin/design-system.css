@@ -17,7 +17,7 @@
 	--wei-color-border-subtle: var(--wpds-color-stroke-surface-neutral-weak, #f0f0f0);
 	--wei-color-header-divider: var(--wpds-color-stroke-surface-neutral, #dbdbdb);
 	--wei-color-border-strong: var(--wpds-color-stroke-interactive-neutral-disabled, #dbdbdb);
-	--wei-color-accent: var(--wpds-color-foreground-interactive-brand, var(--wp-admin-theme-color, #3858e9));
+	--wei-color-accent: var(--wpds-color-foreground-interactive-brand, var(--wp-admin-theme-color, #d93d2e));
 	--wei-color-accent-subtle: var(--wpds-color-background-surface-brand, #ecf0fa);
 	--wei-color-success-text: var(--wpds-color-foreground-content-success, #002900);
 	--wei-color-success-surface: var(--wpds-color-background-surface-success-weak, #ebffed);
